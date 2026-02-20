@@ -21,6 +21,7 @@
   - [📦 Build \& Distribute](#-build--distribute)
   - [📂 Config \& Data](#-config--data)
   - [🔮 Roadmap](#-roadmap)
+  - [📋 Changelog](#-changelog)
   - [📄 License](#-license)
 
 ---
@@ -229,6 +230,12 @@ The directory is created on first run.
 - **Extensions**: Hooks for custom tools or third-party APIs.
 
 Issues and PRs welcome.
+
+---
+
+## 📋 Changelog
+
+See [docs/changlog.md](docs/changlog.md) for feature changes and fixes.
 
 ---
 
