@@ -32,6 +32,11 @@ class SessionRepository(ABC):
     def update_updated_at(self, session_id: str, updated_at: str) -> None:
         ...
 
+    @abstractmethod
+    def delete(self, session_id: str) -> None:
+        """删除会话（调用方需先删除该会话下所有消息）。"""
+        ...
+
 
 def _row_to_session(row: tuple) -> Session:
     return Session(id=row[0], title=row[1], created_at=row[2], updated_at=row[3])
@@ -73,3 +78,7 @@ class SqliteSessionRepository(SessionRepository):
     def update_updated_at(self, session_id: str, updated_at: str) -> None:
         with self._conn() as conn:
             conn.execute("UPDATE session SET updated_at = ? WHERE id = ?", (updated_at, session_id))
+
+    def delete(self, session_id: str) -> None:
+        with self._conn() as conn:
+            conn.execute("DELETE FROM session WHERE id = ?", (session_id,))
