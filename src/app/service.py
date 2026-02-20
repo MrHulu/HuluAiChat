@@ -117,6 +117,15 @@ class AppService:
                     self._message_repo.append(assistant_msg)
                     self._session_repo.update_updated_at(session_id, _now())
                     logger.info("send_message: 流式完成, 助手消息长度=%d", len("".join(acc)))
+                    # 若会话标题仍为默认「新对话」，用首条用户消息摘要更新一次
+                    session_after = self._session_repo.get_by_id(session_id)
+                    if session_after and session_after.title == "新对话":
+                        msgs = self._message_repo.list_by_session(session_id)
+                        first_user = next((m for m in msgs if m.role == "user"), None)
+                        if first_user and first_user.content:
+                            summary = (first_user.content.strip() or first_user.content.split("\n")[0].strip())[:20]
+                            if summary:
+                                self._session_repo.update_title(session_id, summary)
                     if on_done:
                         on_done()
 
@@ -135,6 +144,13 @@ class AppService:
     def switch_session(self, session_id: str) -> None:
         """切换当前会话。"""
         self._current_session_id = session_id
+
+    def delete_session(self, session_id: str) -> None:
+        """删除会话及其消息；若为当前会话则清空当前会话。"""
+        if self._current_session_id == session_id:
+            self._current_session_id = None
+        self._message_repo.delete_by_session(session_id)
+        self._session_repo.delete(session_id)
 
     def load_sessions(self) -> list[Session]:
         """加载会话列表（按时间排序）。"""
