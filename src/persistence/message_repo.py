@@ -20,6 +20,11 @@ class MessageRepository(ABC):
         """按 created_at 升序。"""
         ...
 
+    @abstractmethod
+    def delete_by_session(self, session_id: str) -> None:
+        """删除指定会话下的所有消息。"""
+        ...
+
 
 def _row_to_message(row: tuple) -> Message:
     return Message(id=row[0], session_id=row[1], role=row[2], content=row[3], created_at=row[4])
@@ -47,3 +52,7 @@ class SqliteMessageRepository(MessageRepository):
                 (session_id,),
             )
             return [_row_to_message(r) for r in cur.fetchall()]
+
+    def delete_by_session(self, session_id: str) -> None:
+        with self._conn() as conn:
+            conn.execute("DELETE FROM message WHERE session_id = ?", (session_id,))
