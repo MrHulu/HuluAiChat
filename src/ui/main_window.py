@@ -3,15 +3,32 @@ import queue
 from typing import Callable
 
 import customtkinter as ctk
+from tkinter import messagebox
 
 from src.app.service import AppService
 from src.chat import TextChunk, DoneChunk, ChatError, is_error
 from src.persistence import Session, Message
 
+try:
+    from ctk_markdown import CTkMarkdown
+    _USE_MARKDOWN = True
+except ImportError:
+    CTkMarkdown = None  # type: ignore[misc, assignment]
+    _USE_MARKDOWN = False
 
 SIDEBAR_WIDTH = 220
-SIDEBAR_COLLAPSED = 56
+SIDEBAR_COLLAPSED = 40  # 折叠后仅图标条，尽量收窄
 POLL_MS = 50
+
+# 侧边栏图标按钮：透明、仅图标，悬浮(hover_color)/按压(绑定临时色) 三态
+def _bind_pressed_style(btn: ctk.CTkButton) -> None:
+    def on_press(_e: object) -> None:
+        btn.configure(fg_color=("gray72", "gray32"))
+    def on_release(_e: object) -> None:
+        btn.configure(fg_color="transparent")
+    btn.bind("<Button-1>", on_press)
+    btn.bind("<ButtonRelease-1>", on_release)
+    btn.bind("<Leave>", on_release)  # 鼠标移出时恢复
 
 
 class MainWindow:
@@ -28,7 +45,8 @@ class MainWindow:
         self._root.geometry("900x600")
         self._root.minsize(400, 300)
 
-        # 主网格：侧边栏 | 主区
+        # 主网格：侧边栏 | 主区（column 0 的 minsize 在 _refresh_sidebar_width 中按展开/收起设置）
+        self._root.grid_columnconfigure(0, weight=0)
         self._root.grid_columnconfigure(1, weight=1)
         self._root.grid_rowconfigure(0, weight=1)
 
@@ -37,17 +55,37 @@ class MainWindow:
         self._sidebar.grid(row=0, column=0, sticky="nsew")
         self._sidebar.grid_rowconfigure(1, weight=1)
         self._sidebar_expanded = self._app.config().sidebar_expanded
+        # 侧边栏按钮文字/图标需与背景有对比（明/暗主题）
+        _sidebar_btn_text = ("gray15", "gray88")
+        # 新对话：展开时带文字，折叠时仅图标；透明 + 悬浮/按压样式
         self._sidebar_btn_new = ctk.CTkButton(
-            self._sidebar, text="新对话", command=self._on_new_chat, width=160 if self._sidebar_expanded else 40
+            self._sidebar,
+            text="新对话",
+            command=self._on_new_chat,
+            fg_color="transparent",
+            hover_color=("gray80", "gray28"),
+            border_width=0,
+            text_color=_sidebar_btn_text,
         )
         self._sidebar_btn_new.grid(row=0, column=0, padx=12, pady=12, sticky="ew")
+        # 折叠/展开：仅图标，透明
         self._sidebar_toggle = ctk.CTkButton(
-            self._sidebar, text="◀" if self._sidebar_expanded else "▶", width=32, command=self._toggle_sidebar
+            self._sidebar,
+            text="◀" if self._sidebar_expanded else "▶",
+            command=self._toggle_sidebar,
+            fg_color="transparent",
+            hover_color=("gray80", "gray28"),
+            border_width=0,
+            width=32,
+            height=32,
+            text_color=_sidebar_btn_text,
         )
-        self._sidebar_toggle.grid(row=0, column=1, padx=4, pady=12)
+        self._sidebar_toggle.grid(row=0, column=1, padx=2, pady=12)
+        _bind_pressed_style(self._sidebar_btn_new)
+        _bind_pressed_style(self._sidebar_toggle)
         self._session_list_frame = ctk.CTkScrollableFrame(self._sidebar, fg_color="transparent")
         self._session_list_frame.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=8, pady=4)
-        self._session_buttons: list[ctk.CTkButton] = []
+        self._session_row_frames: list[ctk.CTkFrame] = []
         self._refresh_sidebar_width()
 
         # 主区
@@ -102,9 +140,26 @@ class MainWindow:
 
     def _refresh_sidebar_width(self) -> None:
         w = SIDEBAR_WIDTH if self._sidebar_expanded else SIDEBAR_COLLAPSED
+        self._root.grid_columnconfigure(0, weight=0, minsize=w)
         self._sidebar.configure(width=w)
-        self._sidebar_btn_new.configure(width=160 if self._sidebar_expanded else 40, text="新对话" if self._sidebar_expanded else "＋")
         self._sidebar_toggle.configure(text="◀" if self._sidebar_expanded else "▶")
+        if self._sidebar_expanded:
+            self._sidebar.grid_columnconfigure(0, weight=1)
+            self._sidebar.grid_columnconfigure(1, weight=0, minsize=0)
+            self._sidebar_btn_new.configure(width=160, height=32, text="新对话")
+            self._sidebar_btn_new.grid(row=0, column=0, padx=12, pady=12, sticky="ew")
+            self._sidebar_toggle.configure(width=32, height=32)
+            self._sidebar_toggle.grid(row=0, column=1, padx=4, pady=12)
+            self._session_list_frame.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=8, pady=4)
+        else:
+            # 折叠时只占一列，列宽占满 40px，展开按钮在第二行可见
+            self._sidebar.grid_columnconfigure(0, weight=1, minsize=w)
+            self._sidebar.grid_columnconfigure(1, weight=0, minsize=0)
+            self._sidebar_btn_new.configure(width=32, height=32, text="＋")
+            self._sidebar_btn_new.grid(row=0, column=0, padx=4, pady=6)
+            self._sidebar_toggle.configure(width=32, height=32)
+            self._sidebar_toggle.grid(row=1, column=0, padx=4, pady=6)
+            self._session_list_frame.grid_remove()
 
     def _toggle_sidebar(self) -> None:
         self._sidebar_expanded = not self._sidebar_expanded
@@ -112,22 +167,47 @@ class MainWindow:
         self._refresh_sidebar_width()
 
     def _refresh_sessions_list(self) -> None:
-        for b in self._session_buttons:
-            b.destroy()
-        self._session_buttons.clear()
+        for row in self._session_row_frames:
+            row.destroy()
+        self._session_row_frames.clear()
         sessions = self._app.load_sessions()
         current = self._app.current_session_id()
         for s in sessions:
-            btn = ctk.CTkButton(
-                self._session_list_frame,
-                text=(s.title or "新对话")[:20],
+            row = ctk.CTkFrame(self._session_list_frame, fg_color="transparent")
+            row.grid(sticky="ew", pady=2)
+            row.grid_columnconfigure(0, weight=1)
+            title_text = (s.title or "新对话")[:20]
+            # 会话标题与图标需与侧边栏背景有对比，明/暗主题下均可见
+            _side_text = ("gray15", "gray88")
+            btn_title = ctk.CTkButton(
+                row,
+                text=title_text,
                 anchor="w",
                 fg_color=("gray75", "gray30") if s.id == current else "transparent",
+                text_color=_side_text,
+                hover_color=("gray78", "gray28"),
+                border_width=0,
                 command=lambda sid=s.id: self._on_select_session(sid),
             )
-            btn.grid(sticky="ew", pady=2)
-            self._session_list_frame.columnconfigure(0, weight=1)
-            self._session_buttons.append(btn)
+            btn_title.grid(row=0, column=0, sticky="ew", padx=(0, 4))
+            btn_rename = ctk.CTkButton(
+                row, text="✏️", width=26, height=26,
+                fg_color="transparent", hover_color=("gray80", "gray28"), border_width=0,
+                text_color=_side_text,
+                command=lambda sid=s.id, tit=s.title: self._on_rename_session(sid, tit),
+            )
+            btn_rename.grid(row=0, column=1, padx=2)
+            _bind_pressed_style(btn_rename)
+            btn_del = ctk.CTkButton(
+                row, text="🗑️", width=26, height=26,
+                fg_color="transparent", hover_color=("gray80", "gray28"), border_width=0,
+                text_color=_side_text,
+                command=lambda sid=s.id: self._on_delete_session(sid),
+            )
+            btn_del.grid(row=0, column=2, padx=2)
+            _bind_pressed_style(btn_del)
+            self._session_row_frames.append(row)
+        self._session_list_frame.columnconfigure(0, weight=1)
 
     def _message_textbox_height(self, content: str) -> int:
         """根据内容行数计算文本框高度，避免长文被截断。"""
@@ -159,13 +239,19 @@ class MainWindow:
             frame = ctk.CTkFrame(self._chat_scroll, fg_color=fg, corner_radius=8)
             frame.grid(sticky="ew", pady=4)
             frame.grid_columnconfigure(0, weight=1)
-            tb = ctk.CTkTextbox(
-                frame, wrap="word", height=self._message_textbox_height(m.content),
-                fg_color="transparent", border_width=0, state="normal"
-            )
-            tb.grid(row=0, column=0, sticky="ew", padx=12, pady=8)
-            tb.insert("1.0", f"{'你' if m.role == 'user' else '助手'}: {m.content}")
-            tb.configure(state="disabled")
+            if m.role == "assistant" and _USE_MARKDOWN and CTkMarkdown:
+                md = CTkMarkdown(frame, width=400)
+                md.grid(row=0, column=0, sticky="ew", padx=12, pady=8)
+                md.set_markdown(f"**助手:**\n\n{m.content}")
+                md.configure(height=self._message_textbox_height(m.content))
+            else:
+                tb = ctk.CTkTextbox(
+                    frame, wrap="word", height=self._message_textbox_height(m.content),
+                    fg_color="transparent", border_width=0, state="normal"
+                )
+                tb.grid(row=0, column=0, sticky="ew", padx=12, pady=8)
+                tb.insert("1.0", f"{'你' if m.role == 'user' else '助手'}: {m.content}")
+                tb.configure(state="disabled")
             self._chat_widgets.append((m.id, frame))
         self._chat_scroll.columnconfigure(0, weight=1)
 
@@ -178,6 +264,42 @@ class MainWindow:
         self._app.switch_session(session_id)
         self._refresh_sessions_list()
         self._refresh_chat_area()
+
+    def _on_rename_session(self, session_id: str, current_title: str) -> None:
+        dialog = ctk.CTkToplevel(self._root)
+        dialog.title("重命名")
+        dialog.geometry("320x100")
+        dialog.transient(self._root)
+        ctk.CTkLabel(dialog, text="会话标题：").pack(anchor="w", padx=12, pady=(12, 4))
+        entry = ctk.CTkEntry(dialog, width=280)
+        entry.pack(padx=12, pady=4)
+        entry.insert(0, current_title or "新对话")
+        entry.focus_set()
+        result: list[str] = []
+
+        def ok() -> None:
+            t = entry.get().strip()
+            if t:
+                result.append(t)
+            dialog.destroy()
+
+        def cancel() -> None:
+            dialog.destroy()
+
+        btn_frame = ctk.CTkFrame(dialog, fg_color="transparent")
+        btn_frame.pack(pady=8)
+        ctk.CTkButton(btn_frame, text="确定", width=80, command=ok).pack(side="left", padx=4)
+        ctk.CTkButton(btn_frame, text="取消", width=80, command=cancel).pack(side="left", padx=4)
+        dialog.wait_window()
+        if result:
+            self._app.update_session_title(session_id, result[0])
+            self._refresh_sessions_list()
+
+    def _on_delete_session(self, session_id: str) -> None:
+        if messagebox.askyesno("删除会话", "确定删除该会话？", parent=self._root):
+            self._app.delete_session(session_id)
+            self._refresh_sessions_list()
+            self._refresh_chat_area()
 
     def _on_model_change(self, value: str) -> None:
         for p in self._app.config().providers:
@@ -279,7 +401,15 @@ class MainWindow:
                     self._send_btn.configure(state="normal")
                     if self._streaming_textbox_id is not None:
                         tb = self._find_streaming_textbox()
-                        if tb is not None:
+                        if tb is not None and _USE_MARKDOWN and CTkMarkdown:
+                            full = tb.get("1.0", "end")
+                            content = full.replace("助手: ", "", 1).strip()
+                            frame = tb.master
+                            tb.destroy()
+                            md = CTkMarkdown(frame, width=400, height=280)
+                            md.grid(row=0, column=0, sticky="ew", padx=12, pady=8)
+                            md.set_markdown(f"**助手:**\n\n{content}")
+                        elif tb is not None:
                             tb.configure(state="disabled")
                     self._streaming_session_id = None
                     self._streaming_textbox_id = None
