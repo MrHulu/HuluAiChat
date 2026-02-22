@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="64" y1="64" x2="448" y2="448" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#22C55E"/>
+      <stop offset="0.55" stop-color="#10B981"/>
+      <stop offset="1" stop-color="#06B6D4"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="120" y1="96" x2="392" y2="416" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="shadow" x="0" y="0" width="512" height="512" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#0B1220" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- rounded-square background -->
+  <g filter="url(#shadow)">
+    <rect x="44" y="44" width="424" height="424" rx="96" fill="url(#bg)"/>
+    <path d="M140 92C110 112 92 144 92 184V246C92 330 160 398 244 398H310C350 398 384 380 404 350C380 368 352 378 318 378H248C170 378 108 316 108 238V188C108 146 120 116 140 92Z" fill="url(#shine)"/>
+  </g>
+
+  <!-- chat bubble steam -->
+  <path d="M274 142C312 142 342 170 342 205C342 240 312 268 274 268H252L224 292V268C192 260 170 236 170 205C170 170 204 142 244 142H274Z"
+        fill="#F8FAFC" opacity="0.95"/>
+  <path d="M224 292V268C192 260 170 236 170 205C170 170 204 142 244 142H274C312 142 342 170 342 205C342 240 312 268 274 268H252"
+        stroke="#0F172A" stroke-opacity="0.12" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- tea cup -->
+  <path d="M170 260C170 244 183 232 199 232H313C329 232 342 244 342 260V314C342 352 311 383 273 383H239C201 383 170 352 170 314V260Z"
+        fill="#F8FAFC"/>
+  <path d="M313 232H199C183 232 170 244 170 260V314C170 352 201 383 239 383H273C311 383 342 352 342 314V260C342 244 329 232 313 232Z"
+        stroke="#0F172A" stroke-opacity="0.14" stroke-width="10" stroke-linejoin="round"/>
+
+  <!-- cup handle -->
+  <path d="M346 268H365C388 268 406 286 406 309C406 332 388 350 365 350H346"
+        stroke="#F8FAFC" stroke-width="22" stroke-linecap="round"/>
+  <path d="M346 268H365C388 268 406 286 406 309C406 332 388 350 365 350H346"
+        stroke="#0F172A" stroke-opacity="0.12" stroke-width="10" stroke-linecap="round"/>
+
+  <!-- saucer -->
+  <path d="M154 392C176 414 210 428 256 428C302 428 336 414 358 392"
+        stroke="#F8FAFC" stroke-width="22" stroke-linecap="round"/>
+  <path d="M154 392C176 414 210 428 256 428C302 428 336 414 358 392"
+        stroke="#0F172A" stroke-opacity="0.10" stroke-width="10" stroke-linecap="round"/>
+
+  <!-- small sparkle -->
+  <path d="M366 162L374 182L394 190L374 198L366 218L358 198L338 190L358 182L366 162Z" fill="#F8FAFC" opacity="0.9"/>
+</svg>
