@@ -1,4 +1,4 @@
-"""主窗口：三区布局、侧边栏、对话区、输入区；通过 AppService 与下层交互。"""
+﻿"""主窗口：三区布局、侧边栏、对话区、输入区；通过 AppService 与下层交互。"""
 import queue
 import os
 import sys
