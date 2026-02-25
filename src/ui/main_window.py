@@ -1,9 +1,11 @@
 """主窗口：三区布局、侧边栏、对话区、输入区；通过 AppService 与下层交互。"""
 import queue
+import os
+import sys
 from typing import Callable
 
 import customtkinter as ctk
-from tkinter import messagebox
+from tkinter import messagebox, PhotoImage
 
 from src.app.service import AppService
 from src.chat import TextChunk, DoneChunk, ChatError, is_error
@@ -31,6 +33,16 @@ def _bind_pressed_style(btn: ctk.CTkButton) -> None:
     btn.bind("<Leave>", on_release)  # 鼠标移出时恢复
 
 
+def _resource_path(rel_path: str) -> str:
+    """在源码运行与 PyInstaller 打包运行时都能定位资源文件。"""
+    base = getattr(sys, "_MEIPASS", None)
+    if base:
+        return os.path.join(base, rel_path)
+    here = os.path.abspath(os.path.dirname(__file__))
+    project_root = os.path.abspath(os.path.join(here, "..", ".."))
+    return os.path.join(project_root, rel_path)
+
+
 class MainWindow:
     def __init__(self, app: AppService) -> None:
         self._app = app
@@ -38,10 +50,26 @@ class MainWindow:
         self._streaming_session_id: str | None = None
         self._streaming_textbox_id: int | None = None  # id(streaming CTkTextbox)
         self._streaming_text: list[str] = []
+        self._icon_image: PhotoImage | None = None
 
         ctk.set_appearance_mode(self._app.config().theme)
         self._root = ctk.CTk()
         self._root.title("HuluChat")
+        try:
+            # 优先用 .ico（与 exe 内嵌图标一致，任务栏/标题栏显示统一）
+            icon_ico = _resource_path(os.path.join("assets", "icon.ico"))
+            icon_png = _resource_path(os.path.join("assets", "icon.png"))
+            if os.path.exists(icon_ico) and sys.platform == "win32":
+                self._root.iconbitmap(icon_ico)
+                print("图标设置成功(ico)", icon_ico)
+            elif os.path.exists(icon_png):
+                self._icon_image = PhotoImage(file=icon_png)
+                self._root.iconphoto(True, self._icon_image)
+                print("图标设置成功(png)", icon_png)
+        except Exception:
+            # 图标设置失败不影响主功能（例如：运行环境 Tk 不支持 PNG）
+            self._icon_image = None
+            print("图标设置失败")
         self._root.geometry("900x600")
         self._root.minsize(400, 300)
 
