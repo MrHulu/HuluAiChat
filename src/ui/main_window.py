@@ -4,9 +4,9 @@ import os
 import sys
 from typing import Callable
 from tkinter import filedialog
+from tkinter import messagebox, PhotoImage
 
 import customtkinter as ctk
-from tkinter import messagebox, PhotoImage
 
 from src.app.service import AppService
 from src.app.exporter import ChatExporter
@@ -23,6 +23,62 @@ except ImportError:
 SIDEBAR_WIDTH = 220
 SIDEBAR_COLLAPSED = 40  # 折叠后仅图标条，尽量收窄
 POLL_MS = 50
+
+
+class ToastNotification:
+    """简单的浮动提示框，用于显示操作反馈。"""
+    def __init__(self, parent: ctk.CTk, message: str, duration_ms: int = 1500) -> None:
+        self._parent = parent
+        self._duration = duration_ms
+        self._widget: ctk.CTkFrame | None = None
+
+        # 创建半透明背景的提示框
+        self._widget = ctk.CTkFrame(
+            parent,
+            fg_color=("gray80", "gray30"),
+            corner_radius=8,
+            border_width=1,
+            border_color=("gray70", "gray40")
+        )
+        self._widget.place(relx=0.5, rely=0.85, anchor="center")
+
+        label = ctk.CTkLabel(
+            self._widget,
+            text=message,
+            font=("", 12),
+            text_color=("gray15", "gray88"),
+            padx=16,
+            pady=8
+        )
+        label.pack()
+
+        # 自动消失
+        self._widget.after(duration_ms, self._destroy)
+
+    def _destroy(self) -> None:
+        if self._widget and self._widget.winfo_exists():
+            self._widget.place_forget()
+            self._widget = None
+
+
+def copy_to_clipboard(text: str) -> None:
+    """复制文本到剪贴板。"""
+    try:
+        # Windows 优先使用 clip 模块（更快）
+        import win32clipboard
+        win32clipboard.OpenClipboard()
+        win32clipboard.EmptyClipboard()
+        win32clipboard.SetClipboardText(text, win32clipboard.CF_UNICODETEXT)
+        win32clipboard.CloseClipboard()
+    except Exception:
+        # 回退到 Tkinter 通用方法
+        import tkinter
+        r = tkinter.Tk()
+        r.withdraw()
+        r.clipboard_clear()
+        r.clipboard_append(text)
+        r.update()
+        r.destroy()
 
 # 侧边栏图标按钮：透明、仅图标，悬浮(hover_color)/按压(绑定临时色) 三态
 def _bind_pressed_style(btn: ctk.CTkButton) -> None:
@@ -197,6 +253,11 @@ class MainWindow:
         self._app.set_sidebar_expanded(self._sidebar_expanded)
         self._refresh_sidebar_width()
 
+    def _copy_message(self, content: str) -> None:
+        """复制消息内容到剪贴板，并显示提示。"""
+        copy_to_clipboard(content)
+        ToastNotification(self._root, "✓ 已复制到剪贴板")
+
     def _refresh_sessions_list(self) -> None:
         for row in self._session_row_frames:
             row.destroy()
@@ -270,6 +331,8 @@ class MainWindow:
             frame = ctk.CTkFrame(self._chat_scroll, fg_color=fg, corner_radius=8)
             frame.grid(sticky="ew", pady=4)
             frame.grid_columnconfigure(0, weight=1)
+            frame.grid_columnconfigure(1, weight=0)
+
             if m.role == "assistant" and _USE_MARKDOWN and CTkMarkdown:
                 md = CTkMarkdown(frame, width=400)
                 md.grid(row=0, column=0, sticky="ew", padx=12, pady=8)
@@ -283,6 +346,21 @@ class MainWindow:
                 tb.grid(row=0, column=0, sticky="ew", padx=12, pady=8)
                 tb.insert("1.0", f"{'你' if m.role == 'user' else '助手'}: {m.content}")
                 tb.configure(state="disabled")
+
+            # 复制按钮
+            copy_btn = ctk.CTkButton(
+                frame,
+                text="📋",
+                width=28,
+                height=28,
+                fg_color="transparent",
+                hover_color=("gray80", "gray28"),
+                border_width=0,
+                command=lambda content=m.content: self._copy_message(content)
+            )
+            copy_btn.grid(row=0, column=1, padx=(4, 8), pady=4)
+            _bind_pressed_style(copy_btn)
+
             self._chat_widgets.append((m.id, frame))
         self._chat_scroll.columnconfigure(0, weight=1)
 
@@ -441,6 +519,7 @@ class MainWindow:
         frame = ctk.CTkFrame(self._chat_scroll, fg_color=("gray85", "gray25"), corner_radius=8)
         frame.grid(sticky="ew", pady=4)
         frame.grid_columnconfigure(0, weight=1)
+        frame.grid_columnconfigure(1, weight=0)
         tb = ctk.CTkTextbox(
             frame, wrap="word", height=self._message_textbox_height(content),
             fg_color="transparent", border_width=0, state="normal"
@@ -448,6 +527,19 @@ class MainWindow:
         tb.grid(row=0, column=0, sticky="ew", padx=12, pady=8)
         tb.insert("1.0", f"你: {content}")
         tb.configure(state="disabled")
+        # 复制按钮
+        copy_btn = ctk.CTkButton(
+            frame,
+            text="📋",
+            width=28,
+            height=28,
+            fg_color="transparent",
+            hover_color=("gray80", "gray28"),
+            border_width=0,
+            command=lambda c=content: self._copy_message(c)
+        )
+        copy_btn.grid(row=0, column=1, padx=(4, 8), pady=4)
+        _bind_pressed_style(copy_btn)
         self._chat_widgets.append(("user", frame))
         self._chat_scroll.columnconfigure(0, weight=1)
 
