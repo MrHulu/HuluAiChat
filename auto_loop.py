@@ -279,19 +279,24 @@ class ClaudeRunner:
         self.logger.log_cycle(self.config.loop_count, "START", "Beginning work cycle")
 
         try:
-            # Run claude CLI
+            # Run claude CLI with explicit UTF-8 encoding for Windows compatibility
             result = subprocess.run(
                 cmd,
                 input=prompt,
                 capture_output=True,
-                text=True,
+                encoding="utf-8",
+                errors="replace",  # Replace undecodable chars instead of crashing
                 timeout=self.config.cycle_timeout,
                 cwd=self.config.project_dir
             )
 
-            output = result.stdout
+            output = result.stdout or ""
             if result.stderr:
                 output += "\n" + result.stderr
+
+            # Ensure output is a string (handle edge case where it might be None)
+            if not isinstance(output, str):
+                output = str(output) if output is not None else ""
 
             # Save full output
             with open(cycle_log, "w", encoding="utf-8") as f:
@@ -302,10 +307,17 @@ class ClaudeRunner:
 
             return result.returncode, output, metadata
 
-        except subprocess.TimeoutExpired:
+        except subprocess.TimeoutExpired as e:
             self.logger.log_cycle(self.config.loop_count, "TIMEOUT",
                                  f"Timed out after {self.config.cycle_timeout}s")
-            return 124, "", {"timed_out": True}
+            # Try to get partial output
+            output = ""
+            if e.stdout:
+                try:
+                    output = e.stdout.decode("utf-8", errors="replace")
+                except:
+                    pass
+            return 124, output, {"timed_out": True}
 
         except Exception as e:
             self.logger.log_cycle(self.config.loop_count, "ERROR", str(e))
