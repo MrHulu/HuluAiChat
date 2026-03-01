@@ -433,3 +433,27 @@ class AppService:
         """清空最近搜索列表。"""
         self._config.recent_searches = []
         self._config_store.save(self._config)
+
+    # ========== 会话统计 ==========
+
+    def get_session_stats(self, session_id: str | None = None) -> "SessionStats | None":
+        """获取会话统计数据。
+
+        Args:
+            session_id: 会话ID，不传则使用当前会话
+
+        Returns:
+            SessionStats: 统计数据对象，如果会话不存在返回 None
+        """
+        from src.app.statistics import calculate_session_stats
+
+        sid = session_id or self._current_session_id
+        if not sid:
+            return None
+
+        session = self._session_repo.get_by_id(sid)
+        if not session:
+            return None
+
+        messages = self._message_repo.list_by_session(sid)
+        return calculate_session_stats(session, messages)
