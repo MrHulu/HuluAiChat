@@ -322,3 +322,146 @@ class TestMessagePinning:
         message_repo.set_pinned("m1", False)
         messages = message_repo.list_by_session("s1")
         assert messages[0].is_pinned is False
+
+
+class TestMessageEditing:
+    """消息编辑功能测试。"""
+
+    def test_update_content_changes_message(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：更新消息内容。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m = Message(id="m1", session_id="s1", role="user", content="Original", created_at=now)
+        message_repo.append(m)
+
+        message_repo.update_content("m1", "Updated content")
+
+        messages = message_repo.list_by_session("s1")
+        assert len(messages) == 1
+        assert messages[0].content == "Updated content"
+        assert messages[0].id == "m1"
+        assert messages[0].role == "user"
+
+    def test_update_content_empty_string(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：更新为空字符串。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m = Message(id="m1", session_id="s1", role="user", content="Original", created_at=now)
+        message_repo.append(m)
+
+        message_repo.update_content("m1", "")
+
+        messages = message_repo.list_by_session("s1")
+        assert len(messages) == 1
+        assert messages[0].content == ""
+
+    def test_update_content_with_multiline(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：更新多行内容。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m = Message(id="m1", session_id="s1", role="assistant", content="Single line", created_at=now)
+        message_repo.append(m)
+
+        new_content = "Line 1\nLine 2\nLine 3"
+        message_repo.update_content("m1", new_content)
+
+        messages = message_repo.list_by_session("s1")
+        assert messages[0].content == new_content
+
+    def test_update_content_with_special_chars(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：更新包含特殊字符的内容。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m = Message(id="m1", session_id="s1", role="user", content="Original", created_at=now)
+        message_repo.append(m)
+
+        new_content = "Hello 'world' \"test\" \n newline \t tab"
+        message_repo.update_content("m1", new_content)
+
+        messages = message_repo.list_by_session("s1")
+        assert messages[0].content == new_content
+
+    def test_update_content_with_unicode(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：更新包含 Unicode 字符的内容。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m = Message(id="m1", session_id="s1", role="user", content="Original", created_at=now)
+        message_repo.append(m)
+
+        new_content = "你好世界 🚀 Hello 世界"
+        message_repo.update_content("m1", new_content)
+
+        messages = message_repo.list_by_session("s1")
+        assert messages[0].content == new_content
+
+    def test_update_content_nonexistent_message(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：更新不存在的消息不应报错。"""
+        # 不应该抛出异常
+        message_repo.update_content("nonexistent", "Some content")
+
+    def test_update_content_affects_only_target_message(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：更新只影响目标消息。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="First", created_at=now)
+        m2 = Message(id="m2", session_id="s1", role="assistant", content="Second", created_at=now)
+
+        message_repo.append(m1)
+        message_repo.append(m2)
+
+        message_repo.update_content("m1", "Updated First")
+
+        messages = message_repo.list_by_session("s1")
+        assert len(messages) == 2
+        assert messages[0].content == "Updated First"
+        assert messages[1].content == "Second"
+
+
+class TestMessageCount:
+    """消息计数功能测试。"""
+
+    def test_count_by_session_empty(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：空会话返回 0。"""
+        count = message_repo.count_by_session("nonexistent")
+        assert count == 0
+
+    def test_count_by_session_single_message(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：单条消息的会话返回 1。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m = Message(id="m1", session_id="s1", role="user", content="Hello", created_at=now)
+        message_repo.append(m)
+
+        count = message_repo.count_by_session("s1")
+        assert count == 1
+
+    def test_count_by_session_multiple_messages(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：多条消息的会话返回正确数量。"""
+        now = datetime.now(timezone.utc).isoformat()
+        for i in range(5):
+            m = Message(id=f"m{i}", session_id="s1", role="user", content=f"Msg {i}", created_at=now)
+            message_repo.append(m)
+
+        count = message_repo.count_by_session("s1")
+        assert count == 5
+
+    def test_count_by_session_filters_by_session(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：计数只统计指定会话的消息。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="In s1", created_at=now)
+        m2 = Message(id="m2", session_id="s2", role="user", content="In s2", created_at=now)
+        m3 = Message(id="m3", session_id="s1", role="assistant", content="Also in s1", created_at=now)
+
+        message_repo.append(m1)
+        message_repo.append(m2)
+        message_repo.append(m3)
+
+        assert message_repo.count_by_session("s1") == 2
+        assert message_repo.count_by_session("s2") == 1
+
+    def test_count_by_session_after_delete(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：删除消息后计数正确更新。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="First", created_at=now)
+        m2 = Message(id="m2", session_id="s1", role="assistant", content="Second", created_at=now)
+
+        message_repo.append(m1)
+        message_repo.append(m2)
+
+        assert message_repo.count_by_session("s1") == 2
+
+        message_repo.delete("m1")
+        assert message_repo.count_by_session("s1") == 1
