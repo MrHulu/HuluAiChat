@@ -1,4 +1,4 @@
 """HuluChat - 轻量桌面 AI 聊天应用"""
 
-__version__ = "1.2.5"
+__version__ = "1.2.7"
 __author__ = "MrHulu"

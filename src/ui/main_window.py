@@ -736,6 +736,8 @@ class MainWindow:
         self._selection_mode: bool = False  # 是否处于选择模式
         self._selected_messages: set[str] = set()  # 已选择的消息 ID 集合
         self._message_checkboxes: dict[str, ctk.BooleanVar] = {}  # 消息复选框变量
+        self._last_clicked_message_id: str | None = None  # 上次点击的消息 ID (v1.2.7 Shift+Click)
+        self._shift_pressed_on_click: bool = False  # 点击时 Shift 键状态 (v1.2.7)
 
         ctk.set_appearance_mode(self._app.config().theme)
         self._root = ctk.CTk()
@@ -1085,6 +1087,10 @@ class MainWindow:
         self._root.bind("<Control-G>", lambda e: self._on_go_to_message())  # 大写 G 兼容
         self._root.bind("<Alt-Up>", lambda e: self._on_prev_message())  # Alt+Up 上一条消息
         self._root.bind("<Alt-Down>", lambda e: self._on_next_message())  # Alt+Down 下一条消息
+        # 消息选择快捷键
+        self._root.bind("<Control-a>", lambda e: self._on_select_all())  # Ctrl+A 全选
+        self._root.bind("<Control-A>", lambda e: self._on_select_all())  # 大写 A 兼容
+        self._root.bind("<Escape>", lambda e: self._on_escape_key())  # ESC 退出选择模式或清除搜索
 
     def _current_model_display(self) -> str:
         p = self._app.get_current_provider()
@@ -1515,6 +1521,20 @@ class MainWindow:
             self._refresh_chat_area()
             ToastNotification(self._root, "❌ 已退出选择模式")
 
+    def _on_select_all(self) -> None:
+        """Ctrl+A 全选消息（仅在选择模式下有效）。"""
+        if self._selection_mode:
+            self._select_all_messages()
+
+    def _on_escape_key(self) -> None:
+        """ESC 键处理：优先退出选择模式，其次清除搜索。"""
+        if self._selection_mode:
+            # 如果在选择模式中，退出选择模式
+            self._toggle_selection_mode()
+        else:
+            # 否则清除搜索
+            self._clear_search()
+
     def _show_batch_actions_panel(self) -> None:
         """显示批量操作面板。"""
         # 首先清除旧的面板
@@ -1595,13 +1615,58 @@ class MainWindow:
             count = len(self._selected_messages)
             self._selection_count_label.configure(text=f"已选择 {count} 条消息")
 
+    def _on_checkbox_click(self, event, message_id: str) -> None:
+        """复选框点击事件 - 检测 Shift 键状态 (v1.2.7)。"""
+        # 0x0001 是 Shift 键的掩码
+        self._shift_pressed_on_click = bool(event.state & 0x0001)
+
     def _on_message_checkbox_toggled(self, message_id: str, checked: bool) -> None:
         """消息复选框状态变化回调。"""
-        if checked:
-            self._selected_messages.add(message_id)
+        if self._shift_pressed_on_click and self._last_clicked_message_id:
+            # Shift+Click: 范围选择 (v1.2.7)
+            self._select_message_range(self._last_clicked_message_id, message_id, checked)
+            self._shift_pressed_on_click = False  # 重置标志
         else:
-            self._selected_messages.discard(message_id)
+            # 普通点击: 切换单条消息
+            if checked:
+                self._selected_messages.add(message_id)
+            else:
+                self._selected_messages.discard(message_id)
+            # 记录最后点击的消息 ID
+            self._last_clicked_message_id = message_id
         self._update_selection_count()
+
+    def _select_message_range(self, from_id: str, to_id: str, select: bool) -> None:
+        """选择两个消息之间的所有消息 (v1.2.7)。"""
+        sid = self._app.current_session_id()
+        if not sid:
+            return
+        messages = self._app.load_messages(sid)
+        message_ids = [m.id for m in messages]
+
+        try:
+            from_idx = message_ids.index(from_id)
+            to_idx = message_ids.index(to_id)
+        except ValueError:
+            return
+
+        # 确保范围正确（从小到大）
+        start, end = min(from_idx, to_idx), max(from_idx, to_idx)
+
+        # 选择范围内的所有消息
+        for i in range(start, end + 1):
+            msg_id = message_ids[i]
+            if select:
+                self._selected_messages.add(msg_id)
+                if msg_id in self._message_checkboxes:
+                    self._message_checkboxes[msg_id].set(True)
+            else:
+                self._selected_messages.discard(msg_id)
+                if msg_id in self._message_checkboxes:
+                    self._message_checkboxes[msg_id].set(False)
+
+        # 更新最后点击的消息 ID
+        self._last_clicked_message_id = to_id
 
     def _select_all_messages(self) -> None:
         """全选/取消全选当前会话的所有消息。"""
@@ -1987,6 +2052,8 @@ class MainWindow:
                     hover_color=("gray60", "gray30"),
                     checkmark_color=("gray40", "gray70"),
                 )
+                # v1.2.7: 绑定点击事件以检测 Shift 键状态
+                checkbox.bind("<Button-1>", lambda e, mid=m.id: self._on_checkbox_click(e, mid))
                 checkbox.grid(row=0, column=0, sticky="w", padx=(40, 0), pady=(2, 0))
 
             # 引用内容显示（如果有）
@@ -2313,6 +2380,10 @@ class MainWindow:
             ("消息操作", ""),
             ("Ctrl + R", "重新生成最后回复"),
             ("Ctrl + Shift + C", "复制最后 AI 回复"),
+            ("消息选择", ""),
+            ("Ctrl + A", "全选消息 (选择模式)"),
+            ("Shift + 点击", "范围选择 (选择模式)"),
+            ("ESC", "退出选择模式"),
             ("其他", ""),
             ("Ctrl + ,", "打开设置"),
             ("Ctrl + /", "显示此帮助"),
