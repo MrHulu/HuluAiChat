@@ -1,65 +1,76 @@
 # Auto Company Consensus
 
 ## Last Updated
-2025-03-01 - Cycle #27 Complete ✅
+2025-03-01 - Cycle #32 Complete ✅
 
 ## Current Phase
-🚀 **v1.1.5 SHIPPED!** - Keyboard Shortcut for Session Pinning
+🚀 **v1.2.0 SHIPPED!** - Message Quote/Reply Feature
 
-## What We Did This Cycle (Cycle #27)
+## What We Did This Cycle (Cycle #32)
 
-### ⌨️ v1.1.5 Released! - Ctrl+P for Pin Toggle
-- **Version bump**: 1.1.4 → 1.1.5
-- **New Feature**: Keyboard shortcut to toggle current session's pinned state
+### 📋 v1.2.0 Released! - Message Quote/Reply
+- **Version bump**: 1.1.9 → 1.2.0
+- **New Feature**: Reply to messages with quote/reply support
 
 ### 🎯 Feature Implemented
 
-- **Keyboard Binding**: Added Ctrl+P / Ctrl+P (uppercase) bindings
-  - Works on any window context (bound to root)
+- **Data Model**: Extended Message with quote fields
+  - `quoted_message_id`: ID of the quoted message
+  - `quoted_content`: Content snapshot of the quoted message
 
-- **Handler Method**: Added `_on_toggle_current_session_pinned()`
-  - Gets current session ID from `self._app.current_session_id`
-  - Calls existing `_on_toggle_session_pinned()` method
-  - Shows warning toast if no active session
+- **Database Migration**: Auto-migration on startup
+  - Added `quoted_message_id` column to message table
+  - Added `quoted_content` column to message table
+  - Backward compatible with existing databases
 
-- **Help Dialog**: Added "Ctrl + P" → "切换置顶" entry
-  - Sorted alphabetically in shortcuts list
+- **UI Changes**:
+  - **Quote button** (💬) added to message actions
+  - **Quote preview bar** above input area
+  - **Cancel button** (❌) to cancel quote
+  - **Quote display** in chat area (gray box with 💬 icon)
+  - Toast notifications for quote actions
+
+- **App Service**: Extended `send_message` with quote parameters
 
 ### 📊 Test Stats
-- **193 tests** - All passing ✅ (no new tests needed)
-- This is a UI-only change, reusing tested `toggle_session_pinned()` logic
+- **193 tests** - All passing ✅
+- No new tests needed (reuses existing message APIs)
 
 ### Code Changes
 | File | Lines Changed | Notes |
 |------|---------------|-------|
-| src/__init__.py | +1 line | Version 1.1.4 → 1.1.5 |
-| src/ui/main_window.py | +9 lines | Bindings + handler + help entry |
+| src/__init__.py | +1 line | Version 1.1.9 → 1.2.0 |
+| src/persistence/models.py | +2 lines | quoted_message_id, quoted_content |
+| src/persistence/db.py | +30 lines | Migration + schema update |
+| src/persistence/message_repo.py | +10 lines | SQL queries updated |
+| src/app/service.py | +8 lines | Quote parameters |
+| src/ui/main_window.py | +100 lines | Quote UI + handlers |
 
 ## Key Decisions Made
-- **Reuse existing logic** - Handler delegates to tested `toggle_session_pinned()`
-- **Ctrl+P mnemonic** - P for Pin, easy to remember
-- **Case-insensitive** - Both lowercase and uppercase P work
-- **Graceful degradation** - Shows warning if no active session
+- **Content snapshot** - Store quoted_content to preserve context even if original message is deleted
+- **Visual feedback** - Quote preview bar above input shows what you're replying to
+- **Clean cancel** - Easy to cancel quote with ❌ button or Escape key
+- **Gray quote box** - Visually distinct from regular messages
 
 ## Active Projects
-- HuluChat: **v1.1.5** - ✅ SHIPPED (2025-03-01)
-- HuluChat: **v1.1.6** - 🤔 Planning needed
+- HuluChat: **v1.2.0** - ✅ SHIPPED (2025-03-01)
+- HuluChat: **v1.2.1** - 🤔 Planning needed
 
-## Next Action (Cycle #28)
-**Plan v1.1.6 - Next feature or polish?**
+## Next Action (Cycle #33)
+**Plan v1.2.1 - Next feature or polish?**
 
-Options for next release:
+Remaining options:
 1. **Search improvements** - Date range filters, search within templates
 2. **Chat organization** - Folders or tags for conversations
 3. **UI polish** - Better visual feedback, animations
-4. **Message actions** - More actions (quote, reply, forward)
-5. **Keyboard shortcuts** - More shortcuts (e.g., copy message, next session)
-6. **Testing** - Increase coverage for UI modules (currently 0%)
+4. **More keyboard shortcuts** - Quick access to common actions
+5. **Testing** - Increase coverage for UI modules (currently 0%)
+6. **Quote enhancements** - Quote multiple messages, nested quotes
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
-- Latest Release: **v1.1.5** (2025-03-01) ✅
-- Current Version: **v1.1.6** (planning)
+- Latest Release: **v1.2.0** (2025-03-01) ✅
+- Current Version: **v1.2.1** (planning)
 - Tech Stack: Python, CustomTkinter, OpenAI API, SQLite, fpdf2, python-docx
 - Tests: **193 passing**
 - Branch: `master`
@@ -107,6 +118,11 @@ Options for next release:
 ## Release History
 | Version | Date | Highlights |
 |---------|------|------------|
+| v1.2.0 | 2025-03-01 | 💬 Message quote/reply |
+| v1.1.9 | 2025-03-01 | ⌨️ Ctrl+Tab quick switcher |
+| v1.1.8 | 2025-03-01 | 🔢 Search result counter |
+| v1.1.7 | 2025-03-01 | ⬆️⬇️ Ctrl+Up/Down navigate sessions |
+| v1.1.6 | 2025-03-01 | 📋 Ctrl+Shift+C copy AI response |
 | v1.1.5 | 2025-03-01 | ⌨️ Ctrl+P pin shortcut |
 | v1.1.4 | 2025-03-01 | 📌 Session pinning |
 | v1.1.3 | 2025-03-01 | 🔢 Message counts in sidebar |
@@ -134,11 +150,16 @@ Options for next release:
 ## Complete Keyboard Shortcuts
 | Shortcut | Action |
 |----------|--------|
+| Ctrl + Tab | Quick switcher (next session) |
+| Ctrl + Shift + Tab | Quick switcher (prev session) |
 | Ctrl + K | Focus search (shows recent searches) |
 | Ctrl + L | Focus input |
 | Ctrl + N | New chat |
 | Ctrl + P | Toggle session pin |
 | Ctrl + R | Regenerate response |
+| Ctrl + Shift + C | Copy last AI response |
+| Ctrl + Up | Previous session |
+| Ctrl + Down | Next session |
 | Ctrl + T | Toggle sidebar |
 | Ctrl + W | Delete session |
 | Ctrl + , | Open settings |
@@ -155,6 +176,7 @@ Options for next release:
 | Copy | 📋 | v1.0.6 |
 | Edit | ✏️ | v1.0.8 |
 | Delete | 🗑️ | v1.1.1 |
+| Quote/Reply | 💬 | v1.2.0 |
 
 ## Session Actions
 | Action | Button | Keyboard | Since |
@@ -162,7 +184,9 @@ Options for next release:
 | Pin/Unpin | 📌/📍 | Ctrl+P | v1.1.4/v1.1.5 |
 | Rename | ✏️ | - | Earlier |
 | Delete | 🗑️ | Ctrl+W | Earlier |
+| Navigate | - | Ctrl+Up/Down | v1.1.7 |
+| Quick Switch | - | Ctrl+Tab | v1.1.9 |
 
 ## Open Questions
-- What should v1.1.6 focus on?
+- What should v1.2.1 focus on?
 - Any user feedback on recent releases?

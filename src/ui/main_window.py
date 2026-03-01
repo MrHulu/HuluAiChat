@@ -359,6 +359,7 @@ class MainWindow:
         self._search_dropdown: ctk.CTkFrame | None = None  # 下拉框容器
         self._search_dropdown_open: bool = False  # 下拉框是否打开
         self._search_debounce_job: str | None = None  # 防抖任务ID
+        self._quoted_message: tuple[str, str] | None = None  # (message_id, content) 正在引用的消息
 
         ctk.set_appearance_mode(self._app.config().theme)
         self._root = ctk.CTk()
@@ -507,7 +508,35 @@ class MainWindow:
         # 输入区
         input_frame = ctk.CTkFrame(main, fg_color="transparent")
         input_frame.grid(row=2, column=0, sticky="ew", padx=12, pady=8)
+        input_frame.grid_rowconfigure(1, weight=1)
         input_frame.grid_columnconfigure(1, weight=1)
+
+        # 引用提示条（初始隐藏）
+        self._quote_frame = ctk.CTkFrame(input_frame, fg_color=("gray75", "gray35"), corner_radius=6)
+        # 不 grid，有引用时才显示
+
+        self._quote_label = ctk.CTkLabel(
+            self._quote_frame,
+            text="",
+            anchor="w",
+            text_color=("gray40", "gray70"),
+            font=("", 10),
+            padx=12,
+            pady=6,
+        )
+        self._quote_label.pack(side="left", fill="x", expand=True, padx=(12, 4), pady=6)
+
+        self._quote_cancel_btn = ctk.CTkButton(
+            self._quote_frame,
+            text="❌",
+            width=24,
+            height=24,
+            fg_color="transparent",
+            hover_color=("gray65", "gray30"),
+            border_width=0,
+            command=self._cancel_quote,
+        )
+        self._quote_cancel_btn.pack(side="right", padx=(4, 8), pady=6)
 
         # 提示词模板快捷按钮
         self._template_var = ctk.StringVar(value="模板")
@@ -518,18 +547,18 @@ class MainWindow:
             width=90,
             command=self._on_template_selected,
         )
-        self._template_menu.grid(row=0, column=0, padx=(0, 8))
+        self._template_menu.grid(row=1, column=0, padx=(0, 8))
 
         self._input = ctk.CTkTextbox(input_frame, height=80, wrap="word")
-        self._input.grid(row=0, column=1, sticky="ew", padx=(0, 8))
+        self._input.grid(row=1, column=1, sticky="ew", padx=(0, 8))
         self._input.bind("<Return>", self._on_input_return)
         self._input.bind("<Control-Return>", lambda e: None)  # Ctrl+Enter 换行由默认行为处理
         self._send_btn = ctk.CTkButton(input_frame, text="发送", width=80, command=self._on_send)
-        self._send_btn.grid(row=0, column=2)
+        self._send_btn.grid(row=1, column=2)
         self._sending_label = ctk.CTkLabel(input_frame, text="", fg_color="transparent")
-        self._sending_label.grid(row=0, column=3, padx=8)
+        self._sending_label.grid(row=1, column=3, padx=8)
         self._error_label = ctk.CTkLabel(input_frame, text="", text_color=("red", "orange"))
-        self._error_label.grid(row=1, column=0, columnspan=4, sticky="w", pady=(4, 0))
+        self._error_label.grid(row=2, column=0, columnspan=4, sticky="w", pady=(4, 0))
 
         self._refresh_sessions_list()
         self._refresh_chat_area()
@@ -890,6 +919,24 @@ class MainWindow:
         else:
             ToastNotification(self._root, "❌ 删除失败")
 
+    def _quote_message(self, message_id: str, content: str) -> None:
+        """引用消息，准备回复。"""
+        self._quoted_message = (message_id, content)
+        # 更新引用提示条
+        preview = content[:80] + "..." if len(content) > 80 else content
+        self._quote_label.configure(text=f"💬 回复: {preview}")
+        self._quote_frame.grid(row=0, column=0, columnspan=4, sticky="ew", pady=(0, 4))
+        ToastNotification(self._root, "💬 已引用消息，输入回复后发送")
+        # 聚焦到输入框
+        self._input.focus_set()
+
+    def _cancel_quote(self) -> None:
+        """取消引用。"""
+        self._quoted_message = None
+        # 隐藏引用提示条
+        self._quote_frame.grid_forget()
+        ToastNotification(self._root, "❌ 已取消引用")
+
     def _refresh_sessions_list(self) -> None:
         for row in self._session_row_frames:
             row.destroy()
@@ -1087,14 +1134,48 @@ class MainWindow:
             is_current_match = (m.id == self._current_match_msg_id)
             border_color = ("orange", "dark orange") if is_current_match else None
             border_width = 2 if is_current_match else 0
-            frame = ctk.CTkFrame(
+
+            # 消息容器 frame
+            outer_frame = ctk.CTkFrame(
                 self._chat_scroll,
+                fg_color="transparent",
+                corner_radius=8,
+            )
+            outer_frame.grid(sticky="ew", pady=4)
+            outer_frame.grid_columnconfigure(0, weight=1)
+
+            # 引用内容显示（如果有）
+            content_row = 0
+            if m.quoted_content:
+                quote_frame = ctk.CTkFrame(
+                    outer_frame,
+                    fg_color=("gray70", "gray35"),
+                    corner_radius=6,
+                )
+                quote_frame.grid(row=content_row, column=0, sticky="ew", padx=12, pady=(4, 0))
+                content_row += 1
+
+                quote_label = ctk.CTkLabel(
+                    quote_frame,
+                    text=f"💬 {m.quoted_content[:100]}{'...' if len(m.quoted_content) > 100 else ''}",
+                    anchor="w",
+                    justify="left",
+                    text_color=("gray40", "gray70"),
+                    font=("", 10),
+                    padx=12,
+                    pady=6,
+                )
+                quote_label.pack(fill="x")
+
+            # 主消息 frame
+            frame = ctk.CTkFrame(
+                outer_frame,
                 fg_color=fg,
                 corner_radius=8,
                 border_color=border_color,
                 border_width=border_width
             )
-            frame.grid(sticky="ew", pady=4)
+            frame.grid(row=content_row, column=0, sticky="ew", padx=12, pady=(4, 0))
             frame.grid_columnconfigure(0, weight=1)
             frame.grid_columnconfigure(1, weight=0)
 
@@ -1173,6 +1254,20 @@ class MainWindow:
             )
             delete_btn.grid(row=3, column=0, pady=2)
             _bind_pressed_style(delete_btn)
+
+            # 引用按钮
+            quote_btn = ctk.CTkButton(
+                btn_frame,
+                text="💬",
+                width=28,
+                height=28,
+                fg_color="transparent",
+                hover_color=("gray80", "gray28"),
+                border_width=0,
+                command=lambda msg_id=m.id, content=m.content: self._quote_message(msg_id, content)
+            )
+            quote_btn.grid(row=4, column=0, pady=2)
+            _bind_pressed_style(quote_btn)
 
             self._chat_widgets.append((m.id, frame))
         self._chat_scroll.columnconfigure(0, weight=1)
@@ -1716,19 +1811,55 @@ class MainWindow:
         self._sending_label.configure(text="正在输入…")
         self._send_btn.configure(state="disabled")
         self._streaming_session_id = sid
+
+        # 获取引用消息
+        quoted_msg_id, quoted_content = self._quoted_message or (None, None)
+        self._quoted_message = None  # 清除引用
+
         # 先追加用户消息到界面
-        self._append_user_message(sid, text)
+        self._append_user_message(sid, text, quoted_content)
         self._app.send_message(
             sid,
             text,
             self._stream_queue,
+            quoted_message_id=quoted_msg_id,
+            quoted_content=quoted_content,
             on_done=self._on_stream_done,
             on_error=self._on_stream_error,
         )
 
-    def _append_user_message(self, session_id: str, content: str) -> None:
-        frame = ctk.CTkFrame(self._chat_scroll, fg_color=("gray85", "gray25"), corner_radius=8)
-        frame.grid(sticky="ew", pady=4)
+    def _append_user_message(self, session_id: str, content: str, quoted_content: str | None = None) -> None:
+        # 外层容器
+        outer_frame = ctk.CTkFrame(self._chat_scroll, fg_color="transparent", corner_radius=8)
+        outer_frame.grid(sticky="ew", pady=4)
+        outer_frame.grid_columnconfigure(0, weight=1)
+
+        content_row = 0
+        # 显示引用内容（如果有）
+        if quoted_content:
+            quote_frame = ctk.CTkFrame(
+                outer_frame,
+                fg_color=("gray70", "gray35"),
+                corner_radius=6,
+            )
+            quote_frame.grid(row=content_row, column=0, sticky="ew", padx=12, pady=(4, 0))
+            content_row += 1
+
+            quote_label = ctk.CTkLabel(
+                quote_frame,
+                text=f"💬 {quoted_content[:100]}{'...' if len(quoted_content) > 100 else ''}",
+                anchor="w",
+                justify="left",
+                text_color=("gray40", "gray70"),
+                font=("", 10),
+                padx=12,
+                pady=6,
+            )
+            quote_label.pack(fill="x")
+
+        # 主消息 frame
+        frame = ctk.CTkFrame(outer_frame, fg_color=("gray85", "gray25"), corner_radius=8)
+        frame.grid(row=content_row, column=0, sticky="ew", padx=12, pady=(4, 0))
         frame.grid_columnconfigure(0, weight=1)
         frame.grid_columnconfigure(1, weight=0)
         tb = ctk.CTkTextbox(
@@ -1751,7 +1882,7 @@ class MainWindow:
         )
         copy_btn.grid(row=0, column=1, padx=(4, 8), pady=4)
         _bind_pressed_style(copy_btn)
-        self._chat_widgets.append(("user", frame))
+        self._chat_widgets.append(("user", outer_frame))
         self._chat_scroll.columnconfigure(0, weight=1)
 
     def _on_stream_done(self) -> None:

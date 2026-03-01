@@ -59,10 +59,22 @@ class AppService:
         user_content: str,
         chunk_queue: queue.Queue,
         *,
+        quoted_message_id: str | None = None,
+        quoted_content: str | None = None,
         on_done: Callable[[], None] | None = None,
         on_error: Callable[[str], None] | None = None,
     ) -> None:
-        """发送用户消息，在后台线程执行流式请求，将片段放入 chunk_queue；完成后写库并调用 on_done/on_error。"""
+        """发送用户消息，在后台线程执行流式请求，将片段放入 chunk_queue；完成后写库并调用 on_done/on_error。
+
+        Args:
+            session_id: 会话 ID
+            user_content: 用户消息内容
+            chunk_queue: 用于传递流式响应的队列
+            quoted_message_id: 引用的消息 ID（可选）
+            quoted_content: 引用的消息内容（可选）
+            on_done: 完成回调
+            on_error: 错误回调
+        """
         provider = self.get_current_provider()
         if not provider:
             logger.warning("send_message: 未选择模型")
@@ -84,6 +96,8 @@ class AppService:
             role="user",
             content=user_content,
             created_at=_now(),
+            quoted_message_id=quoted_message_id,
+            quoted_content=quoted_content,
         )
         self._message_repo.append(user_msg)
         self._session_repo.update_updated_at(session_id, _now())
