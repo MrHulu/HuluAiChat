@@ -286,6 +286,11 @@ class MainWindow:
         self._root.bind("<Control-L>", lambda e: self._focus_input())  # 大写 L 兼容
         self._root.bind("<Control-slash>", lambda e: self._show_shortcuts_help())
         self._root.bind("<Control-question>", lambda e: self._show_shortcuts_help())  # 某些键盘布局
+        self._root.bind("<Control-comma>", lambda e: self._on_settings())  # Ctrl+, 打开设置
+        self._root.bind("<Control-t>", lambda e: self._toggle_sidebar())  # Ctrl+T 切换侧边栏
+        self._root.bind("<Control-T>", lambda e: self._toggle_sidebar())
+        self._root.bind("<Control-r>", lambda e: self._on_regenerate())  # Ctrl+R 重新生成
+        self._root.bind("<Control-R>", lambda e: self._on_regenerate())
         # 搜索结果导航
         self._root.bind("<F3>", lambda e: self._next_search_match())
         self._root.bind("<Shift-F3>", lambda e: self._prev_search_match())
@@ -750,7 +755,7 @@ class MainWindow:
         """显示快捷键帮助对话框（Ctrl+/）。"""
         dialog = ctk.CTkToplevel(self._root)
         dialog.title("键盘快捷键")
-        dialog.geometry("380x380")
+        dialog.geometry("380x420")
         dialog.transient(self._root)
 
         # 主容器
@@ -769,7 +774,10 @@ class MainWindow:
             ("Ctrl + K", "聚焦搜索框"),
             ("Ctrl + L", "聚焦输入框"),
             ("Ctrl + N", "新建对话"),
+            ("Ctrl + R", "重新生成最后回复"),
+            ("Ctrl + T", "切换侧边栏"),
             ("Ctrl + W", "删除当前对话"),
+            ("Ctrl + ,", "打开设置"),
             ("Ctrl + /", "显示此帮助"),
             ("ESC", "清除搜索"),
             ("F3", "下一个搜索匹配"),
@@ -859,6 +867,27 @@ class MainWindow:
         self._app.new_session()
         self._refresh_sessions_list()
         self._refresh_chat_area()
+
+    def _on_regenerate(self) -> None:
+        """重新生成最后一条助手回复（Ctrl+R）。"""
+        sid = self._app.current_session_id()
+        if not sid:
+            ToastNotification(self._root, "⚠️ 请先选择一个会话")
+            return
+        # 检查是否正在流式输出
+        if self._streaming_session_id is not None:
+            ToastNotification(self._root, "⚠️ 请等待当前回复完成")
+            return
+        self._error_label.configure(text="")
+        self._sending_label.configure(text="正在重新生成…")
+        self._send_btn.configure(state="disabled")
+        self._streaming_session_id = sid
+        self._app.regenerate_response(
+            sid,
+            self._stream_queue,
+            on_done=self._on_stream_done,
+            on_error=self._on_stream_error,
+        )
 
     def _on_select_session(self, session_id: str) -> None:
         self._app.switch_session(session_id)
