@@ -168,6 +168,10 @@ class AppService:
         """在指定会话中搜索消息。"""
         return self._message_repo.search(session_id, query)
 
+    def search_all_messages(self, query: str, limit: int = 100) -> list[Message]:
+        """在所有会话中搜索消息。"""
+        return self._message_repo.search_all(query, limit)
+
     def set_current_provider(self, provider_id: str) -> None:
         """切换当前模型并写回配置。"""
         self._config.current_provider_id = provider_id
@@ -318,3 +322,25 @@ class AppService:
 
         t = threading.Thread(target=run, daemon=True)
         t.start()
+
+    def pin_message(self, message_id: str) -> None:
+        """置顶消息。"""
+        self._message_repo.set_pinned(message_id, True)
+
+    def unpin_message(self, message_id: str) -> None:
+        """取消置顶消息。"""
+        self._message_repo.set_pinned(message_id, False)
+
+    def list_pinned_messages(self, session_id: str) -> list[Message]:
+        """获取会话中所有置顶的消息。"""
+        return self._message_repo.list_pinned(session_id)
+
+    def toggle_message_pin(self, message_id: str) -> bool:
+        """切换消息的置顶状态，返回新状态。"""
+        messages = self._message_repo.list_by_session(self._current_session_id or "")
+        for m in messages:
+            if m.id == message_id:
+                new_state = not m.is_pinned
+                self._message_repo.set_pinned(message_id, new_state)
+                return new_state
+        return False

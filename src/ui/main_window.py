@@ -110,6 +110,7 @@ class MainWindow:
         self._streaming_text: list[str] = []
         self._icon_image: PhotoImage | None = None
         self._search_query: str = ""  # 当前搜索关键词
+        self._search_global: bool = False  # 全局搜索模式
         self._matched_message_ids: set[str] = set()  # 匹配的消息ID集合
         self._search_matches: list[tuple[str, int, int]] = []  # (msg_id, start_pos, end_pos) 所有匹配位置
         self._current_match_index: int = 0  # 当前选中的匹配索引
@@ -202,6 +203,18 @@ class MainWindow:
         self._search_entry.grid(row=0, column=0, sticky="w")
         self._search_entry.bind("<KeyRelease>", self._on_search_input)
         self._search_entry.bind("<Escape>", lambda e: self._clear_search())
+        # 全局搜索切换按钮
+        self._search_global_btn = ctk.CTkButton(
+            top,
+            text="本会话",
+            width=70,
+            height=32,
+            command=self._toggle_search_scope,
+            fg_color=("gray75", "gray30"),
+            hover_color=("gray70", "gray28"),
+            text_color=("gray15", "gray88"),
+        )
+        self._search_global_btn.grid(row=0, column=1, padx=(4, 8))
 
         self._model_var = ctk.StringVar(value=self._current_model_display())
         self._model_menu = ctk.CTkOptionMenu(
@@ -221,6 +234,8 @@ class MainWindow:
             hover_color=("gray80", "gray28"),
             text_color=("gray40", "gray60")
         ).grid(row=0, column=6, padx=4)
+        # 添加 column 1 的权重，让搜索按钮有足够空间
+        top.grid_columnconfigure(1, weight=0)
 
         # 对话区
         self._chat_scroll = ctk.CTkScrollableFrame(main, fg_color="transparent")
@@ -321,6 +336,12 @@ class MainWindow:
         self._refresh_chat_area()
         self._search_entry.focus_set()
 
+    def _toggle_search_scope(self) -> None:
+        """切换搜索范围（本会话/全部会话）。"""
+        self._search_global = not self._search_global
+        self._search_global_btn.configure(text="全部会话" if self._search_global else "本会话")
+        self._refresh_chat_area()
+
     def _refresh_sidebar_width(self) -> None:
         w = SIDEBAR_WIDTH if self._sidebar_expanded else SIDEBAR_COLLAPSED
         self._root.grid_columnconfigure(0, weight=0, minsize=w)
@@ -353,6 +374,13 @@ class MainWindow:
         """复制消息内容到剪贴板，并显示提示。"""
         copy_to_clipboard(content)
         ToastNotification(self._root, "✓ 已复制到剪贴板")
+
+    def _toggle_pin(self, message_id: str) -> None:
+        """切换消息的置顶状态。"""
+        is_pinned = self._app.toggle_message_pin(message_id)
+        msg = "📌 已置顶" if is_pinned else "📍 已取消置顶"
+        ToastNotification(self._root, msg)
+        self._refresh_chat_area()
 
     def _refresh_sessions_list(self) -> None:
         for row in self._session_row_frames:
@@ -455,6 +483,13 @@ class MainWindow:
             w.destroy()
         self._chat_widgets.clear()
         sid = self._app.current_session_id()
+
+        # 全局搜索模式
+        if self._search_global and self._search_query:
+            self._refresh_global_search_results()
+            return
+
+        # 正常模式或本会话搜索
         if not sid:
             lbl = ctk.CTkLabel(
                 self._chat_scroll, text="新对话：在下方输入并发送。", anchor="w", justify="left"
@@ -547,9 +582,28 @@ class MainWindow:
                 self._insert_highlighted_text(tb, prefix, m.content, m.id)
                 tb.configure(state="disabled")
 
+            # 右侧按钮组
+            btn_frame = ctk.CTkFrame(frame, fg_color="transparent")
+            btn_frame.grid(row=0, column=1, padx=(4, 8), pady=4)
+
+            # 置顶按钮
+            pin_text = "📌" if m.is_pinned else "📍"
+            pin_btn = ctk.CTkButton(
+                btn_frame,
+                text=pin_text,
+                width=28,
+                height=28,
+                fg_color=("yellow", "dark goldenrod") if m.is_pinned else "transparent",
+                hover_color=("gold", "goldenrod") if m.is_pinned else ("gray80", "gray28"),
+                border_width=0,
+                command=lambda msg_id=m.id: self._toggle_pin(msg_id)
+            )
+            pin_btn.grid(row=0, column=0, pady=2)
+            _bind_pressed_style(pin_btn)
+
             # 复制按钮
             copy_btn = ctk.CTkButton(
-                frame,
+                btn_frame,
                 text="📋",
                 width=28,
                 height=28,
@@ -558,11 +612,126 @@ class MainWindow:
                 border_width=0,
                 command=lambda content=m.content: self._copy_message(content)
             )
-            copy_btn.grid(row=0, column=1, padx=(4, 8), pady=4)
+            copy_btn.grid(row=1, column=0, pady=2)
             _bind_pressed_style(copy_btn)
 
             self._chat_widgets.append((m.id, frame))
         self._chat_scroll.columnconfigure(0, weight=1)
+
+    def _refresh_global_search_results(self) -> None:
+        """刷新全局搜索结果。"""
+        all_messages = self._app.search_all_messages(self._search_query)
+
+        if not all_messages:
+            hint = f"没有找到包含「{self._search_query}」的消息"
+            lbl = ctk.CTkLabel(
+                self._chat_scroll, text=hint, anchor="w", justify="left", text_color=("gray40", "gray60")
+            )
+            lbl.grid(sticky="ew", pady=8)
+            self._chat_scroll.columnconfigure(0, weight=1)
+            return
+
+        # 显示搜索结果数量提示
+        count_label = ctk.CTkLabel(
+            self._chat_scroll,
+            text=f"在全部会话中找到 {len(all_messages)} 条匹配消息",
+            anchor="w",
+            text_color=("gray40", "gray60"),
+            font=("", 11)
+        )
+        count_label.grid(sticky="ew", pady=(0, 8))
+
+        # 获取所有会话信息用于显示标题
+        sessions = {s.id: s for s in self._app.load_sessions()}
+
+        for m in all_messages:
+            fg = ("gray85", "gray25") if m.role == "user" else ("gray70", "gray30")
+            session = sessions.get(m.session_id)
+            session_title = session.title if session else "未知会话"
+
+            frame = ctk.CTkFrame(
+                self._chat_scroll,
+                fg_color=fg,
+                corner_radius=8,
+            )
+            frame.grid(sticky="ew", pady=4)
+            frame.grid_columnconfigure(0, weight=1)
+            frame.grid_columnconfigure(1, weight=0)
+
+            # 消息内容
+            tb = ctk.CTkTextbox(
+                frame, wrap="word", height=self._message_textbox_height(m.content),
+                fg_color="transparent", border_width=0, state="normal"
+            )
+            tb.grid(row=0, column=0, sticky="ew", padx=12, pady=8)
+            prefix = '你' if m.role == 'user' else '助手'
+            tb.insert("1.0", f"{prefix}: {m.content}")
+            tb.configure(state="disabled")
+
+            # 右侧按钮组
+            btn_frame = ctk.CTkFrame(frame, fg_color="transparent")
+            btn_frame.grid(row=0, column=1, padx=(4, 8), pady=4)
+
+            # 置顶按钮（全局搜索结果中显示置顶状态但不提供切换）
+            if m.is_pinned:
+                pin_label = ctk.CTkLabel(
+                    btn_frame,
+                    text="📌",
+                    width=28,
+                    text_color=("orange", "dark goldenrod")
+                )
+                pin_label.grid(row=0, column=0, pady=2)
+
+            # 复制按钮
+            copy_btn = ctk.CTkButton(
+                btn_frame,
+                text="📋",
+                width=28,
+                height=28,
+                fg_color="transparent",
+                hover_color=("gray80", "gray28"),
+                border_width=0,
+                command=lambda content=m.content: self._copy_message(content)
+            )
+            copy_btn.grid(row=1 if m.is_pinned else 0, column=0, pady=2)
+            _bind_pressed_style(copy_btn)
+
+            # 跳转到会话按钮
+            goto_btn = ctk.CTkButton(
+                btn_frame,
+                text="🔗",
+                width=28,
+                height=28,
+                fg_color="transparent",
+                hover_color=("gray80", "gray28"),
+                border_width=0,
+                command=lambda sid=m.session_id: self._goto_session(sid)
+            )
+            goto_btn.grid(row=2 if m.is_pinned else 1, column=0, pady=2)
+            _bind_pressed_style(goto_btn)
+
+            # 会话标题标签
+            title_label = ctk.CTkLabel(
+                frame,
+                text=f"📁 {session_title}",
+                anchor="w",
+                text_color=("gray50", "gray70"),
+                font=("", 10)
+            )
+            title_label.grid(row=1, column=0, sticky="w", padx=12, pady=(0, 4))
+
+            self._chat_widgets.append((m.id, frame))
+        self._chat_scroll.columnconfigure(0, weight=1)
+
+    def _goto_session(self, session_id: str) -> None:
+        """跳转到指定会话并退出全局搜索模式。"""
+        self._app.switch_session(session_id)
+        self._search_global = False
+        self._search_global_btn.configure(text="本会话")
+        self._search_var.set("")
+        self._search_query = ""
+        self._refresh_sessions_list()
+        self._refresh_chat_area()
 
     def _focus_search(self) -> None:
         """聚焦搜索框（Ctrl+K）。"""
