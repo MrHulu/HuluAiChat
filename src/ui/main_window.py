@@ -113,6 +113,7 @@ class MainWindow:
         self._matched_message_ids: set[str] = set()  # 匹配的消息ID集合
         self._search_matches: list[tuple[str, int, int]] = []  # (msg_id, start_pos, end_pos) 所有匹配位置
         self._current_match_index: int = 0  # 当前选中的匹配索引
+        self._current_match_msg_id: str | None = None  # 当前匹配所在的消息ID
 
         ctk.set_appearance_mode(self._app.config().theme)
         self._root = ctk.CTk()
@@ -495,6 +496,11 @@ class MainWindow:
                     start = pos + 1
             self._current_match_index = 0
 
+        # 计算当前匹配所在的消息ID（用于视觉指示器）
+        self._current_match_msg_id: str | None = None
+        if self._search_matches and 0 <= self._current_match_index < len(self._search_matches):
+            self._current_match_msg_id = self._search_matches[self._current_match_index][0]
+
         # 显示搜索结果数量提示
         if self._search_query:
             match_text = f"找到 {len(self._search_matches)} 个匹配" if self._search_matches else "没有匹配"
@@ -511,7 +517,17 @@ class MainWindow:
 
         for m in filtered_messages:
             fg = ("gray85", "gray25") if m.role == "user" else ("gray70", "gray30")
-            frame = ctk.CTkFrame(self._chat_scroll, fg_color=fg, corner_radius=8)
+            # 当前匹配的消息添加橙色边框作为视觉指示器
+            is_current_match = (m.id == self._current_match_msg_id)
+            border_color = ("orange", "dark orange") if is_current_match else None
+            border_width = 2 if is_current_match else 0
+            frame = ctk.CTkFrame(
+                self._chat_scroll,
+                fg_color=fg,
+                corner_radius=8,
+                border_color=border_color,
+                border_width=border_width
+            )
             frame.grid(sticky="ew", pady=4)
             frame.grid_columnconfigure(0, weight=1)
             frame.grid_columnconfigure(1, weight=0)
