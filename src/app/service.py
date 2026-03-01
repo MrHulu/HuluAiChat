@@ -180,7 +180,8 @@ class AppService:
         """加载指定会话的消息列表。"""
         return self._message_repo.list_by_session(session_id)
 
-    def search_messages(self, session_id: str, query: str, start_date: str | None = None, end_date: str | None = None) -> list[Message]:
+    def search_messages(self, session_id: str, query: str, start_date: str | None = None, end_date: str | None = None,
+                       case_sensitive: bool = False, whole_word: bool = False) -> list[Message]:
         """在指定会话中搜索消息。
 
         Args:
@@ -188,10 +189,13 @@ class AppService:
             query: 搜索关键词
             start_date: 起始日期 (ISO 8601 格式，如 "2024-01-01")
             end_date: 结束日期 (ISO 8601 格式)
+            case_sensitive: 是否区分大小写 (v1.4.8)
+            whole_word: 是否全词匹配 (v1.4.8)
         """
-        return self._message_repo.search(session_id, query, start_date, end_date)
+        return self._message_repo.search(session_id, query, start_date, end_date, case_sensitive, whole_word)
 
-    def search_all_messages(self, query: str, limit: int = 100, start_date: str | None = None, end_date: str | None = None) -> list[Message]:
+    def search_all_messages(self, query: str, limit: int = 100, start_date: str | None = None, end_date: str | None = None,
+                           case_sensitive: bool = False, whole_word: bool = False) -> list[Message]:
         """在所有会话中搜索消息。
 
         Args:
@@ -199,8 +203,10 @@ class AppService:
             limit: 最大返回结果数
             start_date: 起始日期 (ISO 8601 格式)
             end_date: 结束日期 (ISO 8601 格式)
+            case_sensitive: 是否区分大小写 (v1.4.8)
+            whole_word: 是否全词匹配 (v1.4.8)
         """
-        return self._message_repo.search_all(query, limit, start_date, end_date)
+        return self._message_repo.search_all(query, limit, start_date, end_date, case_sensitive, whole_word)
 
     def set_current_provider(self, provider_id: str) -> None:
         """切换当前模型并写回配置。"""
