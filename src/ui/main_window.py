@@ -961,7 +961,7 @@ class MainWindow:
         # 创建导出对话框
         dialog = ctk.CTkToplevel(self._root)
         dialog.title("导出对话")
-        dialog.geometry("300x180")
+        dialog.geometry("300x260")
         dialog.transient(self._root)
 
         ctk.CTkLabel(dialog, text="选择导出格式：", anchor="w").pack(anchor="w", padx=12, pady=(12, 8))
@@ -971,12 +971,17 @@ class MainWindow:
         md_radio.pack(anchor="w", padx=12, pady=4)
         json_radio = ctk.CTkRadioButton(dialog, text="JSON (.json)", variable=format_var, value="json")
         json_radio.pack(anchor="w", padx=12, pady=4)
+        pdf_radio = ctk.CTkRadioButton(dialog, text="PDF (.pdf)", variable=format_var, value="pdf")
+        pdf_radio.pack(anchor="w", padx=12, pady=4)
+        html_radio = ctk.CTkRadioButton(dialog, text="HTML (.html)", variable=format_var, value="html")
+        html_radio.pack(anchor="w", padx=12, pady=4)
 
         result: list[tuple[str, str]] = []  # (format, path)
 
         def do_export() -> None:
             fmt = format_var.get()
-            ext = "md" if fmt == "md" else "json"
+            ext_map = {"md": "md", "json": "json", "pdf": "pdf", "html": "html"}
+            ext = ext_map.get(fmt, "md")
             # 弹出文件保存对话框
             path = filedialog.asksaveasfilename(
                 title="保存导出文件",
