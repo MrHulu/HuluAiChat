@@ -298,6 +298,8 @@ class MainWindow:
         self._root.bind("<Control-T>", lambda e: self._toggle_sidebar())
         self._root.bind("<Control-r>", lambda e: self._on_regenerate())  # Ctrl+R 重新生成
         self._root.bind("<Control-R>", lambda e: self._on_regenerate())
+        self._root.bind("<Control-p>", lambda e: self._on_toggle_current_session_pinned())  # Ctrl+P 切换置顶
+        self._root.bind("<Control-P>", lambda e: self._on_toggle_current_session_pinned())  # 大写 P 兼容
         # 搜索结果导航
         self._root.bind("<F3>", lambda e: self._next_search_match())
         self._root.bind("<Shift-F3>", lambda e: self._prev_search_match())
@@ -1080,6 +1082,7 @@ class MainWindow:
             ("Ctrl + K", "聚焦搜索框"),
             ("Ctrl + L", "聚焦输入框"),
             ("Ctrl + N", "新建对话"),
+            ("Ctrl + P", "切换置顶"),
             ("Ctrl + R", "重新生成最后回复"),
             ("Ctrl + T", "切换侧边栏"),
             ("Ctrl + W", "删除当前对话"),
@@ -1207,6 +1210,14 @@ class MainWindow:
         status = "已置顶" if new_pinned else "已取消置顶"
         ToastNotification(self._root, f"{icon} {status}")
         self._refresh_sessions_list()
+
+    def _on_toggle_current_session_pinned(self) -> None:
+        """切换当前会话的置顶状态（键盘快捷键 Ctrl+P）。"""
+        current_session_id = self._app.current_session_id
+        if current_session_id:
+            self._on_toggle_session_pinned(current_session_id)
+        else:
+            ToastNotification(self._root, "⚠️ 没有活动会话")
 
     def _on_rename_session(self, session_id: str, current_title: str) -> None:
         dialog = ctk.CTkToplevel(self._root)
