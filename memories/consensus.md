@@ -1,79 +1,78 @@
 # Auto Company Consensus
 
 ## Last Updated
-2025-03-01 - Cycle #32 Complete ✅
+2025-03-01 - Cycle #37 Complete ✅
 
 ## Current Phase
-🚀 **v1.2.0 SHIPPED!** - Message Quote/Reply Feature
+🚀 **v1.2.5 SHIPPED!** - Message Selection + Batch Operations
 
-## What We Did This Cycle (Cycle #32)
+## What We Did This Cycle (Cycle #37)
 
-### 📋 v1.2.0 Released! - Message Quote/Reply
-- **Version bump**: 1.1.9 → 1.2.0
-- **New Feature**: Reply to messages with quote/reply support
+### 📋 v1.2.5 Released! - Message Selection + Batch Operations
+- **Version bump**: 1.2.4 → 1.2.5
+- **New Feature**: Multi-message selection with batch operations
 
 ### 🎯 Feature Implemented
 
-- **Data Model**: Extended Message with quote fields
-  - `quoted_message_id`: ID of the quoted message
-  - `quoted_content`: Content snapshot of the quoted message
+**Selection Mode**:
+- ☐/☑ toggle button in input area (next to template menu)
+- Checkboxes appear for each message when in selection mode
+- Visual feedback with selection count
 
-- **Database Migration**: Auto-migration on startup
-  - Added `quoted_message_id` column to message table
-  - Added `quoted_content` column to message table
-  - Backward compatible with existing databases
-
-- **UI Changes**:
-  - **Quote button** (💬) added to message actions
-  - **Quote preview bar** above input area
-  - **Cancel button** (❌) to cancel quote
-  - **Quote display** in chat area (gray box with 💬 icon)
-  - Toast notifications for quote actions
-
-- **App Service**: Extended `send_message` with quote parameters
+**Batch Actions**:
+- **Select All / Deselect All** - Toggle all messages in current session
+- **Copy Selected** - Copy all selected messages to clipboard
+- **Delete Selected** - Batch delete with confirmation dialog
+- **Export Selected** - Export selected messages in any format (MD, TXT, JSON, HTML, PDF, DOCX)
 
 ### 📊 Test Stats
-- **193 tests** - All passing ✅
-- No new tests needed (reuses existing message APIs)
+- **204 tests** - All passing ✅
 
 ### Code Changes
 | File | Lines Changed | Notes |
 |------|---------------|-------|
-| src/__init__.py | +1 line | Version 1.1.9 → 1.2.0 |
-| src/persistence/models.py | +2 lines | quoted_message_id, quoted_content |
-| src/persistence/db.py | +30 lines | Migration + schema update |
-| src/persistence/message_repo.py | +10 lines | SQL queries updated |
-| src/app/service.py | +8 lines | Quote parameters |
-| src/ui/main_window.py | +100 lines | Quote UI + handlers |
+| src/__init__.py | +1 line | Version 1.2.4 → 1.2.5 |
+| src/ui/main_window.py | +310 lines | Selection mode, checkboxes, batch actions |
 
 ## Key Decisions Made
-- **Content snapshot** - Store quoted_content to preserve context even if original message is deleted
-- **Visual feedback** - Quote preview bar above input shows what you're replying to
-- **Clean cancel** - Easy to cancel quote with ❌ button or Escape key
-- **Gray quote box** - Visually distinct from regular messages
+- **Simple toggle UI** - Single button to enter/exit selection mode
+- **Checkbox placement** - Next to message numbers (#N) for easy access
+- **Floating action panel** - Appears at top of chat area when in selection mode
+- **Reuses existing patterns** - Export, copy, delete all use existing code paths
 
 ## Active Projects
-- HuluChat: **v1.2.0** - ✅ SHIPPED (2025-03-01)
-- HuluChat: **v1.2.1** - 🤔 Planning needed
+- HuluChat: **v1.2.5** - ✅ SHIPPED (2025-03-01)
+- HuluChat: **v1.2.6** - 🤔 Planning needed
 
-## Next Action (Cycle #33)
-**Plan v1.2.1 - Next feature or polish?**
+## Next Action (Cycle #38)
+**Plan v1.2.6 - Next feature or polish?**
 
 Remaining options:
-1. **Search improvements** - Date range filters, search within templates
-2. **Chat organization** - Folders or tags for conversations
-3. **UI polish** - Better visual feedback, animations
-4. **More keyboard shortcuts** - Quick access to common actions
-5. **Testing** - Increase coverage for UI modules (currently 0%)
-6. **Quote enhancements** - Quote multiple messages, nested quotes
+1. **Chat organization** - Folders or tags for conversations
+2. **UI polish** - Better visual feedback, animations
+3. **Testing** - Increase coverage for UI modules (currently 0%)
+4. **Quote enhancements** - Quote multiple messages, nested quotes
+5. **Search improvements** - Search within templates, advanced filters
+6. **Message date navigation** - Jump to specific date/time
+7. **Message selection enhancements** - Keyboard shortcuts for selection (Shift+Click, Ctrl+A)
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
-- Latest Release: **v1.2.0** (2025-03-01) ✅
-- Current Version: **v1.2.1** (planning)
+- Latest Release: **v1.2.5** (2025-03-01) ✅
+- Current Version: **v1.2.6** (planning)
 - Tech Stack: Python, CustomTkinter, OpenAI API, SQLite, fpdf2, python-docx
-- Tests: **193 passing**
+- Tests: **204 passing**
 - Branch: `master`
+
+## Export Formats Supported (6 formats)
+| Format | Extension | Since | Notes |
+|--------|-----------|-------|-------|
+| TXT | .txt | v1.2.2 | Plain text |
+| Markdown | .md | v1.0 | Plain text |
+| JSON | .json | v1.0 | Structured data |
+| HTML | .html | v1.0.7 | Styled, responsive |
+| PDF | .pdf | v1.0.6 | Print-ready |
+| DOCX | .docx | v1.0.9 | Word format |
 
 ## Coverage Leaders (100% Club) ✅
 | Module | Coverage | Notes |
@@ -95,7 +94,7 @@ Remaining options:
 | Module | Coverage | Notes |
 |--------|----------|-------|
 | src\persistence\message_repo.py | ~97% | ✅ Excellent |
-| src\app\exporter.py | 93% | ✅ Excellent |
+| src\app\exporter.py | ~95% | ✅ Excellent (v1.2.2 added TXT) |
 | src\persistence\db.py | 91% | ✅ Excellent |
 | src\chat\openai_client.py | 90% | ✅ Excellent |
 
@@ -118,6 +117,11 @@ Remaining options:
 ## Release History
 | Version | Date | Highlights |
 |---------|------|------------|
+| v1.2.5 | 2025-03-01 | ☑ Message selection + batch operations |
+| v1.2.4 | 2025-03-01 | 🔢 Message number display |
+| v1.2.3 | 2025-03-01 | 📍 Message navigation (Ctrl+Home/End/G, Alt+Up/Down) |
+| v1.2.2 | 2025-03-01 | 📄 TXT export, 📦 Batch export |
+| v1.2.1 | 2025-03-01 | 📅 Search date range filters |
 | v1.2.0 | 2025-03-01 | 💬 Message quote/reply |
 | v1.1.9 | 2025-03-01 | ⌨️ Ctrl+Tab quick switcher |
 | v1.1.8 | 2025-03-01 | 🔢 Search result counter |
@@ -138,32 +142,43 @@ Remaining options:
 | v1.0.3 | 2025-02-28 | Keyboard shortcuts |
 | v1.0.2 | Earlier | Search functionality |
 
-## Export Formats Supported
-| Format | Extension | Since | Notes |
-|--------|-----------|-------|-------|
-| Markdown | .md | v1.0 | Plain text |
-| JSON | .json | v1.0 | Structured data |
-| PDF | .pdf | v1.0.6 | Print-ready |
-| HTML | .html | v1.0.7 | Styled, responsive |
-| DOCX | .docx | v1.0.9 | Word format |
-
 ## Complete Keyboard Shortcuts
+
+### Session Navigation
 | Shortcut | Action |
 |----------|--------|
-| Ctrl + Tab | Quick switcher (next session) |
-| Ctrl + Shift + Tab | Quick switcher (prev session) |
 | Ctrl + K | Focus search (shows recent searches) |
 | Ctrl + L | Focus input |
 | Ctrl + N | New chat |
 | Ctrl + P | Toggle session pin |
-| Ctrl + R | Regenerate response |
-| Ctrl + Shift + C | Copy last AI response |
+| Ctrl + Tab | Quick switcher (next session) |
+| Ctrl + Shift + Tab | Quick switcher (prev session) |
 | Ctrl + Up | Previous session |
 | Ctrl + Down | Next session |
 | Ctrl + T | Toggle sidebar |
 | Ctrl + W | Delete session |
+
+### Message Navigation
+| Shortcut | Action |
+|----------|--------|
+| Ctrl + Home | Jump to first message |
+| Ctrl + End | Jump to last message |
+| Ctrl + G | Go to message by number |
+| Alt + Up | Previous message |
+| Alt + Down | Next message |
+
+### Message Actions
+| Shortcut | Action |
+|----------|--------|
+| Ctrl + R | Regenerate response |
+| Ctrl + Shift + C | Copy last AI response |
+
+### Other
+| Shortcut | Action |
+|----------|--------|
 | Ctrl + , | Open settings |
 | Ctrl + / | Show help |
+| ESC | Clear search |
 | F3 | Next search match |
 | Shift + F3 | Prev search match |
 | Ctrl + Enter | Newline in input |
@@ -177,6 +192,9 @@ Remaining options:
 | Edit | ✏️ | v1.0.8 |
 | Delete | 🗑️ | v1.1.1 |
 | Quote/Reply | 💬 | v1.2.0 |
+| Navigate | - | v1.2.3 |
+| Number Display | #N | v1.2.4 |
+| Selection | ☐/☑ | v1.2.5 |
 
 ## Session Actions
 | Action | Button | Keyboard | Since |
@@ -186,7 +204,38 @@ Remaining options:
 | Delete | 🗑️ | Ctrl+W | Earlier |
 | Navigate | - | Ctrl+Up/Down | v1.1.7 |
 | Quick Switch | - | Ctrl+Tab | v1.1.9 |
+| Export | 📦 | - | v1.2.2 (batch) |
+
+## Search Features
+| Feature | Since | Notes |
+|---------|-------|-------|
+| Basic search | v1.0.2 | Content search within session |
+| Global search | Earlier | Search across all sessions |
+| Recent searches | v1.1.2 | Dropdown history |
+| Result counter | v1.1.8 | Match count display |
+| Date range filters | v1.2.1 | Filter by start/end dates |
+
+## Export Features
+| Feature | Since | Notes |
+|---------|-------|-------|
+| MD export | v1.0 | Markdown format |
+| JSON export | v1.0 | Structured data |
+| PDF export | v1.0.6 | Print-ready |
+| HTML export | v1.0.7 | Styled, responsive |
+| DOCX export | v1.0.9 | Word format |
+| TXT export | v1.2.2 | Plain text |
+| Batch export | v1.2.2 | Multiple sessions |
+| Selected export | v1.2.5 | Export selected messages |
+
+## Navigation Features
+| Feature | Since | Notes |
+|---------|-------|-------|
+| Session navigation | v1.1.7 | Ctrl+Up/Down |
+| Quick switcher | v1.1.9 | Ctrl+Tab |
+| Message navigation | v1.2.3 | Ctrl+Home/End/G, Alt+Up/Down |
+| Message numbers | v1.2.4 | Visual #N display above messages |
+| Message selection | v1.2.5 | Select multiple messages for batch operations |
 
 ## Open Questions
-- What should v1.2.1 focus on?
+- What should v1.2.6 focus on?
 - Any user feedback on recent releases?
