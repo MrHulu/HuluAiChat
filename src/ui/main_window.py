@@ -80,6 +80,246 @@ def copy_to_clipboard(text: str) -> None:
         r.update()
         r.destroy()
 
+
+class QuickSwitcherDialog:
+    """快速会话切换对话框 - 支持 Ctrl+Tab 快速切换会话。"""
+    def __init__(
+        self,
+        parent: ctk.CTk,
+        sessions: list,
+        current_id: str | None,
+        on_select: Callable[[str], None],
+        initial_index: int = 0,
+        message_counts: dict[str, int] | None = None,
+    ) -> None:
+        """
+        Args:
+            parent: 父窗口
+            sessions: 会话列表 (Session 对象)
+            current_id: 当前会话 ID
+            on_select: 选择回调，接收 session_id
+            initial_index: 初始选中的索引 (用于 Ctrl+Tab 快速切换)
+            message_counts: 会话消息计数字典 {session_id: count}
+        """
+        self._parent = parent
+        self._sessions = sessions
+        self._current_id = current_id
+        self._on_select = on_select
+        self._selected_index = initial_index
+        self._filter_text = ""
+        self._filtered_indices: list[int] = list(range(len(sessions)))
+        self._message_counts = message_counts or {}
+        self._widget: ctk.CTkToplevel | None = None
+        self._session_list_frame: ctk.CTkScrollableFrame | None = None
+        self._session_buttons: list[ctk.CTkButton] = []
+        self._search_var: ctk.StringVar | None = None
+            initial_index: 初始选中的索引 (用于 Ctrl+Tab 快速切换)
+        """
+        self._parent = parent
+        self._sessions = sessions
+        self._current_id = current_id
+        self._on_select = on_select
+        self._selected_index = initial_index
+        self._filter_text = ""
+        self._filtered_indices: list[int] = list(range(len(sessions)))
+        self._widget: ctk.CTkToplevel | None = None
+        self._session_list_frame: ctk.CTkScrollableFrame | None = None
+        self._session_buttons: list[ctk.CTkButton] = []
+        self._search_var: ctk.StringVar | None = None
+
+        self._create_dialog()
+
+    def _create_dialog(self) -> None:
+        """创建对话框。"""
+        self._widget = ctk.CTkToplevel(self._parent)
+        self._widget.title("切换会话")
+        self._widget.geometry("600x400")
+        self._widget.transient(self._parent)  # 设置为工具窗口
+        self._widget.grab_set()  # 模态对话框
+
+        # 居中显示
+        self._widget.update_idletasks()
+        parent_x = self._parent.winfo_x()
+        parent_y = self._parent.winfo_y()
+        parent_w = self._parent.winfo_width()
+        parent_h = self._parent.winfo_height()
+        dlg_w = 600
+        dlg_h = 400
+        self._widget.geometry(f"{dlg_w}x{dlg_h}+{parent_x + (parent_w - dlg_w) // 2}+{parent_y + (parent_h - dlg_h) // 2}")
+
+        # 主框架
+        main = ctk.CTkFrame(self._widget, fg_color="transparent")
+        main.pack(fill="both", expand=True, padx=16, pady=16)
+        main.grid_columnconfigure(0, weight=1)
+        main.grid_rowconfigure(1, weight=1)
+
+        # 搜索框
+        self._search_var = ctk.StringVar()
+        search_entry = ctk.CTkEntry(
+            main,
+            placeholder_text="🔍 输入过滤会话...",
+            textvariable=self._search_var,
+            height=36,
+        )
+        search_entry.grid(row=0, column=0, sticky="ew", pady=(0, 12))
+        search_entry.bind("<KeyRelease>", self._on_search_input)
+        search_entry.bind("<Escape>", lambda e: self._close())
+        search_entry.bind("<Up>", lambda e: self._select_prev())
+        search_entry.bind("<Down>", lambda e: self._select_next())
+        search_entry.bind("<Return>", lambda e: self._confirm())
+        search_entry.focus_set()
+
+        # 会话列表
+        self._session_list_frame = ctk.CTkScrollableFrame(
+            main,
+            fg_color=("gray85", "gray22"),
+            corner_radius=8,
+        )
+        self._session_list_frame.grid(row=1, column=0, sticky="nsew")
+
+        # 绑定键盘导航
+        self._widget.bind("<Escape>", lambda e: self._close())
+        self._widget.bind("<Up>", lambda e: self._select_prev())
+        self._widget.bind("<Down>", lambda e: self._select_next())
+        self._widget.bind("<Return>", lambda e: self._confirm())
+
+        # 渲染会话列表
+        self._render_sessions()
+
+    def _render_sessions(self) -> None:
+        """渲染会话列表。"""
+        if not self._session_list_frame:
+            return
+
+        # 清空现有按钮
+        for btn in self._session_buttons:
+            if btn.winfo_exists():
+                btn.destroy()
+        self._session_buttons.clear()
+
+        # 过滤后的会话
+        for idx in self._filtered_indices:
+            session = self._sessions[idx]
+            is_current = session.id == self._current_id
+            is_pinned = session.pinned
+            msg_count = self._message_counts.get(session.id, 0)
+
+            # 构建显示文本
+            pin_icon = "📌" if is_pinned else ""
+            count_text = f"({msg_count})" if msg_count > 0 else ""
+            title = session.title or "未命名会话"
+            display_text = f"{pin_icon} {title} {count_text}".strip()
+
+            # 创建按钮
+            btn = ctk.CTkButton(
+                self._session_list_frame,
+                text=display_text,
+                height=40,
+                fg_color=("gray75", "gray30") if not is_current else ("gray60", "gray45"),
+                hover_color=("gray70", "gray28"),
+                text_color=("gray15", "gray88"),
+                anchor="w",
+                command=lambda sid=session.id: self._select_session(sid),
+            )
+            btn.pack(fill="x", padx=8, pady=4)
+            self._session_buttons.append(btn)
+
+        # 更新选中状态
+        self._update_selection()
+
+    def _on_search_input(self, event) -> None:
+        """处理搜索输入。"""
+        if not self._search_var:
+            return
+        query = self._search_var.get().lower()
+
+        if not query:
+            self._filtered_indices = list(range(len(self._sessions)))
+        else:
+            self._filtered_indices = [
+                i for i, s in enumerate(self._sessions)
+                if query in (s.title or "").lower()
+            ]
+
+        # 重置选中索引到第一个过滤结果
+        if self._filtered_indices:
+            self._selected_index = self._filtered_indices[0]
+
+        self._render_sessions()
+
+    def _update_selection(self) -> None:
+        """更新选中状态的视觉反馈。"""
+        for i, btn in enumerate(self._session_buttons):
+            # 找到对应的原始索引
+            if i < len(self._filtered_indices):
+                orig_idx = self._filtered_indices[i]
+                is_selected = orig_idx == self._selected_index
+                is_current = self._sessions[orig_idx].id == self._current_id
+
+                if is_selected:
+                    btn.configure(
+                        fg_color=("gray50", "gray40"),
+                        border_width=2,
+                        border_color=("gray40", "gray35"),
+                    )
+                elif is_current:
+                    btn.configure(
+                        fg_color=("gray60", "gray45"),
+                        border_width=0,
+                    )
+                else:
+                    btn.configure(
+                        fg_color=("gray75", "gray30"),
+                        border_width=0,
+                    )
+
+    def _select_next(self) -> None:
+        """选择下一个会话。"""
+        if not self._filtered_indices:
+            return
+
+        # 找到当前选中在过滤列表中的位置
+        try:
+            current_pos = self._filtered_indices.index(self._selected_index)
+        except ValueError:
+            current_pos = -1
+
+        next_pos = (current_pos + 1) % len(self._filtered_indices)
+        self._selected_index = self._filtered_indices[next_pos]
+        self._update_selection()
+
+    def _select_prev(self) -> None:
+        """选择上一个会话。"""
+        if not self._filtered_indices:
+            return
+
+        # 找到当前选中在过滤列表中的位置
+        try:
+            current_pos = self._filtered_indices.index(self._selected_index)
+        except ValueError:
+            current_pos = 0
+
+        prev_pos = (current_pos - 1) % len(self._filtered_indices)
+        self._selected_index = self._filtered_indices[prev_pos]
+        self._update_selection()
+
+    def _select_session(self, session_id: str) -> None:
+        """选择会话并关闭对话框。"""
+        self._on_select(session_id)
+        self._close()
+
+    def _confirm(self) -> None:
+        """确认当前选中。"""
+        if 0 <= self._selected_index < len(self._sessions):
+            session_id = self._sessions[self._selected_index].id
+            self._select_session(session_id)
+
+    def _close(self) -> None:
+        """关闭对话框。"""
+        if self._widget and self._widget.winfo_exists():
+            self._widget.destroy()
+            self._widget = None
+
 # 侧边栏图标按钮：透明、仅图标，悬浮(hover_color)/按压(绑定临时色) 三态
 def _bind_pressed_style(btn: ctk.CTkButton) -> None:
     def on_press(_e: object) -> None:
@@ -221,16 +461,29 @@ class MainWindow:
             hover_color=("gray70", "gray28"),
             text_color=("gray15", "gray88"),
         )
-        self._search_global_btn.grid(row=0, column=1, padx=(4, 8))
+        self._search_global_btn.grid(row=0, column=1, padx=(4, 0))
+
+        # 搜索结果计数器
+        self._search_counter_var = ctk.StringVar()
+        self._search_counter = ctk.CTkLabel(
+            top,
+            textvariable=self._search_counter_var,
+            width=50,
+            font=("", 11),
+            text_color=("gray50", "gray65"),
+            anchor="e"
+        )
+        self._search_counter.grid(row=0, column=2, padx=(4, 8))
+        self._search_counter.grid_remove()  # 初始隐藏
 
         self._model_var = ctk.StringVar(value=self._current_model_display())
         self._model_menu = ctk.CTkOptionMenu(
             top, variable=self._model_var, values=self._model_options(), width=180, command=self._on_model_change
         )
-        self._model_menu.grid(row=0, column=2, padx=8)
-        ctk.CTkButton(top, text="模板", width=70, command=self._on_templates).grid(row=0, column=3, padx=4)
-        ctk.CTkButton(top, text="导出", width=70, command=self._on_export).grid(row=0, column=4, padx=4)
-        ctk.CTkButton(top, text="设置", width=70, command=self._on_settings).grid(row=0, column=5, padx=4)
+        self._model_menu.grid(row=0, column=3, padx=8)
+        ctk.CTkButton(top, text="模板", width=70, command=self._on_templates).grid(row=0, column=4, padx=4)
+        ctk.CTkButton(top, text="导出", width=70, command=self._on_export).grid(row=0, column=5, padx=4)
+        ctk.CTkButton(top, text="设置", width=70, command=self._on_settings).grid(row=0, column=6, padx=4)
         # 快捷键提示按钮
         ctk.CTkButton(
             top,
@@ -240,9 +493,10 @@ class MainWindow:
             fg_color="transparent",
             hover_color=("gray80", "gray28"),
             text_color=("gray40", "gray60")
-        ).grid(row=0, column=6, padx=4)
+        ).grid(row=0, column=7, padx=4)
         # 添加 column 1 的权重，让搜索按钮有足够空间
         top.grid_columnconfigure(1, weight=0)
+        top.grid_columnconfigure(2, weight=0)  # 计数器固定宽度
 
         # 对话区
         self._chat_scroll = ctk.CTkScrollableFrame(main, fg_color="transparent")
@@ -300,9 +554,15 @@ class MainWindow:
         self._root.bind("<Control-R>", lambda e: self._on_regenerate())
         self._root.bind("<Control-p>", lambda e: self._on_toggle_current_session_pinned())  # Ctrl+P 切换置顶
         self._root.bind("<Control-P>", lambda e: self._on_toggle_current_session_pinned())  # 大写 P 兼容
+        self._root.bind("<Control-C>", lambda e: self._on_copy_last_message())  # Ctrl+Shift+C 复制最后一条 AI 回复
+        self._root.bind("<Control-Up>", lambda e: self._on_next_session(-1))  # Ctrl+Up 上一个会话
+        self._root.bind("<Control-Down>", lambda e: self._on_next_session(1))  # Ctrl+Down 下一个会话
         # 搜索结果导航
         self._root.bind("<F3>", lambda e: self._next_search_match())
         self._root.bind("<Shift-F3>", lambda e: self._prev_search_match())
+        # 快速会话切换 Ctrl+Tab / Ctrl+Shift+Tab
+        self._root.bind("<Control-Tab>", lambda e: self._on_quick_switcher(1))  # Ctrl+Tab 下一个
+        self._root.bind("<Control-ISO_Left_Tab>", lambda e: self._on_quick_switcher(-1))  # Ctrl+Shift+Tab 上一个
 
     def _current_model_display(self) -> str:
         p = self._app.get_current_provider()
@@ -371,6 +631,17 @@ class MainWindow:
         self._search_query = ""
         self._refresh_chat_area()
         self._search_entry.focus_set()
+
+    def _update_search_counter(self) -> None:
+        """更新搜索框旁的计数器显示。"""
+        if self._search_query and self._search_matches:
+            self._search_counter_var.set(f"{self._current_match_index + 1}/{len(self._search_matches)}")
+            self._search_counter.grid()
+        elif self._search_query:
+            self._search_counter_var.set("0/0")
+            self._search_counter.grid()
+        else:
+            self._search_counter.grid_remove()
 
     def _toggle_search_scope(self) -> None:
         """切换搜索范围（本会话/全部会话）。"""
@@ -788,6 +1059,9 @@ class MainWindow:
                     start = pos + 1
             self._current_match_index = 0
 
+        # 更新搜索框旁的计数器
+        self._update_search_counter()
+
         # 计算当前匹配所在的消息ID（用于视觉指示器）
         self._current_match_msg_id: str | None = None
         if self._search_matches and 0 <= self._current_match_index < len(self._search_matches):
@@ -1063,7 +1337,7 @@ class MainWindow:
         """显示快捷键帮助对话框（Ctrl+/）。"""
         dialog = ctk.CTkToplevel(self._root)
         dialog.title("键盘快捷键")
-        dialog.geometry("380x420")
+        dialog.geometry("380x470")
         dialog.transient(self._root)
 
         # 主容器
@@ -1084,6 +1358,9 @@ class MainWindow:
             ("Ctrl + N", "新建对话"),
             ("Ctrl + P", "切换置顶"),
             ("Ctrl + R", "重新生成最后回复"),
+            ("Ctrl + Shift + C", "复制最后 AI 回复"),
+            ("Ctrl + Tab", "快速切换会话"),
+            ("Ctrl + Up/Down", "上/下一个会话"),
             ("Ctrl + T", "切换侧边栏"),
             ("Ctrl + W", "删除当前对话"),
             ("Ctrl + ,", "打开设置"),
@@ -1218,6 +1495,77 @@ class MainWindow:
             self._on_toggle_session_pinned(current_session_id)
         else:
             ToastNotification(self._root, "⚠️ 没有活动会话")
+
+    def _on_copy_last_message(self) -> None:
+        """复制最后一条 AI 回复到剪贴板（键盘快捷键 Ctrl+Shift+C）。"""
+        sid = self._app.current_session_id()
+        if not sid:
+            ToastNotification(self._root, "⚠️ 请先选择一个会话")
+            return
+        messages = self._app.load_messages(sid)
+        # 找到最后一条 assistant 消息
+        last_assistant_msg = None
+        for m in messages:
+            if m.role == "assistant":
+                last_assistant_msg = m
+        if last_assistant_msg:
+            self._copy_message(last_assistant_msg.content)
+        else:
+            ToastNotification(self._root, "⚠️ 没有可复制的 AI 回复")
+
+    def _on_next_session(self, direction: int) -> None:
+        """切换到下一个（direction=1）或上一个（direction=-1）会话。"""
+        sessions = self._app.load_sessions()
+        if not sessions:
+            ToastNotification(self._root, "⚠️ 没有会话可切换")
+            return
+        current = self._app.current_session_id()
+        try:
+            idx = sessions.index(next(s for s in sessions if s.id == current)) if current else -1
+        except StopIteration:
+            idx = -1
+        new_idx = idx + direction
+        if new_idx < 0:
+            new_idx = len(sessions) - 1  # 循环到最后
+        elif new_idx >= len(sessions):
+            new_idx = 0  # 循环到第一个
+        self._on_select_session(sessions[new_idx].id)
+
+    def _on_quick_switcher(self, direction: int) -> None:
+        """打开快速会话切换对话框（Ctrl+Tab / Ctrl+Shift+Tab）。"""
+        sessions = self._app.load_sessions()
+        if not sessions:
+            ToastNotification(self._root, "⚠️ 没有会话可切换")
+            return
+
+        current = self._app.current_session_id()
+
+        # 找到当前会话的索引
+        try:
+            current_idx = sessions.index(next(s for s in sessions if s.id == current)) if current else 0
+        except StopIteration:
+            current_idx = 0
+
+        # 计算初始选中索引
+        initial_idx = (current_idx + direction) % len(sessions)
+
+        # 获取消息计数
+        message_counts: dict[str, int] = {}
+        for session in sessions:
+            messages = self._app.load_messages(session.id)
+            message_counts[session.id] = len(messages)
+
+        def on_select(session_id: str) -> None:
+            self._on_select_session(session_id)
+
+        QuickSwitcherDialog(
+            self._root,
+            sessions=sessions,
+            current_id=current,
+            on_select=on_select,
+            initial_index=initial_idx,
+            message_counts=message_counts,
+        )
 
     def _on_rename_session(self, session_id: str, current_title: str) -> None:
         dialog = ctk.CTkToplevel(self._root)
