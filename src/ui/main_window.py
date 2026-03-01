@@ -907,7 +907,6 @@ class MainWindow:
         self._whole_word_btn.pack(side="left", padx=(0, 2))
 
         # v1.4.9: 正则表达式切换 (.*)
-        self._search_regex = False
         self._regex_btn = ctk.CTkButton(
             search_options_frame,
             text=".*",
