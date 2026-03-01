@@ -8,6 +8,7 @@ from src.app_data import get_app_data_dir
 _MIGRATION_PINNED_ADDED = False
 _MIGRATION_SESSION_PINNED_ADDED = False
 _MIGRATION_QUOTE_ADDED = False
+_MIGRATION_FOLDER_ADDED = False
 
 
 def ensure_migrations() -> None:
@@ -15,6 +16,7 @@ def ensure_migrations() -> None:
     global _MIGRATION_PINNED_ADDED
     global _MIGRATION_SESSION_PINNED_ADDED
     global _MIGRATION_QUOTE_ADDED
+    global _MIGRATION_FOLDER_ADDED
     if not _MIGRATION_PINNED_ADDED:
         migrate_add_pinned_column()
         _MIGRATION_PINNED_ADDED = True
@@ -24,6 +26,9 @@ def ensure_migrations() -> None:
     if not _MIGRATION_QUOTE_ADDED:
         migrate_add_quote_columns()
         _MIGRATION_QUOTE_ADDED = True
+    if not _MIGRATION_FOLDER_ADDED:
+        migrate_add_folder_column()
+        _MIGRATION_FOLDER_ADDED = True
 
 SESSION_TABLE = """
 CREATE TABLE IF NOT EXISTS session (
@@ -94,6 +99,22 @@ def migrate_add_quote_columns(db_path: str | None = None) -> None:
             conn.execute("ALTER TABLE message ADD COLUMN quoted_message_id TEXT")
         if "quoted_content" not in columns:
             conn.execute("ALTER TABLE message ADD COLUMN quoted_content TEXT")
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def migrate_add_folder_column(db_path: str | None = None) -> None:
+    """为 session 表添加 folder_id 列（向后兼容）。"""
+    path = db_path or str(Path(get_app_data_dir()) / "chat.db")
+    if not Path(path).exists():
+        return
+    conn = sqlite3.connect(path)
+    try:
+        cursor = conn.execute("PRAGMA table_info(session)")
+        columns = {row[1] for row in cursor.fetchall()}
+        if "folder_id" not in columns:
+            conn.execute("ALTER TABLE session ADD COLUMN folder_id TEXT")
         conn.commit()
     finally:
         conn.close()

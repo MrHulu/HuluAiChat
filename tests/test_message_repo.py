@@ -244,6 +244,119 @@ class TestGlobalSearch:
         assert results[0].id == "m2"  # 更新的在前
 
 
+class TestAdvancedSearchOptions:
+    """v1.4.8: 高级搜索选项测试。"""
+
+    def test_search_case_sensitive_true(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：区分大小写搜索。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="Hello World", created_at=now)
+        m2 = Message(id="m2", session_id="s1", role="user", content="HELLO World", created_at=now)
+        m3 = Message(id="m3", session_id="s1", role="user", content="hello world", created_at=now)
+
+        message_repo.append(m1)
+        message_repo.append(m2)
+        message_repo.append(m3)
+
+        # 不区分大小写（默认）
+        results_default = message_repo.search_all("Hello")
+        assert len(results_default) == 3
+
+        # 区分大小写
+        results_case_sensitive = message_repo.search_all("Hello", case_sensitive=True)
+        assert len(results_case_sensitive) == 1
+        assert results_case_sensitive[0].id == "m1"
+
+    def test_search_case_sensitive_uppercase(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：区分大小写搜索大写关键词。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="Hello World", created_at=now)
+        m2 = Message(id="m2", session_id="s1", role="user", content="HELLO World", created_at=now)
+
+        message_repo.append(m1)
+        message_repo.append(m2)
+
+        results = message_repo.search_all("HELLO", case_sensitive=True)
+        assert len(results) == 1
+        assert results[0].id == "m2"
+
+    def test_search_whole_word_true(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：全词匹配搜索。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="Hello World", created_at=now)
+        m2 = Message(id="m2", session_id="s1", role="user", content="HelloWorld", created_at=now)
+        m3 = Message(id="m3", session_id="s1", role="user", content="Hello, World!", created_at=now)
+
+        message_repo.append(m1)
+        message_repo.append(m2)
+        message_repo.append(m3)
+
+        # 不启用全词匹配（默认）
+        results_default = message_repo.search_all("Hello")
+        assert len(results_default) == 3
+
+        # 启用全词匹配
+        results_whole_word = message_repo.search_all("Hello", whole_word=True)
+        assert len(results_whole_word) == 2
+        message_ids = {r.id for r in results_whole_word}
+        assert message_ids == {"m1", "m3"}  # HelloWorld 不应匹配
+
+    def test_search_whole_word_with_punctuation(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：全词匹配支持标点符号边界。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="test, test. test!", created_at=now)
+        m2 = Message(id="m2", session_id="s1", role="user", content="testing", created_at=now)
+
+        message_repo.append(m1)
+        message_repo.append(m2)
+
+        results = message_repo.search_all("test", whole_word=True)
+        assert len(results) == 1
+        assert results[0].id == "m1"
+
+    def test_search_case_sensitive_and_whole_word_combined(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：区分大小写和全词匹配组合使用。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="Hello World", created_at=now)
+        m2 = Message(id="m2", session_id="s1", role="user", content="HELLO World", created_at=now)
+
+        message_repo.append(m1)
+        message_repo.append(m2)
+
+        results = message_repo.search_all("Hello", case_sensitive=True, whole_word=True)
+        assert len(results) == 1
+        assert results[0].id == "m1"
+
+    def test_search_case_sensitive_in_session(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：会话内搜索支持区分大小写。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="Python code", created_at=now)
+        m2 = Message(id="m2", session_id="s1", role="user", content="python CODE", created_at=now)
+
+        message_repo.append(m1)
+        message_repo.append(m2)
+
+        results_default = message_repo.search("s1", "Python")
+        assert len(results_default) == 2
+
+        results_case = message_repo.search("s1", "Python", case_sensitive=True)
+        assert len(results_case) == 1
+        assert results_case[0].id == "m1"
+
+    def test_search_whole_word_in_session(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：会话内搜索支持全词匹配。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="I love Python", created_at=now)
+        m2 = Message(id="m2", session_id="s1", role="user", content="I love Pythonic code", created_at=now)
+
+        message_repo.append(m1)
+        message_repo.append(m2)
+
+        results_whole = message_repo.search("s1", "Python", whole_word=True)
+        assert len(results_whole) == 1
+        assert results_whole[0].id == "m1"
+
+
 class TestMessagePinning:
     """消息置顶功能测试。"""
 
