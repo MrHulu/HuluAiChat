@@ -95,3 +95,64 @@ class TestChatExporter:
         import json
         data = json.loads(json_str)
         assert data["messages"] == []
+
+    def test_to_pdf_returns_bytes(self, sample_session: Session, sample_messages: list[Message]) -> None:
+        """测试：导出为 PDF 格式返回字节数据."""
+        exporter = ChatExporter(sample_session, sample_messages)
+        pdf_bytes = exporter.to_pdf()
+
+        assert isinstance(pdf_bytes, bytes)
+        assert len(pdf_bytes) > 0
+        # PDF 文件以 %PDF- 开头
+        assert pdf_bytes[:4] == b"%PDF"
+
+    def test_to_pdf_with_empty_session(self, sample_session: Session) -> None:
+        """测试：空会话导出为 PDF."""
+        exporter = ChatExporter(sample_session, [])
+        pdf_bytes = exporter.to_pdf()
+
+        assert isinstance(pdf_bytes, bytes)
+        assert len(pdf_bytes) > 0
+        assert pdf_bytes[:4] == b"%PDF"
+
+    def test_save_pdf(self, sample_session: Session, sample_messages: list[Message], temp_dir) -> None:
+        """测试：保存 PDF 文件."""
+        exporter = ChatExporter(sample_session, sample_messages)
+        path = str(temp_dir / "export.pdf")
+        exporter.save(path, "pdf")
+
+        import os
+        assert os.path.exists(path)
+        with open(path, "rb") as f:
+            content = f.read()
+        assert content[:4] == b"%PDF"
+
+    def test_save_unsupported_format_raises_error(self, sample_session: Session, sample_messages: list[Message]) -> None:
+        """测试：不支持的格式抛出异常."""
+        exporter = ChatExporter(sample_session, sample_messages)
+
+        with pytest.raises(ValueError, match="Unsupported format"):
+            exporter.save("export.txt", "txt")
+
+    def test_wrap_text_short(self, sample_session: Session, sample_messages: list[Message]) -> None:
+        """测试：短文本换行."""
+        exporter = ChatExporter(sample_session, sample_messages)
+        lines = exporter._wrap_text("Short text", 190)
+
+        assert len(lines) == 1
+        assert lines[0] == "Short text"
+
+    def test_wrap_text_long(self, sample_session: Session, sample_messages: list[Message]) -> None:
+        """测试：长文本换行."""
+        exporter = ChatExporter(sample_session, sample_messages)
+        long_text = "This is a very long text that should be wrapped into multiple lines for testing purposes."
+        lines = exporter._wrap_text(long_text, 50)
+
+        assert len(lines) > 1
+
+    def test_wrap_text_empty(self, sample_session: Session, sample_messages: list[Message]) -> None:
+        """测试：空文本换行."""
+        exporter = ChatExporter(sample_session, sample_messages)
+        lines = exporter._wrap_text("", 190)
+
+        assert lines == [""]
