@@ -9,6 +9,15 @@ from src.persistence import Folder
 class FolderDialog:
     """文件夹管理对话框。"""
 
+    # 预设图标
+    FOLDER_ICONS = [
+        "📁", "📂", "🗂️", "📋",
+        "📰", "📚", "💼", "🎯",
+        "💡", "⭐", "🔥", "🎨",
+        "💻", "📝", "🎮", "🏠",
+        "🎵", "📖", "✅", "🚀",
+    ]
+
     # 预设颜色（Tailwind 色系）
     FOLDER_COLORS = [
         ("🔵 蓝色", "#60A5FA"),  # blue-400
@@ -25,20 +34,20 @@ class FolderDialog:
         self,
         parent: ctk.CTk,
         folders: list[Folder],
-        on_create: Callable[[str, str], None] | None = None,
+        on_create: Callable[[str, str, str], None] | None = None,
         on_rename: Callable[[str, str, str], None] | None = None,
         on_delete: Callable[[str], None] | None = None,
-        on_move: Callable[[str, int], None] | None = None,  # folder_id, new_order
+        on_move: Callable[[str, str], list[Folder] | None] | None = None,  # folder_id, direction -> updated_folders
     ) -> None:
         """初始化对话框。
 
         Args:
             parent: 父窗口
             folders: 文件夹列表
-            on_create: 创建回调 (name, color) -> None
-            on_rename: 重命名回调 (folder_id, new_name, new_color) -> None
+            on_create: 创建回调 (name, color, icon) -> None
+            on_rename: 重命名回调 (folder_id, old_name, old_color) -> None (打开编辑对话框)
             on_delete: 删除回调 (folder_id) -> None
-            on_move: 移动排序回调 (folder_id, new_order) -> None
+            on_move: 移动排序回调 (folder_id, direction) -> updated_folders | None
         """
         self._parent = parent
         self._folders = folders
@@ -133,15 +142,14 @@ class FolderDialog:
             row.pack(fill="x", padx=8, pady=6)
             row.grid_columnconfigure(1, weight=1)
 
-            # 颜色指示器
-            color_indicator = ctk.CTkLabel(
+            # 图标指示器
+            icon_label = ctk.CTkLabel(
                 row,
-                text="●",
-                font=("", 20),
-                text_color=folder.color,
+                text=folder.icon,
+                font=("", 16),
                 width=30,
             )
-            color_indicator.grid(row=0, column=0, padx=(0, 8))
+            icon_label.grid(row=0, column=0, padx=(0, 4))
 
             # 名称
             name_label = ctk.CTkLabel(
@@ -149,6 +157,7 @@ class FolderDialog:
                 text=folder.name,
                 anchor="w",
                 font=("", 13),
+                text_color=folder.color,
             )
             name_label.grid(row=0, column=1, sticky="w")
 
@@ -200,8 +209,8 @@ class FolderDialog:
         """创建新文件夹。"""
         self._close()
         if self._on_create:
-            # 使用默认名称和颜色
-            self._on_create(f"新文件夹 {len(self._folders) + 1}", "#60A5FA")
+            # 使用默认名称、颜色和图标
+            self._on_create(f"新文件夹 {len(self._folders) + 1}", "#60A5FA", "📁")
 
     def _on_edit_folder(self, folder: Folder) -> None:
         """编辑文件夹。"""
@@ -223,21 +232,20 @@ class FolderDialog:
                 self._on_delete(folder.id)
 
     def _on_move_up(self, folder: Folder) -> None:
-        """上移文件夹。"""
+        """上移文件夹（不关闭对话框）。"""
         if self._on_move:
-            # 找到当前排序
-            current_order = folder.sort_order
-            new_order = max(0, current_order - 1)
-            self._on_move(folder.id, new_order)
-            self._close()
+            updated_folders = self._on_move(folder.id, "up")
+            if updated_folders is not None:
+                self._folders = updated_folders
+                self._render_folders()
 
     def _on_move_down(self, folder: Folder) -> None:
-        """下移文件夹。"""
+        """下移文件夹（不关闭对话框）。"""
         if self._on_move:
-            current_order = folder.sort_order
-            new_order = current_order + 1
-            self._on_move(folder.id, new_order)
-            self._close()
+            updated_folders = self._on_move(folder.id, "down")
+            if updated_folders is not None:
+                self._folders = updated_folders
+                self._render_folders()
 
     def _close(self) -> None:
         """关闭对话框。"""
@@ -251,26 +259,27 @@ class CreateFolderDialog:
     def __init__(
         self,
         parent: ctk.CTk,
-        on_confirm: Callable[[str, str], None],
+        on_confirm: Callable[[str, str, str], None],
     ) -> None:
         """初始化对话框。
 
         Args:
             parent: 父窗口
-            on_confirm: 确认回调 (name, color) -> None
+            on_confirm: 确认回调 (name, color, icon) -> None
         """
         self._parent = parent
         self._on_confirm = on_confirm
         self._widget: ctk.CTkToplevel | None = None
         self._name_var: ctk.StringVar | None = None
         self._selected_color = "#60A5FA"
+        self._selected_icon = "📁"
         self._create_dialog()
 
     def _create_dialog(self) -> None:
         """创建对话框。"""
         self._widget = ctk.CTkToplevel(self._parent)
         self._widget.title("新建文件夹")
-        self._widget.geometry("400x250")
+        self._widget.geometry("450x420")
         self._widget.transient(self._parent)
         self._widget.grab_set()
 
@@ -280,7 +289,7 @@ class CreateFolderDialog:
         parent_y = self._parent.winfo_y()
         parent_w = self._parent.winfo_width()
         parent_h = self._parent.winfo_height()
-        dlg_w, dlg_h = 400, 250
+        dlg_w, dlg_h = 450, 420
         self._widget.geometry(f"{dlg_w}x{dlg_h}+{parent_x + (parent_w - dlg_w) // 2}+{parent_y + (parent_h - dlg_h) // 2}")
 
         # 主框架
@@ -302,12 +311,31 @@ class CreateFolderDialog:
         name_entry.select_range(0, "end")
         name_entry.focus_set()
 
+        # 图标选择
+        ctk.CTkLabel(main, text="选择图标：", anchor="w").pack(fill="x", pady=(0, 8))
+        icon_frame = ctk.CTkScrollableFrame(main, height=100, fg_color="transparent")
+        icon_frame.pack(fill="x", pady=(0, 12))
+
+        self._icon_buttons: list[ctk.CTkButton] = []
+        for i, icon in enumerate(FolderDialog.FOLDER_ICONS):
+            btn = ctk.CTkButton(
+                icon_frame,
+                text=icon,
+                font=("", 18),
+                width=45,
+                height=40,
+                fg_color=("gray70", "gray30") if icon == self._selected_icon else "transparent",
+                command=lambda ic=icon, b=btn: self._select_icon(ic, b),
+            )
+            btn.grid(row=i // 8, column=i % 8, padx=3, pady=3)
+            self._icon_buttons.append((btn, icon))
+
         # 颜色选择
         ctk.CTkLabel(main, text="选择颜色：", anchor="w").pack(fill="x", pady=(0, 8))
         color_frame = ctk.CTkFrame(main, fg_color="transparent")
         color_frame.pack(fill="x", pady=(0, 16))
 
-        self._color_buttons: list[ctk.CTkButton] = []
+        self._color_buttons: list[tuple[ctk.CTkButton, str]] = []
         for i, (label, color) in enumerate(FolderDialog.FOLDER_COLORS):
             btn = ctk.CTkButton(
                 color_frame,
@@ -353,13 +381,22 @@ class CreateFolderDialog:
             else:
                 b.configure(fg_color="transparent", border_width=0, border_color="transparent")
 
+    def _select_icon(self, icon: str, btn: ctk.CTkButton) -> None:
+        """选择图标。"""
+        self._selected_icon = icon
+        for b, i in self._icon_buttons:
+            if i == icon:
+                b.configure(fg_color=("gray70", "gray30"))
+            else:
+                b.configure(fg_color="transparent")
+
     def _on_confirm_click(self) -> None:
         """确认创建。"""
         name = self._name_var.get().strip()
         if not name:
             return
         self._close()
-        self._on_confirm(name, self._selected_color)
+        self._on_confirm(name, self._selected_color, self._selected_icon)
 
     def _close(self) -> None:
         """关闭对话框。"""
@@ -374,14 +411,14 @@ class EditFolderDialog:
         self,
         parent: ctk.CTk,
         folder: Folder,
-        on_confirm: Callable[[str, str], None],
+        on_confirm: Callable[[str, str, str], None],
     ) -> None:
         """初始化对话框。
 
         Args:
             parent: 父窗口
             folder: 要编辑的文件夹
-            on_confirm: 确认回调 (new_name, new_color) -> None
+            on_confirm: 确认回调 (new_name, new_color, new_icon) -> None
         """
         self._parent = parent
         self._folder = folder
@@ -389,13 +426,14 @@ class EditFolderDialog:
         self._widget: ctk.CTkToplevel | None = None
         self._name_var: ctk.StringVar | None = None
         self._selected_color = folder.color
+        self._selected_icon = folder.icon
         self._create_dialog()
 
     def _create_dialog(self) -> None:
         """创建对话框。"""
         self._widget = ctk.CTkToplevel(self._parent)
         self._widget.title("编辑文件夹")
-        self._widget.geometry("400x250")
+        self._widget.geometry("450x420")
         self._widget.transient(self._parent)
         self._widget.grab_set()
 
@@ -405,7 +443,7 @@ class EditFolderDialog:
         parent_y = self._parent.winfo_y()
         parent_w = self._parent.winfo_width()
         parent_h = self._parent.winfo_height()
-        dlg_w, dlg_h = 400, 250
+        dlg_w, dlg_h = 450, 420
         self._widget.geometry(f"{dlg_w}x{dlg_h}+{parent_x + (parent_w - dlg_w) // 2}+{parent_y + (parent_h - dlg_h) // 2}")
 
         # 主框架
@@ -427,12 +465,31 @@ class EditFolderDialog:
         name_entry.select_range(0, "end")
         name_entry.focus_set()
 
+        # 图标选择
+        ctk.CTkLabel(main, text="选择图标：", anchor="w").pack(fill="x", pady=(0, 8))
+        icon_frame = ctk.CTkScrollableFrame(main, height=100, fg_color="transparent")
+        icon_frame.pack(fill="x", pady=(0, 12))
+
+        self._icon_buttons: list[tuple[ctk.CTkButton, str]] = []
+        for i, icon in enumerate(FolderDialog.FOLDER_ICONS):
+            btn = ctk.CTkButton(
+                icon_frame,
+                text=icon,
+                font=("", 18),
+                width=45,
+                height=40,
+                fg_color=("gray70", "gray30") if icon == self._selected_icon else "transparent",
+                command=lambda ic=icon, b=btn: self._select_icon(ic, b),
+            )
+            btn.grid(row=i // 8, column=i % 8, padx=3, pady=3)
+            self._icon_buttons.append((btn, icon))
+
         # 颜色选择
         ctk.CTkLabel(main, text="选择颜色：", anchor="w").pack(fill="x", pady=(0, 8))
         color_frame = ctk.CTkFrame(main, fg_color="transparent")
         color_frame.pack(fill="x", pady=(0, 16))
 
-        self._color_buttons: list[ctk.CTkButton] = []
+        self._color_buttons: list[tuple[ctk.CTkButton, str]] = []
         for i, (label, color) in enumerate(FolderDialog.FOLDER_COLORS):
             btn = ctk.CTkButton(
                 color_frame,
@@ -478,13 +535,22 @@ class EditFolderDialog:
             else:
                 b.configure(fg_color="transparent", border_width=0, border_color="transparent")
 
+    def _select_icon(self, icon: str, btn: ctk.CTkButton) -> None:
+        """选择图标。"""
+        self._selected_icon = icon
+        for b, i in self._icon_buttons:
+            if i == icon:
+                b.configure(fg_color=("gray70", "gray30"))
+            else:
+                b.configure(fg_color="transparent")
+
     def _on_confirm_click(self) -> None:
         """确认修改。"""
         name = self._name_var.get().strip()
         if not name:
             return
         self._close()
-        self._on_confirm(name, self._selected_color)
+        self._on_confirm(name, self._selected_color, self._selected_icon)
 
     def _close(self) -> None:
         """关闭对话框。"""
@@ -567,7 +633,7 @@ class FolderSelectDialog:
         for folder in self._folders:
             btn = ctk.CTkButton(
                 list_frame,
-                text=f"  {folder.name}",
+                text=f"{folder.icon}  {folder.name}",
                 height=40,
                 anchor="w",
                 command=lambda f=folder: self._select(f.id),

@@ -474,11 +474,11 @@ class AppService:
 
     # ========== 文件夹管理 ==========
 
-    def create_folder(self, name: str, color: str = "#60A5FA") -> Folder:
+    def create_folder(self, name: str, color: str = "#60A5FA", icon: str = "📁") -> Folder:
         """创建新文件夹。"""
         if not self._folder_repo:
             raise RuntimeError("FolderRepository not initialized")
-        return self._folder_repo.create(name, color)
+        return self._folder_repo.create(name, color, icon)
 
     def list_folders(self) -> list[Folder]:
         """获取所有文件夹。"""
@@ -504,11 +504,54 @@ class AppService:
             return
         self._folder_repo.update_color(folder_id, color)
 
+    def update_folder_icon(self, folder_id: str, icon: str) -> None:
+        """更新文件夹图标。"""
+        if not self._folder_repo:
+            return
+        self._folder_repo.update_icon(folder_id, icon)
+
     def update_folder_sort_order(self, folder_id: str, sort_order: int) -> None:
         """更新文件夹排序序号。"""
         if not self._folder_repo:
             return
         self._folder_repo.update_sort_order(folder_id, sort_order)
+
+    def swap_folder_order(self, folder_id: str, direction: str) -> Folder | None:
+        """交换文件夹排序序号。
+
+        Args:
+            folder_id: 要移动的文件夹 ID
+            direction: "up" 或 "down"
+
+        Returns:
+            交换后的文件夹列表（用于 UI 更新），如果失败返回 None
+        """
+        if not self._folder_repo:
+            return None
+
+        folders = self._folder_repo.list_folders()
+        if not folders:
+            return None
+
+        # 找到当前文件夹的索引
+        current_index = next((i for i, f in enumerate(folders) if f.id == folder_id), None)
+        if current_index is None:
+            return None
+
+        # 计算目标索引
+        if direction == "up" and current_index > 0:
+            target_index = current_index - 1
+        elif direction == "down" and current_index < len(folders) - 1:
+            target_index = current_index + 1
+        else:
+            return None  # 已经在边界位置
+
+        # 交换排序值
+        target_folder = folders[target_index]
+        self._folder_repo.swap_folder_order(folder_id, target_folder.id)
+
+        # 返回更新后的文件夹列表
+        return self._folder_repo.list_folders()
 
     def delete_folder(self, folder_id: str) -> None:
         """删除文件夹（会话会移至根目录）。"""

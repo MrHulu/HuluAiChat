@@ -14,7 +14,7 @@ class FolderRepository(ABC):
     """文件夹仓储：创建、列表、按 id 获取、更新、删除。"""
 
     @abstractmethod
-    def create(self, name: str, color: str = "#60A5FA") -> Folder:
+    def create(self, name: str, color: str = "#60A5FA", icon: str = "📁") -> Folder:
         """创建新文件夹。"""
         ...
 
@@ -39,8 +39,18 @@ class FolderRepository(ABC):
         ...
 
     @abstractmethod
+    def update_icon(self, folder_id: str, icon: str) -> None:
+        """更新文件夹图标。"""
+        ...
+
+    @abstractmethod
     def update_sort_order(self, folder_id: str, sort_order: int) -> None:
         """更新文件夹排序序号。"""
+        ...
+
+    @abstractmethod
+    def swap_folder_order(self, folder_id: str, other_folder_id: str) -> None:
+        """交换两个文件夹的排序序号。"""
         ...
 
     @abstractmethod
@@ -60,13 +70,17 @@ class FolderRepository(ABC):
 
 
 def _row_to_folder(row: tuple) -> Folder:
-    # row: (id, name, color, created_at, sort_order)
+    # row: (id, name, color, [icon], created_at, sort_order)
+    icon = row[3] if len(row) > 6 else "📁"
+    created_at_idx = 4 if len(row) > 6 else 3
+    sort_order_idx = 5 if len(row) > 6 else 4
     return Folder(
         id=row[0],
         name=row[1],
         color=row[2],
-        created_at=row[3],
-        sort_order=row[4] if len(row) > 4 else 0
+        icon=icon,
+        created_at=row[created_at_idx],
+        sort_order=row[sort_order_idx] if len(row) > sort_order_idx else 0
     )
 
 
@@ -86,10 +100,17 @@ class SqliteFolderRepository(FolderRepository):
                     id TEXT PRIMARY KEY,
                     name TEXT NOT NULL,
                     color TEXT DEFAULT '#60A5FA',
+                    icon TEXT DEFAULT '📁',
                     created_at TEXT NOT NULL,
                     sort_order INTEGER DEFAULT 0
                 )
             """)
+            # 迁移：为现有表添加 icon 列
+            cur = conn.execute("PRAGMA table_info(folder)")
+            columns = [row[1] for row in cur.fetchall()]
+            if "icon" not in columns:
+                conn.execute("ALTER TABLE folder ADD COLUMN icon TEXT DEFAULT '📁'")
+            conn.commit()
             # 文件夹折叠状态表
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS folder_state (
@@ -99,7 +120,7 @@ class SqliteFolderRepository(FolderRepository):
             """)
             conn.commit()
 
-    def create(self, name: str, color: str = "#60A5FA") -> Folder:
+    def create(self, name: str, color: str = "#60A5FA", icon: str = "📁") -> Folder:
         import uuid
         folder_id = str(uuid.uuid4())
         now = datetime.now(timezone.utc).isoformat()
@@ -111,24 +132,24 @@ class SqliteFolderRepository(FolderRepository):
             sort_order = max_order + 1
 
             conn.execute(
-                "INSERT INTO folder (id, name, color, created_at, sort_order) VALUES (?, ?, ?, ?, ?)",
-                (folder_id, name, color, now, sort_order),
+                "INSERT INTO folder (id, name, color, icon, created_at, sort_order) VALUES (?, ?, ?, ?, ?, ?)",
+                (folder_id, name, color, icon, now, sort_order),
             )
             conn.commit()
 
-        return Folder(id=folder_id, name=name, color=color, created_at=now, sort_order=sort_order)
+        return Folder(id=folder_id, name=name, color=color, icon=icon, created_at=now, sort_order=sort_order)
 
     def list_folders(self) -> list[Folder]:
         with self._conn() as conn:
             cur = conn.execute(
-                "SELECT id, name, color, created_at, sort_order FROM folder ORDER BY sort_order ASC"
+                "SELECT id, name, color, icon, created_at, sort_order FROM folder ORDER BY sort_order ASC"
             )
             return [_row_to_folder(r) for r in cur.fetchall()]
 
     def get_by_id(self, folder_id: str) -> Folder | None:
         with self._conn() as conn:
             cur = conn.execute(
-                "SELECT id, name, color, created_at, sort_order FROM folder WHERE id = ?",
+                "SELECT id, name, color, icon, created_at, sort_order FROM folder WHERE id = ?",
                 (folder_id,)
             )
             row = cur.fetchone()
@@ -144,9 +165,34 @@ class SqliteFolderRepository(FolderRepository):
             conn.execute("UPDATE folder SET color = ? WHERE id = ?", (color, folder_id))
             conn.commit()
 
+    def update_icon(self, folder_id: str, icon: str) -> None:
+        with self._conn() as conn:
+            conn.execute("UPDATE folder SET icon = ? WHERE id = ?", (icon, folder_id))
+            conn.commit()
+
     def update_sort_order(self, folder_id: str, sort_order: int) -> None:
         with self._conn() as conn:
             conn.execute("UPDATE folder SET sort_order = ? WHERE id = ?", (sort_order, folder_id))
+            conn.commit()
+
+    def swap_folder_order(self, folder_id: str, other_folder_id: str) -> None:
+        """交换两个文件夹的排序序号（用于上移/下移操作）。"""
+        with self._conn() as conn:
+            # 获取两个文件夹的当前排序值
+            cur = conn.execute(
+                "SELECT id, sort_order FROM folder WHERE id IN (?, ?)",
+                (folder_id, other_folder_id)
+            )
+            rows = cur.fetchall()
+            if len(rows) != 2:
+                return  # 其中一个文件夹不存在，不执行交换
+
+            order_map = {row[0]: row[1] for row in rows}
+            order1, order2 = order_map[folder_id], order_map[other_folder_id]
+
+            # 交换排序值
+            conn.execute("UPDATE folder SET sort_order = ? WHERE id = ?", (order2, folder_id))
+            conn.execute("UPDATE folder SET sort_order = ? WHERE id = ?", (order1, other_folder_id))
             conn.commit()
 
     def delete(self, folder_id: str) -> None:

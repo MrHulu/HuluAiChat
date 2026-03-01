@@ -149,3 +149,43 @@ class TestSqliteFolderRepository:
         folders = folder_repo.list_folders()
         assert len(folders) == 1
         assert folders[0].id == f1.id
+
+    def test_swap_folder_order_up(self, folder_repo: SqliteFolderRepository) -> None:
+        """测试：向上交换文件夹排序。"""
+        f1 = folder_repo.create("第一")
+        f2 = folder_repo.create("第二")
+        f3 = folder_repo.create("第三")
+
+        # f2 和 f1 交换
+        folder_repo.swap_folder_order(f2.id, f1.id)
+
+        folders = folder_repo.list_folders()
+        assert len(folders) == 3
+        # 交换后顺序应该是：第二、第一、第三
+        assert folders[0].id == f2.id
+        assert folders[1].id == f1.id
+        assert folders[2].id == f3.id
+
+    def test_swap_folder_order_down(self, folder_repo: SqliteFolderRepository) -> None:
+        """测试：向下交换文件夹排序。"""
+        f1 = folder_repo.create("第一")
+        f2 = folder_repo.create("第二")
+        f3 = folder_repo.create("第三")
+
+        # f1 和 f2 交换
+        folder_repo.swap_folder_order(f1.id, f2.id)
+
+        folders = folder_repo.list_folders()
+        assert len(folders) == 3
+        # 交换后顺序应该是：第二、第一、第三
+        assert folders[0].id == f2.id
+        assert folders[1].id == f1.id
+        assert folders[2].id == f3.id
+
+    def test_swap_folder_order_nonexistent(self, folder_repo: SqliteFolderRepository) -> None:
+        """测试：交换不存在的文件夹不报错。"""
+        f1 = folder_repo.create("第一")
+        folder_repo.swap_folder_order(f1.id, "nonexistent")
+        # 不应该抛出异常
+        folders = folder_repo.list_folders()
+        assert len(folders) == 1

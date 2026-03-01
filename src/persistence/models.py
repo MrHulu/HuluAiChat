@@ -5,10 +5,11 @@ from datetime import datetime
 
 @dataclass
 class Folder:
-    """文件夹：id、名称、颜色、创建时间、排序序号。"""
+    """文件夹：id、名称、颜色、图标、创建时间、排序序号。"""
     id: str
     name: str
     color: str = "#60A5FA"  # 默认蓝色 (Tailwind blue-400)
+    icon: str = "📁"  # 默认文件夹图标
     created_at: str = ""  # ISO 格式
     sort_order: int = 0  # 排序序号，越小越靠前
 

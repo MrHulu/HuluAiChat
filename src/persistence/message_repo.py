@@ -44,6 +44,11 @@ class MessageRepository(ABC):
         ...
 
     @abstractmethod
+    def list_all(self) -> list[Message]:
+        """获取所有消息（用于统计）。"""
+        ...
+
+    @abstractmethod
     def search_all(self, query: str, limit: int = 100, start_date: str | None = None, end_date: str | None = None) -> list[Message]:
         """在所有会话中搜索包含查询字符串的消息。
 
@@ -199,6 +204,15 @@ class SqliteMessageRepository(MessageRepository):
                 "WHERE session_id = ? AND is_pinned = 1 "
                 "ORDER BY created_at DESC",
                 (session_id,),
+            )
+            return [_row_to_message(r) for r in cur.fetchall()]
+
+    def list_all(self) -> list[Message]:
+        """获取所有消息（用于统计）。"""
+        with self._conn() as conn:
+            cur = conn.execute(
+                "SELECT id, session_id, role, content, created_at, is_pinned, quoted_message_id, quoted_content FROM message "
+                "ORDER BY created_at ASC"
             )
             return [_row_to_message(r) for r in cur.fetchall()]
 
