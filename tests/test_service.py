@@ -382,3 +382,405 @@ class TestAppService:
 
         message_repo.search_all.assert_called_once_with("test", 50)
         assert results == expected_results
+
+    # ========== Prompt Template Tests ==========
+
+    def test_list_prompt_templates(self):
+        """测试获取提示词模板列表。"""
+        from src.config.models import PromptTemplate
+
+        template = PromptTemplate(id="t1", title="Test", content="Content", category="通用")
+        config = AppConfig(providers=[], prompt_templates=[template])
+        store = MagicMock()
+        store.load.return_value = config
+
+        service = AppService(
+            config_store=store,
+            session_repo=MagicMock(),
+            message_repo=MagicMock(),
+            chat_client=MagicMock(),
+        )
+
+        result = service.list_prompt_templates()
+
+        assert result == [template]
+
+    def test_add_prompt_template(self):
+        """测试添加提示词模板。"""
+        config = AppConfig(providers=[], prompt_templates=[])
+        store = MagicMock()
+        store.load.return_value = config
+
+        service = AppService(
+            config_store=store,
+            session_repo=MagicMock(),
+            message_repo=MagicMock(),
+            chat_client=MagicMock(),
+        )
+
+        service.add_prompt_template("New Template", "Content here", "测试")
+
+        assert len(service._config.prompt_templates) == 1
+        assert service._config.prompt_templates[0].title == "New Template"
+        assert service._config.prompt_templates[0].content == "Content here"
+        assert service._config.prompt_templates[0].category == "测试"
+        store.save.assert_called_once()
+
+    def test_update_prompt_template(self):
+        """测试更新提示词模板。"""
+        from src.config.models import PromptTemplate
+
+        template = PromptTemplate(id="t1", title="Old", content="Old content", category="通用")
+        config = AppConfig(providers=[], prompt_templates=[template])
+        store = MagicMock()
+        store.load.return_value = config
+
+        service = AppService(
+            config_store=store,
+            session_repo=MagicMock(),
+            message_repo=MagicMock(),
+            chat_client=MagicMock(),
+        )
+
+        service.update_prompt_template("t1", "Updated", "New content", "更新")
+
+        assert service._config.prompt_templates[0].title == "Updated"
+        assert service._config.prompt_templates[0].content == "New content"
+        assert service._config.prompt_templates[0].category == "更新"
+        store.save.assert_called_once()
+
+    def test_update_nonexistent_template_does_nothing(self):
+        """测试更新不存在的模板时不报错。"""
+        config = AppConfig(providers=[], prompt_templates=[])
+        store = MagicMock()
+        store.load.return_value = config
+
+        service = AppService(
+            config_store=store,
+            session_repo=MagicMock(),
+            message_repo=MagicMock(),
+            chat_client=MagicMock(),
+        )
+
+        service.update_prompt_template("nonexistent", "Title", "Content", "通用")
+
+        store.save.assert_called_once()  # Still saves even if template not found
+
+    def test_delete_prompt_template(self):
+        """测试删除提示词模板。"""
+        from src.config.models import PromptTemplate
+
+        t1 = PromptTemplate(id="t1", title="Keep", content="Content", category="通用")
+        t2 = PromptTemplate(id="t2", title="Delete", content="Content", category="通用")
+        config = AppConfig(providers=[], prompt_templates=[t1, t2])
+        store = MagicMock()
+        store.load.return_value = config
+
+        service = AppService(
+            config_store=store,
+            session_repo=MagicMock(),
+            message_repo=MagicMock(),
+            chat_client=MagicMock(),
+        )
+
+        service.delete_prompt_template("t2")
+
+        assert len(service._config.prompt_templates) == 1
+        assert service._config.prompt_templates[0].id == "t1"
+        store.save.assert_called_once()
+
+    def test_get_prompt_template(self):
+        """测试获取指定模板。"""
+        from src.config.models import PromptTemplate
+
+        template = PromptTemplate(id="t1", title="Test", content="Content", category="通用")
+        config = AppConfig(providers=[], prompt_templates=[template])
+        store = MagicMock()
+        store.load.return_value = config
+
+        service = AppService(
+            config_store=store,
+            session_repo=MagicMock(),
+            message_repo=MagicMock(),
+            chat_client=MagicMock(),
+        )
+
+        result = service.get_prompt_template("t1")
+
+        assert result == template
+
+    def test_get_prompt_template_returns_none_when_not_found(self):
+        """测试获取不存在的模板返回 None。"""
+        config = AppConfig(providers=[], prompt_templates=[])
+        store = MagicMock()
+        store.load.return_value = config
+
+        service = AppService(
+            config_store=store,
+            session_repo=MagicMock(),
+            message_repo=MagicMock(),
+            chat_client=MagicMock(),
+        )
+
+        result = service.get_prompt_template("nonexistent")
+
+        assert result is None
+
+    def test_restore_default_templates(self):
+        """测试恢复默认模板。"""
+        config = AppConfig(providers=[], prompt_templates=[])
+        store = MagicMock()
+        store.load.return_value = config
+
+        service = AppService(
+            config_store=store,
+            session_repo=MagicMock(),
+            message_repo=MagicMock(),
+            chat_client=MagicMock(),
+        )
+
+        service.restore_default_templates()
+
+        assert len(service._config.prompt_templates) > 0
+        store.save.assert_called_once()
+
+    # ========== Pin/Unpin Message Tests ==========
+
+    def test_pin_message(self):
+        """测试置顶消息。"""
+        message_repo = MagicMock()
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=MagicMock(),
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+
+        service.pin_message("m1")
+
+        message_repo.set_pinned.assert_called_once_with("m1", True)
+
+    def test_unpin_message(self):
+        """测试取消置顶消息。"""
+        message_repo = MagicMock()
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=MagicMock(),
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+
+        service.unpin_message("m1")
+
+        message_repo.set_pinned.assert_called_once_with("m1", False)
+
+    def test_list_pinned_messages(self):
+        """测试获取置顶消息列表。"""
+        message_repo = MagicMock()
+        pinned = [
+            Message(id="m1", session_id="s1", role="user", content="Pinned", created_at="2024-01-01T00:00:00Z", is_pinned=True)
+        ]
+        message_repo.list_pinned.return_value = pinned
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=MagicMock(),
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+
+        result = service.list_pinned_messages("s1")
+
+        assert result == pinned
+        message_repo.list_pinned.assert_called_once_with("s1")
+
+    def test_toggle_message_pin_from_unpinned_to_pinned(self):
+        """测试从未置顶切换到置顶。"""
+        message_repo = MagicMock()
+        messages = [
+            Message(id="m1", session_id="s1", role="user", content="Test", created_at="2024-01-01T00:00:00Z", is_pinned=False)
+        ]
+        message_repo.list_by_session.return_value = messages
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=MagicMock(),
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+        service.switch_session("s1")
+
+        result = service.toggle_message_pin("m1")
+
+        assert result is True
+        message_repo.set_pinned.assert_called_once_with("m1", True)
+
+    def test_toggle_message_pin_from_pinned_to_unpinned(self):
+        """测试从置顶切换到未置顶。"""
+        message_repo = MagicMock()
+        messages = [
+            Message(id="m1", session_id="s1", role="user", content="Test", created_at="2024-01-01T00:00:00Z", is_pinned=True)
+        ]
+        message_repo.list_by_session.return_value = messages
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=MagicMock(),
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+        service.switch_session("s1")
+
+        result = service.toggle_message_pin("m1")
+
+        assert result is False
+        message_repo.set_pinned.assert_called_once_with("m1", False)
+
+    def test_toggle_message_pin_returns_false_when_not_found(self):
+        """测试切换不存在的消息返回 False。"""
+        message_repo = MagicMock()
+        message_repo.list_by_session.return_value = []
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=MagicMock(),
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+        service.switch_session("s1")
+
+        result = service.toggle_message_pin("nonexistent")
+
+        assert result is False
+        message_repo.set_pinned.assert_not_called()
+
+    # ========== Send Message Happy Path Tests ==========
+
+    def test_send_message_appends_user_message_and_starts_stream(self):
+        """测试发送消息添加用户消息并启动流式请求。"""
+        import queue
+        import time
+
+        provider = Provider(id="p1", name="OpenAI", base_url="https://api.openai.com/v1", api_key="sk-1", model_id="gpt-4")
+        session = Session(id="s1", title="Chat", created_at="2024-01-01T00:00:00Z", updated_at="2024-01-01T00:00:00Z")
+
+        session_repo = MagicMock()
+        session_repo.get_by_id.return_value = session
+
+        message_repo = MagicMock()
+        message_repo.list_by_session.return_value = []
+
+        chat_client = MagicMock()
+
+        config = AppConfig(providers=[provider], current_provider_id="p1")
+        store = MagicMock()
+        store.load.return_value = config
+
+        service = AppService(
+            config_store=store,
+            session_repo=session_repo,
+            message_repo=message_repo,
+            chat_client=chat_client,
+        )
+
+        q = queue.Queue()
+        service.send_message("s1", "Hello", q)
+
+        # Wait a bit for the thread to start
+        time.sleep(0.1)
+
+        # Verify user message was appended
+        assert message_repo.append.call_count >= 1
+        session_repo.update_updated_at.assert_called()
+
+        # Verify stream_chat was called
+        chat_client.stream_chat.assert_called_once()
+
+    # ========== Regenerate Response Tests ==========
+
+    def test_regenerate_response_with_no_messages_calls_error(self):
+        """测试无消息时重新生成调用 error 回调。"""
+        message_repo = MagicMock()
+        message_repo.list_by_session.return_value = []
+
+        errors = []
+
+        def on_error(msg):
+            errors.append(msg)
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=MagicMock(),
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+
+        import queue
+        q = queue.Queue()
+        service.regenerate_response("s1", q, on_error=on_error)
+
+        assert len(errors) == 1
+        assert "没有可重新生成" in errors[0]
+
+    def test_regenerate_response_with_no_assistant_message_calls_error(self):
+        """测试无助手消息时重新生成调用 error 回调。"""
+        message_repo = MagicMock()
+        message_repo.list_by_session.return_value = [
+            Message(id="m1", session_id="s1", role="user", content="Hello", created_at="2024-01-01T00:00:00Z")
+        ]
+
+        errors = []
+
+        def on_error(msg):
+            errors.append(msg)
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=MagicMock(),
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+
+        import queue
+        q = queue.Queue()
+        service.regenerate_response("s1", q, on_error=on_error)
+
+        assert len(errors) == 1
+        assert "没有助手回复" in errors[0]
+
+    def test_regenerate_response_deletes_last_assistant_message(self):
+        """测试重新生成删除最后的助手消息。"""
+        import time
+
+        provider = Provider(id="p1", name="OpenAI", base_url="https://api.openai.com/v1", api_key="sk-1", model_id="gpt-4")
+
+        message_repo = MagicMock()
+        message_repo.list_by_session.return_value = [
+            Message(id="m1", session_id="s1", role="user", content="Hello", created_at="2024-01-01T00:00:00Z"),
+            Message(id="m2", session_id="s1", role="assistant", content="Hi", created_at="2024-01-01T00:00:01Z"),
+        ]
+
+        chat_client = MagicMock()
+
+        config = AppConfig(providers=[provider], current_provider_id="p1")
+        store = MagicMock()
+        store.load.return_value = config
+
+        service = AppService(
+            config_store=store,
+            session_repo=MagicMock(),
+            message_repo=message_repo,
+            chat_client=chat_client,
+        )
+
+        import queue
+        q = queue.Queue()
+        service.regenerate_response("s1", q)
+
+        time.sleep(0.1)
+
+        # Verify last assistant message was deleted
+        message_repo.delete.assert_called_once_with("m2")
+        chat_client.stream_chat.assert_called_once()
