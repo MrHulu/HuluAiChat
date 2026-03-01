@@ -15,7 +15,7 @@ from src.chat import TextChunk, DoneChunk, ChatError, is_error
 from src.persistence import Session, Message
 
 try:
-    from src.ui.statistics_dialog import open_statistics_dialog
+    from src.ui.statistics_dialog import open_statistics_dialog, open_global_statistics_dialog
     _HAS_STATISTICS = True
 except ImportError:
     _HAS_STATISTICS = False
@@ -1088,10 +1088,13 @@ class MainWindow:
         self._root.bind("<Control-T>", lambda e: self._toggle_sidebar())
         self._root.bind("<Control-r>", lambda e: self._on_regenerate())  # Ctrl+R 重新生成
         self._root.bind("<Control-R>", lambda e: self._on_regenerate())
-        self._root.bind("<Control-s>", lambda e: self._on_show_statistics())  # Ctrl+S 显示统计
+        self._root.bind("<Control-s>", lambda e: self._on_show_statistics())  # Ctrl+S 显示当前会话统计
         self._root.bind("<Control-S>", lambda e: self._on_show_statistics())  # 大写 S 兼容
+        self._root.bind("<Control-Alt-s>", lambda e: self._on_show_global_statistics())  # Ctrl+Alt+S 显示全局统计
+        self._root.bind("<Control-Alt-S>", lambda e: self._on_show_global_statistics())  # 大写 S 兼容
         self._root.bind("<Control-p>", lambda e: self._on_toggle_current_session_pinned())  # Ctrl+P 切换置顶
         self._root.bind("<Control-P>", lambda e: self._on_toggle_current_session_pinned())  # 大写 P 兼容
+        self._root.bind("<Control-F>", lambda e: self._on_manage_folders())  # Ctrl+Shift+F 管理文件夹
         self._root.bind("<Control-C>", lambda e: self._on_copy_last_message())  # Ctrl+Shift+C 复制最后一条 AI 回复
         self._root.bind("<Control-Up>", lambda e: self._on_next_session(-1))  # Ctrl+Up 上一个会话
         self._root.bind("<Control-Down>", lambda e: self._on_next_session(1))  # Ctrl+Down 下一个会话
@@ -1838,67 +1841,148 @@ class MainWindow:
     # ========== 会话列表刷新 ==========
 
     def _refresh_sessions_list(self) -> None:
+        """刷新会话列表，按文件夹分组显示。"""
         for row in self._session_row_frames:
             row.destroy()
         self._session_row_frames.clear()
-        sessions = self._app.load_sessions()
+
         current = self._app.current_session_id()
-        for s in sessions:
-            row = ctk.CTkFrame(self._session_list_frame, fg_color="transparent")
-            row.grid(sticky="ew", pady=2)
-            row.grid_columnconfigure(0, weight=1)
-            title_text = (s.title or "新对话")[:20]
-            # 会话标题与图标需与侧边栏背景有对比，明/暗主题下均可见
-            _side_text = ("gray15", "gray88")
-            btn_title = ctk.CTkButton(
-                row,
-                text=title_text,
-                anchor="w",
-                fg_color=("gray75", "gray30") if s.id == current else "transparent",
-                text_color=_side_text,
-                hover_color=("gray78", "gray28"),
-                border_width=0,
-                command=lambda sid=s.id: self._on_select_session(sid),
-            )
-            btn_title.grid(row=0, column=0, sticky="ew", padx=(0, 4))
-            # 消息数量标签
-            msg_count = self._app.get_message_count(s.id)
-            count_label = ctk.CTkLabel(
-                row,
-                text=str(msg_count),
-                font=("", 10),
-                text_color=("gray50", "gray65"),
-                width=20,
-            )
-            count_label.grid(row=0, column=1, padx=(0, 2))
-            # 置顶按钮
-            pin_text = "📌" if s.is_pinned else "📍"
-            btn_pin = ctk.CTkButton(
-                row, text=pin_text, width=26, height=26,
-                fg_color="transparent", hover_color=("gray80", "gray28"), border_width=0,
-                text_color=_side_text,
-                command=lambda sid=s.id: self._on_toggle_session_pinned(sid),
-            )
-            btn_pin.grid(row=0, column=2, padx=2)
-            _bind_pressed_style(btn_pin)
-            btn_rename = ctk.CTkButton(
-                row, text="✏️", width=26, height=26,
-                fg_color="transparent", hover_color=("gray80", "gray28"), border_width=0,
-                text_color=_side_text,
-                command=lambda sid=s.id, tit=s.title: self._on_rename_session(sid, tit),
-            )
-            btn_rename.grid(row=0, column=3, padx=2)
-            _bind_pressed_style(btn_rename)
-            btn_del = ctk.CTkButton(
-                row, text="🗑️", width=26, height=26,
-                fg_color="transparent", hover_color=("gray80", "gray28"), border_width=0,
-                text_color=_side_text,
-                command=lambda sid=s.id: self._on_delete_session(sid),
-            )
-            btn_del.grid(row=0, column=4, padx=2)
-            _bind_pressed_style(btn_del)
-            self._session_row_frames.append(row)
+        folders = self._app.list_folders()
+
+        # 按文件夹分组会话
+        root_sessions = []  # 根目录的会话
+        folder_sessions = {}  # {folder_id: [sessions]}
+
+        all_sessions = self._app.load_sessions()
+        for s in all_sessions:
+            if s.folder_id is None:
+                root_sessions.append(s)
+            else:
+                if s.folder_id not in folder_sessions:
+                    folder_sessions[s.folder_id] = []
+                folder_sessions[s.folder_id].append(s)
+
+        # 先显示根目录的会话
+        if root_sessions:
+            # 根目录标题（可选）
+            for s in root_sessions:
+                self._add_session_row(s, current)
+
+        # 然后显示每个文件夹的会话
+        for folder in folders:
+            if folder.id not in folder_sessions:
+                continue
+
+            # 文件夹标题行
+            is_collapsed = self._app.is_folder_collapsed(folder.id)
+            folder_row = self._add_folder_header(folder, is_collapsed, len(folder_sessions[folder.id]))
+            self._session_row_frames.append(folder_row)
+
+            # 如果未折叠，显示会话
+            if not is_collapsed:
+                for s in folder_sessions[folder.id]:
+                    self._add_session_row(s, current)
+
         self._session_list_frame.columnconfigure(0, weight=1)
+
+    def _add_folder_header(self, folder, is_collapsed: bool, session_count: int) -> ctk.CTkFrame:
+        """添加文件夹标题行。"""
+        row = ctk.CTkFrame(self._session_list_frame, fg_color="transparent")
+        row.grid(sticky="ew", pady=(8, 2))
+        row.grid_columnconfigure(1, weight=1)
+
+        # 展开/折叠图标
+        collapse_icon = "▶" if is_collapsed else "▼"
+        btn_collapse = ctk.CTkButton(
+            row,
+            text=collapse_icon,
+            width=24,
+            height=24,
+            fg_color="transparent",
+            hover_color=("gray80", "gray28"),
+            border_width=0,
+            text_color=("gray15", "gray88"),
+            command=lambda: self._on_toggle_folder_collapsed(folder.id),
+        )
+        btn_collapse.grid(row=0, column=0, padx=(0, 4))
+
+        # 文件夹名称（带颜色指示）
+        folder_name = ctk.CTkLabel(
+            row,
+            text=f"● {folder.name} ({session_count})",
+            anchor="w",
+            font=("", 12, "bold"),
+            text_color=folder.color,
+        )
+        folder_name.grid(row=0, column=1, sticky="w")
+
+        return row
+
+    def _add_session_row(self, s: Session, current: str | None) -> None:
+        """添加单个会话行。"""
+        row = ctk.CTkFrame(self._session_list_frame, fg_color="transparent")
+        row.grid(sticky="ew", pady=2)
+        row.grid_columnconfigure(0, weight=1)
+        title_text = (s.title or "新对话")[:20]
+        # 会话标题与图标需与侧边栏背景有对比，明/暗主题下均可见
+        _side_text = ("gray15", "gray88")
+        btn_title = ctk.CTkButton(
+            row,
+            text=title_text,
+            anchor="w",
+            fg_color=("gray75", "gray30") if s.id == current else "transparent",
+            text_color=_side_text,
+            hover_color=("gray78", "gray28"),
+            border_width=0,
+            command=lambda sid=s.id: self._on_select_session(sid),
+        )
+        btn_title.grid(row=0, column=0, sticky="ew", padx=(0, 4))
+        # 消息数量标签
+        msg_count = self._app.get_message_count(s.id)
+        count_label = ctk.CTkLabel(
+            row,
+            text=str(msg_count),
+            font=("", 10),
+            text_color=("gray50", "gray65"),
+            width=20,
+        )
+        count_label.grid(row=0, column=1, padx=(0, 2))
+        # 置顶按钮
+        pin_text = "📌" if s.is_pinned else "📍"
+        btn_pin = ctk.CTkButton(
+            row, text=pin_text, width=26, height=26,
+            fg_color="transparent", hover_color=("gray80", "gray28"), border_width=0,
+            text_color=_side_text,
+            command=lambda sid=s.id: self._on_toggle_session_pinned(sid),
+        )
+        btn_pin.grid(row=0, column=2, padx=2)
+        _bind_pressed_style(btn_pin)
+        # 移动到文件夹按钮
+        btn_folder = ctk.CTkButton(
+            row, text="📁", width=26, height=26,
+            fg_color="transparent", hover_color=("gray80", "gray28"), border_width=0,
+            text_color=_side_text,
+            command=lambda sid=s.id: self._on_move_session_to_folder(sid),
+        )
+        btn_folder.grid(row=0, column=3, padx=2)
+        _bind_pressed_style(btn_folder)
+        btn_rename = ctk.CTkButton(
+            row, text="✏️", width=26, height=26,
+            fg_color="transparent", hover_color=("gray80", "gray28"), border_width=0,
+            text_color=_side_text,
+            command=lambda sid=s.id, tit=s.title: self._on_rename_session(sid, tit),
+        )
+        btn_rename.grid(row=0, column=4, padx=2)
+        _bind_pressed_style(btn_rename)
+        btn_del = ctk.CTkButton(
+            row, text="🗑️", width=26, height=26,
+            fg_color="transparent", hover_color=("gray80", "gray28"), border_width=0,
+            text_color=_side_text,
+            command=lambda sid=s.id: self._on_delete_session(sid),
+        )
+        btn_del.grid(row=0, column=5, padx=2)
+        _bind_pressed_style(btn_del)
+        self._session_row_frames.append(row)
 
     def _message_textbox_height(self, content: str) -> int:
         """根据内容行数计算文本框高度，避免长文被截断。"""
@@ -2475,7 +2559,8 @@ class MainWindow:
             ("ESC", "退出选择模式"),
             ("其他", ""),
             ("Ctrl + ,", "打开设置"),
-            ("Ctrl + S", "会话统计"),
+            ("Ctrl + S", "当前会话统计"),
+            ("Ctrl + Alt + S", "全局统计"),
             ("Ctrl + /", "显示此帮助"),
             ("ESC", "清除搜索"),
             ("F3", "下一个搜索匹配"),
@@ -2868,6 +2953,77 @@ class MainWindow:
         stats = self._app.get_session_stats()
         if stats:
             open_statistics_dialog(self._root, stats)
+
+    def _on_show_global_statistics(self) -> None:
+        """打开全局统计对话框（Ctrl+Alt+S）。"""
+        if not _HAS_STATISTICS:
+            return
+        stats = self._app.get_global_stats()
+        open_global_statistics_dialog(self._root, stats)
+
+    def _on_manage_folders(self) -> None:
+        """打开文件夹管理对话框（Ctrl+Shift+F）。"""
+        from src.ui.folder_dialog import FolderDialog, CreateFolderDialog, EditFolderDialog
+
+        folders = self._app.list_folders()
+
+        def on_create(name: str, color: str) -> None:
+            folder = self._app.create_folder(name, color)
+            ToastNotification(self._root, f"✅ 已创建文件夹「{name}」")
+            self._refresh_sessions_list()
+
+        def on_rename(folder_id: str, old_name: str, old_color: str) -> None:
+            EditFolderDialog(
+                self._root,
+                self._app.get_folder(folder_id),
+                lambda name, color: self._do_rename_folder(folder_id, name, color),
+            )
+
+        def on_delete(folder_id: str) -> None:
+            folder = self._app.get_folder(folder_id)
+            if folder:
+                self._app.delete_folder(folder_id)
+                ToastNotification(self._root, f"🗑️ 已删除文件夹「{folder.name}」")
+                self._refresh_sessions_list()
+
+        def on_move(folder_id: str, new_order: int) -> None:
+            self._app.update_folder_sort_order(folder_id, new_order)
+            self._refresh_sessions_list()
+
+        FolderDialog(
+            self._root,
+            folders,
+            on_create=on_create,
+            on_rename=on_rename,
+            on_delete=on_delete,
+            on_move=on_move,
+        )
+
+    def _do_rename_folder(self, folder_id: str, new_name: str, new_color: str) -> None:
+        """执行文件夹重命名。"""
+        self._app.update_folder_name(folder_id, new_name)
+        self._app.update_folder_color(folder_id, new_color)
+        ToastNotification(self._root, f"✅ 已更新文件夹「{new_name}」")
+        self._refresh_sessions_list()
+
+    def _on_toggle_folder_collapsed(self, folder_id: str) -> None:
+        """切换文件夹折叠状态。"""
+        new_state = self._app.toggle_folder_collapsed(folder_id)
+        self._refresh_sessions_list()
+
+    def _on_move_session_to_folder(self, session_id: str) -> None:
+        """移动会话到文件夹。"""
+        from src.ui.folder_dialog import FolderSelectDialog
+
+        folders = self._app.list_folders()
+
+        def on_select(folder_id: str | None) -> None:
+            self._app.set_session_folder(session_id, folder_id)
+            folder_name = "根目录" if folder_id is None else self._app.get_folder(folder_id).name
+            ToastNotification(self._root, f"📁 已移动到「{folder_name}」")
+            self._refresh_sessions_list()
+
+        FolderSelectDialog(self._root, folders, on_select)
 
     def _on_templates(self) -> None:
         """打开提示词模板管理对话框。"""
