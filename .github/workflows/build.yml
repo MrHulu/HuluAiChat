@@ -117,6 +117,11 @@ jobs:
           fi
           pyinstaller HuluChat-mac.spec --clean
 
+          # Create zip for .app (GitHub releases need compressed archives)
+          cd dist
+          zip -r -q HuluChat-macos.zip HuluChat.app
+          cd ..
+
       - name: Build Linux AppImage
         if: matrix.os == 'ubuntu-latest'
         run: |
@@ -213,7 +218,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: HuluChat-macos
-          path: dist/HuluChat.app
+          path: dist/HuluChat-macos.zip
           retention-days: 30
 
       - name: Upload Linux artifacts
@@ -246,7 +251,7 @@ jobs:
         with:
           files: |
             artifacts/HuluChat-windows/HuluChat.exe
-            artifacts/HuluChat-macos/HuluChat.app/**
+            artifacts/HuluChat-macos/HuluChat-macos.zip
             artifacts/HuluChat-linux/HuluChat-x86_64.AppImage
           generate_release_notes: true
           draft: false
