@@ -149,6 +149,22 @@ class CodeBlockFrame(ctk.CTkFrame):
             self._highlight_javascript()
         elif lang in ("bash", "sh", "shell"):
             self._highlight_bash()
+        elif lang in ("go", "golang"):
+            self._highlight_go()
+        elif lang in ("rust", "rs"):
+            self._highlight_rust()
+        elif lang in ("java",):
+            self._highlight_java()
+        elif lang in ("c", "cpp", "c++", "cc", "cxx"):
+            self._highlight_c_cpp()
+        elif lang in ("css",):
+            self._highlight_css()
+        elif lang in ("html", "htm", "xml"):
+            self._highlight_html()
+        elif lang in ("sql",):
+            self._highlight_sql()
+        elif lang in ("json", "yaml", "yml"):
+            self._highlight_data_format()
         else:
             # 无高亮，纯文本
             self._textbox.insert("1.0", self._code)
@@ -185,18 +201,381 @@ class CodeBlockFrame(ctk.CTkFrame):
 
     def _highlight_bash(self):
         """Bash 语法高亮。"""
-        # Bash 简单高亮：注释
+        keywords = {'if', 'then', 'else', 'fi', 'for', 'do', 'done', 'while', 'case', 'esac',
+                    'function', 'return', 'local', 'export', 'echo', 'cd', 'ls', 'pwd', 'cat',
+                    'grep', 'sed', 'awk', 'find', 'mkdir', 'rm', 'cp', 'mv', 'chmod', 'chown',
+                    'sudo', 'apt', 'npm', 'pip', 'python', 'python3', 'git', 'docker', 'curl',
+                    'wget', 'tar', 'unzip', 'zip', 'ssh', 'exit', 'true', 'false', 'test'}
         for line in self._code.split('\n'):
-            # 查找注释位置
-            comment_pos = line.find('#')
-            if comment_pos >= 0:
-                # 注释前的内容
-                if comment_pos > 0:
-                    self._textbox.insert("end", line[:comment_pos])
+            self._highlight_line(line, keywords)
+
+    def _highlight_go(self):
+        """Go 语法高亮。"""
+        keywords = {
+            'break', 'case', 'chan', 'const', 'continue', 'default', 'defer', 'else',
+            'fallthrough', 'for', 'func', 'go', 'goto', 'if', 'import', 'interface',
+            'map', 'package', 'range', 'return', 'select', 'struct', 'switch', 'type',
+            'var', 'true', 'false', 'nil', 'iota', 'len', 'cap', 'make', 'new',
+            'append', 'copy', 'delete', 'print', 'println', 'close', 'complex',
+            'real', 'imag', 'panic', 'recover'
+        }
+        # Go 风格注释用 //
+        for line in self._code.split('\n'):
+            self._highlight_line(line, keywords, js_style=True)
+
+    def _highlight_rust(self):
+        """Rust 语法高亮。"""
+        keywords = {
+            'as', 'async', 'await', 'break', 'const', 'continue', 'crate', 'else',
+            'enum', 'extern', 'false', 'fn', 'for', 'if', 'impl', 'in', 'let',
+            'loop', 'match', 'mod', 'move', 'mut', 'pub', 'ref', 'return', 'self',
+            'Self', 'static', 'struct', 'super', 'trait', 'true', 'type', 'union',
+            'unsafe', 'use', 'where', 'while', 'abstract', 'become', 'box', 'do',
+            'final', 'macro', 'override', 'priv', 'typeof', 'unsized', 'virtual',
+            'yield', 'dyn', 'try', 'String', 'Vec', 'HashMap', 'Option', 'Result',
+            'Some', 'None', 'Ok', 'Err', 'print', 'println', 'eprint', 'eprintln',
+            'vec', 'format'
+        }
+        # Rust 风格注释用 //
+        for line in self._code.split('\n'):
+            self._highlight_line(line, keywords, js_style=True)
+
+    def _highlight_java(self):
+        """Java 语法高亮。"""
+        keywords = {
+            'abstract', 'assert', 'boolean', 'break', 'byte', 'case', 'catch', 'char',
+            'class', 'const', 'continue', 'default', 'do', 'double', 'else', 'enum',
+            'extends', 'final', 'finally', 'float', 'for', 'goto', 'if', 'implements',
+            'import', 'instanceof', 'int', 'interface', 'long', 'native', 'new',
+            'package', 'private', 'protected', 'public', 'return', 'short', 'static',
+            'strictfp', 'super', 'switch', 'synchronized', 'this', 'throw', 'throws',
+            'transient', 'try', 'void', 'volatile', 'while', 'true', 'false', 'null',
+            'System', 'out', 'println', 'String', 'Integer', 'Double', 'Float', 'Long',
+            'Boolean', 'Character', 'Byte', 'Short', 'List', 'ArrayList', 'Map',
+            'HashMap', 'Set', 'HashSet', 'Object', 'Class', 'Math'
+        }
+        # Java 风格注释用 //
+        for line in self._code.split('\n'):
+            self._highlight_line(line, keywords, js_style=True)
+
+    def _highlight_c_cpp(self):
+        """C/C++ 语法高亮。"""
+        keywords = {
+            'auto', 'break', 'case', 'char', 'const', 'continue', 'default', 'do',
+            'double', 'else', 'enum', 'extern', 'float', 'for', 'goto', 'if', 'int',
+            'long', 'register', 'return', 'short', 'signed', 'sizeof', 'static',
+            'struct', 'switch', 'typedef', 'union', 'unsigned', 'void', 'volatile',
+            'while', 'true', 'false', 'nullptr', 'nullptr_t', 'class', 'private',
+            'protected', 'public', 'template', 'typename', 'namespace', 'using',
+            'virtual', 'override', 'final', 'constexpr', 'nullptr', 'std', 'cout',
+            'cin', 'endl', 'printf', 'scanf', 'malloc', 'free', 'new', 'delete',
+            'vector', 'string', 'map', 'set', 'array', 'shared_ptr', 'unique_ptr'
+        }
+        # C++ 风格注释用 //
+        for line in self._code.split('\n'):
+            self._highlight_line(line, keywords, js_style=True)
+
+    def _highlight_css(self):
+        """CSS 语法高亮。"""
+        keywords = {'important', 'auto', 'inherit', 'none', 'normal', 'unset', 'initial'}
+        css_properties = {
+            'color', 'background', 'width', 'height', 'margin', 'padding', 'border',
+            'display', 'position', 'float', 'clear', 'font', 'text', 'line', 'letter',
+            'word', 'white', 'vertical', 'overflow', 'visibility', 'opacity', 'z',
+            'flex', 'grid', 'min', 'max', 'box', 'shadow', 'transform', 'transition',
+            'animation', 'cursor', 'pointer', 'list', 'table', 'caption', 'border',
+            'outline', 'content', 'align', 'justify', 'justify', 'gap', 'wrap',
+            'top', 'right', 'bottom', 'left', 'center', 'stretch', 'start', 'end'
+        }
+
+        for line in self._code.split('\n'):
+            pos = 0
+            while pos < len(line):
+                # 跳过空白
+                while pos < len(line) and line[pos].isspace():
+                    self._textbox.insert("end", line[pos])
+                    pos += 1
+
+                if pos >= len(line):
+                    break
+
+                # 检查注释
+                if pos + 1 < len(line) and line[pos:pos + 2] == '/*':
+                    end = line.find('*/', pos)
+                    if end >= 0:
+                        self._textbox.insert("end", line[pos:end + 2], "comment")
+                        pos = end + 2
+                    else:
+                        self._textbox.insert("end", line[pos:], "comment")
+                        break
+                    continue
+
+                # 检查字符串
+                if line[pos] in ('"', "'"):
+                    quote = line[pos]
+                    end = pos + 1
+                    while end < len(line) and line[end] != quote:
+                        if line[end] == '\\':
+                            end += 2
+                        else:
+                            end += 1
+                    if end < len(line):
+                        self._textbox.insert("end", line[pos:end + 1], "string")
+                        pos = end + 1
+                        continue
+
+                # 检查选择器 {
+                if line[pos] == '{':
+                    self._textbox.insert("end", line[pos], "keyword")
+                    pos += 1
+                    continue
+
+                if line[pos] == '}':
+                    self._textbox.insert("end", line[pos], "keyword")
+                    pos += 1
+                    continue
+
+                # 检查属性名
+                match = re.match(r'[a-zA-Z-]+', line[pos:])
+                if match:
+                    word = match.group(0)
+                    if word in css_properties or word.endswith('-'):
+                        self._textbox.insert("end", word, "function")
+                    else:
+                        self._textbox.insert("end", word)
+                    pos += len(word)
+                    continue
+
+                # 检查颜色值
+                if line[pos] == '#':
+                    match = re.match(r'#[0-9a-fA-F]+', line[pos:])
+                    if match:
+                        self._textbox.insert("end", match.group(0), "number")
+                        pos += len(match.group(0))
+                        continue
+
+                # 检查数字
+                if line[pos].isdigit():
+                    end = pos
+                    while end < len(line) and (line[end].isdigit() or line[end] == '.'):
+                        end += 1
+                    if end < len(line) and line[end] in 'pxemremvwvh%':
+                        end += 2
+                    self._textbox.insert("end", line[pos:end], "number")
+                    pos = end
+                    continue
+
+                self._textbox.insert("end", line[pos])
+                pos += 1
+
+            self._textbox.insert("end", "\n")
+
+    def _highlight_html(self):
+        """HTML/XML 语法高亮。"""
+        for line in self._code.split('\n'):
+            pos = 0
+            while pos < len(line):
+                # 标签开始 <
+                if line[pos] == '<':
+                    end = line.find('>', pos)
+                    if end >= 0:
+                        tag_content = line[pos:end + 1]
+                        # 高亮标签名
+                        tag_match = re.match(r'<\s*/?\s*([a-zA-Z][a-zA-Z0-9]*)', tag_content)
+                        if tag_match:
+                            self._textbox.insert("end", '<', "keyword")
+                            rest = tag_content[1:]
+                            tag_name = tag_match.group(1)
+                            self._textbox.insert("end", tag_name, "function")
+                            pos_after_tag = pos + 1 + len(tag_name)
+
+                            # 处理属性
+                            attr_part = line[pos_after_tag:end]
+                            attr_pos = 0
+                            while attr_pos < len(attr_part):
+                                if attr_part[attr_pos].isspace():
+                                    self._textbox.insert("end", attr_part[attr_pos])
+                                    attr_pos += 1
+                                elif attr_part[attr_pos] == '=':
+                                    self._textbox.insert("end", '=', "keyword")
+                                    attr_pos += 1
+                                elif attr_part[attr_pos] in ('"', "'"):
+                                    quote = attr_part[attr_pos]
+                                    quote_end = attr_part.find(quote, attr_pos + 1)
+                                    if quote_end >= 0:
+                                        self._textbox.insert("end", attr_part[attr_pos:quote_end + 1], "string")
+                                        attr_pos = quote_end + 1
+                                    else:
+                                        self._textbox.insert("end", attr_part[attr_pos:], "string")
+                                        break
+                                else:
+                                    # 属性名
+                                    attr_match = re.match(r'[a-zA-Z-]+', attr_part[attr_pos:])
+                                    if attr_match:
+                                        self._textbox.insert("end", attr_match.group(0), "keyword")
+                                        attr_pos += len(attr_match.group(0))
+                                    else:
+                                        attr_pos += 1
+
+                            self._textbox.insert("end", '>', "keyword")
+                            pos = end + 1
+                        else:
+                            self._textbox.insert("end", line[pos:end + 1], "keyword")
+                            pos = end + 1
+                    else:
+                        self._textbox.insert("end", line[pos:], "keyword")
+                        pos = len(line)
+                    continue
+
                 # 注释
-                self._textbox.insert("end", line[comment_pos:], "comment")
-            else:
-                self._textbox.insert("end", line)
+                if pos + 3 < len(line) and line[pos:pos + 4] == '<!--':
+                    end = line.find('-->', pos)
+                    if end >= 0:
+                        self._textbox.insert("end", line[pos:end + 3], "comment")
+                        pos = end + 3
+                    else:
+                        self._textbox.insert("end", line[pos:], "comment")
+                        pos = len(line)
+                    continue
+
+                self._textbox.insert("end", line[pos])
+                pos += 1
+
+            self._textbox.insert("end", "\n")
+
+    def _highlight_sql(self):
+        """SQL 语法高亮。"""
+        keywords = {
+            'SELECT', 'FROM', 'WHERE', 'INSERT', 'INTO', 'VALUES', 'UPDATE', 'SET',
+            'DELETE', 'CREATE', 'TABLE', 'DROP', 'ALTER', 'INDEX', 'JOIN', 'INNER',
+            'LEFT', 'RIGHT', 'FULL', 'OUTER', 'ON', 'AS', 'ORDER', 'BY', 'GROUP',
+            'HAVING', 'LIMIT', 'OFFSET', 'AND', 'OR', 'NOT', 'IN', 'IS', 'NULL',
+            'LIKE', 'BETWEEN', 'DISTINCT', 'COUNT', 'SUM', 'AVG', 'MIN', 'MAX',
+            'UNION', 'ALL', 'EXISTS', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END',
+            'PRIMARY', 'KEY', 'FOREIGN', 'REFERENCES', 'UNIQUE', 'DEFAULT',
+            'CASCADE', 'RESTRICT', 'CHECK', 'VARCHAR', 'INT', 'INTEGER', 'TEXT',
+            'BOOLEAN', 'DATE', 'DATETIME', 'TIMESTAMP', 'DECIMAL', 'FLOAT'
+        }
+
+        for line in self._code.split('\n'):
+            pos = 0
+            while pos < len(line):
+                # 跳过空白
+                while pos < len(line) and line[pos].isspace():
+                    self._textbox.insert("end", line[pos])
+                    pos += 1
+
+                if pos >= len(line):
+                    break
+
+                # 注释 --
+                if pos + 1 < len(line) and line[pos:pos + 2] == '--':
+                    self._textbox.insert("end", line[pos:], "comment")
+                    break
+
+                # 字符串
+                if line[pos] == "'":
+                    end = pos + 1
+                    while end < len(line) and line[end] != "'":
+                        if line[end] == '\\' and end + 1 < len(line):
+                            end += 2
+                        else:
+                            end += 1
+                    if end < len(line):
+                        self._textbox.insert("end", line[pos:end + 1], "string")
+                        pos = end + 1
+                    else:
+                        self._textbox.insert("end", line[pos:], "string")
+                        pos = len(line)
+                    continue
+
+                # 关键字
+                match = re.match(r'[a-zA-Z_]\w*', line[pos:])
+                if match:
+                    word = match.group(0).upper()
+                    if word in keywords:
+                        self._textbox.insert("end", match.group(0), "keyword")
+                    else:
+                        self._textbox.insert("end", match.group(0))
+                    pos += len(match.group(0))
+                    continue
+
+                self._textbox.insert("end", line[pos])
+                pos += 1
+
+            self._textbox.insert("end", "\n")
+
+    def _highlight_data_format(self):
+        """JSON/YAML 语法高亮。"""
+        is_json = self._language.lower() == 'json'
+        keywords = {'true', 'false', 'null', 'True', 'False', 'None'}
+
+        for line in self._code.split('\n'):
+            pos = 0
+            while pos < len(line):
+                # 跳过空白
+                while pos < len(line) and line[pos].isspace():
+                    self._textbox.insert("end", line[pos])
+                    pos += 1
+
+                if pos >= len(line):
+                    break
+
+                # YAML 注释
+                if not is_json and line[pos] == '#':
+                    self._textbox.insert("end", line[pos:], "comment")
+                    break
+
+                # 字符串
+                if line[pos] in ('"', "'"):
+                    quote = line[pos]
+                    end = pos + 1
+                    while end < len(line) and line[end] != quote:
+                        if line[end] == '\\':
+                            end += 2
+                        else:
+                            end += 1
+                    if end < len(line):
+                        # JSON key (before :)
+                        if is_json and ':' in line[end:]:
+                            self._textbox.insert("end", line[pos:end + 1], "function")
+                        else:
+                            self._textbox.insert("end", line[pos:end + 1], "string")
+                        pos = end + 1
+                    else:
+                        self._textbox.insert("end", line[pos:], "string")
+                        pos = len(line)
+                    continue
+
+                # 数字
+                if line[pos].isdigit() or (line[pos] == '-' and pos + 1 < len(line) and line[pos + 1].isdigit()):
+                    end = pos
+                    while end < len(line) and (line[end].isdigit() or line[end] in '.-+eE'):
+                        end += 1
+                    self._textbox.insert("end", line[pos:end], "number")
+                    pos = end
+                    continue
+
+                # 关键字
+                match = re.match(r'[a-zA-Z_]\w*', line[pos:])
+                if match:
+                    word = match.group(0)
+                    if word in keywords:
+                        self._textbox.insert("end", word, "keyword")
+                    else:
+                        self._textbox.insert("end", word)
+                    pos += len(word)
+                    continue
+
+                # 冒号和逗号
+                if line[pos] in ':,':
+                    self._textbox.insert("end", line[pos], "keyword")
+                    pos += 1
+                    continue
+
+                self._textbox.insert("end", line[pos])
+                pos += 1
+
             self._textbox.insert("end", "\n")
 
     def _highlight_line(self, line: str, keywords: set, js_style: bool = False):
