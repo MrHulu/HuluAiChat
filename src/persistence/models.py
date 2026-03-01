@@ -14,9 +14,10 @@ class Session:
 
 @dataclass
 class Message:
-    """消息：id、会话 id、角色、内容、创建时间。"""
+    """消息：id、会话 id、角色、内容、创建时间、置顶状态。"""
     id: str
     session_id: str
     role: str  # "user" | "assistant"
     content: str
     created_at: str  # ISO 格式
+    is_pinned: bool = False  # 是否置顶

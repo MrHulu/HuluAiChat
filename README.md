@@ -10,6 +10,7 @@
 - [🍵 HuluChat](#-huluchat)
   - [📑 目录](#-目录)
   - [✨ 特性](#-特性)
+  - [📚 文档](#-文档)
   - [🏗️ 项目结构](#️-项目结构)
   - [📐 架构与流程](#-架构与流程)
     - [整体架构](#整体架构)
@@ -33,6 +34,15 @@
 - **本地持久化**：会话与消息存储在本地 SQLite，隐私可控。
 - **主题与布局**：亮色/暗色主题，侧边栏可折叠。
 - **可分发 exe**：支持 PyInstaller 打包为 Windows 单文件 exe，配置与数据仍存用户目录。
+
+---
+
+## 📚 文档
+
+| 文档 | 说明 |
+|------|------|
+| [📖 用户指南](docs/USER_GUIDE.md) | 详细的使用说明，包含功能介绍、快捷键、常见问题 |
+| [🔑 API 配置指南](docs/API_SETUP.md) | 如何获取和配置 OpenAI、DeepSeek、Azure 等 API |
 
 ---
 
@@ -188,7 +198,28 @@ flowchart LR
 
 ## 📦 打包分发
 
-打包为 Windows 单文件 exe：
+### 方式一：使用 NSIS 安装器（推荐）
+
+生成 Windows 安装器（.exe），包含卸载程序和快捷方式：
+
+**要求**：安装 [NSIS](https://nsis.sourceforge.io/Download)
+
+```bash
+# 使用 Make
+make build-installer
+
+# 或使用 PowerShell（Windows）
+.\build.ps1 -Target installer
+
+# 或使用批处理脚本（Windows）
+build.bat installer
+```
+
+生成的安装器：`dist/HuluChat-Setup-1.0.1.exe`
+
+### 方式二：单文件 exe
+
+打包为免安装的单文件 exe：
 
 1. 安装 PyInstaller：
 
@@ -200,9 +231,28 @@ flowchart LR
 
    ```bash
    pyinstaller HuluChat.spec
+
+   # 或使用 Make
+   make build-exe
+
+   # 或使用 PowerShell（Windows）
+   .\build.ps1 -Target exe
    ```
 
 3. 生成的可执行文件在 `dist/HuluChat.exe`。运行 exe 时，配置与数据库仍使用用户目录，不写入 exe 所在目录。
+
+### 清理构建产物
+
+```bash
+# 使用 Make
+make clean-build
+
+# 或使用 PowerShell（Windows）
+.\build.ps1 -Target clean
+
+# 或使用批处理脚本（Windows）
+build.bat clean
+```
 
 ---
 

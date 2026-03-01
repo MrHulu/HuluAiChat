@@ -10,6 +10,7 @@
 - [🍵 HuluChat](#-huluchat)
   - [📑 Table of Contents](#-table-of-contents)
   - [✨ Features](#-features)
+  - [📚 Documentation](#-documentation)
   - [🏗️ Project Structure](#️-project-structure)
   - [📐 Architecture](#-architecture)
     - [High-level](#high-level)
@@ -33,6 +34,15 @@
 - **Local persistence**: Sessions and messages stored in SQLite on your machine.
 - **Theme & layout**: Light/dark theme; collapsible sidebar.
 - **Distributable exe**: PyInstaller build for Windows; config and data stay in user directories.
+
+---
+
+## 📚 Documentation
+
+| Document | Description |
+|----------|-------------|
+| [📖 User Guide](docs/USER_GUIDE.md) | Detailed usage guide with features, shortcuts, and FAQ |
+| [🔑 API Setup Guide](docs/API_SETUP.md) | How to get and configure OpenAI, DeepSeek, Azure APIs |
 
 ---
 
@@ -184,7 +194,28 @@ flowchart LR
 
 ## 📦 Build & Distribute
 
-To build a Windows exe:
+### Method 1: NSIS Installer (Recommended)
+
+Generate a Windows installer (.exe) with uninstaller and shortcuts:
+
+**Requirement**: Install [NSIS](https://nsis.sourceforge.io/Download)
+
+```bash
+# Using Make
+make build-installer
+
+# Or using PowerShell (Windows)
+.\build.ps1 -Target installer
+
+# Or using batch script (Windows)
+build.bat installer
+```
+
+Output: `dist/HuluChat-Setup-1.0.1.exe`
+
+### Method 2: Standalone exe
+
+Build a portable, single-file exe:
 
 1. Install PyInstaller:
 
@@ -196,9 +227,28 @@ To build a Windows exe:
 
    ```bash
    pyinstaller HuluChat.spec
+
+   # Or using Make
+   make build-exe
+
+   # Or using PowerShell (Windows)
+   .\build.ps1 -Target exe
    ```
 
 3. Output: `dist/HuluChat.exe`. Config and database still use the user directory, not the exe folder.
+
+### Clean build artifacts
+
+```bash
+# Using Make
+make clean-build
+
+# Or using PowerShell (Windows)
+.\build.ps1 -Target clean
+
+# Or using batch script (Windows)
+build.bat clean
+```
 
 ---
 
