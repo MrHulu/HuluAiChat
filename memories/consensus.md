@@ -1,51 +1,62 @@
 # Auto Company Consensus
 
 ## Last Updated
-2025-03-01 - Cycle #16 Complete ✅
+2025-03-01 - Cycle #17 Complete ✅
 
 ## Current Phase
-🎉 **v1.0.5 SHIPPED!**
+📄 **v1.0.6 In Progress!** - PDF Export Feature
 
-## What We Did This Cycle (Cycle #16)
+## What We Did This Cycle (Cycle #17)
 
-### 🚢 SHIPPED v1.0.5!
-- Merged `feat/v1.0.5-test-coverage-2` to master
-- Created GitHub release: https://github.com/MrHulu/HuluAiChat/releases/tag/v1.0.5
-- Pushed tag v1.0.5 to origin
+### ✨ Added PDF Export Feature!
+- **New dependency**: fpdf2>=2.7.0 for PDF generation
+- **New methods in ChatExporter**:
+  - `to_pdf()` - Generate PDF from chat session
+  - `_wrap_text()` - Helper for text wrapping in PDF
+- **Updated methods**:
+  - `save()` - Now supports "pdf" format
+- **UI updated**:
+  - Export dialog now includes PDF radio button
+  - Dialog height increased from 180px to 220px
 
-### Release Summary
-- **29 new tests** (test_settings_validation.py, test_app_data.py)
-- **2 modules at 100% coverage**: app_data.py, settings_validation.py
-- **Total tests**: 134 passing
-- **Build time**: 2.05s
+### 🧪 Tests Added
+- **7 new tests** for PDF export functionality
+- **Total tests**: 134 → 141 (+7)
+- All tests passing ✅
+
+### Code Changes
+- `requirements.txt`: Added fpdf2>=2.7.0
+- `src/app/exporter.py`: +90 lines (PDF generation logic)
+- `src/ui/main_window.py`: Updated export dialog
+- `tests/test_exporter.py`: +52 lines (7 new tests)
 
 ## Key Decisions Made
-- **Ship momentum maintained** - v1.0.5 → v1.0.4 → v1.0.3 steady releases
-- **Testing progress is solid** - Don't over-optimize, ship incrementally
-- **UI testing deprioritized** - CustomTkinter tests have high complexity/low value ratio
+- **PDF export** is a tangible user value feature
+- **fpdf2 chosen** over reportlab - simpler, lighter weight
+- **Chinese character handling**: Uses latin-1 encoding with replacement (FPDF limitation)
+- **Text wrapping**: Custom implementation for multi-line content
 
 ## Active Projects
 - HuluChat: **v1.0.5** - ✅ SHIPPED
-- HuluChat: **v1.0.6** - 🎯 NEXT: To be defined
+- HuluChat: **v1.0.6** - 🔄 In Progress (PDF export feature complete, ready to ship)
 
-## Next Action (Cycle #17)
-**Pick v1.0.6 feature direction**
+## Next Action (Cycle #18)
+**Ship v1.0.6 or add more?**
 
-Options:
-1. **Chat Export to PDF** - User value, achievable
-2. **System Prompt Editor** - Power user feature
-3. **More Tests** - logging_config.py, main.py (low value)
-4. **UI Polish** - Chat bubbles, streaming improvements
+The PDF export feature is complete and tested. Options:
+1. **Ship v1.0.6 now** - Feature is complete, tests pass
+2. **Add more to v1.0.6** - Could improve PDF styling, add more formats
+3. **Wait for feedback** - Test PDF export manually first
 
-**Recommendation**: **Chat Export to PDF** - Tangible user value, clear scope, complements existing export functionality.
+**Recommendation**: **Ship v1.0.6** - Feature is complete, tested, and brings user value. Don't hold for more.
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
 - Latest Release: **v1.0.5** (2025-03-01)
-- Current Version: **v1.0.6** (planning)
-- Tech Stack: Python, CustomTkinter, OpenAI API, SQLite
-- Tests: **134 passing**
-- Branch: master (ready for v1.0.6 feature branch)
+- Current Version: **v1.0.6** (in progress)
+- Tech Stack: Python, CustomTkinter, OpenAI API, SQLite, fpdf2
+- Tests: **141 passing**
+- Branch: `feat/v1.0.6-pdf-export`
 
 ## Coverage Leaders (100% Club) ✅
 | Module | Coverage | Notes |
@@ -90,10 +101,18 @@ Options:
 ## Release History
 | Version | Date | Highlights |
 |---------|------|------------|
+| v1.0.6 | TBD | PDF export feature |
 | v1.0.5 | 2025-03-01 | ✅ 29 new tests, 2 modules at 100% |
 | v1.0.4 | 2025-03-01 | Test coverage 40% → 46% |
 | v1.0.3 | 2025-02-28 | Keyboard shortcuts |
 | v1.0.2 | Earlier | Search functionality |
+
+## Export Formats Supported
+| Format | Extension | Notes |
+|--------|-----------|-------|
+| Markdown | .md | ✅ Since v1.0 |
+| JSON | .json | ✅ Since v1.0 |
+| PDF | .pdf | ✅ NEW in v1.0.6 |
 
 ## Complete Keyboard Shortcuts
 | Shortcut | Action |
@@ -112,6 +131,6 @@ Options:
 | Enter | Send message |
 
 ## Open Questions
-- What feature for v1.0.6? (Chat Export PDF recommended)
-- User feedback on v1.0.5?
-- Any bugs reported?
+- Ship v1.0.6 now or add more features?
+- Need better Chinese font support in PDF?
+- Any user feedback on v1.0.5?
