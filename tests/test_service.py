@@ -362,3 +362,23 @@ class TestAppService:
         service.save_config()
 
         store.save.assert_called_once_with(config)
+
+    def test_search_all_messages_delegates_to_repo(self):
+        """测试全局搜索委托给仓储。"""
+        message_repo = MagicMock()
+        expected_results = [
+            Message(id="m1", session_id="s1", role="user", content="Hello", created_at="2024-01-01T00:00:00Z")
+        ]
+        message_repo.search_all.return_value = expected_results
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=MagicMock(),
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+
+        results = service.search_all_messages("test", limit=50)
+
+        message_repo.search_all.assert_called_once_with("test", 50)
+        assert results == expected_results
