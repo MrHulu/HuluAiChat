@@ -32,7 +32,8 @@ class MessageRepository(ABC):
         ...
 
     @abstractmethod
-    def search(self, session_id: str, query: str, start_date: str | None = None, end_date: str | None = None) -> list[Message]:
+    def search(self, session_id: str, query: str, start_date: str | None = None, end_date: str | None = None,
+              case_sensitive: bool = False, whole_word: bool = False) -> list[Message]:
         """在指定会话中搜索包含查询字符串的消息。
 
         Args:
@@ -40,6 +41,8 @@ class MessageRepository(ABC):
             query: 搜索关键词
             start_date: 起始日期 (ISO 8601 格式，如 "2024-01-01" 或 "2024-01-01T00:00:00Z")
             end_date: 结束日期 (ISO 8601 格式)
+            case_sensitive: 是否区分大小写 (v1.4.8)
+            whole_word: 是否全词匹配 (v1.4.8)
         """
         ...
 
@@ -49,7 +52,8 @@ class MessageRepository(ABC):
         ...
 
     @abstractmethod
-    def search_all(self, query: str, limit: int = 100, start_date: str | None = None, end_date: str | None = None) -> list[Message]:
+    def search_all(self, query: str, limit: int = 100, start_date: str | None = None, end_date: str | None = None,
+                   case_sensitive: bool = False, whole_word: bool = False) -> list[Message]:
         """在所有会话中搜索包含查询字符串的消息。
 
         Args:
@@ -57,6 +61,8 @@ class MessageRepository(ABC):
             limit: 最大返回结果数
             start_date: 起始日期 (ISO 8601 格式)
             end_date: 结束日期 (ISO 8601 格式)
+            case_sensitive: 是否区分大小写 (v1.4.8)
+            whole_word: 是否全词匹配 (v1.4.8)
         """
         ...
 
@@ -133,21 +139,86 @@ class SqliteMessageRepository(MessageRepository):
             conn.execute("DELETE FROM message WHERE id = ?", (message_id,))
             conn.commit()
 
-    def search(self, session_id: str, query: str, start_date: str | None = None, end_date: str | None = None) -> list[Message]:
-        """在指定会话中搜索包含查询字符串的消息（不区分大小写）。
+    def search(self, session_id: str, query: str, start_date: str | None = None, end_date: str | None = None,
+              case_sensitive: bool = False, whole_word: bool = False) -> list[Message]:
+        """在指定会话中搜索包含查询字符串的消息。
 
         支持日期范围过滤：
         - start_date: 只返回创建日期 >= start_date 的消息
         - end_date: 只返回创建日期 <= end_date 的消息
+        v1.4.8: 支持 case_sensitive 和 whole_word 选项
         """
         if not query:
             return []
         with self._conn() as conn:
+            # v1.4.8: 启用区分大小写的 LIKE
+            if case_sensitive:
+                conn.execute("PRAGMA case_sensitive_like = ON")
+
+            # 构建 WHERE 子句
+            where_conditions = ["session_id = ?"]
+            params = [session_id]
+
+            # 构建搜索条件
+            if whole_word:
+                # 全词匹配：使用正则表达式或词边界
+                # SQLite 的 REGEXP 需要额外加载，这里用 LIKE 模拟
+                # 匹配 " word " 或 " word," 或 " word." 或行首/行尾
+                if case_sensitive:
+                    where_conditions.append("""(
+                        content = ? OR
+                        content LIKE ? OR
+                        content LIKE ? OR
+                        content LIKE ? OR
+                        content LIKE ? OR
+                        content LIKE ? OR
+                        content LIKE ? OR
+                        content LIKE ?
+                    )""")
+                    params.extend([
+                        query,  # 完全匹配
+                        f"{query} %",  # 行首
+                        f"% {query}",  # 行尾
+                        f"% {query} %",  # 中间（空格包围）
+                        f"% {query}.%",  # 句号
+                        f"% {query},%",  # 逗号
+                        f"% {query};%",  # 分号
+                        f"{query},%",  # 行首+逗号 (v1.4.8: for "Hello, World!")
+                    ])
+                else:
+                    where_conditions.append("""(
+                        LOWER(content) = LOWER(?) OR
+                        LOWER(content) LIKE LOWER(?) OR
+                        LOWER(content) LIKE LOWER(?) OR
+                        LOWER(content) LIKE LOWER(?) OR
+                        LOWER(content) LIKE LOWER(?) OR
+                        LOWER(content) LIKE LOWER(?) OR
+                        LOWER(content) LIKE LOWER(?) OR
+                        LOWER(content) LIKE LOWER(?)
+                    )""")
+                    params.extend([
+                        query,
+                        f"{query} %",
+                        f"% {query}",
+                        f"% {query} %",
+                        f"% {query}.%",
+                        f"% {query},%",
+                        f"% {query};%",
+                        f"{query},%",  # 行首+逗号
+                    ])
+            else:
+                # 普通匹配
+                if case_sensitive:
+                    where_conditions.append("content LIKE ?")
+                    params.append(f"%{query}%")
+                else:
+                    where_conditions.append("LOWER(content) LIKE LOWER(?)")
+                    params.append(f"%{query}%")
+
             sql = (
                 "SELECT id, session_id, role, content, created_at, is_pinned, quoted_message_id, quoted_content FROM message "
-                "WHERE session_id = ? AND LOWER(content) LIKE LOWER(?)"
+                f"WHERE {' AND '.join(where_conditions)}"
             )
-            params = [session_id, f"%{query}%"]
 
             # 添加日期过滤条件
             if start_date:
@@ -161,21 +232,84 @@ class SqliteMessageRepository(MessageRepository):
             cur = conn.execute(sql, tuple(params))
             return [_row_to_message(r) for r in cur.fetchall()]
 
-    def search_all(self, query: str, limit: int = 100, start_date: str | None = None, end_date: str | None = None) -> list[Message]:
-        """在所有会话中搜索包含查询字符串的消息（不区分大小写），按时间倒序。
+    def search_all(self, query: str, limit: int = 100, start_date: str | None = None, end_date: str | None = None,
+                   case_sensitive: bool = False, whole_word: bool = False) -> list[Message]:
+        """在所有会话中搜索包含查询字符串的消息，按时间倒序。
 
         支持日期范围过滤：
         - start_date: 只返回创建日期 >= start_date 的消息
         - end_date: 只返回创建日期 <= end_date 的消息
+        v1.4.8: 支持 case_sensitive 和 whole_word 选项
         """
         if not query:
             return []
         with self._conn() as conn:
+            # v1.4.8: 启用区分大小写的 LIKE
+            if case_sensitive:
+                conn.execute("PRAGMA case_sensitive_like = ON")
+
+            # 构建 WHERE 子句
+            where_conditions = ["1=1"]  # 基础条件，方便后续添加
+            params = []
+
+            # 构建搜索条件
+            if whole_word:
+                # 全词匹配
+                if case_sensitive:
+                    where_conditions.append("""(
+                        content = ? OR
+                        content LIKE ? OR
+                        content LIKE ? OR
+                        content LIKE ? OR
+                        content LIKE ? OR
+                        content LIKE ? OR
+                        content LIKE ? OR
+                        content LIKE ?
+                    )""")
+                    params.extend([
+                        query,
+                        f"{query} %",
+                        f"% {query}",
+                        f"% {query} %",
+                        f"% {query}.%",
+                        f"% {query},%",
+                        f"% {query};%",
+                        f"{query},%",  # 行首+逗号 (v1.4.8)
+                    ])
+                else:
+                    where_conditions.append("""(
+                        LOWER(content) = LOWER(?) OR
+                        LOWER(content) LIKE LOWER(?) OR
+                        LOWER(content) LIKE LOWER(?) OR
+                        LOWER(content) LIKE LOWER(?) OR
+                        LOWER(content) LIKE LOWER(?) OR
+                        LOWER(content) LIKE LOWER(?) OR
+                        LOWER(content) LIKE LOWER(?) OR
+                        LOWER(content) LIKE LOWER(?)
+                    )""")
+                    params.extend([
+                        query,
+                        f"{query} %",
+                        f"% {query}",
+                        f"% {query} %",
+                        f"% {query}.%",
+                        f"% {query},%",
+                        f"% {query};%",
+                        f"{query},%",  # 行首+逗号
+                    ])
+            else:
+                # 普通匹配
+                if case_sensitive:
+                    where_conditions.append("content LIKE ?")
+                    params.append(f"%{query}%")
+                else:
+                    where_conditions.append("LOWER(content) LIKE LOWER(?)")
+                    params.append(f"%{query}%")
+
             sql = (
                 "SELECT id, session_id, role, content, created_at, is_pinned, quoted_message_id, quoted_content FROM message "
-                "WHERE LOWER(content) LIKE LOWER(?)"
+                f"WHERE {' AND '.join(where_conditions)}"
             )
-            params = [f"%{query}%"]
 
             # 添加日期过滤条件
             if start_date:

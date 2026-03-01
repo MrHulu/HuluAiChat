@@ -723,6 +723,9 @@ class MainWindow:
         self._search_matches: list[tuple[str, int, int]] = []  # (msg_id, start_pos, end_pos) 所有匹配位置
         self._current_match_index: int = 0  # 当前选中的匹配索引
         self._current_match_msg_id: str | None = None  # 当前匹配所在的消息ID
+        # v1.4.8: 高级搜索选项
+        self._search_case_sensitive: bool = False  # 区分大小写
+        self._search_whole_word: bool = False  # 全词匹配
         # 最近搜索下拉框
         self._search_dropdown: ctk.CTkFrame | None = None  # 下拉框容器
         self._search_dropdown_open: bool = False  # 下拉框是否打开
@@ -868,6 +871,40 @@ class MainWindow:
         )
         self._date_filter_btn.grid(row=0, column=2, padx=(4, 0))
 
+        # v1.4.8: 高级搜索选项容器
+        search_options_frame = ctk.CTkFrame(top, fg_color="transparent")
+        search_options_frame.grid(row=0, column=3, padx=(4, 0))
+
+        # 区分大小写切换 (Aa)
+        self._case_sensitive_var = ctk.BooleanVar(value=False)
+        self._case_sensitive_btn = ctk.CTkButton(
+            search_options_frame,
+            text="Aa",
+            width=28,
+            height=32,
+            command=self._toggle_case_sensitive,
+            fg_color="transparent",
+            hover_color=("gray80", "gray28"),
+            text_color=("gray40", "gray60"),
+            font=("", 10, "bold")
+        )
+        self._case_sensitive_btn.pack(side="left", padx=(0, 2))
+
+        # 全词匹配切换 (W)
+        self._whole_word_var = ctk.BooleanVar(value=False)
+        self._whole_word_btn = ctk.CTkButton(
+            search_options_frame,
+            text="W",
+            width=28,
+            height=32,
+            command=self._toggle_whole_word,
+            fg_color="transparent",
+            hover_color=("gray80", "gray28"),
+            text_color=("gray40", "gray60"),
+            font=("", 10, "bold")
+        )
+        self._whole_word_btn.pack(side="left")
+
         # 搜索结果计数器
         self._search_counter_var = ctk.StringVar()
         self._search_counter = ctk.CTkLabel(
@@ -878,7 +915,7 @@ class MainWindow:
             text_color=("gray50", "gray65"),
             anchor="e"
         )
-        self._search_counter.grid(row=0, column=3, padx=(4, 8))
+        self._search_counter.grid(row=0, column=4, padx=(4, 8))
         self._search_counter.grid_remove()  # 初始隐藏
 
         self._model_var = ctk.StringVar(value=self._current_model_display())
@@ -1228,6 +1265,40 @@ class MainWindow:
             self._date_filter_frame.grid_remove()
         else:
             self._date_filter_frame.grid(row=1, column=0, sticky="ew", padx=(12, 12), pady=(0, 8))
+
+    def _toggle_case_sensitive(self) -> None:
+        """切换区分大小写搜索 (v1.4.8)。"""
+        self._search_case_sensitive = not self._search_case_sensitive
+        # 更新按钮样式
+        if self._search_case_sensitive:
+            self._case_sensitive_btn.configure(
+                fg_color=("gray70", "gray35"),
+                text_color=("gray10", "gray90")
+            )
+        else:
+            self._case_sensitive_btn.configure(
+                fg_color="transparent",
+                text_color=("gray40", "gray60")
+            )
+        # 刷新搜索结果
+        self._refresh_chat_area()
+
+    def _toggle_whole_word(self) -> None:
+        """切换全词匹配搜索 (v1.4.8)。"""
+        self._search_whole_word = not self._search_whole_word
+        # 更新按钮样式
+        if self._search_whole_word:
+            self._whole_word_btn.configure(
+                fg_color=("gray70", "gray35"),
+                text_color=("gray10", "gray90")
+            )
+        else:
+            self._whole_word_btn.configure(
+                fg_color="transparent",
+                text_color=("gray40", "gray60")
+            )
+        # 刷新搜索结果
+        self._refresh_chat_area()
 
     def _open_date_picker(self, field: str) -> None:
         """打开日期选择器。
@@ -2105,7 +2176,8 @@ class MainWindow:
         # 搜索过滤
         if self._search_query:
             self._matched_message_ids = {m.id for m in self._app.search_messages(
-                sid, self._search_query, self._search_start_date, self._search_end_date
+                sid, self._search_query, self._search_start_date, self._search_end_date,
+                self._search_case_sensitive, self._search_whole_word
             )}
             filtered_messages = [m for m in messages if m.id in self._matched_message_ids]
         else:
@@ -2400,7 +2472,8 @@ class MainWindow:
     def _refresh_global_search_results(self) -> None:
         """刷新全局搜索结果。"""
         all_messages = self._app.search_all_messages(
-            self._search_query, 100, self._search_start_date, self._search_end_date
+            self._search_query, 100, self._search_start_date, self._search_end_date,
+            self._search_case_sensitive, self._search_whole_word
         )
 
         if not all_messages:
