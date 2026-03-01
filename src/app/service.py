@@ -7,7 +7,7 @@ from typing import Callable
 
 from src.config.models import AppConfig, Provider
 from src.config.store import ConfigStore
-from src.persistence import Session, Message, SessionRepository, MessageRepository
+from src.persistence import Session, Message, Folder, SessionRepository, MessageRepository, FolderRepository
 from src.chat import ChatClient, ChatError, StreamChunk, TextChunk, DoneChunk, is_error
 
 logger = logging.getLogger(__name__)
@@ -31,11 +31,13 @@ class AppService:
         session_repo: SessionRepository,
         message_repo: MessageRepository,
         chat_client: ChatClient,
+        folder_repo: FolderRepository | None = None,
     ) -> None:
         self._config_store = config_store
         self._session_repo = session_repo
         self._message_repo = message_repo
         self._chat_client = chat_client
+        self._folder_repo = folder_repo
         self._config = config_store.load()
         self._current_session_id: str | None = None
 
@@ -457,3 +459,82 @@ class AppService:
 
         messages = self._message_repo.list_by_session(sid)
         return calculate_session_stats(session, messages)
+
+    def get_global_stats(self) -> "GlobalStats":
+        """获取全局统计数据（跨所有会话）。
+
+        Returns:
+            GlobalStats: 全局统计数据对象
+        """
+        from src.app.statistics import calculate_global_stats
+
+        sessions = self._session_repo.list_all()
+        all_messages = self._message_repo.list_all()
+        return calculate_global_stats(sessions, all_messages)
+
+    # ========== 文件夹管理 ==========
+
+    def create_folder(self, name: str, color: str = "#60A5FA") -> Folder:
+        """创建新文件夹。"""
+        if not self._folder_repo:
+            raise RuntimeError("FolderRepository not initialized")
+        return self._folder_repo.create(name, color)
+
+    def list_folders(self) -> list[Folder]:
+        """获取所有文件夹。"""
+        if not self._folder_repo:
+            return []
+        return self._folder_repo.list_folders()
+
+    def get_folder(self, folder_id: str) -> Folder | None:
+        """获取指定文件夹。"""
+        if not self._folder_repo:
+            return None
+        return self._folder_repo.get_by_id(folder_id)
+
+    def update_folder_name(self, folder_id: str, name: str) -> None:
+        """更新文件夹名称。"""
+        if not self._folder_repo:
+            return
+        self._folder_repo.update_name(folder_id, name)
+
+    def update_folder_color(self, folder_id: str, color: str) -> None:
+        """更新文件夹颜色。"""
+        if not self._folder_repo:
+            return
+        self._folder_repo.update_color(folder_id, color)
+
+    def update_folder_sort_order(self, folder_id: str, sort_order: int) -> None:
+        """更新文件夹排序序号。"""
+        if not self._folder_repo:
+            return
+        self._folder_repo.update_sort_order(folder_id, sort_order)
+
+    def delete_folder(self, folder_id: str) -> None:
+        """删除文件夹（会话会移至根目录）。"""
+        if not self._folder_repo:
+            return
+        self._folder_repo.delete(folder_id)
+
+    def set_session_folder(self, session_id: str, folder_id: str | None) -> None:
+        """设置会话所属文件夹（None 表示移至根目录）。"""
+        self._session_repo.set_folder(session_id, folder_id)
+
+    def get_sessions_by_folder(self, folder_id: str | None) -> list[Session]:
+        """获取指定文件夹下的会话（None 表示根目录）。"""
+        return self._session_repo.get_sessions_by_folder(folder_id)
+
+    def toggle_folder_collapsed(self, folder_id: str) -> bool:
+        """切换文件夹折叠状态，返回新状态。"""
+        if not self._folder_repo:
+            return False
+        current = self._folder_repo.is_folder_collapsed(folder_id)
+        new_state = not current
+        self._folder_repo.set_folder_collapsed(folder_id, new_state)
+        return new_state
+
+    def is_folder_collapsed(self, folder_id: str) -> bool:
+        """检查文件夹是否折叠。"""
+        if not self._folder_repo:
+            return False
+        return self._folder_repo.is_folder_collapsed(folder_id)
