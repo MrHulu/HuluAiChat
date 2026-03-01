@@ -2,6 +2,31 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [1.0.3] - 2025-03-01
+
+### ✨ Features
+
+- **Keyboard Shortcuts Enhanced**:
+  - `Ctrl+R` - Regenerate last assistant response
+  - `Ctrl+T` - Toggle sidebar collapse/expand
+  - `Ctrl+,` - Open settings dialog
+  - Updated help dialog with all shortcuts
+
+### 📝 Notes
+
+- Added regenerate response functionality to UI (was available in AppService but not exposed)
+- Improved keyboard workflow for power users
+
+## [1.0.2] - 2025-03-01
+
+### 🔧 Fixes
+
+- Fixed macOS PyInstaller build (onedir mode, removed target_arch)
+- Fixed Linux AppImage build (ARCH env variable)
+- Fixed Linux icon display (copy to AppDir root)
+- Fixed macOS release upload (zip .app bundle)
+- All 3 platforms (Windows, macOS, Linux) now build successfully
+
 ## [1.0.0-beta] - 2025-03-01
 
 ### ✨ Features
