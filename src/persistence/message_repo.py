@@ -64,7 +64,18 @@ class MessageRepository(ABC):
 
 def _row_to_message(row: tuple) -> Message:
     is_pinned = bool(row[5]) if len(row) > 5 else False
-    return Message(id=row[0], session_id=row[1], role=row[2], content=row[3], created_at=row[4], is_pinned=is_pinned)
+    quoted_message_id = row[6] if len(row) > 6 else None
+    quoted_content = row[7] if len(row) > 7 else None
+    return Message(
+        id=row[0],
+        session_id=row[1],
+        role=row[2],
+        content=row[3],
+        created_at=row[4],
+        is_pinned=is_pinned,
+        quoted_message_id=quoted_message_id,
+        quoted_content=quoted_content,
+    )
 
 
 class SqliteMessageRepository(MessageRepository):
@@ -78,15 +89,17 @@ class SqliteMessageRepository(MessageRepository):
     def append(self, message: Message) -> None:
         with self._conn() as c:
             c.execute(
-                "INSERT INTO message (id, session_id, role, content, created_at, is_pinned) VALUES (?, ?, ?, ?, ?, ?)",
-                (message.id, message.session_id, message.role, message.content, message.created_at, int(message.is_pinned)),
+                """INSERT INTO message (id, session_id, role, content, created_at, is_pinned, quoted_message_id, quoted_content)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                (message.id, message.session_id, message.role, message.content, message.created_at,
+                 int(message.is_pinned), message.quoted_message_id, message.quoted_content),
             )
             c.commit()
 
     def list_by_session(self, session_id: str) -> list[Message]:
         with self._conn() as conn:
             cur = conn.execute(
-                "SELECT id, session_id, role, content, created_at, is_pinned FROM message WHERE session_id = ? ORDER BY created_at ASC",
+                "SELECT id, session_id, role, content, created_at, is_pinned, quoted_message_id, quoted_content FROM message WHERE session_id = ? ORDER BY created_at ASC",
                 (session_id,),
             )
             return [_row_to_message(r) for r in cur.fetchall()]
@@ -107,7 +120,7 @@ class SqliteMessageRepository(MessageRepository):
             return []
         with self._conn() as conn:
             cur = conn.execute(
-                "SELECT id, session_id, role, content, created_at, is_pinned FROM message "
+                "SELECT id, session_id, role, content, created_at, is_pinned, quoted_message_id, quoted_content FROM message "
                 "WHERE session_id = ? AND LOWER(content) LIKE LOWER(?) "
                 "ORDER BY created_at ASC",
                 (session_id, f"%{query}%"),
@@ -120,7 +133,7 @@ class SqliteMessageRepository(MessageRepository):
             return []
         with self._conn() as conn:
             cur = conn.execute(
-                "SELECT id, session_id, role, content, created_at, is_pinned FROM message "
+                "SELECT id, session_id, role, content, created_at, is_pinned, quoted_message_id, quoted_content FROM message "
                 "WHERE LOWER(content) LIKE LOWER(?) "
                 "ORDER BY created_at DESC LIMIT ?",
                 (f"%{query}%", limit),
@@ -137,7 +150,7 @@ class SqliteMessageRepository(MessageRepository):
         """获取指定会话中所有置顶的消息（按时间倒序）。"""
         with self._conn() as conn:
             cur = conn.execute(
-                "SELECT id, session_id, role, content, created_at, is_pinned FROM message "
+                "SELECT id, session_id, role, content, created_at, is_pinned, quoted_message_id, quoted_content FROM message "
                 "WHERE session_id = ? AND is_pinned = 1 "
                 "ORDER BY created_at DESC",
                 (session_id,),
