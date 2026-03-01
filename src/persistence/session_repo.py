@@ -1,6 +1,7 @@
-"""会话仓储接口与 SQLite 实现。"""
+"""会话仓储接口与 SQLite 实现."""
 import sqlite3
 from abc import ABC, abstractmethod
+from contextlib import closing
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -48,8 +49,8 @@ class SqliteSessionRepository(SessionRepository):
         self._path = db_path or str(Path(get_app_data_dir()) / "chat.db")
         init_db(self._path)
 
-    def _conn(self) -> sqlite3.Connection:
-        return sqlite3.connect(self._path)
+    def _conn(self) -> closing:
+        return closing(sqlite3.connect(self._path))
 
     def create(self, session_id: str, title: str) -> Session:
         now = datetime.now(timezone.utc).isoformat()
@@ -58,6 +59,7 @@ class SqliteSessionRepository(SessionRepository):
                 "INSERT INTO session (id, title, created_at, updated_at) VALUES (?, ?, ?, ?)",
                 (session_id, title, now, now),
             )
+            conn.commit()
         return Session(id=session_id, title=title, created_at=now, updated_at=now)
 
     def list_sessions(self) -> list[Session]:
@@ -74,11 +76,14 @@ class SqliteSessionRepository(SessionRepository):
     def update_title(self, session_id: str, title: str) -> None:
         with self._conn() as conn:
             conn.execute("UPDATE session SET title = ? WHERE id = ?", (title, session_id))
+            conn.commit()
 
     def update_updated_at(self, session_id: str, updated_at: str) -> None:
         with self._conn() as conn:
             conn.execute("UPDATE session SET updated_at = ? WHERE id = ?", (updated_at, session_id))
+            conn.commit()
 
     def delete(self, session_id: str) -> None:
         with self._conn() as conn:
             conn.execute("DELETE FROM session WHERE id = ?", (session_id,))
+            conn.commit()

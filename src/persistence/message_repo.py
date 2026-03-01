@@ -1,6 +1,7 @@
-"""消息仓储接口与 SQLite 实现。"""
+"""消息仓储接口与 SQLite 实现."""
 import sqlite3
 from abc import ABC, abstractmethod
+from contextlib import closing
 from pathlib import Path
 
 from src.app_data import get_app_data_dir
@@ -35,8 +36,8 @@ class SqliteMessageRepository(MessageRepository):
         self._path = db_path or str(Path(get_app_data_dir()) / "chat.db")
         init_db(self._path)
 
-    def _conn(self) -> sqlite3.Connection:
-        return sqlite3.connect(self._path)
+    def _conn(self) -> closing:
+        return closing(sqlite3.connect(self._path))
 
     def append(self, message: Message) -> None:
         with self._conn() as c:
@@ -44,6 +45,7 @@ class SqliteMessageRepository(MessageRepository):
                 "INSERT INTO message (id, session_id, role, content, created_at) VALUES (?, ?, ?, ?, ?)",
                 (message.id, message.session_id, message.role, message.content, message.created_at),
             )
+            c.commit()
 
     def list_by_session(self, session_id: str) -> list[Message]:
         with self._conn() as conn:
@@ -56,3 +58,4 @@ class SqliteMessageRepository(MessageRepository):
     def delete_by_session(self, session_id: str) -> None:
         with self._conn() as conn:
             conn.execute("DELETE FROM message WHERE session_id = ?", (session_id,))
+            conn.commit()

@@ -156,6 +156,10 @@ class AppService:
         """加载会话列表（按时间排序）。"""
         return self._session_repo.list_sessions()
 
+    def get_session(self, session_id: str) -> Session | None:
+        """获取指定会话。"""
+        return self._session_repo.get_by_id(session_id)
+
     def load_messages(self, session_id: str) -> list[Message]:
         """加载指定会话的消息列表。"""
         return self._message_repo.list_by_session(session_id)

@@ -3,11 +3,13 @@ import queue
 import os
 import sys
 from typing import Callable
+from tkinter import filedialog
 
 import customtkinter as ctk
 from tkinter import messagebox, PhotoImage
 
 from src.app.service import AppService
+from src.app.exporter import ChatExporter
 from src.chat import TextChunk, DoneChunk, ChatError, is_error
 from src.persistence import Session, Message
 
@@ -131,7 +133,8 @@ class MainWindow:
             top, variable=self._model_var, values=self._model_options(), width=200, command=self._on_model_change
         )
         self._model_menu.grid(row=0, column=0, sticky="w")
-        ctk.CTkButton(top, text="设置", width=80, command=self._on_settings).grid(row=0, column=1, padx=8)
+        ctk.CTkButton(top, text="导出", width=80, command=self._on_export).grid(row=0, column=1, padx=8)
+        ctk.CTkButton(top, text="设置", width=80, command=self._on_settings).grid(row=0, column=2, padx=8)
 
         # 对话区
         self._chat_scroll = ctk.CTkScrollableFrame(main, fg_color="transparent")
@@ -338,6 +341,64 @@ class MainWindow:
     def _on_settings(self) -> None:
         from src.ui.settings import open_settings
         open_settings(self._root, self._app, self._on_config_changed)
+
+    def _on_export(self) -> None:
+        """导出当前会话."""
+        sid = self._app.current_session_id()
+        if not sid:
+            messagebox.showinfo("提示", "请先选择一个会话", parent=self._root)
+            return
+
+        # 创建导出对话框
+        dialog = ctk.CTkToplevel(self._root)
+        dialog.title("导出对话")
+        dialog.geometry("300x180")
+        dialog.transient(self._root)
+
+        ctk.CTkLabel(dialog, text="选择导出格式：", anchor="w").pack(anchor="w", padx=12, pady=(12, 8))
+
+        format_var = ctk.StringVar(value="md")
+        md_radio = ctk.CTkRadioButton(dialog, text="Markdown (.md)", variable=format_var, value="md")
+        md_radio.pack(anchor="w", padx=12, pady=4)
+        json_radio = ctk.CTkRadioButton(dialog, text="JSON (.json)", variable=format_var, value="json")
+        json_radio.pack(anchor="w", padx=12, pady=4)
+
+        result: list[tuple[str, str]] = []  # (format, path)
+
+        def do_export() -> None:
+            fmt = format_var.get()
+            ext = "md" if fmt == "md" else "json"
+            # 弹出文件保存对话框
+            path = filedialog.asksaveasfilename(
+                title="保存导出文件",
+                defaultextension=f".{ext}",
+                filetypes=[(f"{fmt.upper()} Files", f"*.{ext}"), ("All Files", "*.*")],
+                parent=self._root,
+            )
+            if path:
+                result.append((fmt, path))
+            dialog.destroy()
+
+        def cancel() -> None:
+            dialog.destroy()
+
+        btn_frame = ctk.CTkFrame(dialog, fg_color="transparent")
+        btn_frame.pack(pady=16)
+        ctk.CTkButton(btn_frame, text="导出", width=80, command=do_export).pack(side="left", padx=4)
+        ctk.CTkButton(btn_frame, text="取消", width=80, command=cancel).pack(side="left", padx=4)
+
+        dialog.wait_window()
+
+        if result:
+            fmt, path = result[0]
+            try:
+                session = self._app.get_session(sid)
+                messages = self._app.load_messages(sid)
+                exporter = ChatExporter(session, messages)
+                exporter.save(path, fmt)
+                messagebox.showinfo("成功", f"已导出到：{path}", parent=self._root)
+            except Exception as e:
+                messagebox.showerror("错误", f"导出失败：{e}", parent=self._root)
 
     def _on_config_changed(self) -> None:
         """设置保存后刷新模型下拉与主题。"""
