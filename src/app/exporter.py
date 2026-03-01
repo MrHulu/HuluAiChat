@@ -12,7 +12,7 @@ from src.persistence import Session, Message
 
 
 class ChatExporter:
-    """聊天记录导出器，支持 Markdown、JSON、HTML、PDF 和 DOCX 格式."""
+    """聊天记录导出器，支持 TXT、Markdown、JSON、HTML、PDF 和 DOCX 格式."""
 
     def __init__(self, session: Session, messages: list[Message]) -> None:
         self._session = session
@@ -33,6 +33,35 @@ class ChatExporter:
             lines.append(f"{msg.content}\n\n")
 
         return "".join(lines)
+
+    def to_txt(self) -> str:
+        """导出为纯文本格式.
+
+        Returns:
+            纯文本文档字符串
+        """
+        lines = [
+            "=" * 60,
+            f"{self._session.title or '新对话'}",
+            "=" * 60,
+            f"创建时间: {self._format_time(self._session.created_at)}",
+            f"更新时间: {self._format_time(self._session.updated_at)}",
+            "",
+            "-" * 60,
+            "",
+        ]
+
+        for msg in self._messages:
+            role_name = "【你】" if msg.role == "user" else "【助手】"
+            lines.append(role_name)
+            lines.append(msg.content or "")
+            lines.append("")
+            lines.append(f"时间: {self._format_time(msg.created_at)}")
+            lines.append("")
+            lines.append("-" * 60)
+            lines.append("")
+
+        return "\n".join(lines)
 
     def to_json(self) -> str:
         """导出为 JSON 格式."""
@@ -354,9 +383,12 @@ class ChatExporter:
 
         Args:
             path: 文件路径
-            format: "md", "json", "html", "pdf" 或 "docx"
+            format: "txt", "md", "json", "html", "pdf" 或 "docx"
         """
-        if format == "md":
+        if format == "txt":
+            content = self.to_txt()
+            Path(path).write_text(content, encoding="utf-8")
+        elif format == "md":
             content = self.to_markdown()
             Path(path).write_text(content, encoding="utf-8")
         elif format == "json":

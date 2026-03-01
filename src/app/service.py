@@ -178,13 +178,27 @@ class AppService:
         """加载指定会话的消息列表。"""
         return self._message_repo.list_by_session(session_id)
 
-    def search_messages(self, session_id: str, query: str) -> list[Message]:
-        """在指定会话中搜索消息。"""
-        return self._message_repo.search(session_id, query)
+    def search_messages(self, session_id: str, query: str, start_date: str | None = None, end_date: str | None = None) -> list[Message]:
+        """在指定会话中搜索消息。
 
-    def search_all_messages(self, query: str, limit: int = 100) -> list[Message]:
-        """在所有会话中搜索消息。"""
-        return self._message_repo.search_all(query, limit)
+        Args:
+            session_id: 会话ID
+            query: 搜索关键词
+            start_date: 起始日期 (ISO 8601 格式，如 "2024-01-01")
+            end_date: 结束日期 (ISO 8601 格式)
+        """
+        return self._message_repo.search(session_id, query, start_date, end_date)
+
+    def search_all_messages(self, query: str, limit: int = 100, start_date: str | None = None, end_date: str | None = None) -> list[Message]:
+        """在所有会话中搜索消息。
+
+        Args:
+            query: 搜索关键词
+            limit: 最大返回结果数
+            start_date: 起始日期 (ISO 8601 格式)
+            end_date: 结束日期 (ISO 8601 格式)
+        """
+        return self._message_repo.search_all(query, limit, start_date, end_date)
 
     def set_current_provider(self, provider_id: str) -> None:
         """切换当前模型并写回配置。"""
