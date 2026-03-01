@@ -1,0 +1,2 @@
+# Marker file for PEP 561 support.
+# Enables static type checkers (mypy, pyright, etc.) to recognize this package as typed.

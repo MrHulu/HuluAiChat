@@ -1,4 +1,6 @@
 """设置弹窗：主题（第一项，下拉+图标）、Provider 列表（草稿/校验、Model ID 预设）；保存后写回 config。"""
+import uuid
+
 import customtkinter as ctk
 from typing import Callable
 
@@ -208,7 +210,6 @@ def open_settings(parent: ctk.CTk, app: AppService, on_save: Callable[[], None] 
 
     add_btn_row = len(providers)
     def _add_provider() -> None:
-        import uuid
         new_id = str(uuid.uuid4())[:8]
         new_p = Provider(id=new_id, name="", base_url="", api_key="", model_id="")
         providers.append(new_p)
