@@ -165,6 +165,7 @@ jobs:
           # Copy built files
           cp dist/huluchat AppDir/usr/bin/
           cp assets/icon.png AppDir/usr/share/icons/hicolor/256x256/apps/huluchat.png
+          cp assets/icon.png AppDir/huluchat.png
 
           # Create desktop file
           cat > AppDir/huluchat.desktop << 'DESKTOP'
