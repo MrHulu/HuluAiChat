@@ -3,11 +3,13 @@ import queue
 import os
 import sys
 from typing import Callable
-
-import customtkinter as ctk
+from tkinter import filedialog
 from tkinter import messagebox, PhotoImage
 
+import customtkinter as ctk
+
 from src.app.service import AppService
+from src.app.exporter import ChatExporter
 from src.chat import TextChunk, DoneChunk, ChatError, is_error
 from src.persistence import Session, Message
 
@@ -21,6 +23,62 @@ except ImportError:
 SIDEBAR_WIDTH = 220
 SIDEBAR_COLLAPSED = 40  # 折叠后仅图标条，尽量收窄
 POLL_MS = 50
+
+
+class ToastNotification:
+    """简单的浮动提示框，用于显示操作反馈。"""
+    def __init__(self, parent: ctk.CTk, message: str, duration_ms: int = 1500) -> None:
+        self._parent = parent
+        self._duration = duration_ms
+        self._widget: ctk.CTkFrame | None = None
+
+        # 创建半透明背景的提示框
+        self._widget = ctk.CTkFrame(
+            parent,
+            fg_color=("gray80", "gray30"),
+            corner_radius=8,
+            border_width=1,
+            border_color=("gray70", "gray40")
+        )
+        self._widget.place(relx=0.5, rely=0.85, anchor="center")
+
+        label = ctk.CTkLabel(
+            self._widget,
+            text=message,
+            font=("", 12),
+            text_color=("gray15", "gray88"),
+            padx=16,
+            pady=8
+        )
+        label.pack()
+
+        # 自动消失
+        self._widget.after(duration_ms, self._destroy)
+
+    def _destroy(self) -> None:
+        if self._widget and self._widget.winfo_exists():
+            self._widget.place_forget()
+            self._widget = None
+
+
+def copy_to_clipboard(text: str) -> None:
+    """复制文本到剪贴板。"""
+    try:
+        # Windows 优先使用 clip 模块（更快）
+        import win32clipboard
+        win32clipboard.OpenClipboard()
+        win32clipboard.EmptyClipboard()
+        win32clipboard.SetClipboardText(text, win32clipboard.CF_UNICODETEXT)
+        win32clipboard.CloseClipboard()
+    except Exception:
+        # 回退到 Tkinter 通用方法
+        import tkinter
+        r = tkinter.Tk()
+        r.withdraw()
+        r.clipboard_clear()
+        r.clipboard_append(text)
+        r.update()
+        r.destroy()
 
 # 侧边栏图标按钮：透明、仅图标，悬浮(hover_color)/按压(绑定临时色) 三态
 def _bind_pressed_style(btn: ctk.CTkButton) -> None:
@@ -51,6 +109,11 @@ class MainWindow:
         self._streaming_textbox_id: int | None = None  # id(streaming CTkTextbox)
         self._streaming_text: list[str] = []
         self._icon_image: PhotoImage | None = None
+        self._search_query: str = ""  # 当前搜索关键词
+        self._matched_message_ids: set[str] = set()  # 匹配的消息ID集合
+        self._search_matches: list[tuple[str, int, int]] = []  # (msg_id, start_pos, end_pos) 所有匹配位置
+        self._current_match_index: int = 0  # 当前选中的匹配索引
+        self._current_match_msg_id: str | None = None  # 当前匹配所在的消息ID
 
         ctk.set_appearance_mode(self._app.config().theme)
         self._root = ctk.CTk()
@@ -125,13 +188,39 @@ class MainWindow:
         # 顶部栏
         top = ctk.CTkFrame(main, fg_color="transparent")
         top.grid(row=0, column=0, sticky="ew", padx=12, pady=8)
-        top.grid_columnconfigure(0, weight=1)
+        top.grid_columnconfigure(1, weight=1)
+
+        # 搜索框
+        self._search_var = ctk.StringVar()
+        self._search_entry = ctk.CTkEntry(
+            top,
+            placeholder_text="🔍 搜索... (Ctrl+K)",
+            width=200,
+            textvariable=self._search_var,
+            height=32
+        )
+        self._search_entry.grid(row=0, column=0, sticky="w")
+        self._search_entry.bind("<KeyRelease>", self._on_search_input)
+        self._search_entry.bind("<Escape>", lambda e: self._clear_search())
+
         self._model_var = ctk.StringVar(value=self._current_model_display())
         self._model_menu = ctk.CTkOptionMenu(
-            top, variable=self._model_var, values=self._model_options(), width=200, command=self._on_model_change
+            top, variable=self._model_var, values=self._model_options(), width=180, command=self._on_model_change
         )
-        self._model_menu.grid(row=0, column=0, sticky="w")
-        ctk.CTkButton(top, text="设置", width=80, command=self._on_settings).grid(row=0, column=1, padx=8)
+        self._model_menu.grid(row=0, column=2, padx=8)
+        ctk.CTkButton(top, text="模板", width=70, command=self._on_templates).grid(row=0, column=3, padx=4)
+        ctk.CTkButton(top, text="导出", width=70, command=self._on_export).grid(row=0, column=4, padx=4)
+        ctk.CTkButton(top, text="设置", width=70, command=self._on_settings).grid(row=0, column=5, padx=4)
+        # 快捷键提示按钮
+        ctk.CTkButton(
+            top,
+            text="⌨️",
+            width=36,
+            command=self._show_shortcuts_help,
+            fg_color="transparent",
+            hover_color=("gray80", "gray28"),
+            text_color=("gray40", "gray60")
+        ).grid(row=0, column=6, padx=4)
 
         # 对话区
         self._chat_scroll = ctk.CTkScrollableFrame(main, fg_color="transparent")
@@ -142,22 +231,49 @@ class MainWindow:
         # 输入区
         input_frame = ctk.CTkFrame(main, fg_color="transparent")
         input_frame.grid(row=2, column=0, sticky="ew", padx=12, pady=8)
-        input_frame.grid_columnconfigure(0, weight=1)
+        input_frame.grid_columnconfigure(1, weight=1)
+
+        # 提示词模板快捷按钮
+        self._template_var = ctk.StringVar(value="模板")
+        self._template_menu = ctk.CTkOptionMenu(
+            input_frame,
+            variable=self._template_var,
+            values=self._template_options(),
+            width=90,
+            command=self._on_template_selected,
+        )
+        self._template_menu.grid(row=0, column=0, padx=(0, 8))
+
         self._input = ctk.CTkTextbox(input_frame, height=80, wrap="word")
-        self._input.grid(row=0, column=0, sticky="ew", padx=(0, 8))
+        self._input.grid(row=0, column=1, sticky="ew", padx=(0, 8))
         self._input.bind("<Return>", self._on_input_return)
         self._input.bind("<Control-Return>", lambda e: None)  # Ctrl+Enter 换行由默认行为处理
         self._send_btn = ctk.CTkButton(input_frame, text="发送", width=80, command=self._on_send)
-        self._send_btn.grid(row=0, column=1)
+        self._send_btn.grid(row=0, column=2)
         self._sending_label = ctk.CTkLabel(input_frame, text="", fg_color="transparent")
-        self._sending_label.grid(row=0, column=2, padx=8)
+        self._sending_label.grid(row=0, column=3, padx=8)
         self._error_label = ctk.CTkLabel(input_frame, text="", text_color=("red", "orange"))
-        self._error_label.grid(row=1, column=0, columnspan=3, sticky="w", pady=(4, 0))
+        self._error_label.grid(row=1, column=0, columnspan=4, sticky="w", pady=(4, 0))
 
         self._refresh_sessions_list()
         self._refresh_chat_area()
         self._root.after(POLL_MS, self._poll_stream)
         self._root.protocol("WM_DELETE_WINDOW", self._on_close)
+
+        # 键盘快捷键
+        self._root.bind("<Control-k>", lambda e: self._focus_search())
+        self._root.bind("<Control-K>", lambda e: self._focus_search())  # 大写 K 兼容
+        self._root.bind("<Control-n>", lambda e: self._on_new_chat())
+        self._root.bind("<Control-N>", lambda e: self._on_new_chat())  # 大写 N 兼容
+        self._root.bind("<Control-w>", lambda e: self._on_close_current_session())
+        self._root.bind("<Control-W>", lambda e: self._on_close_current_session())  # 大写 W 兼容
+        self._root.bind("<Control-l>", lambda e: self._focus_input())
+        self._root.bind("<Control-L>", lambda e: self._focus_input())  # 大写 L 兼容
+        self._root.bind("<Control-slash>", lambda e: self._show_shortcuts_help())
+        self._root.bind("<Control-question>", lambda e: self._show_shortcuts_help())  # 某些键盘布局
+        # 搜索结果导航
+        self._root.bind("<F3>", lambda e: self._next_search_match())
+        self._root.bind("<Shift-F3>", lambda e: self._prev_search_match())
 
     def _current_model_display(self) -> str:
         p = self._app.get_current_provider()
@@ -165,6 +281,45 @@ class MainWindow:
 
     def _model_options(self) -> list[str]:
         return [p.name for p in self._app.config().providers] or ["未配置模型"]
+
+    def _template_options(self) -> list[str]:
+        """获取模板选项列表。"""
+        templates = self._app.list_prompt_templates()
+        return [t.title for t in templates] or ["无模板"]
+
+    def _on_template_selected(self, choice: str) -> None:
+        """用户选择模板时，将模板内容插入输入框。"""
+        templates = self._app.list_prompt_templates()
+        for t in templates:
+            if t.title == choice:
+                # 获取当前选中的文本（如果有）
+                current_text = self._input.get("1.0", "end").strip()
+                # 替换模板中的 {selection} 占位符
+                content = t.content.replace("{selection}", current_text if current_text else "")
+                # 如果内容已存在且不是占位符，追加；否则替换
+                if current_text and "{selection}" not in t.content:
+                    self._input.delete("1.0", "end")
+                    self._input.insert("1.0", content)
+                else:
+                    self._input.delete("1.0", "end")
+                    self._input.insert("1.0", content)
+                # 重置下拉菜单显示
+                self._template_var.set("模板")
+                break
+
+    def _on_search_input(self, event) -> None:
+        """搜索输入框内容变化时触发。"""
+        query = self._search_var.get().strip()
+        if query != self._search_query:
+            self._search_query = query
+            self._refresh_chat_area()
+
+    def _clear_search(self) -> None:
+        """清除搜索。"""
+        self._search_var.set("")
+        self._search_query = ""
+        self._refresh_chat_area()
+        self._search_entry.focus_set()
 
     def _refresh_sidebar_width(self) -> None:
         w = SIDEBAR_WIDTH if self._sidebar_expanded else SIDEBAR_COLLAPSED
@@ -193,6 +348,11 @@ class MainWindow:
         self._sidebar_expanded = not self._sidebar_expanded
         self._app.set_sidebar_expanded(self._sidebar_expanded)
         self._refresh_sidebar_width()
+
+    def _copy_message(self, content: str) -> None:
+        """复制消息内容到剪贴板，并显示提示。"""
+        copy_to_clipboard(content)
+        ToastNotification(self._root, "✓ 已复制到剪贴板")
 
     def _refresh_sessions_list(self) -> None:
         for row in self._session_row_frames:
@@ -242,6 +402,54 @@ class MainWindow:
         lines = max(2, content.count("\n") + 1)
         return min(400, max(60, lines * 22))
 
+    def _insert_highlighted_text(self, tb: ctk.CTkTextbox, prefix: str, content: str, msg_id: str) -> None:
+        """插入文本并高亮搜索匹配。"""
+        tb.insert("1.0", f"{prefix}: ")
+        # 配置高亮标签（如果支持）
+        try:
+            # 尝试使用底层 Tkinter Text 的 tag_configure
+            text_widget = tb._textbox if hasattr(tb, '_textbox') else tb
+            text_widget.tag_config("search_highlight", background="yellow", foreground="black")
+        except Exception:
+            pass  # CTkTextbox 可能不支持标签
+
+        if not self._search_query:
+            tb.insert("end", content)
+            return
+
+        # 插入内容并高亮匹配
+        content_lower = content.lower()
+        query_lower = self._search_query.lower()
+        start = 0
+        has_match = False
+
+        while True:
+            pos = content_lower.find(query_lower, start)
+            if pos == -1:
+                # 插入剩余部分
+                if start < len(content):
+                    tb.insert("end", content[start:])
+                break
+            has_match = True
+            # 插入匹配前的文本
+            if pos > start:
+                tb.insert("end", content[start:pos])
+            # 插入匹配文本（尝试高亮）
+            match_text = content[pos:pos + len(self._search_query)]
+            tb.insert("end", match_text)
+            try:
+                text_widget = tb._textbox if hasattr(tb, '_textbox') else tb
+                # 计算在文本框中的位置
+                line_start = f"1.0 + {len(prefix) + 2 + pos} chars"
+                line_end = f"1.0 + {len(prefix) + 2 + pos + len(match_text)} chars"
+                text_widget.tag_add("search_highlight", line_start, line_end)
+            except Exception:
+                pass  # 忽略高亮失败
+            start = pos + len(self._search_query)
+
+        if not has_match:
+            tb.insert("end", content)
+
     def _refresh_chat_area(self) -> None:
         for _, w in self._chat_widgets:
             w.destroy()
@@ -255,18 +463,75 @@ class MainWindow:
             self._chat_scroll.columnconfigure(0, weight=1)
             return
         messages = self._app.load_messages(sid)
-        if not messages:
+
+        # 搜索过滤
+        if self._search_query:
+            self._matched_message_ids = {m.id for m in self._app.search_messages(sid, self._search_query)}
+            filtered_messages = [m for m in messages if m.id in self._matched_message_ids]
+        else:
+            self._matched_message_ids = set()
+            filtered_messages = messages
+
+        if not filtered_messages:
+            hint = "没有匹配的消息" if self._search_query else "在下方输入并发送。"
             lbl = ctk.CTkLabel(
-                self._chat_scroll, text="在下方输入并发送。", anchor="w", justify="left"
+                self._chat_scroll, text=hint, anchor="w", justify="left", text_color=("gray40", "gray60")
             )
             lbl.grid(sticky="ew", pady=8)
             self._chat_scroll.columnconfigure(0, weight=1)
             return
-        for m in messages:
+
+        # 收集所有匹配位置用于导航
+        self._search_matches = []
+        if self._search_query:
+            for m in filtered_messages:
+                content_lower = m.content.lower()
+                query_lower = self._search_query.lower()
+                start = 0
+                while True:
+                    pos = content_lower.find(query_lower, start)
+                    if pos == -1:
+                        break
+                    self._search_matches.append((m.id, pos, pos + len(self._search_query)))
+                    start = pos + 1
+            self._current_match_index = 0
+
+        # 计算当前匹配所在的消息ID（用于视觉指示器）
+        self._current_match_msg_id: str | None = None
+        if self._search_matches and 0 <= self._current_match_index < len(self._search_matches):
+            self._current_match_msg_id = self._search_matches[self._current_match_index][0]
+
+        # 显示搜索结果数量提示
+        if self._search_query:
+            match_text = f"找到 {len(self._search_matches)} 个匹配" if self._search_matches else "没有匹配"
+            if self._search_matches:
+                match_text += f" ({self._current_match_index + 1}/{len(self._search_matches)})"
+            count_label = ctk.CTkLabel(
+                self._chat_scroll,
+                text=match_text,
+                anchor="w",
+                text_color=("gray40", "gray60"),
+                font=("", 11)
+            )
+            count_label.grid(sticky="ew", pady=(0, 8))
+
+        for m in filtered_messages:
             fg = ("gray85", "gray25") if m.role == "user" else ("gray70", "gray30")
-            frame = ctk.CTkFrame(self._chat_scroll, fg_color=fg, corner_radius=8)
+            # 当前匹配的消息添加橙色边框作为视觉指示器
+            is_current_match = (m.id == self._current_match_msg_id)
+            border_color = ("orange", "dark orange") if is_current_match else None
+            border_width = 2 if is_current_match else 0
+            frame = ctk.CTkFrame(
+                self._chat_scroll,
+                fg_color=fg,
+                corner_radius=8,
+                border_color=border_color,
+                border_width=border_width
+            )
             frame.grid(sticky="ew", pady=4)
             frame.grid_columnconfigure(0, weight=1)
+            frame.grid_columnconfigure(1, weight=0)
+
             if m.role == "assistant" and _USE_MARKDOWN and CTkMarkdown:
                 md = CTkMarkdown(frame, width=400)
                 md.grid(row=0, column=0, sticky="ew", padx=12, pady=8)
@@ -278,10 +543,148 @@ class MainWindow:
                     fg_color="transparent", border_width=0, state="normal"
                 )
                 tb.grid(row=0, column=0, sticky="ew", padx=12, pady=8)
-                tb.insert("1.0", f"{'你' if m.role == 'user' else '助手'}: {m.content}")
+                prefix = '你' if m.role == 'user' else '助手'
+                self._insert_highlighted_text(tb, prefix, m.content, m.id)
                 tb.configure(state="disabled")
+
+            # 复制按钮
+            copy_btn = ctk.CTkButton(
+                frame,
+                text="📋",
+                width=28,
+                height=28,
+                fg_color="transparent",
+                hover_color=("gray80", "gray28"),
+                border_width=0,
+                command=lambda content=m.content: self._copy_message(content)
+            )
+            copy_btn.grid(row=0, column=1, padx=(4, 8), pady=4)
+            _bind_pressed_style(copy_btn)
+
             self._chat_widgets.append((m.id, frame))
         self._chat_scroll.columnconfigure(0, weight=1)
+
+    def _focus_search(self) -> None:
+        """聚焦搜索框（Ctrl+K）。"""
+        self._search_entry.focus_set()
+        # 选中已有文本方便替换
+        current = self._search_var.get()
+        if current:
+            self._search_entry.select_range(0, "end")
+
+    def _focus_input(self) -> None:
+        """聚焦输入框（Ctrl+L）。"""
+        self._input.focus_set()
+        self._input.mark_set("insert", "end")  # 光标移到末尾
+
+    def _show_shortcuts_help(self) -> None:
+        """显示快捷键帮助对话框（Ctrl+/）。"""
+        dialog = ctk.CTkToplevel(self._root)
+        dialog.title("键盘快捷键")
+        dialog.geometry("380x380")
+        dialog.transient(self._root)
+
+        # 主容器
+        main = ctk.CTkFrame(dialog, fg_color="transparent")
+        main.pack(fill="both", expand=True, padx=16, pady=16)
+
+        # 标题
+        ctk.CTkLabel(
+            main,
+            text="⌨️ 键盘快捷键",
+            font=("", 18, "bold")
+        ).pack(pady=(0, 16))
+
+        # 快捷键列表
+        shortcuts = [
+            ("Ctrl + K", "聚焦搜索框"),
+            ("Ctrl + L", "聚焦输入框"),
+            ("Ctrl + N", "新建对话"),
+            ("Ctrl + W", "删除当前对话"),
+            ("Ctrl + /", "显示此帮助"),
+            ("ESC", "清除搜索"),
+            ("F3", "下一个搜索匹配"),
+            ("Shift + F3", "上一个搜索匹配"),
+            ("Ctrl + Enter", "输入框内换行"),
+            ("Enter", "发送消息"),
+        ]
+
+        # 使用 Frame 来对齐
+        for key, desc in shortcuts:
+            row = ctk.CTkFrame(main, fg_color="transparent")
+            row.pack(fill="x", pady=4)
+            ctk.CTkLabel(
+                row,
+                text=key,
+                font=("Courier", 12),
+                width=120,
+                anchor="w",
+                text_color=("blue", "cyan")
+            ).pack(side="left")
+            ctk.CTkLabel(
+                row,
+                text=desc,
+                anchor="w"
+            ).pack(side="left", padx=(8, 0))
+
+        # 关闭按钮
+        ctk.CTkButton(
+            main,
+            text="关闭",
+            width=100,
+            command=dialog.destroy
+        ).pack(pady=(16, 0))
+
+    def _scroll_to_match(self, msg_id: str) -> None:
+        """滚动到包含指定消息的 widget，使其可见。"""
+        for mid, frame in self._chat_widgets:
+            if mid == msg_id:
+                # 使用 _chat_scroll 的 scroll_to 方法滚动到该 frame
+                try:
+                    # CTkScrollableFrame 有 scroll_to 方法（基于底层 canvas）
+                    # 计算相对位置
+                    self._root.update_idletasks()  # 确保布局已更新
+                    frame_y = frame.winfo_y()
+                    scroll_height = self._chat_scroll._canvas.winfo_height()
+                    # 滚动使目标可见（在视口中间位置）
+                    target_y = max(0, frame_y - scroll_height // 3)
+                    self._chat_scroll._canvas.yview_moveto(target_y / self._chat_scroll._canvas.winfo_height() * 2)
+                except Exception:
+                    # 回退：使用 see 方法（如果可用）
+                    pass
+                break
+
+    def _next_search_match(self) -> None:
+        """跳转到下一个搜索匹配（F3）。"""
+        if not self._search_matches:
+            return
+        self._current_match_index = (self._current_match_index + 1) % len(self._search_matches)
+        # 获取目标消息 ID，刷新后滚动到该位置
+        target_msg_id = self._search_matches[self._current_match_index][0]
+        self._refresh_chat_area()
+        # 延迟滚动，等待 UI 更新完成
+        self._root.after(50, lambda: self._scroll_to_match(target_msg_id))
+
+    def _prev_search_match(self) -> None:
+        """跳转到上一个搜索匹配（Shift+F3）。"""
+        if not self._search_matches:
+            return
+        self._current_match_index = (self._current_match_index - 1) % len(self._search_matches)
+        # 获取目标消息 ID，刷新后滚动到该位置
+        target_msg_id = self._search_matches[self._current_match_index][0]
+        self._refresh_chat_area()
+        # 延迟滚动，等待 UI 更新完成
+        self._root.after(50, lambda: self._scroll_to_match(target_msg_id))
+
+    def _on_close_current_session(self) -> None:
+        """关闭当前会话（Ctrl+W）。"""
+        sid = self._app.current_session_id()
+        if sid:
+            from tkinter import messagebox
+            if messagebox.askyesno("删除会话", "确定删除当前会话？", parent=self._root):
+                self._app.delete_session(sid)
+                self._refresh_sessions_list()
+                self._refresh_chat_area()
 
     def _on_new_chat(self) -> None:
         self._app.new_session()
@@ -339,6 +742,75 @@ class MainWindow:
         from src.ui.settings import open_settings
         open_settings(self._root, self._app, self._on_config_changed)
 
+    def _on_templates(self) -> None:
+        """打开提示词模板管理对话框。"""
+        from src.ui.templates_dialog import open_templates_dialog
+        open_templates_dialog(self._root, self._app, self._on_config_changed)
+
+    def _on_config_changed(self) -> None:
+        """配置更改后的回调：刷新模型列表、模板列表。"""
+        self._model_var.set(self._current_model_display())
+        self._model_menu.configure(values=self._model_options())
+        self._template_menu.configure(values=self._template_options())
+
+    def _on_export(self) -> None:
+        """导出当前会话."""
+        sid = self._app.current_session_id()
+        if not sid:
+            messagebox.showinfo("提示", "请先选择一个会话", parent=self._root)
+            return
+
+        # 创建导出对话框
+        dialog = ctk.CTkToplevel(self._root)
+        dialog.title("导出对话")
+        dialog.geometry("300x180")
+        dialog.transient(self._root)
+
+        ctk.CTkLabel(dialog, text="选择导出格式：", anchor="w").pack(anchor="w", padx=12, pady=(12, 8))
+
+        format_var = ctk.StringVar(value="md")
+        md_radio = ctk.CTkRadioButton(dialog, text="Markdown (.md)", variable=format_var, value="md")
+        md_radio.pack(anchor="w", padx=12, pady=4)
+        json_radio = ctk.CTkRadioButton(dialog, text="JSON (.json)", variable=format_var, value="json")
+        json_radio.pack(anchor="w", padx=12, pady=4)
+
+        result: list[tuple[str, str]] = []  # (format, path)
+
+        def do_export() -> None:
+            fmt = format_var.get()
+            ext = "md" if fmt == "md" else "json"
+            # 弹出文件保存对话框
+            path = filedialog.asksaveasfilename(
+                title="保存导出文件",
+                defaultextension=f".{ext}",
+                filetypes=[(f"{fmt.upper()} Files", f"*.{ext}"), ("All Files", "*.*")],
+                parent=self._root,
+            )
+            if path:
+                result.append((fmt, path))
+            dialog.destroy()
+
+        def cancel() -> None:
+            dialog.destroy()
+
+        btn_frame = ctk.CTkFrame(dialog, fg_color="transparent")
+        btn_frame.pack(pady=16)
+        ctk.CTkButton(btn_frame, text="导出", width=80, command=do_export).pack(side="left", padx=4)
+        ctk.CTkButton(btn_frame, text="取消", width=80, command=cancel).pack(side="left", padx=4)
+
+        dialog.wait_window()
+
+        if result:
+            fmt, path = result[0]
+            try:
+                session = self._app.get_session(sid)
+                messages = self._app.load_messages(sid)
+                exporter = ChatExporter(session, messages)
+                exporter.save(path, fmt)
+                messagebox.showinfo("成功", f"已导出到：{path}", parent=self._root)
+            except Exception as e:
+                messagebox.showerror("错误", f"导出失败：{e}", parent=self._root)
+
     def _on_config_changed(self) -> None:
         """设置保存后刷新模型下拉与主题。"""
         ctk.set_appearance_mode(self._app.config().theme)
@@ -380,13 +852,27 @@ class MainWindow:
         frame = ctk.CTkFrame(self._chat_scroll, fg_color=("gray85", "gray25"), corner_radius=8)
         frame.grid(sticky="ew", pady=4)
         frame.grid_columnconfigure(0, weight=1)
+        frame.grid_columnconfigure(1, weight=0)
         tb = ctk.CTkTextbox(
             frame, wrap="word", height=self._message_textbox_height(content),
             fg_color="transparent", border_width=0, state="normal"
         )
         tb.grid(row=0, column=0, sticky="ew", padx=12, pady=8)
-        tb.insert("1.0", f"你: {content}")
+        self._insert_highlighted_text(tb, "你", content, "user")
         tb.configure(state="disabled")
+        # 复制按钮
+        copy_btn = ctk.CTkButton(
+            frame,
+            text="📋",
+            width=28,
+            height=28,
+            fg_color="transparent",
+            hover_color=("gray80", "gray28"),
+            border_width=0,
+            command=lambda c=content: self._copy_message(c)
+        )
+        copy_btn.grid(row=0, column=1, padx=(4, 8), pady=4)
+        _bind_pressed_style(copy_btn)
         self._chat_widgets.append(("user", frame))
         self._chat_scroll.columnconfigure(0, weight=1)
 

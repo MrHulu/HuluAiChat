@@ -156,9 +156,17 @@ class AppService:
         """加载会话列表（按时间排序）。"""
         return self._session_repo.list_sessions()
 
+    def get_session(self, session_id: str) -> Session | None:
+        """获取指定会话。"""
+        return self._session_repo.get_by_id(session_id)
+
     def load_messages(self, session_id: str) -> list[Message]:
         """加载指定会话的消息列表。"""
         return self._message_repo.list_by_session(session_id)
+
+    def search_messages(self, session_id: str, query: str) -> list[Message]:
+        """在指定会话中搜索消息。"""
+        return self._message_repo.search(session_id, query)
 
     def set_current_provider(self, provider_id: str) -> None:
         """切换当前模型并写回配置。"""
@@ -184,3 +192,129 @@ class AppService:
     def update_session_title(self, session_id: str, title: str) -> None:
         """更新会话标题。"""
         self._session_repo.update_title(session_id, title)
+
+    # ========== 提示词模板管理 ==========
+
+    def list_prompt_templates(self) -> list:
+        """获取所有提示词模板。"""
+        from src.config.models import PromptTemplate
+        return self._config.prompt_templates
+
+    def add_prompt_template(self, title: str, content: str, category: str = "通用") -> None:
+        """添加新的提示词模板。"""
+        from src.config.models import PromptTemplate
+        import uuid
+        template = PromptTemplate(
+            id=str(uuid.uuid4()),
+            title=title,
+            content=content,
+            category=category,
+        )
+        self._config.prompt_templates.append(template)
+        self._config_store.save(self._config)
+
+    def update_prompt_template(self, template_id: str, title: str, content: str, category: str) -> None:
+        """更新提示词模板。"""
+        for t in self._config.prompt_templates:
+            if t.id == template_id:
+                t.title = title
+                t.content = content
+                t.category = category
+                break
+        self._config_store.save(self._config)
+
+    def delete_prompt_template(self, template_id: str) -> None:
+        """删除提示词模板。"""
+        self._config.prompt_templates = [t for t in self._config.prompt_templates if t.id != template_id]
+        self._config_store.save(self._config)
+
+    def get_prompt_template(self, template_id: str):
+        """获取指定模板。"""
+        for t in self._config.prompt_templates:
+            if t.id == template_id:
+                return t
+        return None
+
+    def restore_default_templates(self) -> None:
+        """恢复默认提示词模板。"""
+        from src.config.models import default_prompt_templates
+        self._config.prompt_templates = default_prompt_templates()
+        self._config_store.save(self._config)
+
+    def regenerate_response(
+        self,
+        session_id: str,
+        chunk_queue: queue.Queue,
+        *,
+        on_done: Callable[[], None] | None = None,
+        on_error: Callable[[str], None] | None = None,
+    ) -> None:
+        """重新生成最后一条助手回复。删除最后的助手消息，用相同的对话历史重新请求。"""
+        messages = self._message_repo.list_by_session(session_id)
+        if not messages:
+            logger.warning("regenerate_response: 会话无消息 session_id=%s", session_id)
+            if on_error:
+                on_error("没有可重新生成的内容")
+            return
+
+        # 找到最后一条助手消息并删除
+        last_assistant_idx = -1
+        for i, m in enumerate(messages):
+            if m.role == "assistant":
+                last_assistant_idx = i
+
+        if last_assistant_idx == -1:
+            logger.warning("regenerate_response: 没有助手消息 session_id=%s", session_id)
+            if on_error:
+                on_error("没有助手回复可重新生成")
+            return
+
+        last_assistant = messages[last_assistant_idx]
+        self._message_repo.delete(last_assistant.id)
+
+        # 用删除助手消息后的历史重新请求
+        history = self._message_repo.list_by_session(session_id)
+        api_messages = [{"role": m.role, "content": m.content} for m in history]
+
+        provider = self.get_current_provider()
+        if not provider:
+            logger.warning("regenerate_response: 未选择模型")
+            if on_error:
+                on_error("请先配置并选择模型")
+            return
+
+        logger.info("regenerate_response: session_id=%s, provider=%s", session_id, provider.name)
+
+        def run() -> None:
+            acc: list[str] = []
+
+            def on_chunk(c: StreamChunk) -> None:
+                if is_error(c):
+                    logger.warning("regenerate_response: 流式错误 %s", c.message)
+                    chunk_queue.put(c)
+                    if on_error:
+                        on_error(c.message)
+                    return
+                if isinstance(c, TextChunk):
+                    acc.append(c.content)
+                    chunk_queue.put(c)
+                elif isinstance(c, DoneChunk):
+                    chunk_queue.put(c)
+                    assistant_id = _gen_id()
+                    assistant_msg = Message(
+                        id=assistant_id,
+                        session_id=session_id,
+                        role="assistant",
+                        content="".join(acc),
+                        created_at=_now(),
+                    )
+                    self._message_repo.append(assistant_msg)
+                    self._session_repo.update_updated_at(session_id, _now())
+                    logger.info("regenerate_response: 流式完成, 助手消息长度=%d", len("".join(acc)))
+                    if on_done:
+                        on_done()
+
+            self._chat_client.stream_chat(provider, api_messages, on_chunk)
+
+        t = threading.Thread(target=run, daemon=True)
+        t.start()
