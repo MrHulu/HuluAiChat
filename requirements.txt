@@ -3,6 +3,7 @@ openai>=1.0.0
 ctk-markdown>=0.1.1
 Pillow>=10.0.0
 fpdf2>=2.7.0
+python-docx>=1.1.0
 # 测试依赖
 pytest>=7.4.0
 pytest-mock>=3.11.0

@@ -383,6 +383,78 @@ class TestAppService:
         message_repo.search_all.assert_called_once_with("test", 50)
         assert results == expected_results
 
+    def test_get_message_count_delegates_to_repo(self):
+        """测试获取消息数量委托给仓储。"""
+        message_repo = MagicMock()
+        message_repo.count_by_session.return_value = 5
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=MagicMock(),
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+
+        count = service.get_message_count("s1")
+
+        message_repo.count_by_session.assert_called_once_with("s1")
+        assert count == 5
+
+    def test_toggle_session_pinned_to_true(self):
+        """测试将会话设置为置顶。"""
+        from src.persistence.models import Session
+        session_repo = MagicMock()
+        session = Session(id="s1", title="Test", created_at="2024-01-01T00:00:00+00:00", updated_at="2024-01-01T00:00:00+00:00", is_pinned=False)
+        session_repo.get_by_id.return_value = session
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=session_repo,
+            message_repo=MagicMock(),
+            chat_client=MagicMock(),
+        )
+
+        result = service.toggle_session_pinned("s1")
+
+        assert result is True
+        session_repo.set_pinned.assert_called_once_with("s1", True)
+
+    def test_toggle_session_pinned_to_false(self):
+        """测试取消会话置顶。"""
+        from src.persistence.models import Session
+        session_repo = MagicMock()
+        session = Session(id="s1", title="Test", created_at="2024-01-01T00:00:00+00:00", updated_at="2024-01-01T00:00:00+00:00", is_pinned=True)
+        session_repo.get_by_id.return_value = session
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=session_repo,
+            message_repo=MagicMock(),
+            chat_client=MagicMock(),
+        )
+
+        result = service.toggle_session_pinned("s1")
+
+        assert result is False
+        session_repo.set_pinned.assert_called_once_with("s1", False)
+
+    def test_toggle_session_pinned_nonexistent(self):
+        """测试切换不存在的会话置顶状态返回 False。"""
+        session_repo = MagicMock()
+        session_repo.get_by_id.return_value = None
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=session_repo,
+            message_repo=MagicMock(),
+            chat_client=MagicMock(),
+        )
+
+        result = service.toggle_session_pinned("nonexistent")
+
+        assert result is False
+        session_repo.set_pinned.assert_not_called()
+
     # ========== Prompt Template Tests ==========
 
     def test_list_prompt_templates(self):
@@ -784,3 +856,292 @@ class TestAppService:
         # Verify last assistant message was deleted
         message_repo.delete.assert_called_once_with("m2")
         chat_client.stream_chat.assert_called_once()
+
+    # ========== Update Message Content Tests ==========
+
+    def test_update_message_content_delegates_to_repo(self):
+        """测试更新消息内容委托给仓储。"""
+        message_repo = MagicMock()
+        session_repo = MagicMock()
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=session_repo,
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+        service.switch_session("s1")
+
+        result = service.update_message_content("m1", "Updated content")
+
+        message_repo.update_content.assert_called_once_with("m1", "Updated content")
+        assert result is True
+
+    def test_update_message_content_updates_session_timestamp(self):
+        """测试更新消息内容时更新会话时间戳。"""
+        message_repo = MagicMock()
+        session_repo = MagicMock()
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=session_repo,
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+        service.switch_session("s1")
+
+        service.update_message_content("m1", "Updated content")
+
+        session_repo.update_updated_at.assert_called_once()
+
+    def test_update_message_content_returns_false_on_error(self):
+        """测试更新失败时返回 False。"""
+        message_repo = MagicMock()
+        message_repo.update_content.side_effect = Exception("DB error")
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=MagicMock(),
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+        service.switch_session("s1")
+
+        result = service.update_message_content("m1", "Updated content")
+
+        assert result is False
+
+    def test_update_message_content_with_no_current_session(self):
+        """测试无当前会话时更新消息仍能成功。"""
+        message_repo = MagicMock()
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=MagicMock(),
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+        # No current session set
+
+        result = service.update_message_content("m1", "Updated content")
+
+        # Should still call update_content, but not update_updated_at
+        message_repo.update_content.assert_called_once_with("m1", "Updated content")
+        assert result is True
+
+    # ========== Delete Message Tests ==========
+
+    def test_delete_message_delegates_to_repo(self):
+        """测试删除消息委托给仓储。"""
+        message_repo = MagicMock()
+        session_repo = MagicMock()
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=session_repo,
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+        service.switch_session("s1")
+
+        result = service.delete_message("m1")
+
+        message_repo.delete.assert_called_once_with("m1")
+        assert result is True
+
+    def test_delete_message_updates_session_timestamp(self):
+        """测试删除消息时更新会话时间戳。"""
+        message_repo = MagicMock()
+        session_repo = MagicMock()
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=session_repo,
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+        service.switch_session("s1")
+
+        service.delete_message("m1")
+
+        session_repo.update_updated_at.assert_called_once()
+
+    def test_delete_message_returns_false_on_error(self):
+        """测试删除失败时返回 False。"""
+        message_repo = MagicMock()
+        message_repo.delete.side_effect = Exception("DB error")
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=MagicMock(),
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+        service.switch_session("s1")
+
+        result = service.delete_message("m1")
+
+        assert result is False
+
+    def test_delete_message_with_no_current_session(self):
+        """测试无当前会话时删除消息仍能成功。"""
+        message_repo = MagicMock()
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=MagicMock(),
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+        # No current session set
+
+        result = service.delete_message("m1")
+
+        # Should still call delete, but not update_updated_at
+        message_repo.delete.assert_called_once_with("m1")
+        assert result is True
+
+    # ========== Recent Searches Tests ==========
+
+    def test_get_recent_searches_returns_empty_list_initially(self):
+        """测试初始状态下最近搜索列表为空。"""
+        config = AppConfig(providers=[], recent_searches=[])
+        store = MagicMock()
+        store.load.return_value = config
+
+        service = AppService(
+            config_store=store,
+            session_repo=MagicMock(),
+            message_repo=MagicMock(),
+            chat_client=MagicMock(),
+        )
+
+        result = service.get_recent_searches()
+
+        assert result == []
+
+    def test_get_recent_searches_returns_existing_searches(self):
+        """测试返回现有的最近搜索列表。"""
+        config = AppConfig(providers=[], recent_searches=["python", "test", "code"])
+        store = MagicMock()
+        store.load.return_value = config
+
+        service = AppService(
+            config_store=store,
+            session_repo=MagicMock(),
+            message_repo=MagicMock(),
+            chat_client=MagicMock(),
+        )
+
+        result = service.get_recent_searches()
+
+        assert result == ["python", "test", "code"]
+
+    def test_add_recent_search_adds_new_query(self):
+        """测试添加新的搜索到最近搜索列表。"""
+        config = AppConfig(providers=[], recent_searches=["old_search"])
+        store = MagicMock()
+        store.load.return_value = config
+
+        service = AppService(
+            config_store=store,
+            session_repo=MagicMock(),
+            message_repo=MagicMock(),
+            chat_client=MagicMock(),
+        )
+
+        service.add_recent_search("new_search")
+
+        assert service._config.recent_searches == ["new_search", "old_search"]
+        store.save.assert_called_once()
+
+    def test_add_recent_search_moves_existing_to_front(self):
+        """测试添加已存在的搜索时，将其移动到列表开头。"""
+        config = AppConfig(providers=[], recent_searches=["python", "test", "code"])
+        store = MagicMock()
+        store.load.return_value = config
+
+        service = AppService(
+            config_store=store,
+            session_repo=MagicMock(),
+            message_repo=MagicMock(),
+            chat_client=MagicMock(),
+        )
+
+        service.add_recent_search("test")
+
+        assert service._config.recent_searches == ["test", "python", "code"]
+        store.save.assert_called_once()
+
+    def test_add_recent_search_limits_to_10_items(self):
+        """测试最近搜索列表最多保留10条。"""
+        config = AppConfig(providers=[], recent_searches=[f"search{i}" for i in range(10)])
+        store = MagicMock()
+        store.load.return_value = config
+
+        service = AppService(
+            config_store=store,
+            session_repo=MagicMock(),
+            message_repo=MagicMock(),
+            chat_client=MagicMock(),
+        )
+
+        service.add_recent_search("new")
+
+        assert len(service._config.recent_searches) == 10
+        assert service._config.recent_searches[0] == "new"
+        assert "search9" not in service._config.recent_searches  # 最旧的(search9)被移除
+
+    def test_add_recent_search_ignores_empty_query(self):
+        """测试添加空字符串时不修改列表。"""
+        config = AppConfig(providers=[], recent_searches=["existing"])
+        store = MagicMock()
+        store.load.return_value = config
+
+        service = AppService(
+            config_store=store,
+            session_repo=MagicMock(),
+            message_repo=MagicMock(),
+            chat_client=MagicMock(),
+        )
+
+        service.add_recent_search("")
+        service.add_recent_search("   ")
+
+        assert service._config.recent_searches == ["existing"]
+        store.save.assert_not_called()
+
+    def test_add_recent_search_trims_whitespace(self):
+        """测试添加搜索时自动去除首尾空格。"""
+        config = AppConfig(providers=[], recent_searches=[])
+        store = MagicMock()
+        store.load.return_value = config
+
+        service = AppService(
+            config_store=store,
+            session_repo=MagicMock(),
+            message_repo=MagicMock(),
+            chat_client=MagicMock(),
+        )
+
+        service.add_recent_search("  python test  ")
+
+        assert service._config.recent_searches == ["python test"]
+
+    def test_clear_recent_searches_clears_list(self):
+        """测试清空最近搜索列表。"""
+        config = AppConfig(providers=[], recent_searches=["python", "test", "code"])
+        store = MagicMock()
+        store.load.return_value = config
+
+        service = AppService(
+            config_store=store,
+            session_repo=MagicMock(),
+            message_repo=MagicMock(),
+            chat_client=MagicMock(),
+        )
+
+        service.clear_recent_searches()
+
+        assert service._config.recent_searches == []
+        store.save.assert_called_once()

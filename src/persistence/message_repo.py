@@ -51,6 +51,16 @@ class MessageRepository(ABC):
         """获取指定会话中所有置顶的消息（按时间倒序）。"""
         ...
 
+    @abstractmethod
+    def update_content(self, message_id: str, content: str) -> None:
+        """更新指定消息的内容。"""
+        ...
+
+    @abstractmethod
+    def count_by_session(self, session_id: str) -> int:
+        """获取指定会话的消息数量。"""
+        ...
+
 
 def _row_to_message(row: tuple) -> Message:
     is_pinned = bool(row[5]) if len(row) > 5 else False
@@ -133,3 +143,19 @@ class SqliteMessageRepository(MessageRepository):
                 (session_id,),
             )
             return [_row_to_message(r) for r in cur.fetchall()]
+
+    def update_content(self, message_id: str, content: str) -> None:
+        """更新指定消息的内容。"""
+        with self._conn() as conn:
+            conn.execute("UPDATE message SET content = ? WHERE id = ?", (content, message_id))
+            conn.commit()
+
+    def count_by_session(self, session_id: str) -> int:
+        """获取指定会话的消息数量。"""
+        with self._conn() as conn:
+            cur = conn.execute(
+                "SELECT COUNT(*) FROM message WHERE session_id = ?",
+                (session_id,),
+            )
+            row = cur.fetchone()
+            return row[0] if row else 0

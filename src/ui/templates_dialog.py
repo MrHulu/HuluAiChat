@@ -111,17 +111,11 @@ def open_templates_dialog(parent: ctk.CTk, app: AppService, on_close: callable) 
 
     def _restore_defaults(app_service: AppService, refresh_cb: callable) -> None:
         """恢复默认模板。"""
-        if ctk.CTkToplevel:
-            result = ctk.CTkOptionPane(
-                dialog,
-                title="确认",
-                message="确定要恢复默认模板吗？这将删除所有自定义模板。",
-                options=["确定", "取消"],
-            )
-            # customtkinter 没有内置的确认对话框，使用简单确认
-        app_service.restore_default_templates()
-        refresh_cb()
-        ToastNotification(dialog, "已恢复默认模板")
+        from tkinter import messagebox
+        if messagebox.askyesno("确认", "确定要恢复默认模板吗？这将删除所有自定义模板。", parent=dialog):
+            app_service.restore_default_templates()
+            refresh_cb()
+            ToastNotification(dialog, "已恢复默认模板")
 
     # 新建模板按钮
     new_btn = ctk.CTkButton(

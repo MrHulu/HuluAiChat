@@ -115,6 +115,10 @@ class MainWindow:
         self._search_matches: list[tuple[str, int, int]] = []  # (msg_id, start_pos, end_pos) 所有匹配位置
         self._current_match_index: int = 0  # 当前选中的匹配索引
         self._current_match_msg_id: str | None = None  # 当前匹配所在的消息ID
+        # 最近搜索下拉框
+        self._search_dropdown: ctk.CTkFrame | None = None  # 下拉框容器
+        self._search_dropdown_open: bool = False  # 下拉框是否打开
+        self._search_debounce_job: str | None = None  # 防抖任务ID
 
         ctk.set_appearance_mode(self._app.config().theme)
         self._root = ctk.CTk()
@@ -203,6 +207,9 @@ class MainWindow:
         self._search_entry.grid(row=0, column=0, sticky="w")
         self._search_entry.bind("<KeyRelease>", self._on_search_input)
         self._search_entry.bind("<Escape>", lambda e: self._clear_search())
+        self._search_entry.bind("<FocusIn>", lambda e: self._show_search_dropdown())
+        self._search_entry.bind("<FocusOut>", self._on_search_focus_out)
+        self._search_entry.bind("<Return>", self._on_search_enter)
         # 全局搜索切换按钮
         self._search_global_btn = ctk.CTkButton(
             top,
@@ -334,8 +341,30 @@ class MainWindow:
             self._search_query = query
             self._refresh_chat_area()
 
+        # 取消之前的防抖任务
+        if self._search_debounce_job:
+            self._root.after_cancel(self._search_debounce_job)
+
+        # 如果查询不为空，设置防抖任务（1秒后添加到最近搜索）
+        if query:
+            self._search_debounce_job = self._root.after(1000, lambda: self._add_search_to_history(query))
+        else:
+            self._search_debounce_job = None
+
+    def _add_search_to_history(self, query: str) -> None:
+        """防抖后添加到最近搜索历史。"""
+        current = self._search_var.get().strip()
+        # 只有当前搜索框的内容仍然匹配时才添加（防止用户继续输入）
+        if current == query:
+            self._app.add_recent_search(query)
+            self._search_debounce_job = None
+
     def _clear_search(self) -> None:
         """清除搜索。"""
+        # 取消防抖任务
+        if self._search_debounce_job:
+            self._root.after_cancel(self._search_debounce_job)
+            self._search_debounce_job = None
         self._search_var.set("")
         self._search_query = ""
         self._refresh_chat_area()
@@ -346,6 +375,110 @@ class MainWindow:
         self._search_global = not self._search_global
         self._search_global_btn.configure(text="全部会话" if self._search_global else "本会话")
         self._refresh_chat_area()
+
+    def _on_search_enter(self, event) -> None:
+        """用户在搜索框按 Enter 键，执行搜索并记录到最近搜索。"""
+        # 取消防抖任务
+        if self._search_debounce_job:
+            self._root.after_cancel(self._search_debounce_job)
+            self._search_debounce_job = None
+
+        query = self._search_var.get().strip()
+        if query:
+            self._app.add_recent_search(query)
+        # 执行搜索
+        if query != self._search_query:
+            self._search_query = query
+            self._refresh_chat_area()
+        self._hide_search_dropdown()
+        return "break"  # 阻止默认行为
+
+    def _show_search_dropdown(self) -> None:
+        """显示最近搜索下拉框。"""
+        recent = self._app.get_recent_searches()
+        if not recent:
+            return  # 没有最近搜索，不显示下拉框
+
+        # 如果已经显示，不再重复创建
+        if self._search_dropdown_open:
+            return
+
+        # 获取搜索框的位置
+        x = self._search_entry.winfo_x()
+        y = self._search_entry.winfo_y() + self._search_entry.winfo_height()
+        width = self._search_entry.winfo_width()
+
+        # 创建下拉框容器
+        self._search_dropdown = ctk.CTkFrame(
+            self._root,
+            fg_color=("gray95", "gray22"),
+            border_width=1,
+            border_color=("gray70", "gray40"),
+            corner_radius=6,
+        )
+        self._search_dropdown.place(x=x, y=y, width=width, anchor="nw")
+        self._search_dropdown_open = True
+
+        # 添加最近搜索项
+        for i, query in enumerate(recent):
+            btn = ctk.CTkButton(
+                self._search_dropdown,
+                text=f"🕐 {query}",
+                fg_color="transparent",
+                hover_color=("gray85", "gray30"),
+                text_color=("gray15", "gray88"),
+                height=28,
+                anchor="w",
+                corner_radius=0,
+            )
+            btn.pack(fill="x", padx=0, pady=0)
+            # 点击该项，执行搜索
+            btn.configure(command=lambda q=query: self._select_recent_search(q))
+
+        # 清除历史按钮
+        clear_btn = ctk.CTkButton(
+            self._search_dropdown,
+            text="🗑️ 清除搜索历史",
+            fg_color="transparent",
+            hover_color=("gray80", "gray28"),
+            text_color=("gray40", "gray60"),
+            height=28,
+            anchor="w",
+            corner_radius=0,
+        )
+        clear_btn.pack(fill="x", padx=0, pady=(4, 0))
+        clear_btn.configure(command=self._clear_recent_searches)
+
+    def _hide_search_dropdown(self) -> None:
+        """隐藏最近搜索下拉框。"""
+        if self._search_dropdown:
+            self._search_dropdown.place_forget()
+            self._search_dropdown = None
+        self._search_dropdown_open = False
+
+    def _on_search_focus_out(self, event) -> None:
+        """搜索框失去焦点时，延迟隐藏下拉框（允许点击下拉项）。"""
+        # 延迟100ms，给点击事件时间处理
+        self._root.after(100, self._hide_search_dropdown)
+
+    def _select_recent_search(self, query: str) -> None:
+        """选择一个最近搜索项。"""
+        # 取消防抖任务
+        if self._search_debounce_job:
+            self._root.after_cancel(self._search_debounce_job)
+            self._search_debounce_job = None
+
+        self._search_var.set(query)
+        self._search_query = query
+        self._app.add_recent_search(query)  # 更新为最新
+        self._hide_search_dropdown()
+        self._refresh_chat_area()
+
+    def _clear_recent_searches(self) -> None:
+        """清除所有最近搜索。"""
+        self._app.clear_recent_searches()
+        self._hide_search_dropdown()
+        ToastNotification(self._root, "搜索历史已清除")
 
     def _refresh_sidebar_width(self) -> None:
         w = SIDEBAR_WIDTH if self._sidebar_expanded else SIDEBAR_COLLAPSED
@@ -387,6 +520,103 @@ class MainWindow:
         ToastNotification(self._root, msg)
         self._refresh_chat_area()
 
+    def _edit_message(self, message_id: str, current_content: str) -> None:
+        """编辑消息内容。"""
+        # 获取消息信息
+        sid = self._app.current_session_id()
+        if not sid:
+            return
+        messages = self._app.load_messages(sid)
+        target_msg = None
+        for m in messages:
+            if m.id == message_id:
+                target_msg = m
+                break
+        if not target_msg:
+            ToastNotification(self._root, "❌ 消息不存在")
+            return
+
+        # 创建编辑对话框
+        dialog = ctk.CTkToplevel(self._root)
+        dialog.title("编辑消息")
+        dialog.geometry("600x400")
+        dialog.transient(self._root)
+        dialog.grab_set()
+
+        # 角色标签
+        role_label = ctk.CTkLabel(
+            dialog,
+            text=f"编辑{'用户' if target_msg.role == 'user' else '助手'}消息",
+            font=("", 14, "bold")
+        )
+        role_label.pack(pady=(16, 8))
+
+        # 文本输入框
+        textbox = ctk.CTkTextbox(
+            dialog,
+            wrap="word",
+            height=250,
+            font=("", 12)
+        )
+        textbox.pack(padx=16, pady=8, fill="both", expand=True)
+        textbox.insert("1.0", current_content)
+
+        # 按钮容器
+        btn_frame = ctk.CTkFrame(dialog, fg_color="transparent")
+        btn_frame.pack(pady=(8, 16))
+
+        def save_and_close():
+            new_content = textbox.get("1.0", "end").strip()
+            if not new_content:
+                messagebox.showwarning("警告", "消息内容不能为空")
+                return
+            if self._app.update_message_content(message_id, new_content):
+                ToastNotification(self._root, "✓ 消息已更新")
+                self._refresh_chat_area()
+                dialog.destroy()
+            else:
+                messagebox.showerror("错误", "更新消息失败")
+
+        def cancel_and_close():
+            dialog.destroy()
+
+        # 保存按钮
+        save_btn = ctk.CTkButton(
+            btn_frame,
+            text="保存",
+            command=save_and_close,
+            width=100,
+            fg_color=("gray70", "gray30"),
+            hover_color=("gray60", "gray20")
+        )
+        save_btn.pack(side="left", padx=8)
+
+        # 取消按钮
+        cancel_btn = ctk.CTkButton(
+            btn_frame,
+            text="取消",
+            command=cancel_and_close,
+            width=100,
+            fg_color="transparent",
+            border_width=1,
+            border_color=("gray60", "gray40")
+        )
+        cancel_btn.pack(side="left", padx=8)
+
+        # 聚焦到文本框
+        textbox.focus_set()
+
+    def _delete_message(self, message_id: str) -> None:
+        """删除消息，需用户确认。"""
+        if not messagebox.askyesno("确认删除", "确定要删除这条消息吗？"):
+            return
+
+        if self._app.delete_message(message_id):
+            ToastNotification(self._root, "🗑️ 消息已删除")
+            self._refresh_chat_area()
+        else:
+            ToastNotification(self._root, "❌ 删除失败")
+
     def _refresh_sessions_list(self) -> None:
         for row in self._session_row_frames:
             row.destroy()
@@ -411,13 +641,33 @@ class MainWindow:
                 command=lambda sid=s.id: self._on_select_session(sid),
             )
             btn_title.grid(row=0, column=0, sticky="ew", padx=(0, 4))
+            # 消息数量标签
+            msg_count = self._app.get_message_count(s.id)
+            count_label = ctk.CTkLabel(
+                row,
+                text=str(msg_count),
+                font=("", 10),
+                text_color=("gray50", "gray65"),
+                width=20,
+            )
+            count_label.grid(row=0, column=1, padx=(0, 2))
+            # 置顶按钮
+            pin_text = "📌" if s.is_pinned else "📍"
+            btn_pin = ctk.CTkButton(
+                row, text=pin_text, width=26, height=26,
+                fg_color="transparent", hover_color=("gray80", "gray28"), border_width=0,
+                text_color=_side_text,
+                command=lambda sid=s.id: self._on_toggle_session_pinned(sid),
+            )
+            btn_pin.grid(row=0, column=2, padx=2)
+            _bind_pressed_style(btn_pin)
             btn_rename = ctk.CTkButton(
                 row, text="✏️", width=26, height=26,
                 fg_color="transparent", hover_color=("gray80", "gray28"), border_width=0,
                 text_color=_side_text,
                 command=lambda sid=s.id, tit=s.title: self._on_rename_session(sid, tit),
             )
-            btn_rename.grid(row=0, column=1, padx=2)
+            btn_rename.grid(row=0, column=3, padx=2)
             _bind_pressed_style(btn_rename)
             btn_del = ctk.CTkButton(
                 row, text="🗑️", width=26, height=26,
@@ -425,7 +675,7 @@ class MainWindow:
                 text_color=_side_text,
                 command=lambda sid=s.id: self._on_delete_session(sid),
             )
-            btn_del.grid(row=0, column=2, padx=2)
+            btn_del.grid(row=0, column=4, padx=2)
             _bind_pressed_style(btn_del)
             self._session_row_frames.append(row)
         self._session_list_frame.columnconfigure(0, weight=1)
@@ -620,6 +870,34 @@ class MainWindow:
             copy_btn.grid(row=1, column=0, pady=2)
             _bind_pressed_style(copy_btn)
 
+            # 编辑按钮
+            edit_btn = ctk.CTkButton(
+                btn_frame,
+                text="✏️",
+                width=28,
+                height=28,
+                fg_color="transparent",
+                hover_color=("gray80", "gray28"),
+                border_width=0,
+                command=lambda msg_id=m.id, content=m.content: self._edit_message(msg_id, content)
+            )
+            edit_btn.grid(row=2, column=0, pady=2)
+            _bind_pressed_style(edit_btn)
+
+            # 删除按钮
+            delete_btn = ctk.CTkButton(
+                btn_frame,
+                text="🗑️",
+                width=28,
+                height=28,
+                fg_color="transparent",
+                hover_color=("gray80", "gray28"),
+                border_width=0,
+                command=lambda msg_id=m.id: self._delete_message(msg_id)
+            )
+            delete_btn.grid(row=3, column=0, pady=2)
+            _bind_pressed_style(delete_btn)
+
             self._chat_widgets.append((m.id, frame))
         self._chat_scroll.columnconfigure(0, weight=1)
 
@@ -714,6 +992,34 @@ class MainWindow:
             )
             goto_btn.grid(row=2 if m.is_pinned else 1, column=0, pady=2)
             _bind_pressed_style(goto_btn)
+
+            # 编辑按钮
+            edit_btn = ctk.CTkButton(
+                btn_frame,
+                text="✏️",
+                width=28,
+                height=28,
+                fg_color="transparent",
+                hover_color=("gray80", "gray28"),
+                border_width=0,
+                command=lambda msg_id=m.id, content=m.content: self._edit_message(msg_id, content)
+            )
+            edit_btn.grid(row=3 if m.is_pinned else 2, column=0, pady=2)
+            _bind_pressed_style(edit_btn)
+
+            # 删除按钮
+            delete_btn = ctk.CTkButton(
+                btn_frame,
+                text="🗑️",
+                width=28,
+                height=28,
+                fg_color="transparent",
+                hover_color=("gray80", "gray28"),
+                border_width=0,
+                command=lambda msg_id=m.id: self._delete_message(msg_id)
+            )
+            delete_btn.grid(row=4 if m.is_pinned else 3, column=0, pady=2)
+            _bind_pressed_style(delete_btn)
 
             # 会话标题标签
             title_label = ctk.CTkLabel(
@@ -894,6 +1200,14 @@ class MainWindow:
         self._refresh_sessions_list()
         self._refresh_chat_area()
 
+    def _on_toggle_session_pinned(self, session_id: str) -> None:
+        """切换会话置顶状态。"""
+        new_pinned = self._app.toggle_session_pinned(session_id)
+        icon = "📌" if new_pinned else "📍"
+        status = "已置顶" if new_pinned else "已取消置顶"
+        ToastNotification(self._root, f"{icon} {status}")
+        self._refresh_sessions_list()
+
     def _on_rename_session(self, session_id: str, current_title: str) -> None:
         dialog = ctk.CTkToplevel(self._root)
         dialog.title("重命名")
@@ -961,7 +1275,7 @@ class MainWindow:
         # 创建导出对话框
         dialog = ctk.CTkToplevel(self._root)
         dialog.title("导出对话")
-        dialog.geometry("300x260")
+        dialog.geometry("300x300")
         dialog.transient(self._root)
 
         ctk.CTkLabel(dialog, text="选择导出格式：", anchor="w").pack(anchor="w", padx=12, pady=(12, 8))
@@ -975,12 +1289,14 @@ class MainWindow:
         pdf_radio.pack(anchor="w", padx=12, pady=4)
         html_radio = ctk.CTkRadioButton(dialog, text="HTML (.html)", variable=format_var, value="html")
         html_radio.pack(anchor="w", padx=12, pady=4)
+        docx_radio = ctk.CTkRadioButton(dialog, text="Word (.docx)", variable=format_var, value="docx")
+        docx_radio.pack(anchor="w", padx=12, pady=4)
 
         result: list[tuple[str, str]] = []  # (format, path)
 
         def do_export() -> None:
             fmt = format_var.get()
-            ext_map = {"md": "md", "json": "json", "pdf": "pdf", "html": "html"}
+            ext_map = {"md": "md", "json": "json", "pdf": "pdf", "html": "html", "docx": "docx"}
             ext = ext_map.get(fmt, "md")
             # 弹出文件保存对话框
             path = filedialog.asksaveasfilename(

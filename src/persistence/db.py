@@ -6,21 +6,27 @@ from src.app_data import get_app_data_dir
 
 # 已迁移的标记，避免重复迁移
 _MIGRATION_PINNED_ADDED = False
+_MIGRATION_SESSION_PINNED_ADDED = False
 
 
 def ensure_migrations() -> None:
     """确保所有数据库迁移都已执行。"""
     global _MIGRATION_PINNED_ADDED
+    global _MIGRATION_SESSION_PINNED_ADDED
     if not _MIGRATION_PINNED_ADDED:
         migrate_add_pinned_column()
         _MIGRATION_PINNED_ADDED = True
+    if not _MIGRATION_SESSION_PINNED_ADDED:
+        migrate_add_session_pinned_column()
+        _MIGRATION_SESSION_PINNED_ADDED = True
 
 SESSION_TABLE = """
 CREATE TABLE IF NOT EXISTS session (
     id TEXT PRIMARY KEY,
     title TEXT NOT NULL,
     created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL
+    updated_at TEXT NOT NULL,
+    is_pinned INTEGER NOT NULL DEFAULT 0
 );
 """
 
@@ -47,6 +53,22 @@ def migrate_add_pinned_column(db_path: str | None = None) -> None:
         columns = {row[1] for row in cursor.fetchall()}
         if "is_pinned" not in columns:
             conn.execute("ALTER TABLE message ADD COLUMN is_pinned INTEGER NOT NULL DEFAULT 0")
+            conn.commit()
+    finally:
+        conn.close()
+
+
+def migrate_add_session_pinned_column(db_path: str | None = None) -> None:
+    """为 session 表添加 is_pinned 列（向后兼容）。"""
+    path = db_path or str(Path(get_app_data_dir()) / "chat.db")
+    if not Path(path).exists():
+        return
+    conn = sqlite3.connect(path)
+    try:
+        cursor = conn.execute("PRAGMA table_info(session)")
+        columns = {row[1] for row in cursor.fetchall()}
+        if "is_pinned" not in columns:
+            conn.execute("ALTER TABLE session ADD COLUMN is_pinned INTEGER NOT NULL DEFAULT 0")
             conn.commit()
     finally:
         conn.close()
