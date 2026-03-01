@@ -11,7 +11,7 @@ from src.persistence.models import Session
 
 
 class SessionRepository(ABC):
-    """会话仓储：创建、列表、按 id 获取、更新 title/updated_at。"""
+    """会话仓储：创建、列表、按 id 获取、更新 title/updated_at/pinned。"""
 
     @abstractmethod
     def create(self, session_id: str, title: str) -> Session:
@@ -19,7 +19,7 @@ class SessionRepository(ABC):
 
     @abstractmethod
     def list_sessions(self) -> list[Session]:
-        """按时间排序（updated_at 降序）。"""
+        """置顶优先，然后按时间排序（updated_at 降序）。"""
         ...
 
     @abstractmethod
@@ -35,13 +35,20 @@ class SessionRepository(ABC):
         ...
 
     @abstractmethod
+    def set_pinned(self, session_id: str, pinned: bool) -> None:
+        """设置会话置顶状态。"""
+        ...
+
+    @abstractmethod
     def delete(self, session_id: str) -> None:
         """删除会话（调用方需先删除该会话下所有消息）。"""
         ...
 
 
 def _row_to_session(row: tuple) -> Session:
-    return Session(id=row[0], title=row[1], created_at=row[2], updated_at=row[3])
+    # row: (id, title, created_at, updated_at, is_pinned)
+    is_pinned = bool(row[4]) if len(row) > 4 else False
+    return Session(id=row[0], title=row[1], created_at=row[2], updated_at=row[3], is_pinned=is_pinned)
 
 
 class SqliteSessionRepository(SessionRepository):
@@ -64,12 +71,18 @@ class SqliteSessionRepository(SessionRepository):
 
     def list_sessions(self) -> list[Session]:
         with self._conn() as conn:
-            cur = conn.execute("SELECT id, title, created_at, updated_at FROM session ORDER BY updated_at DESC")
+            # 置顶优先，然后按更新时间降序
+            cur = conn.execute(
+                "SELECT id, title, created_at, updated_at, is_pinned FROM session ORDER BY is_pinned DESC, updated_at DESC"
+            )
             return [_row_to_session(r) for r in cur.fetchall()]
 
     def get_by_id(self, session_id: str) -> Session | None:
         with self._conn() as conn:
-            cur = conn.execute("SELECT id, title, created_at, updated_at FROM session WHERE id = ?", (session_id,))
+            cur = conn.execute(
+                "SELECT id, title, created_at, updated_at, is_pinned FROM session WHERE id = ?",
+                (session_id,)
+            )
             row = cur.fetchone()
             return _row_to_session(row) if row else None
 
@@ -81,6 +94,14 @@ class SqliteSessionRepository(SessionRepository):
     def update_updated_at(self, session_id: str, updated_at: str) -> None:
         with self._conn() as conn:
             conn.execute("UPDATE session SET updated_at = ? WHERE id = ?", (updated_at, session_id))
+            conn.commit()
+
+    def set_pinned(self, session_id: str, pinned: bool) -> None:
+        with self._conn() as conn:
+            conn.execute(
+                "UPDATE session SET is_pinned = ? WHERE id = ?",
+                (1 if pinned else 0, session_id)
+            )
             conn.commit()
 
     def delete(self, session_id: str) -> None:

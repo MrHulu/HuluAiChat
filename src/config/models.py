@@ -60,12 +60,13 @@ class Provider:
 
 @dataclass
 class AppConfig:
-    """应用配置：providers、当前 Provider、主题、侧边栏状态、提示词模板。"""
+    """应用配置：providers、当前 Provider、主题、侧边栏状态、提示词模板、最近搜索。"""
     providers: list[Provider] = field(default_factory=list)
     current_provider_id: str | None = None
     theme: str = "dark"
     sidebar_expanded: bool = True
     prompt_templates: list[PromptTemplate] = field(default_factory=list)
+    recent_searches: list[str] = field(default_factory=list)  # 最近搜索，最多10条
 
     def to_json(self) -> dict[str, Any]:
         return {
@@ -74,6 +75,7 @@ class AppConfig:
             "theme": self.theme,
             "sidebar_expanded": self.sidebar_expanded,
             "prompt_templates": [t.to_json() for t in self.prompt_templates],
+            "recent_searches": self.recent_searches,
         }
 
     @classmethod
@@ -86,6 +88,7 @@ class AppConfig:
             theme=data.get("theme", "dark"),
             sidebar_expanded=data.get("sidebar_expanded", True),
             prompt_templates=templates,
+            recent_searches=data.get("recent_searches", []),
         )
 
 

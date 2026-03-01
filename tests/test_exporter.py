@@ -299,3 +299,108 @@ class TestChatExporterChinese:
         # JSON 字符串应直接包含中文，不是 Unicode 转义
         assert "你好" in json_str
         assert "\\u4f60\\u597d" not in json_str  # 不是 Unicode 转义
+
+
+class TestChatExporterDOCX:
+    """ChatExporter DOCX 导出测试 (v1.0.9)."""
+
+    def test_to_docx_returns_bytes(self, sample_session: Session, sample_messages: list[Message]) -> None:
+        """测试：导出为 DOCX 格式返回字节数据."""
+        exporter = ChatExporter(sample_session, sample_messages)
+        docx_bytes = exporter.to_docx()
+
+        assert isinstance(docx_bytes, bytes)
+        assert len(docx_bytes) > 0
+        # DOCX 文件（ZIP 格式）以 PK\x03\x04 开头
+        assert docx_bytes[:4] == b"PK\x03\x04"
+
+    def test_to_docx_contains_content(self, sample_session: Session, sample_messages: list[Message]) -> None:
+        """测试：DOCX 包含正确的文本内容."""
+        from docx import Document
+
+        exporter = ChatExporter(sample_session, sample_messages)
+        docx_bytes = exporter.to_docx()
+
+        # 从字节数据加载文档
+        from io import BytesIO
+        doc = Document(BytesIO(docx_bytes))
+
+        # 检查标题
+        assert doc.paragraphs[0].text == "Test Session"
+
+        # 检查是否包含消息内容
+        full_text = "\n".join(p.text for p in doc.paragraphs)
+        assert "Hello" in full_text
+        assert "Hi there!" in full_text
+
+    def test_to_docx_with_chinese_content(self) -> None:
+        """测试：DOCX 导出支持中文内容."""
+        from docx import Document
+        from io import BytesIO
+
+        session = Session(
+            id="s1",
+            title="中文测试",
+            created_at=datetime.now(timezone.utc).isoformat(),
+            updated_at=datetime.now(timezone.utc).isoformat(),
+        )
+        messages = [
+            Message(id="m1", session_id="s1", role="user", content="你好，世界！", created_at=datetime.now(timezone.utc).isoformat()),
+            Message(id="m2", session_id="s1", role="assistant", content="你好！有什么可以帮助你的吗？", created_at=datetime.now(timezone.utc).isoformat()),
+        ]
+
+        exporter = ChatExporter(session, messages)
+        docx_bytes = exporter.to_docx()
+
+        # 加载文档并检查中文内容
+        doc = Document(BytesIO(docx_bytes))
+        full_text = "\n".join(p.text for p in doc.paragraphs)
+
+        assert "中文测试" in full_text
+        assert "你好，世界！" in full_text
+        assert "你好！有什么可以帮助你的吗？" in full_text
+
+    def test_to_docx_with_empty_session(self, sample_session: Session) -> None:
+        """测试：空会话导出为 DOCX."""
+        exporter = ChatExporter(sample_session, [])
+        docx_bytes = exporter.to_docx()
+
+        assert isinstance(docx_bytes, bytes)
+        assert len(docx_bytes) > 0
+        assert docx_bytes[:4] == b"PK\x03\x04"
+
+    def test_save_docx(self, sample_session: Session, sample_messages: list[Message], temp_dir) -> None:
+        """测试：保存 DOCX 文件."""
+        import os
+
+        exporter = ChatExporter(sample_session, sample_messages)
+        path = str(temp_dir / "export.docx")
+        exporter.save(path, "docx")
+
+        assert os.path.exists(path)
+        with open(path, "rb") as f:
+            content = f.read()
+        assert content[:4] == b"PK\x03\x04"
+
+    def test_to_docx_structure(self, sample_session: Session, sample_messages: list[Message]) -> None:
+        """测试：DOCX 文档结构正确（标题、元信息、消息）。"""
+        from docx import Document
+        from io import BytesIO
+
+        exporter = ChatExporter(sample_session, sample_messages)
+        docx_bytes = exporter.to_docx()
+
+        doc = Document(BytesIO(docx_bytes))
+
+        # 检查文档结构
+        full_text = "\n".join(p.text for p in doc.paragraphs)
+
+        # 应该包含标题
+        assert "Test Session" in full_text
+
+        # 应该包含时间戳信息
+        assert "创建时间:" in full_text or "Created:" in full_text
+
+        # 应该包含消息
+        assert "Hello" in full_text
+        assert "Hi there!" in full_text

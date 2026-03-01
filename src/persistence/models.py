@@ -5,11 +5,12 @@ from datetime import datetime
 
 @dataclass
 class Session:
-    """会话：id、标题、创建与更新时间。"""
+    """会话：id、标题、创建与更新时间、置顶状态。"""
     id: str
     title: str
     created_at: str  # ISO 格式
     updated_at: str  # ISO 格式
+    is_pinned: bool = False  # 是否置顶
 
 
 @dataclass
