@@ -3,6 +3,7 @@ import queue
 import os
 import sys
 from typing import Callable
+from datetime import datetime, timedelta
 from tkinter import filedialog
 from tkinter import messagebox, PhotoImage
 
@@ -320,6 +321,374 @@ class QuickSwitcherDialog:
             self._widget.destroy()
             self._widget = None
 
+
+class GoToMessageDialog:
+    """跳转到指定消息的对话框 - 支持按消息编号快速定位。"""
+    def __init__(
+        self,
+        parent: ctk.CTk,
+        total_messages: int,
+        on_jump: Callable[[int], None],
+    ) -> None:
+        """
+        Args:
+            parent: 父窗口
+            total_messages: 会话中消息总数
+            on_jump: 跳转回调，接收消息索引（从 0 开始）
+        """
+        self._parent = parent
+        self._total_messages = total_messages
+        self._on_jump = on_jump
+        self._widget: ctk.CTkToplevel | None = None
+        self._entry_var: ctk.StringVar | None = None
+
+        self._create_dialog()
+
+    def _create_dialog(self) -> None:
+        """创建对话框。"""
+        self._widget = ctk.CTkToplevel(self._parent)
+        self._widget.title("跳转到消息")
+        self._widget.geometry("400x200")
+        self._widget.transient(self._parent)
+        self._widget.grab_set()
+        self._widget.resizable(False, False)
+
+        # 居中显示
+        self._widget.update_idletasks()
+        parent_x = self._parent.winfo_x()
+        parent_y = self._parent.winfo_y()
+        parent_w = self._parent.winfo_width()
+        parent_h = self._parent.winfo_height()
+        dlg_w = 400
+        dlg_h = 200
+        self._widget.geometry(f"{dlg_w}x{dlg_h}+{parent_x + (parent_w - dlg_w) // 2}+{parent_y + (parent_h - dlg_h) // 2}")
+
+        # 主框架
+        main = ctk.CTkFrame(self._widget, fg_color="transparent")
+        main.pack(fill="both", expand=True, padx=24, pady=24)
+        main.grid_columnconfigure(0, weight=1)
+
+        # 标题
+        title = ctk.CTkLabel(
+            main,
+            text="📍 跳转到消息",
+            font=("", 16, "bold"),
+            text_color=("gray15", "gray88")
+        )
+        title.grid(row=0, column=0, pady=(0, 8))
+
+        # 提示信息
+        hint = ctk.CTkLabel(
+            main,
+            text=f"输入消息编号 (1 - {self._total_messages})",
+            text_color=("gray40", "gray60")
+        )
+        hint.grid(row=1, column=0, pady=(0, 16))
+
+        # 输入框
+        self._entry_var = ctk.StringVar()
+        entry = ctk.CTkEntry(
+            main,
+            textvariable=self._entry_var,
+            placeholder_text=f"消息编号 (1-{self._total_messages})",
+            height=40,
+        )
+        entry.grid(row=2, column=0, pady=(0, 16))
+        entry.focus_set()
+        entry.bind("<Return>", lambda e: self._jump())
+        entry.bind("<Escape>", lambda e: self._close())
+
+        # 按钮区域
+        btn_frame = ctk.CTkFrame(main, fg_color="transparent")
+        btn_frame.grid(row=3, column=0)
+        btn_frame.grid_columnconfigure(0, weight=1)
+        btn_frame.grid_columnconfigure(1, weight=1)
+
+        ctk.CTkButton(
+            btn_frame,
+            text="跳转",
+            width=100,
+            height=36,
+            command=self._jump,
+        ).grid(row=0, column=0, padx=(0, 8))
+
+        ctk.CTkButton(
+            btn_frame,
+            text="取消",
+            width=100,
+            height=36,
+            fg_color=("gray70", "gray35"),
+            hover_color=("gray60", "gray30"),
+            command=self._close,
+        ).grid(row=0, column=1, padx=(8, 0))
+
+        # 绑定 ESC 关闭
+        self._widget.bind("<Escape>", lambda e: self._close())
+
+    def _jump(self) -> None:
+        """执行跳转。"""
+        if not self._entry_var:
+            return
+        try:
+            msg_num = int(self._entry_var.get().strip())
+            if 1 <= msg_num <= self._total_messages:
+                # 转换为 0-based 索引
+                self._on_jump(msg_num - 1)
+                self._close()
+            else:
+                # 显示错误提示（短暂闪烁输入框边框）
+                self._entry_var.set("")
+        except ValueError:
+            self._entry_var.set("")
+
+    def _close(self) -> None:
+        """关闭对话框。"""
+        if self._widget and self._widget.winfo_exists():
+            self._widget.destroy()
+            self._widget = None
+
+
+class DatePickerDialog:
+    """简单的日期选择对话框，用于选择日期范围。"""
+    def __init__(
+        self,
+        parent: ctk.CTk,
+        title: str,
+        on_select: Callable[[str | None], None],
+        initial_date: str | None = None,
+    ) -> None:
+        """初始化日期选择器。
+
+        Args:
+            parent: 父窗口
+            title: 对话框标题
+            on_select: 选择回调，接收 ISO 格式日期字符串或 None (取消)
+            initial_date: 初始日期 (ISO 格式)
+        """
+        self._parent = parent
+        self._title = title
+        self._on_select = on_select
+        self._widget: ctk.CTkToplevel | None = None
+        self._selected_date: str | None = initial_date
+
+        # 解析初始日期
+        if initial_date:
+            try:
+                dt = datetime.fromisoformat(initial_date.replace("Z", "+00:00"))
+                self._year = dt.year
+                self._month = dt.month
+                self._day = dt.day
+            except Exception:
+                today = datetime.now()
+                self._year = today.year
+                self._month = today.month
+                self._day = today.day
+        else:
+            today = datetime.now()
+            self._year = today.year
+            self._month = today.month
+            self._day = today.day
+
+        self._build()
+
+    def _build(self) -> None:
+        """构建日期选择器 UI。"""
+        self._widget = ctk.CTkToplevel(self._parent)
+        self._widget.title(self._title)
+        self._widget.transient(self._parent)
+        self._widget.grab_set()
+        self._widget.resizable(False, False)
+
+        # 居中显示
+        parent_x = self._parent.winfo_x()
+        parent_y = self._parent.winfo_y()
+        parent_w = self._parent.winfo_width()
+        parent_h = self._parent.winfo_height()
+        dlg_w, dlg_h = 320, 400
+        self._widget.geometry(f"{dlg_w}x{dlg_h}+{parent_x + (parent_w - dlg_w) // 2}+{parent_y + (parent_h - dlg_h) // 2}")
+
+        # 主框架
+        main = ctk.CTkFrame(self._widget, fg_color="transparent")
+        main.pack(fill="both", expand=True, padx=16, pady=16)
+        main.grid_columnconfigure(0, weight=1)
+
+        # 年月选择行
+        row = 0
+        header = ctk.CTkFrame(main, fg_color="transparent")
+        header.grid(row=row, column=0, sticky="ew", pady=(0, 12))
+        header.grid_columnconfigure(1, weight=1)
+
+        self._prev_month_btn = ctk.CTkButton(
+            header, text="<", width=40, height=32,
+            command=self._prev_month
+        )
+        self._prev_month_btn.grid(row=0, column=0)
+
+        self._year_month_var = ctk.StringVar()
+        self._year_month_label = ctk.CTkLabel(
+            header, textvariable=self._year_month_var,
+            font=("", 14, "bold")
+        )
+        self._year_month_label.grid(row=0, column=1)
+
+        self._next_month_btn = ctk.CTkButton(
+            header, text=">", width=40, height=32,
+            command=self._next_month
+        )
+        self._next_month_btn.grid(row=0, column=2)
+
+        # 星期标题
+        row += 1
+        weekdays = ["一", "二", "三", "四", "五", "六", "日"]
+        weekday_frame = ctk.CTkFrame(main, fg_color="transparent")
+        weekday_frame.grid(row=row, column=0, sticky="ew", pady=(0, 8))
+        for i, wd in enumerate(weekdays):
+            lbl = ctk.CTkLabel(
+                weekday_frame, text=wd,
+                width=40, height=32,
+                font=("", 11),
+                text_color=("gray50", "gray65")
+            )
+            lbl.grid(row=0, column=i)
+
+        # 日期网格
+        row += 1
+        self._date_frame = ctk.CTkFrame(main, fg_color="transparent")
+        self._date_frame.grid(row=row, column=0, sticky="nsew", pady=(0, 12))
+        self._day_buttons: list[ctk.CTkButton] = []
+
+        # 按钮区域
+        row += 1
+        btn_frame = ctk.CTkFrame(main, fg_color="transparent")
+        btn_frame.grid(row=row, column=0, sticky="ew")
+        btn_frame.grid_columnconfigure(0, weight=1)
+        btn_frame.grid_columnconfigure(1, weight=1)
+
+        ctk.CTkButton(
+            btn_frame, text="清除", width=100, height=36,
+            fg_color=("gray70", "gray35"),
+            hover_color=("gray60", "gray30"),
+            command=self._clear
+        ).grid(row=0, column=0, padx=(0, 8))
+
+        ctk.CTkButton(
+            btn_frame, text="今天", width=100, height=36,
+            command=self._select_today
+        ).grid(row=0, column=1, padx=(8, 0))
+
+        self._update_calendar()
+        self._widget.bind("<Escape>", lambda e: self._close())
+
+    def _update_calendar(self) -> None:
+        """更新日历显示。"""
+        # 更新年月标签
+        self._year_month_var.set(f"{self._year}年 {self._month}月")
+
+        # 清除旧按钮
+        for btn in self._day_buttons:
+            btn.destroy()
+        self._day_buttons.clear()
+
+        # 计算日历
+        first_day = datetime(self._year, self._month, 1)
+        # 中国习惯: 周一为第一天 (0=周一, 6=周日)
+        # weekday(): 0=周一, 6=周日
+        first_weekday = first_day.weekday()
+
+        # 本月天数
+        if self._month == 12:
+            next_month = datetime(self._year + 1, 1, 1)
+        else:
+            next_month = datetime(self._year, self._month + 1, 1)
+        days_in_month = (next_month - timedelta(days=1)).day
+
+        # 创建日期按钮
+        day = 1
+        for week in range(6):  # 最多6行
+            if day > days_in_month:
+                break
+            for wd in range(7):  # 7列
+                if week == 0 and wd < first_weekday:
+                    # 空白格
+                    lbl = ctk.CTkLabel(
+                        self._date_frame, text="",
+                        width=40, height=32
+                    )
+                    lbl.grid(row=week, column=wd)
+                elif day <= days_in_month:
+                    # 日期按钮
+                    is_selected = (day == self._day and
+                                   self._month == datetime.fromisoformat(
+                                       self._selected_date.replace("Z", "+00:00")
+                                   ).month if self._selected_date else False)
+                    is_today = (day == datetime.now().day and
+                                self._month == datetime.now().month and
+                                self._year == datetime.now().year)
+
+                    btn = ctk.CTkButton(
+                        self._date_frame,
+                        text=str(day),
+                        width=40, height=32,
+                        fg_color=("gray65", "gray30") if is_selected else ("gray85", "gray25"),
+                        hover_color=("gray55", "gray28"),
+                        text_color=("gray15", "gray88"),
+                        command=lambda d=day: self._select_day(d)
+                    )
+                    btn.grid(row=week, column=wd, padx=1, pady=1)
+                    self._day_buttons.append(btn)
+                    day += 1
+                else:
+                    # 空白格
+                    lbl = ctk.CTkLabel(
+                        self._date_frame, text="",
+                        width=40, height=32
+                    )
+                    lbl.grid(row=week, column=wd)
+
+    def _prev_month(self) -> None:
+        """上一月。"""
+        if self._month == 1:
+            self._month = 12
+            self._year -= 1
+        else:
+            self._month -= 1
+        self._update_calendar()
+
+    def _next_month(self) -> None:
+        """下一月。"""
+        if self._month == 12:
+            self._month = 1
+            self._year += 1
+        else:
+            self._month += 1
+        self._update_calendar()
+
+    def _select_day(self, day: int) -> None:
+        """选择日期。"""
+        self._day = day
+        date_str = datetime(self._year, self._month, self._day).isoformat()
+        self._on_select(date_str)
+        self._close()
+
+    def _select_today(self) -> None:
+        """选择今天。"""
+        today = datetime.now()
+        date_str = datetime(today.year, today.month, today.day).isoformat()
+        self._on_select(date_str)
+        self._close()
+
+    def _clear(self) -> None:
+        """清除日期选择。"""
+        self._on_select(None)
+        self._close()
+
+    def _close(self) -> None:
+        """关闭对话框。"""
+        if self._widget and self._widget.winfo_exists():
+            self._widget.destroy()
+            self._widget = None
+
+
 # 侧边栏图标按钮：透明、仅图标，悬浮(hover_color)/按压(绑定临时色) 三态
 def _bind_pressed_style(btn: ctk.CTkButton) -> None:
     def on_press(_e: object) -> None:
@@ -359,6 +728,9 @@ class MainWindow:
         self._search_dropdown: ctk.CTkFrame | None = None  # 下拉框容器
         self._search_dropdown_open: bool = False  # 下拉框是否打开
         self._search_debounce_job: str | None = None  # 防抖任务ID
+        # 日期范围过滤
+        self._search_start_date: str | None = None  # 起始日期 (ISO 格式)
+        self._search_end_date: str | None = None  # 结束日期 (ISO 格式)
         self._quoted_message: tuple[str, str] | None = None  # (message_id, content) 正在引用的消息
 
         ctk.set_appearance_mode(self._app.config().theme)
@@ -464,6 +836,19 @@ class MainWindow:
         )
         self._search_global_btn.grid(row=0, column=1, padx=(4, 0))
 
+        # 日期范围过滤按钮
+        self._date_filter_btn = ctk.CTkButton(
+            top,
+            text="📅",
+            width=36,
+            height=32,
+            command=self._toggle_date_filter,
+            fg_color="transparent",
+            hover_color=("gray80", "gray28"),
+            text_color=("gray40", "gray60")
+        )
+        self._date_filter_btn.grid(row=0, column=2, padx=(4, 0))
+
         # 搜索结果计数器
         self._search_counter_var = ctk.StringVar()
         self._search_counter = ctk.CTkLabel(
@@ -474,17 +859,17 @@ class MainWindow:
             text_color=("gray50", "gray65"),
             anchor="e"
         )
-        self._search_counter.grid(row=0, column=2, padx=(4, 8))
+        self._search_counter.grid(row=0, column=3, padx=(4, 8))
         self._search_counter.grid_remove()  # 初始隐藏
 
         self._model_var = ctk.StringVar(value=self._current_model_display())
         self._model_menu = ctk.CTkOptionMenu(
             top, variable=self._model_var, values=self._model_options(), width=180, command=self._on_model_change
         )
-        self._model_menu.grid(row=0, column=3, padx=8)
-        ctk.CTkButton(top, text="模板", width=70, command=self._on_templates).grid(row=0, column=4, padx=4)
-        ctk.CTkButton(top, text="导出", width=70, command=self._on_export).grid(row=0, column=5, padx=4)
-        ctk.CTkButton(top, text="设置", width=70, command=self._on_settings).grid(row=0, column=6, padx=4)
+        self._model_menu.grid(row=0, column=4, padx=8)
+        ctk.CTkButton(top, text="模板", width=70, command=self._on_templates).grid(row=0, column=5, padx=4)
+        ctk.CTkButton(top, text="导出", width=70, command=self._on_export).grid(row=0, column=6, padx=4)
+        ctk.CTkButton(top, text="设置", width=70, command=self._on_settings).grid(row=0, column=7, padx=4)
         # 快捷键提示按钮
         ctk.CTkButton(
             top,
@@ -494,20 +879,99 @@ class MainWindow:
             fg_color="transparent",
             hover_color=("gray80", "gray28"),
             text_color=("gray40", "gray60")
-        ).grid(row=0, column=7, padx=4)
+        ).grid(row=0, column=8, padx=4)
         # 添加 column 1 的权重，让搜索按钮有足够空间
         top.grid_columnconfigure(1, weight=0)
-        top.grid_columnconfigure(2, weight=0)  # 计数器固定宽度
+        top.grid_columnconfigure(2, weight=0)  # 日期按钮固定宽度
+        top.grid_columnconfigure(3, weight=0)  # 计数器固定宽度
+
+        # 日期范围过滤面板（初始隐藏）
+        self._date_filter_frame = ctk.CTkFrame(
+            main,
+            fg_color=("gray85", "gray28"),
+            corner_radius=8
+        )
+        # 初始不显示，有日期过滤时才显示
+
+        self._date_start_var = ctk.StringVar()
+        self._date_end_var = ctk.StringVar()
+
+        date_label = ctk.CTkLabel(
+            self._date_filter_frame,
+            text="📅 日期范围:",
+            font=("", 11),
+            text_color=("gray40", "gray70")
+        )
+        date_label.grid(row=0, column=0, padx=(8, 4), pady=6)
+
+        self._date_start_entry = ctk.CTkEntry(
+            self._date_filter_frame,
+            placeholder_text="起始 (YYYY-MM-DD)",
+            width=140,
+            height=32,
+            textvariable=self._date_start_var
+        )
+        self._date_start_entry.grid(row=0, column=1, padx=4, pady=6)
+
+        self._date_start_btn = ctk.CTkButton(
+            self._date_filter_frame,
+            text="📆",
+            width=36,
+            height=32,
+            command=lambda: self._open_date_picker("start"),
+            fg_color=("gray75", "gray32"),
+            hover_color=("gray70", "gray28")
+        )
+        self._date_start_btn.grid(row=0, column=2, padx=(0, 4), pady=6)
+
+        to_label = ctk.CTkLabel(
+            self._date_filter_frame,
+            text="至",
+            font=("", 11),
+            text_color=("gray50", "gray65")
+        )
+        to_label.grid(row=0, column=3, padx=4, pady=6)
+
+        self._date_end_entry = ctk.CTkEntry(
+            self._date_filter_frame,
+            placeholder_text="结束 (YYYY-MM-DD)",
+            width=140,
+            height=32,
+            textvariable=self._date_end_var
+        )
+        self._date_end_entry.grid(row=0, column=4, padx=4, pady=6)
+
+        self._date_end_btn = ctk.CTkButton(
+            self._date_filter_frame,
+            text="📆",
+            width=36,
+            height=32,
+            command=lambda: self._open_date_picker("end"),
+            fg_color=("gray75", "gray32"),
+            hover_color=("gray70", "gray28")
+        )
+        self._date_end_btn.grid(row=0, column=5, padx=(0, 4), pady=6)
+
+        self._date_clear_btn = ctk.CTkButton(
+            self._date_filter_frame,
+            text="清除",
+            width=60,
+            height=32,
+            command=self._clear_date_filter,
+            fg_color=("gray70", "gray30"),
+            hover_color=("gray65", "gray28")
+        )
+        self._date_clear_btn.grid(row=0, column=6, padx=(8, 8), pady=6)
 
         # 对话区
         self._chat_scroll = ctk.CTkScrollableFrame(main, fg_color="transparent")
-        self._chat_scroll.grid(row=1, column=0, sticky="nsew", padx=12, pady=4)
+        self._chat_scroll.grid(row=2, column=0, sticky="nsew", padx=12, pady=4)
         self._chat_scroll.grid_columnconfigure(0, weight=1)
         self._chat_widgets: list[tuple[str, ctk.CTkFrame]] = []  # (msg_id, frame containing CTkTextbox)
 
         # 输入区
         input_frame = ctk.CTkFrame(main, fg_color="transparent")
-        input_frame.grid(row=2, column=0, sticky="ew", padx=12, pady=8)
+        input_frame.grid(row=3, column=0, sticky="ew", padx=12, pady=8)
         input_frame.grid_rowconfigure(1, weight=1)
         input_frame.grid_columnconfigure(1, weight=1)
 
@@ -592,6 +1056,13 @@ class MainWindow:
         # 快速会话切换 Ctrl+Tab / Ctrl+Shift+Tab
         self._root.bind("<Control-Tab>", lambda e: self._on_quick_switcher(1))  # Ctrl+Tab 下一个
         self._root.bind("<Control-ISO_Left_Tab>", lambda e: self._on_quick_switcher(-1))  # Ctrl+Shift+Tab 上一个
+        # 消息导航 Ctrl+Home / Ctrl+End / Ctrl+G / Alt+Up / Alt+Down
+        self._root.bind("<Control-Home>", lambda e: self._scroll_to_first_message())  # Ctrl+Home 跳转到首条消息
+        self._root.bind("<Control-End>", lambda e: self._scroll_to_last_message())  # Ctrl+End 跳转到末条消息
+        self._root.bind("<Control-g>", lambda e: self._on_go_to_message())  # Ctrl+G 跳转到指定消息
+        self._root.bind("<Control-G>", lambda e: self._on_go_to_message())  # 大写 G 兼容
+        self._root.bind("<Alt-Up>", lambda e: self._on_prev_message())  # Alt+Up 上一条消息
+        self._root.bind("<Alt-Down>", lambda e: self._on_next_message())  # Alt+Down 下一条消息
 
     def _current_model_display(self) -> str:
         p = self._app.get_current_provider()
@@ -677,6 +1148,61 @@ class MainWindow:
         self._search_global = not self._search_global
         self._search_global_btn.configure(text="全部会话" if self._search_global else "本会话")
         self._refresh_chat_area()
+
+    def _toggle_date_filter(self) -> None:
+        """切换日期过滤面板的显示。"""
+        if self._date_filter_frame.winfo_ismapped():
+            self._date_filter_frame.grid_remove()
+        else:
+            self._date_filter_frame.grid(row=1, column=0, sticky="ew", padx=(12, 12), pady=(0, 8))
+
+    def _open_date_picker(self, field: str) -> None:
+        """打开日期选择器。
+
+        Args:
+            field: "start" 或 "end"，指定要设置的字段
+        """
+        current_date = None
+        if field == "start" and self._search_start_date:
+            current_date = self._search_start_date
+        elif field == "end" and self._search_end_date:
+            current_date = self._search_end_date
+
+        title = "选择起始日期" if field == "start" else "选择结束日期"
+
+        def on_select(date_str: str | None) -> None:
+            if date_str:
+                # 转换为 YYYY-MM-DD 格式显示
+                dt = datetime.fromisoformat(date_str)
+                display_date = dt.strftime("%Y-%m-%d")
+                if field == "start":
+                    self._search_start_date = f"{display_date}T00:00:00Z"
+                    self._date_start_var.set(display_date)
+                else:
+                    # 结束日期设为当天的 23:59:59
+                    self._search_end_date = f"{display_date}T23:59:59Z"
+                    self._date_end_var.set(display_date)
+            else:
+                if field == "start":
+                    self._search_start_date = None
+                    self._date_start_var.set("")
+                else:
+                    self._search_end_date = None
+                    self._date_end_var.set("")
+            # 刷新搜索结果
+            self._refresh_chat_area()
+
+        DatePickerDialog(self._root, title, on_select, current_date)
+
+    def _clear_date_filter(self) -> None:
+        """清除日期过滤。"""
+        self._search_start_date = None
+        self._search_end_date = None
+        self._date_start_var.set("")
+        self._date_end_var.set("")
+        self._refresh_chat_area()
+        # 隐藏日期过滤面板
+        self._date_filter_frame.grid_remove()
 
     def _on_search_enter(self, event) -> None:
         """用户在搜索框按 Enter 键，执行搜索并记录到最近搜索。"""
@@ -1076,7 +1602,9 @@ class MainWindow:
 
         # 搜索过滤
         if self._search_query:
-            self._matched_message_ids = {m.id for m in self._app.search_messages(sid, self._search_query)}
+            self._matched_message_ids = {m.id for m in self._app.search_messages(
+                sid, self._search_query, self._search_start_date, self._search_end_date
+            )}
             filtered_messages = [m for m in messages if m.id in self._matched_message_ids]
         else:
             self._matched_message_ids = set()
@@ -1128,7 +1656,7 @@ class MainWindow:
             )
             count_label.grid(sticky="ew", pady=(0, 8))
 
-        for m in filtered_messages:
+        for idx, m in enumerate(filtered_messages, start=1):
             fg = ("gray85", "gray25") if m.role == "user" else ("gray70", "gray30")
             # 当前匹配的消息添加橙色边框作为视觉指示器
             is_current_match = (m.id == self._current_match_msg_id)
@@ -1144,8 +1672,18 @@ class MainWindow:
             outer_frame.grid(sticky="ew", pady=4)
             outer_frame.grid_columnconfigure(0, weight=1)
 
+            # 消息编号标签（左上角小数字）
+            num_label = ctk.CTkLabel(
+                outer_frame,
+                text=f"#{idx}",
+                font=("", 9),
+                text_color=("gray50", "gray65"),
+                anchor="w",
+            )
+            num_label.grid(row=0, column=0, sticky="w", padx=14, pady=(2, 0))
+
             # 引用内容显示（如果有）
-            content_row = 0
+            content_row = 1
             if m.quoted_content:
                 quote_frame = ctk.CTkFrame(
                     outer_frame,
@@ -1274,7 +1812,9 @@ class MainWindow:
 
     def _refresh_global_search_results(self) -> None:
         """刷新全局搜索结果。"""
-        all_messages = self._app.search_all_messages(self._search_query)
+        all_messages = self._app.search_all_messages(
+            self._search_query, 100, self._search_start_date, self._search_end_date
+        )
 
         if not all_messages:
             hint = f"没有找到包含「{self._search_query}」的消息"
@@ -1432,7 +1972,7 @@ class MainWindow:
         """显示快捷键帮助对话框（Ctrl+/）。"""
         dialog = ctk.CTkToplevel(self._root)
         dialog.title("键盘快捷键")
-        dialog.geometry("380x470")
+        dialog.geometry("400x580")
         dialog.transient(self._root)
 
         # 主容器
@@ -1448,16 +1988,25 @@ class MainWindow:
 
         # 快捷键列表
         shortcuts = [
+            ("会话导航", ""),
             ("Ctrl + K", "聚焦搜索框"),
             ("Ctrl + L", "聚焦输入框"),
             ("Ctrl + N", "新建对话"),
             ("Ctrl + P", "切换置顶"),
-            ("Ctrl + R", "重新生成最后回复"),
-            ("Ctrl + Shift + C", "复制最后 AI 回复"),
             ("Ctrl + Tab", "快速切换会话"),
             ("Ctrl + Up/Down", "上/下一个会话"),
             ("Ctrl + T", "切换侧边栏"),
             ("Ctrl + W", "删除当前对话"),
+            ("消息导航", ""),
+            ("Ctrl + Home", "跳转到首条消息"),
+            ("Ctrl + End", "跳转到末条消息"),
+            ("Ctrl + G", "跳转到指定消息"),
+            ("Alt + Up", "上一条消息"),
+            ("Alt + Down", "下一条消息"),
+            ("消息操作", ""),
+            ("Ctrl + R", "重新生成最后回复"),
+            ("Ctrl + Shift + C", "复制最后 AI 回复"),
+            ("其他", ""),
             ("Ctrl + ,", "打开设置"),
             ("Ctrl + /", "显示此帮助"),
             ("ESC", "清除搜索"),
@@ -1469,21 +2018,31 @@ class MainWindow:
 
         # 使用 Frame 来对齐
         for key, desc in shortcuts:
-            row = ctk.CTkFrame(main, fg_color="transparent")
-            row.pack(fill="x", pady=4)
-            ctk.CTkLabel(
-                row,
-                text=key,
-                font=("Courier", 12),
-                width=120,
-                anchor="w",
-                text_color=("blue", "cyan")
-            ).pack(side="left")
-            ctk.CTkLabel(
-                row,
-                text=desc,
-                anchor="w"
-            ).pack(side="left", padx=(8, 0))
+            if not desc:
+                # 分类标题
+                ctk.CTkLabel(
+                    main,
+                    text=key,
+                    font=("", 12, "bold"),
+                    anchor="w",
+                    text_color=("gray40", "gray60")
+                ).pack(fill="x", pady=(12, 4))
+            else:
+                row = ctk.CTkFrame(main, fg_color="transparent")
+                row.pack(fill="x", pady=2)
+                ctk.CTkLabel(
+                    row,
+                    text=key,
+                    font=("Courier", 11),
+                    width=140,
+                    anchor="w",
+                    text_color=("blue", "cyan")
+                ).pack(side="left")
+                ctk.CTkLabel(
+                    row,
+                    text=desc,
+                    anchor="w"
+                ).pack(side="left", padx=(8, 0))
 
         # 关闭按钮
         ctk.CTkButton(
@@ -1543,6 +2102,132 @@ class MainWindow:
                 self._app.delete_session(sid)
                 self._refresh_sessions_list()
                 self._refresh_chat_area()
+
+    def _scroll_to_first_message(self) -> None:
+        """滚动到第一条消息（Ctrl+Home）。"""
+        if not self._chat_widgets:
+            return
+        # 滚动到顶部
+        try:
+            self._root.update_idletasks()
+            # 使用 canvas 的 yview_moveto 滚动到顶部
+            self._chat_scroll._canvas.yview_moveto(0.0)
+            # 高亮第一条消息
+            if self._chat_widgets:
+                _, first_frame = self._chat_widgets[0]
+                self._flash_message_frame(first_frame)
+        except Exception:
+            pass
+
+    def _scroll_to_last_message(self) -> None:
+        """滚动到最后一条消息（Ctrl+End）。"""
+        if not self._chat_widgets:
+            return
+        # 滚动到底部
+        try:
+            self._root.update_idletasks()
+            # 使用 canvas 的 yview_moveto 滚动到底部
+            self._chat_scroll._canvas.yview_moveto(1.0)
+            # 高亮最后一条消息
+            if self._chat_widgets:
+                _, last_frame = self._chat_widgets[-1]
+                self._flash_message_frame(last_frame)
+        except Exception:
+            pass
+
+    def _on_go_to_message(self) -> None:
+        """打开跳转到消息对话框（Ctrl+G）。"""
+        if not self._chat_widgets:
+            ToastNotification(self._root, "⚠️ 当前会话没有消息")
+            return
+
+        total = len(self._chat_widgets)
+
+        def on_jump(index: int) -> None:
+            self._on_jump_to_message_index(index)
+
+        GoToMessageDialog(
+            self._root,
+            total_messages=total,
+            on_jump=on_jump,
+        )
+
+    def _on_jump_to_message_index(self, index: int) -> None:
+        """跳转到指定索引的消息。"""
+        if 0 <= index < len(self._chat_widgets):
+            _, frame = self._chat_widgets[index]
+            # 滚动到该消息
+            try:
+                self._root.update_idletasks()
+                frame_y = frame.winfo_y()
+                canvas_height = self._chat_scroll._canvas.winfo_height()
+                scroll_region_height = self._chat_scroll._canvas.winfo_reqheight()
+                if scroll_region_height > 0:
+                    # 计算滚动位置，使消息在视口中间
+                    target_y = max(0, frame_y - canvas_height // 3)
+                    scroll_fraction = target_y / scroll_region_height
+                    self._chat_scroll._canvas.yview_moveto(min(scroll_fraction, 1.0))
+                self._flash_message_frame(frame)
+                ToastNotification(self._root, f"📍 消息 {index + 1}/{len(self._chat_widgets)}", duration_ms=1000)
+            except Exception:
+                pass
+
+    def _on_prev_message(self) -> None:
+        """跳转到上一条消息（Alt+Up）。"""
+        if not self._chat_widgets:
+            return
+        # 获取当前滚动位置，找到当前可见的消息
+        try:
+            self._root.update_idletasks()
+            canvas = self._chat_scroll._canvas
+            scroll_top = float(canvas.canvasy(0))
+            current_idx = -1
+            for i, (_, frame) in enumerate(self._chat_widgets):
+                frame_y = frame.winfo_y()
+                frame_bottom = frame_y + frame.winfo_height()
+                if frame_y >= scroll_top:
+                    current_idx = i
+                    break
+            if current_idx > 0:
+                self._on_jump_to_message_index(current_idx - 1)
+            elif current_idx == 0:
+                ToastNotification(self._root, "⬆️ 已是第一条消息", duration_ms=1000)
+        except Exception:
+            pass
+
+    def _on_next_message(self) -> None:
+        """跳转到下一条消息（Alt+Down）。"""
+        if not self._chat_widgets:
+            return
+        # 获取当前滚动位置，找到当前可见的消息
+        try:
+            self._root.update_idletasks()
+            canvas = self._chat_scroll._canvas
+            scroll_top = float(canvas.canvasy(0))
+            current_idx = -1
+            for i, (_, frame) in enumerate(self._chat_widgets):
+                frame_y = frame.winfo_y()
+                if frame_y >= scroll_top:
+                    current_idx = i
+                    break
+            if current_idx >= 0 and current_idx < len(self._chat_widgets) - 1:
+                self._on_jump_to_message_index(current_idx + 1)
+            elif current_idx == len(self._chat_widgets) - 1:
+                ToastNotification(self._root, "⬇️ 已是最后一条消息", duration_ms=1000)
+        except Exception:
+            pass
+
+    def _flash_message_frame(self, frame: ctk.CTkFrame) -> None:
+        """闪烁消息框以提供视觉反馈。"""
+        try:
+            # 保存原始背景色
+            original_bg = frame.cget("fg_color")
+            # 设置高亮色
+            frame.configure(fg_color=("gray60", "gray40"))
+            # 200ms 后恢复
+            self._root.after(200, lambda: frame.configure(fg_color=original_bg))
+        except Exception:
+            pass
 
     def _on_new_chat(self) -> None:
         self._app.new_session()
@@ -1720,6 +2405,41 @@ class MainWindow:
         self._template_menu.configure(values=self._template_options())
 
     def _on_export(self) -> None:
+        """导出对话 - 选择当前会话或批量导出."""
+        # 首先询问导出模式
+        mode_dialog = ctk.CTkToplevel(self._root)
+        mode_dialog.title("导出")
+        mode_dialog.geometry("280x150")
+        mode_dialog.transient(self._root)
+
+        ctk.CTkLabel(mode_dialog, text="选择导出方式：", font=("", 14)).pack(pady=(20, 15))
+
+        mode_result: list[str] = []
+
+        def choose_current() -> None:
+            mode_result.append("current")
+            mode_dialog.destroy()
+
+        def choose_batch() -> None:
+            mode_result.append("batch")
+            mode_dialog.destroy()
+
+        btn_frame = ctk.CTkFrame(mode_dialog, fg_color="transparent")
+        btn_frame.pack(pady=10)
+        ctk.CTkButton(btn_frame, text="当前会话", width=100, command=choose_current).pack(side="left", padx=8)
+        ctk.CTkButton(btn_frame, text="多个会话", width=100, command=choose_batch).pack(side="left", padx=8)
+
+        mode_dialog.wait_window()
+
+        if not mode_result:
+            return  # 用户取消
+
+        if mode_result[0] == "current":
+            self._export_current_session()
+        else:
+            self._batch_export_sessions()
+
+    def _export_current_session(self) -> None:
         """导出当前会话."""
         sid = self._app.current_session_id()
         if not sid:
@@ -1729,12 +2449,14 @@ class MainWindow:
         # 创建导出对话框
         dialog = ctk.CTkToplevel(self._root)
         dialog.title("导出对话")
-        dialog.geometry("300x300")
+        dialog.geometry("300x340")
         dialog.transient(self._root)
 
         ctk.CTkLabel(dialog, text="选择导出格式：", anchor="w").pack(anchor="w", padx=12, pady=(12, 8))
 
         format_var = ctk.StringVar(value="md")
+        txt_radio = ctk.CTkRadioButton(dialog, text="纯文本 (.txt)", variable=format_var, value="txt")
+        txt_radio.pack(anchor="w", padx=12, pady=4)
         md_radio = ctk.CTkRadioButton(dialog, text="Markdown (.md)", variable=format_var, value="md")
         md_radio.pack(anchor="w", padx=12, pady=4)
         json_radio = ctk.CTkRadioButton(dialog, text="JSON (.json)", variable=format_var, value="json")
@@ -1750,7 +2472,7 @@ class MainWindow:
 
         def do_export() -> None:
             fmt = format_var.get()
-            ext_map = {"md": "md", "json": "json", "pdf": "pdf", "html": "html", "docx": "docx"}
+            ext_map = {"txt": "txt", "md": "md", "json": "json", "pdf": "pdf", "html": "html", "docx": "docx"}
             ext = ext_map.get(fmt, "md")
             # 弹出文件保存对话框
             path = filedialog.asksaveasfilename(
@@ -1783,6 +2505,110 @@ class MainWindow:
                 messagebox.showinfo("成功", f"已导出到：{path}", parent=self._root)
             except Exception as e:
                 messagebox.showerror("错误", f"导出失败：{e}", parent=self._root)
+
+    def _batch_export_sessions(self) -> None:
+        """批量导出多个会话."""
+        sessions = self._app.load_sessions()
+        if not sessions:
+            messagebox.showinfo("提示", "没有可导出的会话", parent=self._root)
+            return
+
+        # 创建批量导出对话框
+        dialog = ctk.CTkToplevel(self._root)
+        dialog.title("批量导出")
+        dialog.geometry("400x500")
+        dialog.transient(self._root)
+
+        # 标题和说明
+        ctk.CTkLabel(dialog, text="选择要导出的会话：", font=("", 14)).pack(pady=(15, 8))
+        ctk.CTkLabel(dialog, text="勾选会话后选择导出格式和保存位置", text_color="gray", font=("", 10)).pack()
+
+        # 滚动框架用于会话列表
+        scroll_frame = ctk.CTkScrollableFrame(dialog, height=250)
+        scroll_frame.pack(fill="both", expand=True, padx=12, pady=10)
+
+        # 会话复选框字典
+        check_vars: dict[str, ctk.StringVar] = {}
+
+        for session in sessions:
+            var = ctk.BooleanVar(value=False)
+            check_vars[session.id] = var
+            title = session.title or "新对话"
+            # 创建带复选框的行
+            row = ctk.CTkFrame(scroll_frame, fg_color="transparent")
+            row.pack(fill="x", pady=2)
+            ctk.CTkCheckBox(row, text=title, variable=var).pack(side="left", padx=4)
+
+        # 格式选择
+        format_frame = ctk.CTkFrame(dialog, fg_color="transparent")
+        format_frame.pack(fill="x", padx=12, pady=8)
+        ctk.CTkLabel(format_frame, text="导出格式：").pack(side="left", padx=4)
+
+        format_var = ctk.StringVar(value="md")
+        formats = [("txt", "纯文本"), ("md", "Markdown"), ("json", "JSON"), ("html", "HTML")]
+
+        for fmt, label in formats:
+            ctk.CTkRadioButton(format_frame, text=label, variable=format_var, value=fmt).pack(side="left", padx=6)
+
+        # 按钮
+        result: list[tuple[str, str, list[str]]] = []  # (format, dir_path, session_ids)
+
+        def do_export() -> None:
+            selected = [sid for sid, var in check_vars.items() if var.get()]
+            if not selected:
+                messagebox.showwarning("提示", "请至少选择一个会话", parent=dialog)
+                return
+
+            fmt = format_var.get()
+            # 选择保存目录
+            dir_path = filedialog.askdirectory(title="选择保存目录", parent=self._root)
+            if dir_path:
+                result.append((fmt, dir_path, selected))
+            dialog.destroy()
+
+        def select_all() -> None:
+            for var in check_vars.values():
+                var.set(True)
+
+        def deselect_all() -> None:
+            for var in check_vars.values():
+                var.set(False)
+
+        btn_frame = ctk.CTkFrame(dialog, fg_color="transparent")
+        btn_frame.pack(pady=10)
+        ctk.CTkButton(btn_frame, text="全选", width=60, command=select_all).pack(side="left", padx=4)
+        ctk.CTkButton(btn_frame, text="清空", width=60, command=deselect_all).pack(side="left", padx=4)
+        ctk.CTkButton(btn_frame, text="导出", width=80, command=do_export).pack(side="left", padx=8)
+        ctk.CTkButton(btn_frame, text="取消", width=80, command=dialog.destroy).pack(side="left", padx=4)
+
+        dialog.wait_window()
+
+        if result:
+            fmt, dir_path, session_ids = result[0]
+            exported = 0
+            failed = 0
+            for sid in session_ids:
+                try:
+                    session = self._app.get_session(sid)
+                    messages = self._app.load_messages(sid)
+                    exporter = ChatExporter(session, messages)
+                    # 文件名: title_timestamp.ext
+                    import re
+                    safe_title = re.sub(r'[\\/*?:"<>|]', '_', session.title or "新对话")
+                    timestamp = session.created_at[:19].replace(":", "-").replace("T", "_")
+                    filename = f"{safe_title}_{timestamp}.{fmt}"
+                    path = str(Path(dir_path) / filename)
+                    exporter.save(path, fmt)
+                    exported += 1
+                except Exception as e:
+                    failed += 1
+                    logger.error("批量导出失败 sid=%s: %s", sid, e)
+
+            messagebox.showinfo(
+                "完成",
+                f"批量导出完成！\n成功: {exported} 个\n失败: {failed} 个",
+                parent=self._root,
+            )
 
     def _on_config_changed(self) -> None:
         """设置保存后刷新模型下拉与主题。"""

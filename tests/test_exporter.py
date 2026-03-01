@@ -132,7 +132,7 @@ class TestChatExporter:
         exporter = ChatExporter(sample_session, sample_messages)
 
         with pytest.raises(ValueError, match="Unsupported format"):
-            exporter.save("export.txt", "txt")
+            exporter.save("export.xyz", "xyz")
 
     def test_wrap_text_short(self, sample_session: Session, sample_messages: list[Message]) -> None:
         """测试：短文本换行."""
@@ -404,3 +404,86 @@ class TestChatExporterDOCX:
         # 应该包含消息
         assert "Hello" in full_text
         assert "Hi there!" in full_text
+
+
+class TestChatExporterTXT:
+    """ChatExporter TXT 导出测试 (v1.2.2)."""
+
+    def test_to_txt_returns_string(self, sample_session: Session, sample_messages: list[Message]) -> None:
+        """测试：导出为纯文本格式返回字符串."""
+        exporter = ChatExporter(sample_session, sample_messages)
+        txt = exporter.to_txt()
+
+        assert isinstance(txt, str)
+        assert len(txt) > 0
+
+    def test_to_txt_contains_title(self, sample_session: Session, sample_messages: list[Message]) -> None:
+        """测试：TXT 包含会话标题."""
+        exporter = ChatExporter(sample_session, sample_messages)
+        txt = exporter.to_txt()
+
+        assert "Test Session" in txt
+        assert "=" in txt  # 分隔线
+
+    def test_to_txt_contains_messages(self, sample_session: Session, sample_messages: list[Message]) -> None:
+        """测试：TXT 包含消息内容."""
+        exporter = ChatExporter(sample_session, sample_messages)
+        txt = exporter.to_txt()
+
+        assert "Hello" in txt
+        assert "Hi there!" in txt
+        assert "【你】" in txt
+        assert "【助手】" in txt
+
+    def test_to_txt_contains_timestamps(self, sample_session: Session, sample_messages: list[Message]) -> None:
+        """测试：TXT 包含时间戳."""
+        exporter = ChatExporter(sample_session, sample_messages)
+        txt = exporter.to_txt()
+
+        assert "创建时间:" in txt
+        assert "更新时间:" in txt
+        assert "时间:" in txt
+
+    def test_to_txt_with_chinese_content(self) -> None:
+        """测试：TXT 导出支持中文内容."""
+        session = Session(
+            id="s1",
+            title="中文测试",
+            created_at=datetime.now(timezone.utc).isoformat(),
+            updated_at=datetime.now(timezone.utc).isoformat(),
+        )
+        messages = [
+            Message(id="m1", session_id="s1", role="user", content="你好，世界！", created_at=datetime.now(timezone.utc).isoformat()),
+            Message(id="m2", session_id="s1", role="assistant", content="你好！有什么可以帮助你的吗？", created_at=datetime.now(timezone.utc).isoformat()),
+        ]
+
+        exporter = ChatExporter(session, messages)
+        txt = exporter.to_txt()
+
+        assert "中文测试" in txt
+        assert "你好，世界！" in txt
+        assert "你好！有什么可以帮助你的吗？" in txt
+
+    def test_to_txt_with_empty_session(self, sample_session: Session) -> None:
+        """测试：空会话导出为 TXT."""
+        exporter = ChatExporter(sample_session, [])
+        txt = exporter.to_txt()
+
+        assert "Test Session" in txt
+        assert "【你】" not in txt
+        assert "【助手】" not in txt
+
+    def test_save_txt(self, sample_session: Session, sample_messages: list[Message], temp_dir) -> None:
+        """测试：保存 TXT 文件."""
+        import os
+
+        exporter = ChatExporter(sample_session, sample_messages)
+        path = str(temp_dir / "export.txt")
+        exporter.save(path, "txt")
+
+        assert os.path.exists(path)
+        with open(path, encoding="utf-8") as f:
+            content = f.read()
+        assert "Test Session" in content
+        assert "Hello" in content
+        assert "Hi there!" in content

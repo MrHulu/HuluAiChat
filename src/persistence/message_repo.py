@@ -32,13 +32,27 @@ class MessageRepository(ABC):
         ...
 
     @abstractmethod
-    def search(self, session_id: str, query: str) -> list[Message]:
-        """在指定会话中搜索包含查询字符串的消息。"""
+    def search(self, session_id: str, query: str, start_date: str | None = None, end_date: str | None = None) -> list[Message]:
+        """在指定会话中搜索包含查询字符串的消息。
+
+        Args:
+            session_id: 会话ID
+            query: 搜索关键词
+            start_date: 起始日期 (ISO 8601 格式，如 "2024-01-01" 或 "2024-01-01T00:00:00Z")
+            end_date: 结束日期 (ISO 8601 格式)
+        """
         ...
 
     @abstractmethod
-    def search_all(self, query: str, limit: int = 100) -> list[Message]:
-        """在所有会话中搜索包含查询字符串的消息。"""
+    def search_all(self, query: str, limit: int = 100, start_date: str | None = None, end_date: str | None = None) -> list[Message]:
+        """在所有会话中搜索包含查询字符串的消息。
+
+        Args:
+            query: 搜索关键词
+            limit: 最大返回结果数
+            start_date: 起始日期 (ISO 8601 格式)
+            end_date: 结束日期 (ISO 8601 格式)
+        """
         ...
 
     @abstractmethod
@@ -114,30 +128,61 @@ class SqliteMessageRepository(MessageRepository):
             conn.execute("DELETE FROM message WHERE id = ?", (message_id,))
             conn.commit()
 
-    def search(self, session_id: str, query: str) -> list[Message]:
-        """在指定会话中搜索包含查询字符串的消息（不区分大小写）。"""
+    def search(self, session_id: str, query: str, start_date: str | None = None, end_date: str | None = None) -> list[Message]:
+        """在指定会话中搜索包含查询字符串的消息（不区分大小写）。
+
+        支持日期范围过滤：
+        - start_date: 只返回创建日期 >= start_date 的消息
+        - end_date: 只返回创建日期 <= end_date 的消息
+        """
         if not query:
             return []
         with self._conn() as conn:
-            cur = conn.execute(
+            sql = (
                 "SELECT id, session_id, role, content, created_at, is_pinned, quoted_message_id, quoted_content FROM message "
-                "WHERE session_id = ? AND LOWER(content) LIKE LOWER(?) "
-                "ORDER BY created_at ASC",
-                (session_id, f"%{query}%"),
+                "WHERE session_id = ? AND LOWER(content) LIKE LOWER(?)"
             )
+            params = [session_id, f"%{query}%"]
+
+            # 添加日期过滤条件
+            if start_date:
+                sql += " AND created_at >= ?"
+                params.append(start_date)
+            if end_date:
+                sql += " AND created_at <= ?"
+                params.append(end_date)
+
+            sql += " ORDER BY created_at ASC"
+            cur = conn.execute(sql, tuple(params))
             return [_row_to_message(r) for r in cur.fetchall()]
 
-    def search_all(self, query: str, limit: int = 100) -> list[Message]:
-        """在所有会话中搜索包含查询字符串的消息（不区分大小写），按时间倒序。"""
+    def search_all(self, query: str, limit: int = 100, start_date: str | None = None, end_date: str | None = None) -> list[Message]:
+        """在所有会话中搜索包含查询字符串的消息（不区分大小写），按时间倒序。
+
+        支持日期范围过滤：
+        - start_date: 只返回创建日期 >= start_date 的消息
+        - end_date: 只返回创建日期 <= end_date 的消息
+        """
         if not query:
             return []
         with self._conn() as conn:
-            cur = conn.execute(
+            sql = (
                 "SELECT id, session_id, role, content, created_at, is_pinned, quoted_message_id, quoted_content FROM message "
-                "WHERE LOWER(content) LIKE LOWER(?) "
-                "ORDER BY created_at DESC LIMIT ?",
-                (f"%{query}%", limit),
+                "WHERE LOWER(content) LIKE LOWER(?)"
             )
+            params = [f"%{query}%"]
+
+            # 添加日期过滤条件
+            if start_date:
+                sql += " AND created_at >= ?"
+                params.append(start_date)
+            if end_date:
+                sql += " AND created_at <= ?"
+                params.append(end_date)
+
+            sql += " ORDER BY created_at DESC LIMIT ?"
+            params.append(limit)
+            cur = conn.execute(sql, tuple(params))
             return [_row_to_message(r) for r in cur.fetchall()]
 
     def set_pinned(self, message_id: str, pinned: bool) -> None:
