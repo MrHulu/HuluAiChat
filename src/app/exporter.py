@@ -5,12 +5,14 @@ from datetime import datetime
 from io import BytesIO
 from pathlib import Path
 
+from docx import Document
+from docx.shared import Pt, RGBColor
 from fpdf import FPDF
 from src.persistence import Session, Message
 
 
 class ChatExporter:
-    """聊天记录导出器，支持 Markdown、JSON、HTML 和 PDF 格式."""
+    """聊天记录导出器，支持 TXT、Markdown、JSON、HTML、PDF 和 DOCX 格式."""
 
     def __init__(self, session: Session, messages: list[Message]) -> None:
         self._session = session
@@ -31,6 +33,35 @@ class ChatExporter:
             lines.append(f"{msg.content}\n\n")
 
         return "".join(lines)
+
+    def to_txt(self) -> str:
+        """导出为纯文本格式.
+
+        Returns:
+            纯文本文档字符串
+        """
+        lines = [
+            "=" * 60,
+            f"{self._session.title or '新对话'}",
+            "=" * 60,
+            f"创建时间: {self._format_time(self._session.created_at)}",
+            f"更新时间: {self._format_time(self._session.updated_at)}",
+            "",
+            "-" * 60,
+            "",
+        ]
+
+        for msg in self._messages:
+            role_name = "【你】" if msg.role == "user" else "【助手】"
+            lines.append(role_name)
+            lines.append(msg.content or "")
+            lines.append("")
+            lines.append(f"时间: {self._format_time(msg.created_at)}")
+            lines.append("")
+            lines.append("-" * 60)
+            lines.append("")
+
+        return "\n".join(lines)
 
     def to_json(self) -> str:
         """导出为 JSON 格式."""
@@ -260,6 +291,62 @@ class ChatExporter:
 
                 return BytesIO(pdf.output()).getvalue()
 
+    def to_docx(self) -> bytes:
+        """导出为 Word (DOCX) 格式.
+
+        Returns:
+            DOCX 文件的二进制数据
+        """
+        doc = Document()
+
+        # 标题
+        title = self._session.title or "新对话"
+        title_para = doc.add_heading(title, level=1)
+        title_para.alignment = 0  # 0=left, 1=center, 2=right
+
+        # 元信息
+        meta_para = doc.add_paragraph()
+        meta_run = meta_para.add_run(f"创建时间: {self._format_time(self._session.created_at)}\n")
+        meta_run.font.size = Pt(10)
+        meta_run.font.color.rgb = RGBColor(0x66, 0x66, 0x66)
+        meta_run = meta_para.add_run(f"更新时间: {self._format_time(self._session.updated_at)}")
+        meta_run.font.size = Pt(10)
+        meta_run.font.color.rgb = RGBColor(0x66, 0x66, 0x66)
+
+        # 分隔线（用水平线）
+        doc.add_paragraph("_" * 80)
+
+        # 消息
+        for msg in self._messages:
+            # 角色名称
+            role_name = "你" if msg.role == "user" else "助手"
+            role_para = doc.add_heading(role_name, level=2)
+
+            # 设置角色标题颜色
+            for run in role_para.runs:
+                if msg.role == "user":
+                    run.font.color.rgb = RGBColor(0x21, 0x96, 0xF3)  # 蓝色
+                else:
+                    run.font.color.rgb = RGBColor(0x4C, 0xAF, 0x50)  # 绿色
+
+            # 消息内容
+            content = msg.content or ""
+            content_para = doc.add_paragraph(content)
+            content_para.paragraph_format.space_after = Pt(6)
+
+            # 时间戳
+            time_para = doc.add_paragraph()
+            time_run = time_para.add_run(f"{self._format_time(msg.created_at)}")
+            time_run.font.size = Pt(8)
+            time_run.font.color.rgb = RGBColor(0x99, 0x99, 0x99)
+            time_para.paragraph_format.space_after = Pt(12)
+
+        # 保存到内存
+        buffer = BytesIO()
+        doc.save(buffer)
+        buffer.seek(0)
+        return buffer.getvalue()
+
     def _wrap_text(self, text: str, max_width: float) -> list[str]:
         """将文本按指定宽度换行.
 
@@ -296,9 +383,12 @@ class ChatExporter:
 
         Args:
             path: 文件路径
-            format: "md", "json", "html" 或 "pdf"
+            format: "txt", "md", "json", "html", "pdf" 或 "docx"
         """
-        if format == "md":
+        if format == "txt":
+            content = self.to_txt()
+            Path(path).write_text(content, encoding="utf-8")
+        elif format == "md":
             content = self.to_markdown()
             Path(path).write_text(content, encoding="utf-8")
         elif format == "json":
@@ -309,6 +399,9 @@ class ChatExporter:
             Path(path).write_text(content, encoding="utf-8")
         elif format == "pdf":
             content = self.to_pdf()
+            Path(path).write_bytes(content)
+        elif format == "docx":
+            content = self.to_docx()
             Path(path).write_bytes(content)
         else:
             raise ValueError(f"Unsupported format: {format}")

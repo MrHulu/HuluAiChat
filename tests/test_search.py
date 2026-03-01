@@ -119,3 +119,54 @@ class TestMessageSearch:
         assert result[0].id == "m1"
         assert result[1].id == "m2"
         assert result[2].id == "m3"
+
+    def test_search_with_start_date(self, repo):
+        """搜索应支持起始日期过滤。"""
+        sid = "session-1"
+        repo.append(Message(id="m1", session_id=sid, role="user", content="hello world", created_at="2024-01-01T00:00:00Z"))
+        repo.append(Message(id="m2", session_id=sid, role="assistant", content="hello there", created_at="2024-01-05T00:00:00Z"))
+        repo.append(Message(id="m3", session_id=sid, role="user", content="hello again", created_at="2024-01-10T00:00:00Z"))
+
+        # 搜索从 2024-01-05 开始的消息
+        result = repo.search(sid, "hello", start_date="2024-01-05T00:00:00Z")
+        assert len(result) == 2
+        assert {m.id for m in result} == {"m2", "m3"}
+
+    def test_search_with_end_date(self, repo):
+        """搜索应支持结束日期过滤。"""
+        sid = "session-1"
+        repo.append(Message(id="m1", session_id=sid, role="user", content="hello world", created_at="2024-01-01T00:00:00Z"))
+        repo.append(Message(id="m2", session_id=sid, role="assistant", content="hello there", created_at="2024-01-05T00:00:00Z"))
+        repo.append(Message(id="m3", session_id=sid, role="user", content="hello again", created_at="2024-01-10T00:00:00Z"))
+
+        # 搜索到 2024-01-05 为止的消息
+        result = repo.search(sid, "hello", end_date="2024-01-05T23:59:59Z")
+        assert len(result) == 2
+        assert {m.id for m in result} == {"m1", "m2"}
+
+    def test_search_with_date_range(self, repo):
+        """搜索应支持日期范围过滤。"""
+        sid = "session-1"
+        repo.append(Message(id="m1", session_id=sid, role="user", content="hello world", created_at="2024-01-01T00:00:00Z"))
+        repo.append(Message(id="m2", session_id=sid, role="assistant", content="hello there", created_at="2024-01-05T00:00:00Z"))
+        repo.append(Message(id="m3", session_id=sid, role="user", content="hello again", created_at="2024-01-10T00:00:00Z"))
+        repo.append(Message(id="m4", session_id=sid, role="assistant", content="hello once more", created_at="2024-01-15T00:00:00Z"))
+
+        # 搜索 2024-01-03 到 2024-01-12 之间的消息
+        result = repo.search(sid, "hello", start_date="2024-01-03T00:00:00Z", end_date="2024-01-12T23:59:59Z")
+        assert len(result) == 2
+        assert {m.id for m in result} == {"m2", "m3"}
+
+    def test_search_all_with_date_range(self, repo):
+        """全局搜索应支持日期范围过滤。"""
+        sid1 = "session-1"
+        sid2 = "session-2"
+        repo.append(Message(id="m1", session_id=sid1, role="user", content="keyword", created_at="2024-01-01T00:00:00Z"))
+        repo.append(Message(id="m2", session_id=sid1, role="assistant", content="keyword", created_at="2024-01-05T00:00:00Z"))
+        repo.append(Message(id="m3", session_id=sid2, role="user", content="keyword", created_at="2024-01-10T00:00:00Z"))
+        repo.append(Message(id="m4", session_id=sid2, role="assistant", content="keyword", created_at="2024-01-15T00:00:00Z"))
+
+        # 搜索 2024-01-05 到 2024-01-12 之间的消息
+        result = repo.search_all("keyword", limit=100, start_date="2024-01-05T00:00:00Z", end_date="2024-01-12T23:59:59Z")
+        assert len(result) == 2
+        assert {m.id for m in result} == {"m2", "m3"}

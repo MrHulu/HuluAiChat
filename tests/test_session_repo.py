@@ -115,3 +115,56 @@ class TestSqliteSessionRepository:
         sessions = session_repo.list_sessions()
         assert len(sessions) == 1
         assert sessions[0].id == "s2"
+
+    def test_set_pinned_true(self, session_repo: SqliteSessionRepository) -> None:
+        """测试：设置会话为置顶。"""
+        session_repo.create("s1", "Test")
+        session_repo.set_pinned("s1", True)
+
+        session = session_repo.get_by_id("s1")
+        assert session is not None
+        assert session.is_pinned is True
+
+    def test_set_pinned_false(self, session_repo: SqliteSessionRepository) -> None:
+        """测试：取消会话置顶。"""
+        session_repo.create("s1", "Test")
+        session_repo.set_pinned("s1", True)
+        session_repo.set_pinned("s1", False)
+
+        session = session_repo.get_by_id("s1")
+        assert session is not None
+        assert session.is_pinned is False
+
+    def test_list_sessions_pinned_first(self, session_repo: SqliteSessionRepository) -> None:
+        """测试：置顶会话排在前面。"""
+        session_repo.create("s1", "First")
+        session_repo.create("s2", "Second")
+        session_repo.create("s3", "Third")
+        # 置顶 s2 和 s3
+        session_repo.set_pinned("s2", True)
+        session_repo.set_pinned("s3", True)
+
+        sessions = session_repo.list_sessions()
+        assert len(sessions) == 3
+        # 置顶的会话排在前面，按 updated_at 降序（s3 最晚创建）
+        assert sessions[0].id == "s3"
+        assert sessions[1].id == "s2"
+        # 未置顶的会话在后面
+        assert sessions[2].id == "s1"
+
+    def test_list_sessions_pinned_then_updated_at(self, session_repo: SqliteSessionRepository) -> None:
+        """测试：先按置顶排序，然后按更新时间排序。"""
+        session_repo.create("s1", "First")
+        session_repo.create("s2", "Second")
+        session_repo.create("s3", "Third")
+        # s2 置顶，s1 更新
+        session_repo.set_pinned("s2", True)
+        session_repo.update_updated_at("s1", datetime.now(timezone.utc).isoformat())
+
+        sessions = session_repo.list_sessions()
+        assert len(sessions) == 3
+        # s2 置顶，应该排在最前面
+        assert sessions[0].id == "s2"
+        # s1 最晚更新，应该在未置顶中排第一
+        assert sessions[1].id == "s1"
+        assert sessions[2].id == "s3"

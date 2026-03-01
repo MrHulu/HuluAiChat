@@ -59,10 +59,22 @@ class AppService:
         user_content: str,
         chunk_queue: queue.Queue,
         *,
+        quoted_message_id: str | None = None,
+        quoted_content: str | None = None,
         on_done: Callable[[], None] | None = None,
         on_error: Callable[[str], None] | None = None,
     ) -> None:
-        """发送用户消息，在后台线程执行流式请求，将片段放入 chunk_queue；完成后写库并调用 on_done/on_error。"""
+        """发送用户消息，在后台线程执行流式请求，将片段放入 chunk_queue；完成后写库并调用 on_done/on_error。
+
+        Args:
+            session_id: 会话 ID
+            user_content: 用户消息内容
+            chunk_queue: 用于传递流式响应的队列
+            quoted_message_id: 引用的消息 ID（可选）
+            quoted_content: 引用的消息内容（可选）
+            on_done: 完成回调
+            on_error: 错误回调
+        """
         provider = self.get_current_provider()
         if not provider:
             logger.warning("send_message: 未选择模型")
@@ -84,6 +96,8 @@ class AppService:
             role="user",
             content=user_content,
             created_at=_now(),
+            quoted_message_id=quoted_message_id,
+            quoted_content=quoted_content,
         )
         self._message_repo.append(user_msg)
         self._session_repo.update_updated_at(session_id, _now())
@@ -164,13 +178,27 @@ class AppService:
         """加载指定会话的消息列表。"""
         return self._message_repo.list_by_session(session_id)
 
-    def search_messages(self, session_id: str, query: str) -> list[Message]:
-        """在指定会话中搜索消息。"""
-        return self._message_repo.search(session_id, query)
+    def search_messages(self, session_id: str, query: str, start_date: str | None = None, end_date: str | None = None) -> list[Message]:
+        """在指定会话中搜索消息。
 
-    def search_all_messages(self, query: str, limit: int = 100) -> list[Message]:
-        """在所有会话中搜索消息。"""
-        return self._message_repo.search_all(query, limit)
+        Args:
+            session_id: 会话ID
+            query: 搜索关键词
+            start_date: 起始日期 (ISO 8601 格式，如 "2024-01-01")
+            end_date: 结束日期 (ISO 8601 格式)
+        """
+        return self._message_repo.search(session_id, query, start_date, end_date)
+
+    def search_all_messages(self, query: str, limit: int = 100, start_date: str | None = None, end_date: str | None = None) -> list[Message]:
+        """在所有会话中搜索消息。
+
+        Args:
+            query: 搜索关键词
+            limit: 最大返回结果数
+            start_date: 起始日期 (ISO 8601 格式)
+            end_date: 结束日期 (ISO 8601 格式)
+        """
+        return self._message_repo.search_all(query, limit, start_date, end_date)
 
     def set_current_provider(self, provider_id: str) -> None:
         """切换当前模型并写回配置。"""
@@ -196,6 +224,15 @@ class AppService:
     def update_session_title(self, session_id: str, title: str) -> None:
         """更新会话标题。"""
         self._session_repo.update_title(session_id, title)
+
+    def toggle_session_pinned(self, session_id: str) -> bool:
+        """切换会话置顶状态，返回新的置顶状态。"""
+        session = self._session_repo.get_by_id(session_id)
+        if session:
+            new_pinned = not session.is_pinned
+            self._session_repo.set_pinned(session_id, new_pinned)
+            return new_pinned
+        return False
 
     # ========== 提示词模板管理 ==========
 
@@ -344,3 +381,55 @@ class AppService:
                 self._message_repo.set_pinned(message_id, new_state)
                 return new_state
         return False
+
+    def update_message_content(self, message_id: str, content: str) -> bool:
+        """更新消息内容。返回是否成功。"""
+        try:
+            self._message_repo.update_content(message_id, content)
+            # 更新会话时间
+            if self._current_session_id:
+                self._session_repo.update_updated_at(self._current_session_id, _now())
+            return True
+        except Exception as e:
+            logger.error("update_message_content: error=%s", e)
+            return False
+
+    def delete_message(self, message_id: str) -> bool:
+        """删除指定消息。返回是否成功。"""
+        try:
+            self._message_repo.delete(message_id)
+            # 更新会话时间
+            if self._current_session_id:
+                self._session_repo.update_updated_at(self._current_session_id, _now())
+            return True
+        except Exception as e:
+            logger.error("delete_message: error=%s", e)
+            return False
+
+    def get_message_count(self, session_id: str) -> int:
+        """获取指定会话的消息数量。"""
+        return self._message_repo.count_by_session(session_id)
+
+    # ========== 最近搜索管理 ==========
+
+    def get_recent_searches(self) -> list[str]:
+        """获取最近搜索列表（最多10条）。"""
+        return self._config.recent_searches[:10]  # 最多返回10条
+
+    def add_recent_search(self, query: str) -> None:
+        """添加搜索到最近搜索列表（去重，最多10条，最新的在前）。"""
+        query = query.strip()
+        if not query:
+            return
+        # 去重：先删除已存在的
+        searches = [s for s in self._config.recent_searches if s != query]
+        # 插入到开头
+        searches.insert(0, query)
+        # 最多保留10条
+        self._config.recent_searches = searches[:10]
+        self._config_store.save(self._config)
+
+    def clear_recent_searches(self) -> None:
+        """清空最近搜索列表。"""
+        self._config.recent_searches = []
+        self._config_store.save(self._config)
