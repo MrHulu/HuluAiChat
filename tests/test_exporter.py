@@ -95,3 +95,207 @@ class TestChatExporter:
         import json
         data = json.loads(json_str)
         assert data["messages"] == []
+
+    def test_to_pdf_returns_bytes(self, sample_session: Session, sample_messages: list[Message]) -> None:
+        """测试：导出为 PDF 格式返回字节数据."""
+        exporter = ChatExporter(sample_session, sample_messages)
+        pdf_bytes = exporter.to_pdf()
+
+        assert isinstance(pdf_bytes, bytes)
+        assert len(pdf_bytes) > 0
+        # PDF 文件以 %PDF- 开头
+        assert pdf_bytes[:4] == b"%PDF"
+
+    def test_to_pdf_with_empty_session(self, sample_session: Session) -> None:
+        """测试：空会话导出为 PDF."""
+        exporter = ChatExporter(sample_session, [])
+        pdf_bytes = exporter.to_pdf()
+
+        assert isinstance(pdf_bytes, bytes)
+        assert len(pdf_bytes) > 0
+        assert pdf_bytes[:4] == b"%PDF"
+
+    def test_save_pdf(self, sample_session: Session, sample_messages: list[Message], temp_dir) -> None:
+        """测试：保存 PDF 文件."""
+        exporter = ChatExporter(sample_session, sample_messages)
+        path = str(temp_dir / "export.pdf")
+        exporter.save(path, "pdf")
+
+        import os
+        assert os.path.exists(path)
+        with open(path, "rb") as f:
+            content = f.read()
+        assert content[:4] == b"%PDF"
+
+    def test_save_unsupported_format_raises_error(self, sample_session: Session, sample_messages: list[Message]) -> None:
+        """测试：不支持的格式抛出异常."""
+        exporter = ChatExporter(sample_session, sample_messages)
+
+        with pytest.raises(ValueError, match="Unsupported format"):
+            exporter.save("export.txt", "txt")
+
+    def test_wrap_text_short(self, sample_session: Session, sample_messages: list[Message]) -> None:
+        """测试：短文本换行."""
+        exporter = ChatExporter(sample_session, sample_messages)
+        lines = exporter._wrap_text("Short text", 190)
+
+        assert len(lines) == 1
+        assert lines[0] == "Short text"
+
+    def test_wrap_text_long(self, sample_session: Session, sample_messages: list[Message]) -> None:
+        """测试：长文本换行."""
+        exporter = ChatExporter(sample_session, sample_messages)
+        long_text = "This is a very long text that should be wrapped into multiple lines for testing purposes."
+        lines = exporter._wrap_text(long_text, 50)
+
+        assert len(lines) > 1
+
+    def test_wrap_text_empty(self, sample_session: Session, sample_messages: list[Message]) -> None:
+        """测试：空文本换行."""
+        exporter = ChatExporter(sample_session, sample_messages)
+        lines = exporter._wrap_text("", 190)
+
+        assert lines == [""]
+
+
+class TestChatExporterHTML:
+    """ChatExporter HTML 导出测试 (v1.0.7)."""
+
+    def test_to_html_returns_string(self, sample_session: Session, sample_messages: list[Message]) -> None:
+        """测试：导出为 HTML 格式返回字符串."""
+        exporter = ChatExporter(sample_session, sample_messages)
+        html = exporter.to_html()
+
+        assert isinstance(html, str)
+        assert len(html) > 0
+
+    def test_to_html_contains_doctype(self, sample_session: Session, sample_messages: list[Message]) -> None:
+        """测试：HTML 包含 DOCTYPE 声明."""
+        exporter = ChatExporter(sample_session, sample_messages)
+        html = exporter.to_html()
+
+        assert "<!DOCTYPE html>" in html
+        assert "<html" in html
+        assert "</html>" in html
+
+    def test_to_html_contains_title(self, sample_session: Session, sample_messages: list[Message]) -> None:
+        """测试：HTML 包含会话标题."""
+        exporter = ChatExporter(sample_session, sample_messages)
+        html = exporter.to_html()
+
+        assert "Test Session" in html
+        assert "<title>" in html
+
+    def test_to_html_contains_messages(self, sample_session: Session, sample_messages: list[Message]) -> None:
+        """测试：HTML 包含消息内容."""
+        exporter = ChatExporter(sample_session, sample_messages)
+        html = exporter.to_html()
+
+        assert "Hello" in html
+        assert "Hi there!" in html
+        assert "message user" in html
+        assert "message assistant" in html
+
+    def test_to_html_contains_styles(self, sample_session: Session, sample_messages: list[Message]) -> None:
+        """测试：HTML 包含样式定义."""
+        exporter = ChatExporter(sample_session, sample_messages)
+        html = exporter.to_html()
+
+        assert "<style>" in html
+        assert "</style>" in html
+        assert "body {" in html
+        assert "font-family:" in html
+
+    def test_to_html_with_chinese_content(self) -> None:
+        """测试：HTML 导出支持中文内容."""
+        session = Session(
+            id="s1",
+            title="测试会话",
+            created_at=datetime.now(timezone.utc).isoformat(),
+            updated_at=datetime.now(timezone.utc).isoformat(),
+        )
+        messages = [
+            Message(id="m1", session_id="s1", role="user", content="你好，世界！", created_at=datetime.now(timezone.utc).isoformat()),
+            Message(id="m2", session_id="s1", role="assistant", content="你好！有什么可以帮助你的吗？", created_at=datetime.now(timezone.utc).isoformat()),
+        ]
+
+        exporter = ChatExporter(session, messages)
+        html = exporter.to_html()
+
+        assert "测试会话" in html
+        assert "你好，世界！" in html
+        assert "你好！有什么可以帮助你的吗？" in html
+        # 检查是否正确转义
+        assert "&lt;" not in html or "Hello" in html  # 只有特殊字符才转义
+
+    def test_save_html(self, sample_session: Session, sample_messages: list[Message], temp_dir) -> None:
+        """测试：保存 HTML 文件."""
+        exporter = ChatExporter(sample_session, sample_messages)
+        path = str(temp_dir / "export.html")
+        exporter.save(path, "html")
+
+        import os
+        assert os.path.exists(path)
+        with open(path, encoding="utf-8") as f:
+            content = f.read()
+        assert "<!DOCTYPE html>" in content
+        assert "Test Session" in content
+
+    def test_to_html_with_empty_session(self, sample_session: Session) -> None:
+        """测试：空会话导出为 HTML."""
+        exporter = ChatExporter(sample_session, [])
+        html = exporter.to_html()
+
+        assert "<!DOCTYPE html>" in html
+        assert "Test Session" in html
+        # 没有消息
+        assert "message user" not in html
+        assert "message assistant" not in html
+
+
+class TestChatExporterChinese:
+    """ChatExporter 中文内容测试 (v1.0.7)."""
+
+    def test_to_markdown_with_chinese(self) -> None:
+        """测试：Markdown 导出支持中文."""
+        session = Session(
+            id="s1",
+            title="中文测试",
+            created_at=datetime.now(timezone.utc).isoformat(),
+            updated_at=datetime.now(timezone.utc).isoformat(),
+        )
+        messages = [
+            Message(id="m1", session_id="s1", role="user", content="你好，AI助手！", created_at=datetime.now(timezone.utc).isoformat()),
+            Message(id="m2", session_id="s1", role="assistant", content="你好！请问有什么可以帮助你的？", created_at=datetime.now(timezone.utc).isoformat()),
+        ]
+
+        exporter = ChatExporter(session, messages)
+        md = exporter.to_markdown()
+
+        assert "# 中文测试" in md
+        assert "你好，AI助手！" in md
+        assert "你好！请问有什么可以帮助你的？" in md
+
+    def test_to_json_with_chinese(self) -> None:
+        """测试：JSON 导出支持中文（ensure_ascii=False）."""
+        session = Session(
+            id="s1",
+            title="中文测试",
+            created_at=datetime.now(timezone.utc).isoformat(),
+            updated_at=datetime.now(timezone.utc).isoformat(),
+        )
+        messages = [
+            Message(id="m1", session_id="s1", role="user", content="你好", created_at=datetime.now(timezone.utc).isoformat()),
+        ]
+
+        exporter = ChatExporter(session, messages)
+        json_str = exporter.to_json()
+
+        import json
+        data = json.loads(json_str)
+
+        assert data["session"]["title"] == "中文测试"
+        assert data["messages"][0]["content"] == "你好"
+        # JSON 字符串应直接包含中文，不是 Unicode 转义
+        assert "你好" in json_str
+        assert "\\u4f60\\u597d" not in json_str  # 不是 Unicode 转义
