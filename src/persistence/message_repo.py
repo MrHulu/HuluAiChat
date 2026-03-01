@@ -1,4 +1,5 @@
 """消息仓储接口与 SQLite 实现."""
+import re
 import sqlite3
 from abc import ABC, abstractmethod
 from contextlib import closing
@@ -33,7 +34,7 @@ class MessageRepository(ABC):
 
     @abstractmethod
     def search(self, session_id: str, query: str, start_date: str | None = None, end_date: str | None = None,
-              case_sensitive: bool = False, whole_word: bool = False) -> list[Message]:
+              case_sensitive: bool = False, whole_word: bool = False, regex: bool = False) -> list[Message]:
         """在指定会话中搜索包含查询字符串的消息。
 
         Args:
@@ -43,6 +44,7 @@ class MessageRepository(ABC):
             end_date: 结束日期 (ISO 8601 格式)
             case_sensitive: 是否区分大小写 (v1.4.8)
             whole_word: 是否全词匹配 (v1.4.8)
+            regex: 是否使用正则表达式 (v1.4.9)
         """
         ...
 
@@ -53,7 +55,7 @@ class MessageRepository(ABC):
 
     @abstractmethod
     def search_all(self, query: str, limit: int = 100, start_date: str | None = None, end_date: str | None = None,
-                   case_sensitive: bool = False, whole_word: bool = False) -> list[Message]:
+                   case_sensitive: bool = False, whole_word: bool = False, regex: bool = False) -> list[Message]:
         """在所有会话中搜索包含查询字符串的消息。
 
         Args:
@@ -63,6 +65,7 @@ class MessageRepository(ABC):
             end_date: 结束日期 (ISO 8601 格式)
             case_sensitive: 是否区分大小写 (v1.4.8)
             whole_word: 是否全词匹配 (v1.4.8)
+            regex: 是否使用正则表达式 (v1.4.9)
         """
         ...
 
@@ -140,16 +143,51 @@ class SqliteMessageRepository(MessageRepository):
             conn.commit()
 
     def search(self, session_id: str, query: str, start_date: str | None = None, end_date: str | None = None,
-              case_sensitive: bool = False, whole_word: bool = False) -> list[Message]:
+              case_sensitive: bool = False, whole_word: bool = False, regex: bool = False) -> list[Message]:
         """在指定会话中搜索包含查询字符串的消息。
 
         支持日期范围过滤：
         - start_date: 只返回创建日期 >= start_date 的消息
         - end_date: 只返回创建日期 <= end_date 的消息
         v1.4.8: 支持 case_sensitive 和 whole_word 选项
+        v1.4.9: 支持 regex 正则表达式选项
         """
         if not query:
             return []
+
+        # v1.4.9: 如果启用正则表达式模式，先获取候选消息再过滤
+        if regex:
+            # 构建基础查询（仅日期过滤）
+            where_conditions = ["session_id = ?"]
+            params = [session_id]
+
+            if start_date:
+                where_conditions.append("created_at >= ?")
+                params.append(start_date)
+            if end_date:
+                where_conditions.append("created_at <= ?")
+                params.append(end_date)
+
+            sql = (
+                "SELECT id, session_id, role, content, created_at, is_pinned, quoted_message_id, quoted_content FROM message "
+                f"WHERE {' AND '.join(where_conditions)} ORDER BY created_at ASC"
+            )
+
+            # 获取候选消息
+            with self._conn() as conn:
+                candidates = [_row_to_message(r) for r in conn.execute(sql, tuple(params)).fetchall()]
+
+            # 使用正则表达式过滤
+            flags = 0 if case_sensitive else re.IGNORECASE
+            try:
+                pattern = re.compile(query, flags)
+            except re.error:
+                # 正则表达式无效，返回空结果
+                return []
+
+            return [msg for msg in candidates if pattern.search(msg.content)]
+
+        # 原有的 LIKE 搜索逻辑
         with self._conn() as conn:
             # v1.4.8: 启用区分大小写的 LIKE
             if case_sensitive:
@@ -233,16 +271,56 @@ class SqliteMessageRepository(MessageRepository):
             return [_row_to_message(r) for r in cur.fetchall()]
 
     def search_all(self, query: str, limit: int = 100, start_date: str | None = None, end_date: str | None = None,
-                   case_sensitive: bool = False, whole_word: bool = False) -> list[Message]:
+                   case_sensitive: bool = False, whole_word: bool = False, regex: bool = False) -> list[Message]:
         """在所有会话中搜索包含查询字符串的消息，按时间倒序。
 
         支持日期范围过滤：
         - start_date: 只返回创建日期 >= start_date 的消息
         - end_date: 只返回创建日期 <= end_date 的消息
         v1.4.8: 支持 case_sensitive 和 whole_word 选项
+        v1.4.9: 支持 regex 正则表达式选项
         """
         if not query:
             return []
+
+        # v1.4.9: 如果启用正则表达式模式，先获取候选消息再过滤
+        if regex:
+            # 构建基础查询（仅日期过滤）
+            where_conditions = ["1=1"]
+            params = []
+
+            if start_date:
+                where_conditions.append("created_at >= ?")
+                params.append(start_date)
+            if end_date:
+                where_conditions.append("created_at <= ?")
+                params.append(end_date)
+
+            # 先获取更多候选消息（扩大limit以便后续过滤）
+            fetch_limit = limit * 5 if limit > 0 else 500
+
+            sql = (
+                "SELECT id, session_id, role, content, created_at, is_pinned, quoted_message_id, quoted_content FROM message "
+                f"WHERE {' AND '.join(where_conditions)} ORDER BY created_at DESC LIMIT ?"
+            )
+            params.append(fetch_limit)
+
+            # 获取候选消息
+            with self._conn() as conn:
+                candidates = [_row_to_message(r) for r in conn.execute(sql, tuple(params)).fetchall()]
+
+            # 使用正则表达式过滤
+            flags = 0 if case_sensitive else re.IGNORECASE
+            try:
+                pattern = re.compile(query, flags)
+            except re.error:
+                # 正则表达式无效，返回空结果
+                return []
+
+            filtered = [msg for msg in candidates if pattern.search(msg.content)]
+            return filtered[:limit] if limit > 0 else filtered
+
+        # 原有的 LIKE 搜索逻辑
         with self._conn() as conn:
             # v1.4.8: 启用区分大小写的 LIKE
             if case_sensitive:

@@ -181,7 +181,7 @@ class AppService:
         return self._message_repo.list_by_session(session_id)
 
     def search_messages(self, session_id: str, query: str, start_date: str | None = None, end_date: str | None = None,
-                       case_sensitive: bool = False, whole_word: bool = False) -> list[Message]:
+                       case_sensitive: bool = False, whole_word: bool = False, regex: bool = False) -> list[Message]:
         """在指定会话中搜索消息。
 
         Args:
@@ -191,11 +191,12 @@ class AppService:
             end_date: 结束日期 (ISO 8601 格式)
             case_sensitive: 是否区分大小写 (v1.4.8)
             whole_word: 是否全词匹配 (v1.4.8)
+            regex: 是否使用正则表达式 (v1.4.9)
         """
-        return self._message_repo.search(session_id, query, start_date, end_date, case_sensitive, whole_word)
+        return self._message_repo.search(session_id, query, start_date, end_date, case_sensitive, whole_word, regex)
 
     def search_all_messages(self, query: str, limit: int = 100, start_date: str | None = None, end_date: str | None = None,
-                           case_sensitive: bool = False, whole_word: bool = False) -> list[Message]:
+                           case_sensitive: bool = False, whole_word: bool = False, regex: bool = False) -> list[Message]:
         """在所有会话中搜索消息。
 
         Args:
@@ -205,8 +206,9 @@ class AppService:
             end_date: 结束日期 (ISO 8601 格式)
             case_sensitive: 是否区分大小写 (v1.4.8)
             whole_word: 是否全词匹配 (v1.4.8)
+            regex: 是否使用正则表达式 (v1.4.9)
         """
-        return self._message_repo.search_all(query, limit, start_date, end_date, case_sensitive, whole_word)
+        return self._message_repo.search_all(query, limit, start_date, end_date, case_sensitive, whole_word, regex)
 
     def set_current_provider(self, provider_id: str) -> None:
         """切换当前模型并写回配置。"""
