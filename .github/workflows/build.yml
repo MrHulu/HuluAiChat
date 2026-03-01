@@ -1,0 +1,254 @@
+# HuluChat Cross-Platform Build Workflow
+# Builds Windows .exe, macOS .app, and Linux AppImage
+
+name: Build Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g., v1.0.2-beta)'
+        required: true
+        default: 'v1.0.2-beta'
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+      fail-fast: false
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build Windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          pyinstaller HuluChat.spec --clean
+        shell: cmd
+
+      - name: Build macOS .app
+        if: matrix.os == 'macos-latest'
+        run: |
+          # Create macOS app bundle spec
+          cat > HuluChat-mac.spec << 'EOF'
+          a = Analysis(
+              ['main.py'],
+              pathex=[],
+              binaries=[],
+              datas=[('assets/icon.png', 'assets')],
+              hiddenimports=['customtkinter', 'openai', 'PIL', 'PIL._tkinter_finder'],
+              hookspath=[],
+              hooksconfig={},
+              runtime_hooks=[],
+              excludes=[],
+              noarchive=False,
+              optimize=0,
+          )
+          pyz = PYZ(a.pure)
+          exe = EXE(
+              pyz,
+              a.scripts,
+              [],
+              name='HuluChat',
+              debug=False,
+              bootloader_ignore_signals=False,
+              strip=False,
+              upx=True,
+              console=False,
+              target_arch='universal2',
+              codesign_identity=None,
+              entitlements_file=None,
+          )
+          coll = COLLECT(
+              exe,
+              a.binaries,
+              a.datas,
+              strip=False,
+              upx=True,
+              upx_exclude=[],
+              name='HuluChat',
+          )
+          app = BUNDLE(
+              coll,
+              name='HuluChat.app',
+              icon='assets/icon.icns',
+              bundle_identifier='com.huluchat.app',
+              info_plist={
+                  'CFBundleName': 'HuluChat',
+                  'CFBundleDisplayName': 'HuluChat',
+                  'CFBundleVersion': '${{ github.ref_name }}',
+                  'CFBundleShortVersionString': '${{ github.ref_name }}',
+                  'NSHighResolutionCapable': True,
+              },
+          )
+          EOF
+          # Generate icns from png if needed
+          if [ ! -f assets/icon.icns ]; then
+            mkdir -p assets/icon.iconset
+            sips -z 16 16     assets/icon.png --out assets/icon.iconset/icon_16x16.png
+            sips -z 32 32     assets/icon.png --out assets/icon.iconset/icon_16x16@2x.png
+            sips -z 32 32     assets/icon.png --out assets/icon.iconset/icon_32x32.png
+            sips -z 64 64     assets/icon.png --out assets/icon.iconset/icon_32x32@2x.png
+            sips -z 128 128   assets/icon.png --out assets/icon.iconset/icon_128x128.png
+            sips -z 256 256   assets/icon.png --out assets/icon.iconset/icon_128x128@2x.png
+            sips -z 256 256   assets/icon.png --out assets/icon.iconset/icon_256x256.png
+            sips -z 512 512   assets/icon.png --out assets/icon.iconset/icon_256x256@2x.png
+            sips -z 512 512   assets/icon.png --out assets/icon.iconset/icon_512x512.png
+            sips -z 1024 1024 assets/icon.png --out assets/icon.iconset/icon_512x512@2x.png
+            iconutil -c icns assets/icon.iconset -o assets/icon.icns
+          fi
+          pyinstaller HuluChat-mac.spec --clean
+
+      - name: Build Linux AppImage
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          # Install AppImage dependencies
+          sudo apt-get update
+          sudo apt-get install -y file fuse libfuse2
+
+          # Build with PyInstaller
+          cat > HuluChat-linux.spec << 'EOF'
+          a = Analysis(
+              ['main.py'],
+              pathex=[],
+              binaries=[],
+              datas=[('assets/icon.png', 'assets')],
+              hiddenimports=['customtkinter', 'openai', 'PIL', 'PIL._tkinter_finder'],
+              hookspath=[],
+              hooksconfig={},
+              runtime_hooks=[],
+              excludes=[],
+              noarchive=False,
+              optimize=0,
+          )
+          pyz = PYZ(a.pure)
+          exe = EXE(
+              pyz,
+              a.scripts,
+              a.binaries,
+              a.datas,
+              [],
+              name='huluchat',
+              debug=False,
+              bootloader_ignore_signals=False,
+              strip=False,
+              upx=True,
+              console=False,
+          )
+          EOF
+          pyinstaller HuluChat-linux.spec --clean
+
+          # Create AppDir structure
+          mkdir -p AppDir/usr/bin
+          mkdir -p AppDir/usr/share/applications
+          mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
+          mkdir -p AppDir/usr/share/metainfo
+
+          # Copy built files
+          cp dist/huluchat AppDir/usr/bin/
+          cp assets/icon.png AppDir/usr/share/icons/hicolor/256x256/apps/huluchat.png
+
+          # Create desktop file
+          cat > AppDir/huluchat.desktop << 'DESKTOP'
+          [Desktop Entry]
+          Name=HuluChat
+          Comment=AI Chat Desktop Application
+          Exec=huluchat
+          Icon=huluchat
+          Type=Application
+          Categories=Utility;Network;
+          StartupNotify=true
+          DESKTOP
+          cp AppDir/huluchat.desktop AppDir/usr/share/applications/
+
+          # Create AppRun
+          cat > AppDir/AppRun << 'APPRUN'
+          #!/bin/bash
+          SELF=$(readlink -f "$0")
+          HERE=${SELF%/*}
+          export LD_LIBRARY_PATH="${HERE}/usr/lib:${HERE}/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH}"
+          export PATH="${HERE}/usr/bin:${PATH}"
+          export PYTHONPATH="${HERE}/usr/bin:${PYTHONPATH}"
+          exec "${HERE}/usr/bin/huluchat" "$@"
+          APPRUN
+          chmod +x AppDir/AppRun
+
+          # Download appimagetool
+          wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+          chmod +x appimagetool-x86_64.AppImage
+
+          # Build AppImage
+          ./appimagetool-x86_64.AppImage AppDir HuluChat-x86_64.AppImage
+
+      - name: Upload Windows artifacts
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: HuluChat-windows
+          path: dist/HuluChat.exe
+          retention-days: 30
+
+      - name: Upload macOS artifacts
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: HuluChat-macos
+          path: dist/HuluChat.app
+          retention-days: 30
+
+      - name: Upload Linux artifacts
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: HuluChat-linux
+          path: HuluChat-x86_64.AppImage
+          retention-days: 30
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            artifacts/HuluChat-windows/HuluChat.exe
+            artifacts/HuluChat-macos/HuluChat.app/**
+            artifacts/HuluChat-linux/HuluChat-x86_64.AppImage
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ contains(github.ref, 'beta') || contains(github.ref, 'alpha') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
