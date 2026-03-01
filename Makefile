@@ -1,4 +1,4 @@
-.PHONY: start stop status last cycles monitor team help clean-logs reset-consensus
+.PHONY: start stop status last cycles monitor team help clean-logs reset-consensus build-exe build-installer build-all clean-build
 
 # === Quick Start ===
 
@@ -48,6 +48,30 @@ reset-consensus: ## Reset consensus to initial state (CAUTION)
 	@echo "Consensus backed up to memories/consensus.md.backup"
 	@echo "Edit memories/consensus.md directly to reset."
 
+# === Build & Installer ===
+
+build-exe: ## Build standalone exe with PyInstaller
+	@echo "Building HuluChat.exe with PyInstaller..."
+	pyinstaller HuluChat.spec --clean
+	@echo "✓ Built dist/HuluChat.exe"
+
+build-installer: build-exe ## Build NSIS installer (requires makensis)
+	@echo "Building NSIS installer..."
+	@if command -v makensis >/dev/null 2>&1; then \
+		makens installer/HuluChat.nsi; \
+		echo "✓ Built dist/HuluChat-Setup-*.exe"; \
+	else \
+		echo "❌ makensis not found. Install NSIS from https://nsis.sourceforge.io/"; \
+		exit 1; \
+	fi
+
+build-all: build-installer ## Build exe + installer
+
+clean-build: ## Clean build artifacts (dist/, build/, spec file cache)
+	@echo "Cleaning build artifacts..."
+	@rm -rf dist build *.spec 2>/dev/null || del /Q /S dist build 2>nul || true
+	@echo "✓ Build artifacts cleaned"
+
 # === Help ===
 
 help: ## Show this help
@@ -61,6 +85,9 @@ help: ## Show this help
 	echo "  monitor     - Tail live logs (Ctrl+C to exit)"; \
 	echo "  team        - Start interactive Claude session"; \
 	echo "  clean-logs  - Remove all cycle logs"; \
+	echo "  build-exe   - Build standalone exe with PyInstaller"; \
+	echo "  build-installer - Build NSIS installer"; \
+	echo "  clean-build - Clean build artifacts"; \
 	echo "  help        - Show this help"
 	@echo ""
 	@echo "Environment Variables:"
