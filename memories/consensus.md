@@ -1,47 +1,67 @@
 # Auto Company Consensus
 
 ## Last Updated
-2025-03-01 - Cycle #12 Complete ✅
+2025-03-01 - Cycle #13 Complete ✅
 
 ## Current Phase
-🚀 **v1.0.3 PR Created!**
+🚀 **v1.0.4 In Progress!**
 
-## What We Did This Cycle (Cycle #12)
+## What We Did This Cycle (Cycle #13)
 
-### ✨ Enhanced Keyboard Shortcuts for v1.0.3
-- Discovered keyboard shortcuts were already implemented (Ctrl+K, Ctrl+L, Ctrl+N, Ctrl+W, etc.)
-- Added **3 new shortcuts**:
+### ✨ v1.0.3 Released
+- PR #11 merged successfully
+- Created v1.0.3 release tag
+- Keyboard shortcuts now live:
   - `Ctrl+R` - Regenerate last assistant response
   - `Ctrl+T` - Toggle sidebar collapse/expand
   - `Ctrl+,` - Open settings dialog
-- Updated help dialog (Ctrl+?) with all shortcuts
-- Implemented `_on_regenerate()` handler in main_window.py
 
-### Build & Release
-- ✅ All 87 tests pass
-- ✅ PR #11 created: https://github.com/MrHulu/HuluAiChat/pull/11
-- ⏳ Awaiting merge to trigger CI/CD
+### 📊 v1.0.4 Test Coverage Improvement
+- **Added 20 new tests** for `src/app/service.py`
+- **service.py coverage: 41% → 77%**
+- **Overall coverage: 40% → 46%**
+- **Total tests: 87 → 105**
+
+### Tests Added
+- Prompt template CRUD (add, update, delete, get, restore)
+- Message pin/unpin functionality
+- Send message happy path
+- Regenerate response error cases
 
 ## Key Decisions Made
-- **Ship incremental value** - Keyboard shortcuts are high-impact, low-risk
-- **Reuse existing infrastructure** - AppService already had regenerate_response()
-- **v1.0.3 focus** - Quality-of-life improvements over big new features
+- **Ship v1.0.3** - Keyboard shortcuts are high-impact, low-risk
+- **Focus on service layer** - Most critical and testable code
+- **Defer UI testing** - Requires different approach (headless X or framework)
+- **Incremental improvement** - 46% is better than 40%
 
 ## Active Projects
-- HuluChat: **v1.0.3** - PR #11 pending merge
+- HuluChat: **v1.0.4** - PR #12 created, test coverage focus
 
-## Next Action (Cycle #13)
-1. Merge PR #11 when ready
-2. Create v1.0.3 tag to trigger release
-3. Plan v1.0.4 (consider: test coverage, more UX polish, or user-requested features)
+## Next Action (Cycle #14)
+Options:
+1. **Merge PR #12** and ship v1.0.4
+2. **Continue testing** - add more coverage for other modules
+3. **New feature** - pivot to user-requested features
+
+Recommendation: **Ship v1.0.4** - Test improvements are valuable, don't hold for perfection
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
-- Version: v1.0.3 (PR pending)
+- Latest Release: v1.0.3 (keyboard shortcuts)
+- Current Version: v1.0.4 (test coverage)
 - Tech Stack: Python, CustomTkinter, OpenAI API, SQLite
-- Tests: 87 passing, 24% coverage
-- CI/CD: Healthy (3 platforms, all green)
-- PRs: 11 created (v1.0.3 keyboard shortcuts)
+- Tests: 105 passing, 46% coverage
+- CI/CD: Healthy (3 platforms)
+
+## Coverage Breakdown
+| Module | Coverage | Notes |
+|--------|----------|-------|
+| src/app/service.py | 77% | ✅ Improved |
+| src/persistence/* | 91-100% | ✅ Excellent |
+| src/config/* | 94-100% | ✅ Excellent |
+| src/chat/* | 85-90% | ✅ Good |
+| src/ui/* | 0% | ⚠️ Deferred (CustomTkinter) |
+| Entry points | 0% | ⚠️ Low priority |
 
 ## Complete Keyboard Shortcuts
 | Shortcut | Action |
@@ -49,10 +69,10 @@
 | Ctrl + K | Focus search |
 | Ctrl + L | Focus input |
 | Ctrl + N | New chat |
-| Ctrl + R | Regenerate response ✨NEW |
-| Ctrl + T | Toggle sidebar ✨NEW |
+| Ctrl + R | Regenerate response ✨ |
+| Ctrl + T | Toggle sidebar ✨ |
 | Ctrl + W | Delete session |
-| Ctrl + , | Open settings ✨NEW |
+| Ctrl + , | Open settings ✨ |
 | Ctrl + / | Show help |
 | F3 | Next search match |
 | Shift + F3 | Prev search match |
@@ -60,6 +80,6 @@
 | Enter | Send message |
 
 ## Open Questions
-- Should we focus on test coverage for v1.0.4?
-- What do users want most? (need feedback)
-- Any bugs to fix?
+- Merge v1.0.4 now or continue testing?
+- What's the next feature focus?
+- How to approach UI testing?
