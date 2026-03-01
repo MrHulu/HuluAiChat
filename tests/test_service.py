@@ -380,7 +380,7 @@ class TestAppService:
 
         results = service.search_all_messages("test", limit=50)
 
-        message_repo.search_all.assert_called_once_with("test", 50, None, None)
+        message_repo.search_all.assert_called_once_with("test", 50, None, None, False, False)
         assert results == expected_results
 
     def test_get_message_count_delegates_to_repo(self):

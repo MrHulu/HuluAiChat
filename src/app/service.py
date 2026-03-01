@@ -7,7 +7,7 @@ from typing import Callable
 
 from src.config.models import AppConfig, Provider
 from src.config.store import ConfigStore
-from src.persistence import Session, Message, SessionRepository, MessageRepository
+from src.persistence import Session, Message, Folder, SessionRepository, MessageRepository, FolderRepository
 from src.chat import ChatClient, ChatError, StreamChunk, TextChunk, DoneChunk, is_error
 
 logger = logging.getLogger(__name__)
@@ -31,11 +31,13 @@ class AppService:
         session_repo: SessionRepository,
         message_repo: MessageRepository,
         chat_client: ChatClient,
+        folder_repo: FolderRepository | None = None,
     ) -> None:
         self._config_store = config_store
         self._session_repo = session_repo
         self._message_repo = message_repo
         self._chat_client = chat_client
+        self._folder_repo = folder_repo
         self._config = config_store.load()
         self._current_session_id: str | None = None
 
@@ -178,7 +180,8 @@ class AppService:
         """加载指定会话的消息列表。"""
         return self._message_repo.list_by_session(session_id)
 
-    def search_messages(self, session_id: str, query: str, start_date: str | None = None, end_date: str | None = None) -> list[Message]:
+    def search_messages(self, session_id: str, query: str, start_date: str | None = None, end_date: str | None = None,
+                       case_sensitive: bool = False, whole_word: bool = False, regex: bool = False) -> list[Message]:
         """在指定会话中搜索消息。
 
         Args:
@@ -186,10 +189,14 @@ class AppService:
             query: 搜索关键词
             start_date: 起始日期 (ISO 8601 格式，如 "2024-01-01")
             end_date: 结束日期 (ISO 8601 格式)
+            case_sensitive: 是否区分大小写 (v1.4.8)
+            whole_word: 是否全词匹配 (v1.4.8)
+            regex: 是否使用正则表达式 (v1.4.9)
         """
-        return self._message_repo.search(session_id, query, start_date, end_date)
+        return self._message_repo.search(session_id, query, start_date, end_date, case_sensitive, whole_word, regex)
 
-    def search_all_messages(self, query: str, limit: int = 100, start_date: str | None = None, end_date: str | None = None) -> list[Message]:
+    def search_all_messages(self, query: str, limit: int = 100, start_date: str | None = None, end_date: str | None = None,
+                           case_sensitive: bool = False, whole_word: bool = False, regex: bool = False) -> list[Message]:
         """在所有会话中搜索消息。
 
         Args:
@@ -197,8 +204,11 @@ class AppService:
             limit: 最大返回结果数
             start_date: 起始日期 (ISO 8601 格式)
             end_date: 结束日期 (ISO 8601 格式)
+            case_sensitive: 是否区分大小写 (v1.4.8)
+            whole_word: 是否全词匹配 (v1.4.8)
+            regex: 是否使用正则表达式 (v1.4.9)
         """
-        return self._message_repo.search_all(query, limit, start_date, end_date)
+        return self._message_repo.search_all(query, limit, start_date, end_date, case_sensitive, whole_word, regex)
 
     def set_current_provider(self, provider_id: str) -> None:
         """切换当前模型并写回配置。"""
@@ -220,6 +230,51 @@ class AppService:
         """切换侧边栏展开/收起并写回配置。"""
         self._config.sidebar_expanded = expanded
         self._config_store.save(self._config)
+
+    # ========== 代码块主题管理 (v1.4.5) ==========
+
+    def get_code_block_theme(self) -> str:
+        """获取当前代码块主题。"""
+        return self._config.code_block_theme
+
+    def set_code_block_theme(self, theme_name: str) -> bool:
+        """
+        设置代码块主题并写回配置。
+
+        Args:
+            theme_name: 主题名称，必须是已注册的主题之一
+
+        Returns:
+            bool: 主题是否有效并已设置
+        """
+        from src.ui.enhanced_markdown import CodeBlockTheme
+        if theme_name in CodeBlockTheme.THEMES:
+            self._config.code_block_theme = theme_name
+            self._config_store.save(self._config)
+            return True
+        return False
+
+    # ========== 代码块字号管理 (v1.4.6) ==========
+
+    def get_code_block_font_size(self) -> int:
+        """获取当前代码块字号。"""
+        return self._config.code_block_font_size
+
+    def set_code_block_font_size(self, font_size: int) -> bool:
+        """
+        设置代码块字号并写回配置。
+
+        Args:
+            font_size: 字号，必须在 8-16 之间
+
+        Returns:
+            bool: 字号是否有效并已设置
+        """
+        if isinstance(font_size, int) and 8 <= font_size <= 16:
+            self._config.code_block_font_size = font_size
+            self._config_store.save(self._config)
+            return True
+        return False
 
     def update_session_title(self, session_id: str, title: str) -> None:
         """更新会话标题。"""
@@ -433,3 +488,149 @@ class AppService:
         """清空最近搜索列表。"""
         self._config.recent_searches = []
         self._config_store.save(self._config)
+
+    # ========== 会话统计 ==========
+
+    def get_session_stats(self, session_id: str | None = None) -> "SessionStats | None":
+        """获取会话统计数据。
+
+        Args:
+            session_id: 会话ID，不传则使用当前会话
+
+        Returns:
+            SessionStats: 统计数据对象，如果会话不存在返回 None
+        """
+        from src.app.statistics import calculate_session_stats
+
+        sid = session_id or self._current_session_id
+        if not sid:
+            return None
+
+        session = self._session_repo.get_by_id(sid)
+        if not session:
+            return None
+
+        messages = self._message_repo.list_by_session(sid)
+        return calculate_session_stats(session, messages)
+
+    def get_global_stats(self) -> "GlobalStats":
+        """获取全局统计数据（跨所有会话）。
+
+        Returns:
+            GlobalStats: 全局统计数据对象
+        """
+        from src.app.statistics import calculate_global_stats
+
+        sessions = self._session_repo.list_all()
+        all_messages = self._message_repo.list_all()
+        return calculate_global_stats(sessions, all_messages)
+
+    # ========== 文件夹管理 ==========
+
+    def create_folder(self, name: str, color: str = "#60A5FA", icon: str = "📁") -> Folder:
+        """创建新文件夹。"""
+        if not self._folder_repo:
+            raise RuntimeError("FolderRepository not initialized")
+        return self._folder_repo.create(name, color, icon)
+
+    def list_folders(self) -> list[Folder]:
+        """获取所有文件夹。"""
+        if not self._folder_repo:
+            return []
+        return self._folder_repo.list_folders()
+
+    def get_folder(self, folder_id: str) -> Folder | None:
+        """获取指定文件夹。"""
+        if not self._folder_repo:
+            return None
+        return self._folder_repo.get_by_id(folder_id)
+
+    def update_folder_name(self, folder_id: str, name: str) -> None:
+        """更新文件夹名称。"""
+        if not self._folder_repo:
+            return
+        self._folder_repo.update_name(folder_id, name)
+
+    def update_folder_color(self, folder_id: str, color: str) -> None:
+        """更新文件夹颜色。"""
+        if not self._folder_repo:
+            return
+        self._folder_repo.update_color(folder_id, color)
+
+    def update_folder_icon(self, folder_id: str, icon: str) -> None:
+        """更新文件夹图标。"""
+        if not self._folder_repo:
+            return
+        self._folder_repo.update_icon(folder_id, icon)
+
+    def update_folder_sort_order(self, folder_id: str, sort_order: int) -> None:
+        """更新文件夹排序序号。"""
+        if not self._folder_repo:
+            return
+        self._folder_repo.update_sort_order(folder_id, sort_order)
+
+    def swap_folder_order(self, folder_id: str, direction: str) -> Folder | None:
+        """交换文件夹排序序号。
+
+        Args:
+            folder_id: 要移动的文件夹 ID
+            direction: "up" 或 "down"
+
+        Returns:
+            交换后的文件夹列表（用于 UI 更新），如果失败返回 None
+        """
+        if not self._folder_repo:
+            return None
+
+        folders = self._folder_repo.list_folders()
+        if not folders:
+            return None
+
+        # 找到当前文件夹的索引
+        current_index = next((i for i, f in enumerate(folders) if f.id == folder_id), None)
+        if current_index is None:
+            return None
+
+        # 计算目标索引
+        if direction == "up" and current_index > 0:
+            target_index = current_index - 1
+        elif direction == "down" and current_index < len(folders) - 1:
+            target_index = current_index + 1
+        else:
+            return None  # 已经在边界位置
+
+        # 交换排序值
+        target_folder = folders[target_index]
+        self._folder_repo.swap_folder_order(folder_id, target_folder.id)
+
+        # 返回更新后的文件夹列表
+        return self._folder_repo.list_folders()
+
+    def delete_folder(self, folder_id: str) -> None:
+        """删除文件夹（会话会移至根目录）。"""
+        if not self._folder_repo:
+            return
+        self._folder_repo.delete(folder_id)
+
+    def set_session_folder(self, session_id: str, folder_id: str | None) -> None:
+        """设置会话所属文件夹（None 表示移至根目录）。"""
+        self._session_repo.set_folder(session_id, folder_id)
+
+    def get_sessions_by_folder(self, folder_id: str | None) -> list[Session]:
+        """获取指定文件夹下的会话（None 表示根目录）。"""
+        return self._session_repo.get_sessions_by_folder(folder_id)
+
+    def toggle_folder_collapsed(self, folder_id: str) -> bool:
+        """切换文件夹折叠状态，返回新状态。"""
+        if not self._folder_repo:
+            return False
+        current = self._folder_repo.is_folder_collapsed(folder_id)
+        new_state = not current
+        self._folder_repo.set_folder_collapsed(folder_id, new_state)
+        return new_state
+
+    def is_folder_collapsed(self, folder_id: str) -> bool:
+        """检查文件夹是否折叠。"""
+        if not self._folder_repo:
+            return False
+        return self._folder_repo.is_folder_collapsed(folder_id)
