@@ -2265,11 +2265,12 @@ class MainWindow:
                 )
                 role_label.grid(row=0, column=0, sticky="w", pady=(0, 4))
 
-                # 渲染 Markdown 内容
+                # 渲染 Markdown 内容（v1.4.7: 传递搜索查询以支持高亮）
                 md_widgets = EnhancedMarkdown.render_with_code_blocks(
                     content_container,
                     m.content,
-                    use_base_ctkmarkdown=_USE_MARKDOWN
+                    use_base_ctkmarkdown=_USE_MARKDOWN,
+                    search_query=self._search_query
                 )
                 for i, widget in enumerate(md_widgets, start=1):
                     widget.grid(row=i, column=0, sticky="ew")

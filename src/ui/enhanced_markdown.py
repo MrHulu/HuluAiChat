@@ -1247,13 +1247,105 @@ class EnhancedMarkdown:
         return blocks
 
     @staticmethod
+    def _apply_search_highlight(text_widget, content: str, search_query: str) -> None:
+        """
+        对文本 widget 应用搜索高亮（v1.4.7）。
+
+        Args:
+            text_widget: CTkTextbox 或底层 Tkinter Text widget
+            content: 原始文本内容
+            search_query: 搜索关键词
+        """
+        if not search_query:
+            return
+
+        try:
+            # 获取底层 Tkinter Text widget
+            if hasattr(text_widget, '_textbox'):
+                tk_text = text_widget._textbox
+            elif hasattr(text_widget, '_text'):
+                tk_text = text_widget._text
+            else:
+                tk_text = text_widget
+        except Exception:
+            return
+
+        # 配置高亮标签（主题感知）
+        try:
+            is_dark = ctk.get_appearance_mode() == "Dark"
+            if is_dark:
+                tk_text.tag_config("search_highlight", background="#E65100", foreground="white")
+            else:
+                tk_text.tag_config("search_highlight", background="#FFEB3B", foreground="black")
+        except Exception:
+            pass
+
+        # 查找并高亮所有匹配
+        content_lower = content.lower()
+        query_lower = search_query.lower()
+        start = 0
+
+        while True:
+            pos = content_lower.find(query_lower, start)
+            if pos == -1:
+                break
+
+            try:
+                # 计算在文本框中的位置
+                line_start = f"1.0 + {pos} chars"
+                line_end = f"1.0 + {pos + len(search_query)} chars"
+                tk_text.tag_add("search_highlight", line_start, line_end)
+            except Exception:
+                pass
+
+            start = pos + len(search_query)
+
+    @staticmethod
+    def _apply_search_highlight_to_markdown(md_widget, content: str, search_query: str) -> None:
+        """
+        对 CTkMarkdown widget 应用搜索高亮（v1.4.7）。
+
+        CTkMarkdown 内部使用多个 Text widget 来渲染格式化内容，
+        我们尝试遍历其子组件并应用高亮。
+
+        Args:
+            md_widget: CTkMarkdown widget
+            content: 原始 Markdown 内容
+            search_query: 搜索关键词
+        """
+        if not search_query or not _HAS_BASE:
+            return
+
+        try:
+            # CTkMarkdown 的内部结构：frame -> textbox(s)
+            # 尝试找到内部的 Text widget
+            def search_and_highlight(widget) -> None:
+                try:
+                    # 如果是 CTkTextbox，尝试应用高亮
+                    if hasattr(widget, '_textbox'):
+                        EnhancedMarkdown._apply_search_highlight(widget, content, search_query)
+                    # 递归搜索子组件
+                    for child in widget.winfo_children():
+                        search_and_highlight(child)
+                except Exception:
+                    pass
+
+            # 延迟执行，等待 Markdown 渲染完成
+            import tkinter as tk
+            widget_root = md_widget.winfo_toplevel()
+            widget_root.after(10, lambda: search_and_highlight(md_widget))
+        except Exception:
+            pass
+
+    @staticmethod
     def render_with_code_blocks(
         parent,
         markdown: str,
         use_base_ctkmarkdown: bool = True,
         show_line_numbers: bool = True,
         wrap: str = "word",
-        theme: str | None = None
+        theme: str | None = None,
+        search_query: str | None = None
     ) -> list:
         """
         渲染 Markdown，代码块用 CodeBlockFrame，其他用基础渲染器。
@@ -1265,6 +1357,7 @@ class EnhancedMarkdown:
             show_line_numbers: 是否显示行号
             wrap: 换行模式 ("word", "char", "none")
             theme: 主题名称（None 使用共享主题）
+            search_query: 搜索关键词（用于高亮显示，v1.4.7）
 
         返回: [创建的 widget 列表]
         """
@@ -1275,11 +1368,17 @@ class EnhancedMarkdown:
             if use_base_ctkmarkdown and _HAS_BASE:
                 md = BaseCTkMarkdown(parent, width=400)
                 md.set_markdown(markdown)
+                # v1.4.7: 尝试对 CTkMarkdown 应用搜索高亮
+                if search_query:
+                    EnhancedMarkdown._apply_search_highlight_to_markdown(md, markdown, search_query)
                 widgets.append(md)
             else:
                 # 纯文本回退
                 tb = ctk.CTkTextbox(parent, wrap="word")
                 tb.insert("1.0", markdown)
+                # v1.4.7: 应用搜索高亮
+                if search_query:
+                    EnhancedMarkdown._apply_search_highlight(tb, markdown, search_query)
                 tb.configure(state="disabled")
                 widgets.append(tb)
             return widgets
@@ -1294,10 +1393,14 @@ class EnhancedMarkdown:
                     if use_base_ctkmarkdown and _HAS_BASE:
                         md = BaseCTkMarkdown(parent, width=400)
                         md.set_markdown(before_text)
+                        if search_query:
+                            EnhancedMarkdown._apply_search_highlight_to_markdown(md, before_text, search_query)
                         widgets.append(md)
                     else:
                         tb = ctk.CTkTextbox(parent, wrap="word")
                         tb.insert("1.0", before_text)
+                        if search_query:
+                            EnhancedMarkdown._apply_search_highlight(tb, before_text, search_query)
                         tb.configure(state="disabled")
                         widgets.append(tb)
 
@@ -1321,10 +1424,14 @@ class EnhancedMarkdown:
                 if use_base_ctkmarkdown and _HAS_BASE:
                     md = BaseCTkMarkdown(parent, width=400)
                     md.set_markdown(after_text)
+                    if search_query:
+                        EnhancedMarkdown._apply_search_highlight_to_markdown(md, after_text, search_query)
                     widgets.append(md)
                 else:
                     tb = ctk.CTkTextbox(parent, wrap="word")
                     tb.insert("1.0", after_text)
+                    if search_query:
+                        EnhancedMarkdown._apply_search_highlight(tb, after_text, search_query)
                     tb.configure(state="disabled")
                     widgets.append(tb)
 

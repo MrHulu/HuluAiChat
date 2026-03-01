@@ -829,3 +829,107 @@ class TestCodeBlockFontSizePersistence:
         # Reset to default
         CodeBlockFrame.set_shared_font_size(10)
         assert CodeBlockFrame.get_shared_font_size() == 10
+
+
+class TestSearchHighlighting:
+    """Tests for search highlighting functionality (v1.4.7)."""
+
+    @pytest.fixture(scope="session")
+    def root_window(self):
+        """Create a root tkinter window for testing (session-scoped)."""
+        import tkinter as tk
+        window = tk.Tk()
+        window.withdraw()  # Hide the window
+        yield window
+        window.destroy()
+
+    def test_render_with_code_blocks_accepts_search_query(self, root_window):
+        """Test that render_with_code_blocks accepts search_query parameter."""
+        markdown = "Hello world\n```python\nprint('test')\n```"
+
+        # Should not raise an exception
+        widgets = EnhancedMarkdown.render_with_code_blocks(
+            root_window,
+            markdown,
+            use_base_ctkmarkdown=False,
+            search_query="world"
+        )
+        assert len(widgets) > 0
+
+    def test_render_with_empty_search_query(self, root_window):
+        """Test that empty search_query doesn't cause errors."""
+        markdown = "Hello world"
+
+        widgets = EnhancedMarkdown.render_with_code_blocks(
+            root_window,
+            markdown,
+            use_base_ctkmarkdown=False,
+            search_query=None
+        )
+        assert len(widgets) > 0
+
+        widgets2 = EnhancedMarkdown.render_with_code_blocks(
+            root_window,
+            markdown,
+            use_base_ctkmarkdown=False,
+            search_query=""
+        )
+        assert len(widgets2) > 0
+
+    def test_render_with_code_blocks_with_search(self, root_window):
+        """Test rendering with code blocks and search query."""
+        markdown = "Search for **test** here\n```python\nprint('search')\n```"
+
+        widgets = EnhancedMarkdown.render_with_code_blocks(
+            root_window,
+            markdown,
+            use_base_ctkmarkdown=False,
+            search_query="search"
+        )
+        # Should have text widget(s) and code block
+        assert len(widgets) > 0
+
+    def test_render_plain_text_with_search(self, root_window):
+        """Test rendering plain text with search query."""
+        markdown = "This is a plain text message without code blocks."
+
+        widgets = EnhancedMarkdown.render_with_code_blocks(
+            root_window,
+            markdown,
+            use_base_ctkmarkdown=False,
+            search_query="plain"
+        )
+        assert len(widgets) == 1
+
+    def test_render_markdown_with_inline_code_and_search(self, root_window):
+        """Test rendering markdown with inline code and search query."""
+        markdown = "Use `print()` for output and search for terms."
+
+        widgets = EnhancedMarkdown.render_with_code_blocks(
+            root_window,
+            markdown,
+            use_base_ctkmarkdown=False,
+            search_query="search"
+        )
+        assert len(widgets) == 1
+
+    def test_render_multiple_code_blocks_with_search(self, root_window):
+        """Test rendering multiple code blocks with search query."""
+        markdown = """First block
+```python
+print('hello')
+```
+Middle text
+```js
+console.log('world');
+```
+Last text"""
+
+        widgets = EnhancedMarkdown.render_with_code_blocks(
+            root_window,
+            markdown,
+            use_base_ctkmarkdown=False,
+            search_query="text"
+        )
+        # Should have: text, code, text, code, text
+        assert len(widgets) >= 3
