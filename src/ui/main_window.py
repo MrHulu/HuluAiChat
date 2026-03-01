@@ -15,6 +15,12 @@ from src.chat import TextChunk, DoneChunk, ChatError, is_error
 from src.persistence import Session, Message
 
 try:
+    from src.ui.statistics_dialog import open_statistics_dialog
+    _HAS_STATISTICS = True
+except ImportError:
+    _HAS_STATISTICS = False
+
+try:
     from ctk_markdown import CTkMarkdown
     _USE_MARKDOWN = True
 except ImportError:
@@ -861,7 +867,10 @@ class MainWindow:
         self._model_menu.grid(row=0, column=4, padx=8)
         ctk.CTkButton(top, text="模板", width=70, command=self._on_templates).grid(row=0, column=5, padx=4)
         ctk.CTkButton(top, text="导出", width=70, command=self._on_export).grid(row=0, column=6, padx=4)
-        ctk.CTkButton(top, text="设置", width=70, command=self._on_settings).grid(row=0, column=7, padx=4)
+        # v1.3.2: Statistics button
+        if _HAS_STATISTICS:
+            ctk.CTkButton(top, text="统计", width=70, command=self._on_show_statistics).grid(row=0, column=7, padx=4)
+        ctk.CTkButton(top, text="设置", width=70, command=self._on_settings).grid(row=0, column=8, padx=4)
         # 快捷键提示按钮
         ctk.CTkButton(
             top,
@@ -871,7 +880,7 @@ class MainWindow:
             fg_color="transparent",
             hover_color=("gray80", "gray28"),
             text_color=("gray40", "gray60")
-        ).grid(row=0, column=8, padx=4)
+        ).grid(row=0, column=9, padx=4)
         # 添加 column 1 的权重，让搜索按钮有足够空间
         top.grid_columnconfigure(1, weight=0)
         top.grid_columnconfigure(2, weight=0)  # 日期按钮固定宽度
@@ -1027,12 +1036,36 @@ class MainWindow:
         self._input.grid(row=1, column=1, sticky="ew", padx=(0, 8))
         self._input.bind("<Return>", self._on_input_return)
         self._input.bind("<Control-Return>", lambda e: None)  # Ctrl+Enter 换行由默认行为处理
+        # v1.3.0: Bind KeyRelease to update character counter
+        self._input.bind("<KeyRelease>", self._on_input_key_release)
+
         self._send_btn = ctk.CTkButton(input_frame, text="发送", width=80, command=self._on_send)
         self._send_btn.grid(row=1, column=2)
-        self._sending_label = ctk.CTkLabel(input_frame, text="", fg_color="transparent")
+
+        # v1.3.0: Enhanced loading indicator with animation support
+        self._sending_label = ctk.CTkLabel(
+            input_frame,
+            text="",
+            fg_color="transparent",
+            font=("", 11),
+            text_color=("#3b82f6", "#60a5fa")  # Blue color for loading state
+        )
         self._sending_label.grid(row=1, column=3, padx=8)
+        self._loading_anim_step = 0  # v1.3.0: Animation step counter
+        self._loading_anim_job = None  # v1.3.0: Animation job handle
+
+        # v1.3.0: Character counter label (positioned at bottom right of input area)
+        self._char_count_label = ctk.CTkLabel(
+            input_frame,
+            text="0 字符",
+            font=("", 9),
+            text_color=("gray50", "gray65"),
+            anchor="e"
+        )
+        self._char_count_label.grid(row=2, column=1, sticky="e", padx=(0, 8), pady=(2, 0))
+
         self._error_label = ctk.CTkLabel(input_frame, text="", text_color=("red", "orange"))
-        self._error_label.grid(row=2, column=0, columnspan=4, sticky="w", pady=(4, 0))
+        self._error_label.grid(row=3, column=0, columnspan=4, sticky="w", pady=(4, 0))
 
         self._refresh_sessions_list()
         self._refresh_chat_area()
@@ -1055,6 +1088,8 @@ class MainWindow:
         self._root.bind("<Control-T>", lambda e: self._toggle_sidebar())
         self._root.bind("<Control-r>", lambda e: self._on_regenerate())  # Ctrl+R 重新生成
         self._root.bind("<Control-R>", lambda e: self._on_regenerate())
+        self._root.bind("<Control-s>", lambda e: self._on_show_statistics())  # Ctrl+S 显示统计
+        self._root.bind("<Control-S>", lambda e: self._on_show_statistics())  # 大写 S 兼容
         self._root.bind("<Control-p>", lambda e: self._on_toggle_current_session_pinned())  # Ctrl+P 切换置顶
         self._root.bind("<Control-P>", lambda e: self._on_toggle_current_session_pinned())  # 大写 P 兼容
         self._root.bind("<Control-C>", lambda e: self._on_copy_last_message())  # Ctrl+Shift+C 复制最后一条 AI 回复
@@ -2001,19 +2036,28 @@ class MainWindow:
             count_label.grid(sticky="ew", pady=(0, 8))
 
         for idx, m in enumerate(filtered_messages, start=1):
-            fg = ("gray85", "gray25") if m.role == "user" else ("gray70", "gray30")
+            # v1.3.0: Enhanced message bubble colors with better visual hierarchy
+            if m.role == "user":
+                # User messages: warmer, more prominent
+                fg = ("#e8f4fd", "#1e3a5f")  # Soft blue gradient
+                border_color_user = ("#c5e1f5", "#2a4a6f")  # Subtle blue border
+            else:
+                # AI messages: neutral, readable
+                fg = ("#f5f5f5", "#2d2d2d")  # Light gray gradient (better contrast)
+                border_color_user = ("#e0e0e0", "#3d3d3d")  # Subtle gray border
+
             # 当前匹配的消息添加橙色边框作为视觉指示器
             is_current_match = (m.id == self._current_match_msg_id)
-            border_color = ("orange", "dark orange") if is_current_match else None
-            border_width = 2 if is_current_match else 0
+            border_color = ("#ff9500", "#ff6b00") if is_current_match else border_color_user
+            border_width = 2 if is_current_match else 1
 
-            # 消息容器 frame
+            # 消息容器 frame - v1.3.0: Added subtle border for depth
             outer_frame = ctk.CTkFrame(
                 self._chat_scroll,
                 fg_color="transparent",
-                corner_radius=8,
+                corner_radius=12,  # v1.3.0: More rounded for modern look
             )
-            outer_frame.grid(sticky="ew", pady=4)
+            outer_frame.grid(sticky="ew", pady=6)  # v1.3.0: More spacing
             outer_frame.grid_columnconfigure(0, weight=1)
 
             # 消息编号标签（左上角小数字）
@@ -2070,15 +2114,15 @@ class MainWindow:
                 )
                 quote_label.pack(fill="x")
 
-            # 主消息 frame
+            # 主消息 frame - v1.3.0: Enhanced styling with refined colors
             frame = ctk.CTkFrame(
                 outer_frame,
                 fg_color=fg,
-                corner_radius=8,
+                corner_radius=12,  # v1.3.0: More rounded corners
                 border_color=border_color,
                 border_width=border_width
             )
-            frame.grid(row=content_row, column=0, sticky="ew", padx=12, pady=(4, 0))
+            frame.grid(row=content_row, column=0, sticky="ew", padx=16, pady=(2, 0))  # v1.3.0: Better spacing
             frame.grid_columnconfigure(0, weight=1)
             frame.grid_columnconfigure(1, weight=0)
 
@@ -2097,7 +2141,7 @@ class MainWindow:
                 self._insert_highlighted_text(tb, prefix, m.content, m.id)
                 tb.configure(state="disabled")
 
-            # 时间戳标签 (v1.2.8)
+            # 时间戳标签 (v1.2.8, enhanced v1.3.0)
             try:
                 # 解析 ISO 8601 时间戳
                 dt = datetime.fromisoformat(m.created_at.replace('Z', '+00:00'))
@@ -2115,14 +2159,15 @@ class MainWindow:
                     # 更早显示完整日期
                     time_str = dt.strftime("%m-%d %H:%M")
 
+                # v1.3.0: Better timestamp styling with more subtle color
                 timestamp_label = ctk.CTkLabel(
                     frame,
                     text=time_str,
                     font=("", 9),
-                    text_color=("gray50", "gray65"),
+                    text_color=("gray40", "gray60"),  # v1.3.0: More subtle
                     anchor="w",
                 )
-                timestamp_label.grid(row=1, column=0, sticky="w", padx=12, pady=(0, 4))
+                timestamp_label.grid(row=1, column=0, sticky="w", padx=12, pady=(0, 6))  # v1.3.0: More bottom padding
             except (ValueError, TypeError):
                 pass  # 时间戳解析失败时不显示
 
@@ -2430,6 +2475,7 @@ class MainWindow:
             ("ESC", "退出选择模式"),
             ("其他", ""),
             ("Ctrl + ,", "打开设置"),
+            ("Ctrl + S", "会话统计"),
             ("Ctrl + /", "显示此帮助"),
             ("ESC", "清除搜索"),
             ("F3", "下一个搜索匹配"),
@@ -2667,7 +2713,7 @@ class MainWindow:
             ToastNotification(self._root, "⚠️ 请等待当前回复完成")
             return
         self._error_label.configure(text="")
-        self._sending_label.configure(text="正在重新生成…")
+        self._start_loading_animation()  # v1.3.0: Start animation
         self._send_btn.configure(state="disabled")
         self._streaming_session_id = sid
         self._app.regenerate_response(
@@ -2814,6 +2860,14 @@ class MainWindow:
     def _on_settings(self) -> None:
         from src.ui.settings import open_settings
         open_settings(self._root, self._app, self._on_config_changed)
+
+    def _on_show_statistics(self) -> None:
+        """打开会话统计对话框。"""
+        if not _HAS_STATISTICS:
+            return
+        stats = self._app.get_session_stats()
+        if stats:
+            open_statistics_dialog(self._root, stats)
 
     def _on_templates(self) -> None:
         """打开提示词模板管理对话框。"""
@@ -3044,6 +3098,40 @@ class MainWindow:
         self._on_send()
         return "break"
 
+    def _on_input_key_release(self, event) -> None:
+        """v1.3.0: Update character counter on input. v1.3.1: Auto-resize input height."""
+        text = self._input.get("1.0", "end")
+        char_count = len(text) - 1  # -1 because Text widget adds extra newline
+        # Update character counter
+        self._char_count_label.configure(text=f"{char_count} 字符")
+
+        # v1.3.1: Auto-resize input height based on content
+        # Count actual line breaks and estimate wrapped lines
+        lines = text.strip().split('\n') if text.strip() else ['']
+        # Base height on line count with wrapping consideration
+        # Each line is approximately 20px tall with the default font
+        min_height = 80
+        max_height = 200
+        line_height = 20
+
+        # Calculate needed height based on line count and content
+        # Consider wrapping: average ~80 characters per line at default width
+        avg_chars_per_line = 80
+        total_lines = 0
+        for line in lines:
+            if line:
+                wrapped_lines = max(1, (len(line) + avg_chars_per_line - 1) // avg_chars_per_line)
+                total_lines += wrapped_lines
+            else:
+                total_lines += 1
+
+        # Calculate new height (min 1 line, but use min_height as baseline)
+        new_height = max(min_height, min(max_height, total_lines * line_height + 40))
+
+        # Only update if height changed significantly (avoid jitter)
+        if abs(self._input.cget("height") - new_height) > 5:
+            self._input.configure(height=new_height)
+
     def _on_send(self) -> None:
         text = self._input.get("1.0", "end").strip()
         if not text:
@@ -3056,7 +3144,9 @@ class MainWindow:
             self._refresh_chat_area()
         self._input.delete("1.0", "end")
         self._error_label.configure(text="")
-        self._sending_label.configure(text="正在输入…")
+        self._char_count_label.configure(text="0 字符")  # v1.3.0: Reset counter
+        self._input.configure(height=80)  # v1.3.1: Reset input height after send
+        self._start_loading_animation()  # v1.3.0: Start animation
         self._send_btn.configure(state="disabled")
         self._streaming_session_id = sid
 
@@ -3077,9 +3167,10 @@ class MainWindow:
         )
 
     def _append_user_message(self, session_id: str, content: str, quoted_content: str | None = None) -> None:
+        # v1.3.0: Enhanced styling matches new design
         # 外层容器
-        outer_frame = ctk.CTkFrame(self._chat_scroll, fg_color="transparent", corner_radius=8)
-        outer_frame.grid(sticky="ew", pady=4)
+        outer_frame = ctk.CTkFrame(self._chat_scroll, fg_color="transparent", corner_radius=12)
+        outer_frame.grid(sticky="ew", pady=6)
         outer_frame.grid_columnconfigure(0, weight=1)
 
         content_row = 0
@@ -3090,7 +3181,7 @@ class MainWindow:
                 fg_color=("gray70", "gray35"),
                 corner_radius=6,
             )
-            quote_frame.grid(row=content_row, column=0, sticky="ew", padx=12, pady=(4, 0))
+            quote_frame.grid(row=content_row, column=0, sticky="ew", padx=16, pady=(4, 0))
             content_row += 1
 
             quote_label = ctk.CTkLabel(
@@ -3105,9 +3196,15 @@ class MainWindow:
             )
             quote_label.pack(fill="x")
 
-        # 主消息 frame
-        frame = ctk.CTkFrame(outer_frame, fg_color=("gray85", "gray25"), corner_radius=8)
-        frame.grid(row=content_row, column=0, sticky="ew", padx=12, pady=(4, 0))
+        # v1.3.0: User message uses refined blue color scheme
+        frame = ctk.CTkFrame(
+            outer_frame,
+            fg_color=("#e8f4fd", "#1e3a5f"),  # Soft blue gradient
+            corner_radius=12,  # More rounded
+            border_color=("#c5e1f5", "#2a4a6f"),  # Subtle blue border
+            border_width=1
+        )
+        frame.grid(row=content_row, column=0, sticky="ew", padx=16, pady=(2, 0))
         frame.grid_columnconfigure(0, weight=1)
         frame.grid_columnconfigure(1, weight=0)
         tb = ctk.CTkTextbox(
@@ -3133,11 +3230,32 @@ class MainWindow:
         self._chat_widgets.append(("user", outer_frame))
         self._chat_scroll.columnconfigure(0, weight=1)
 
+    def _start_loading_animation(self) -> None:
+        """v1.3.0: Start the animated loading indicator."""
+        self._loading_anim_step = 0
+        self._update_loading_animation()
+
+    def _stop_loading_animation(self) -> None:
+        """v1.3.0: Stop the animated loading indicator."""
+        if self._loading_anim_job:
+            self._root.after_cancel(self._loading_anim_job)
+            self._loading_anim_job = None
+        self._sending_label.configure(text="")
+
+    def _update_loading_animation(self) -> None:
+        """v1.3.0: Update the loading animation frame."""
+        # Animated dots: ●○○ → ○●○ → ○○● → ●○○ ...
+        dots = ["●○○", "○●○", "○○●"]
+        text = dots[self._loading_anim_step % 3]
+        self._sending_label.configure(text=f"思考中 {text}")
+        self._loading_anim_step += 1
+        self._loading_anim_job = self._root.after(500, self._update_loading_animation)
+
     def _on_stream_done(self) -> None:
         self._root.after(0, self._stream_done_ui)
 
     def _stream_done_ui(self) -> None:
-        self._sending_label.configure(text="")
+        self._stop_loading_animation()  # v1.3.0: Stop animation
         self._send_btn.configure(state="normal")
         self._streaming_session_id = None
         self._streaming_textbox_id = None
@@ -3148,7 +3266,7 @@ class MainWindow:
         self._root.after(0, lambda: self._stream_error_ui(message))
 
     def _stream_error_ui(self, message: str) -> None:
-        self._sending_label.configure(text="")
+        self._stop_loading_animation()  # v1.3.0: Stop animation
         self._error_label.configure(text=message)
         self._send_btn.configure(state="normal")
         self._streaming_session_id = None
@@ -3160,7 +3278,7 @@ class MainWindow:
             while True:
                 chunk = self._stream_queue.get_nowait()
                 if is_error(chunk):
-                    self._sending_label.configure(text="")
+                    self._stop_loading_animation()  # v1.3.0: Stop animation
                     self._error_label.configure(text=chunk.message)
                     self._send_btn.configure(state="normal")
                     self._streaming_session_id = None
@@ -3168,7 +3286,7 @@ class MainWindow:
                     self._streaming_text = []
                     continue
                 if isinstance(chunk, DoneChunk):
-                    self._sending_label.configure(text="")
+                    self._stop_loading_animation()  # v1.3.0: Stop animation
                     self._send_btn.configure(state="normal")
                     if self._streaming_textbox_id is not None:
                         tb = self._find_streaming_textbox()
@@ -3189,8 +3307,23 @@ class MainWindow:
                     continue
                 if isinstance(chunk, TextChunk):
                     if self._streaming_textbox_id is None:
-                        frame = ctk.CTkFrame(self._chat_scroll, fg_color=("gray70", "gray30"), corner_radius=8)
-                        frame.grid(sticky="ew", pady=4)
+                        # v1.3.0: Use refined AI message styling
+                        outer_frame = ctk.CTkFrame(
+                            self._chat_scroll,
+                            fg_color="transparent",
+                            corner_radius=12
+                        )
+                        outer_frame.grid(sticky="ew", pady=6)
+                        outer_frame.grid_columnconfigure(0, weight=1)
+
+                        frame = ctk.CTkFrame(
+                            outer_frame,
+                            fg_color=("#f5f5f5", "#2d2d2d"),  # Refined AI message color
+                            corner_radius=12,
+                            border_color=("#e0e0e0", "#3d3d3d"),
+                            border_width=1
+                        )
+                        frame.grid(sticky="ew", padx=16, pady=(2, 0))
                         frame.grid_columnconfigure(0, weight=1)
                         tb = ctk.CTkTextbox(
                             frame, wrap="word", height=280,
@@ -3198,7 +3331,7 @@ class MainWindow:
                         )
                         tb.grid(row=0, column=0, sticky="ew", padx=12, pady=8)
                         tb.insert("1.0", "助手: ")
-                        self._chat_widgets.append(("streaming", frame))
+                        self._chat_widgets.append(("streaming", outer_frame))
                         self._streaming_textbox_id = id(tb)
                     tb = self._find_streaming_textbox()
                     if tb is not None:
