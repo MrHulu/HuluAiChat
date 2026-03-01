@@ -1,6 +1,7 @@
 """会话仓储接口与 SQLite 实现。"""
 import sqlite3
 from abc import ABC, abstractmethod
+from datetime import datetime, timezone
 from pathlib import Path
 
 from src.app_data import get_app_data_dir
@@ -51,7 +52,6 @@ class SqliteSessionRepository(SessionRepository):
         return sqlite3.connect(self._path)
 
     def create(self, session_id: str, title: str) -> Session:
-        from datetime import datetime, timezone
         now = datetime.now(timezone.utc).isoformat()
         with self._conn() as conn:
             conn.execute(
