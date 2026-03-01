@@ -114,20 +114,6 @@ class QuickSwitcherDialog:
         self._session_list_frame: ctk.CTkScrollableFrame | None = None
         self._session_buttons: list[ctk.CTkButton] = []
         self._search_var: ctk.StringVar | None = None
-            initial_index: 初始选中的索引 (用于 Ctrl+Tab 快速切换)
-        """
-        self._parent = parent
-        self._sessions = sessions
-        self._current_id = current_id
-        self._on_select = on_select
-        self._selected_index = initial_index
-        self._filter_text = ""
-        self._filtered_indices: list[int] = list(range(len(sessions)))
-        self._widget: ctk.CTkToplevel | None = None
-        self._session_list_frame: ctk.CTkScrollableFrame | None = None
-        self._session_buttons: list[ctk.CTkButton] = []
-        self._search_var: ctk.StringVar | None = None
-
         self._create_dialog()
 
     def _create_dialog(self) -> None:
@@ -1887,11 +1873,16 @@ class MainWindow:
     def _insert_highlighted_text(self, tb: ctk.CTkTextbox, prefix: str, content: str, msg_id: str) -> None:
         """插入文本并高亮搜索匹配。"""
         tb.insert("1.0", f"{prefix}: ")
-        # 配置高亮标签（如果支持）
+        # 配置高亮标签（主题感知，v1.2.9）
         try:
             # 尝试使用底层 Tkinter Text 的 tag_configure
             text_widget = tb._textbox if hasattr(tb, '_textbox') else tb
-            text_widget.tag_config("search_highlight", background="yellow", foreground="black")
+            # 根据主题使用不同颜色：亮色用黄色，暗色用橙色高亮
+            is_dark = ctk.get_appearance_mode() == "Dark"
+            if is_dark:
+                text_widget.tag_config("search_highlight", background="#E65100", foreground="white")
+            else:
+                text_widget.tag_config("search_highlight", background="#FFEB3B", foreground="black")
         except Exception:
             pass  # CTkTextbox 可能不支持标签
 
@@ -2255,14 +2246,14 @@ class MainWindow:
             frame.grid_columnconfigure(0, weight=1)
             frame.grid_columnconfigure(1, weight=0)
 
-            # 消息内容
+            # 消息内容 (v1.2.9: 使用高亮显示搜索匹配)
             tb = ctk.CTkTextbox(
                 frame, wrap="word", height=self._message_textbox_height(m.content),
                 fg_color="transparent", border_width=0, state="normal"
             )
             tb.grid(row=0, column=0, sticky="ew", padx=12, pady=8)
             prefix = '你' if m.role == 'user' else '助手'
-            tb.insert("1.0", f"{prefix}: {m.content}")
+            self._insert_highlighted_text(tb, prefix, m.content, m.id)
             tb.configure(state="disabled")
 
             # 时间戳标签 (v1.2.8)
