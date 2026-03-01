@@ -27,6 +27,13 @@ except ImportError:
     CTkMarkdown = None  # type: ignore[misc, assignment]
     _USE_MARKDOWN = False
 
+# v1.4.0: Enhanced Markdown with code block copy buttons
+try:
+    from src.ui.enhanced_markdown import EnhancedMarkdown, create_enhanced_markdown
+    _HAS_ENHANCED_MARKDOWN = True
+except ImportError:
+    _HAS_ENHANCED_MARKDOWN = False
+
 SIDEBAR_WIDTH = 220
 SIDEBAR_COLLAPSED = 40  # 折叠后仅图标条，尽量收窄
 POLL_MS = 50
@@ -1906,15 +1913,33 @@ class MainWindow:
         )
         btn_collapse.grid(row=0, column=0, padx=(0, 4))
 
-        # 文件夹名称（带颜色指示）
+        # v1.3.9: 文件夹名称（不带计数，计数单独做成徽章）
         folder_name = ctk.CTkLabel(
             row,
-            text=f"● {folder.name} ({session_count})",
+            text=f"{folder.icon} {folder.name}",
             anchor="w",
             font=("", 12, "bold"),
             text_color=folder.color,
         )
         folder_name.grid(row=0, column=1, sticky="w")
+
+        # v1.3.9: 视觉徽章显示会话数量
+        badge_frame = ctk.CTkFrame(
+            row,
+            fg_color=folder.color,
+            corner_radius=10,
+        )
+        badge_frame.grid(row=0, column=2, padx=(6, 0), pady=2)
+
+        count_label = ctk.CTkLabel(
+            badge_frame,
+            text=str(session_count),
+            font=("", 10, "bold"),
+            text_color=("white", "black"),  # 根据徽章背景色自适应
+            padx=6,
+            pady=1,
+        )
+        count_label.grid()
 
         return row
 
@@ -2210,7 +2235,31 @@ class MainWindow:
             frame.grid_columnconfigure(0, weight=1)
             frame.grid_columnconfigure(1, weight=0)
 
-            if m.role == "assistant" and _USE_MARKDOWN and CTkMarkdown:
+            # v1.4.0: Use enhanced markdown with code block copy buttons for AI responses
+            if m.role == "assistant" and _HAS_ENHANCED_MARKDOWN:
+                # 使用增强版 Markdown（支持代码块复制按钮）
+                content_container = ctk.CTkFrame(frame, fg_color="transparent")
+                content_container.grid(row=0, column=0, sticky="nsew", padx=12, pady=8)
+                content_container.grid_columnconfigure(0, weight=1)
+
+                # 添加助手标签
+                role_label = ctk.CTkLabel(
+                    content_container,
+                    text="**助手:**",
+                    anchor="w",
+                    font=("", 11, "bold")
+                )
+                role_label.grid(row=0, column=0, sticky="w", pady=(0, 4))
+
+                # 渲染 Markdown 内容
+                md_widgets = EnhancedMarkdown.render_with_code_blocks(
+                    content_container,
+                    m.content,
+                    use_base_ctkmarkdown=_USE_MARKDOWN
+                )
+                for i, widget in enumerate(md_widgets, start=1):
+                    widget.grid(row=i, column=0, sticky="ew")
+            elif m.role == "assistant" and _USE_MARKDOWN and CTkMarkdown:
                 md = CTkMarkdown(frame, width=400)
                 md.grid(row=0, column=0, sticky="ew", padx=12, pady=8)
                 md.set_markdown(f"**助手:**\n\n{m.content}")
@@ -2967,8 +3016,8 @@ class MainWindow:
 
         folders = self._app.list_folders()
 
-        def on_create(name: str, color: str) -> None:
-            folder = self._app.create_folder(name, color)
+        def on_create(name: str, color: str, icon: str) -> None:
+            folder = self._app.create_folder(name, color, icon)
             ToastNotification(self._root, f"✅ 已创建文件夹「{name}」")
             self._refresh_sessions_list()
 
@@ -2976,7 +3025,7 @@ class MainWindow:
             EditFolderDialog(
                 self._root,
                 self._app.get_folder(folder_id),
-                lambda name, color: self._do_rename_folder(folder_id, name, color),
+                lambda name, color, icon: self._do_rename_folder(folder_id, name, color, icon),
             )
 
         def on_delete(folder_id: str) -> None:
@@ -2986,9 +3035,12 @@ class MainWindow:
                 ToastNotification(self._root, f"🗑️ 已删除文件夹「{folder.name}」")
                 self._refresh_sessions_list()
 
-        def on_move(folder_id: str, new_order: int) -> None:
-            self._app.update_folder_sort_order(folder_id, new_order)
-            self._refresh_sessions_list()
+        def on_move(folder_id: str, direction: str) -> list[Folder] | None:
+            """移动文件夹排序（上移/下移）。"""
+            updated_folders = self._app.swap_folder_order(folder_id, direction)
+            if updated_folders is not None:
+                self._refresh_sessions_list()
+            return updated_folders
 
         FolderDialog(
             self._root,
@@ -2999,10 +3051,11 @@ class MainWindow:
             on_move=on_move,
         )
 
-    def _do_rename_folder(self, folder_id: str, new_name: str, new_color: str) -> None:
+    def _do_rename_folder(self, folder_id: str, new_name: str, new_color: str, new_icon: str) -> None:
         """执行文件夹重命名。"""
         self._app.update_folder_name(folder_id, new_name)
         self._app.update_folder_color(folder_id, new_color)
+        self._app.update_folder_icon(folder_id, new_icon)
         ToastNotification(self._root, f"✅ 已更新文件夹「{new_name}」")
         self._refresh_sessions_list()
 
