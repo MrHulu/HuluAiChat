@@ -60,13 +60,15 @@ class Provider:
 
 @dataclass
 class AppConfig:
-    """应用配置：providers、当前 Provider、主题、侧边栏状态、提示词模板、最近搜索。"""
+    """应用配置：providers、当前 Provider、主题、侧边栏状态、提示词模板、最近搜索、代码块主题、代码块字号。"""
     providers: list[Provider] = field(default_factory=list)
     current_provider_id: str | None = None
     theme: str = "dark"
     sidebar_expanded: bool = True
     prompt_templates: list[PromptTemplate] = field(default_factory=list)
     recent_searches: list[str] = field(default_factory=list)  # 最近搜索，最多10条
+    code_block_theme: str = "github_dark"  # v1.4.5: 代码块主题，默认 GitHub Dark
+    code_block_font_size: int = 10  # v1.4.6: 代码块字号，默认 10 (范围 8-16)
 
     def to_json(self) -> dict[str, Any]:
         return {
@@ -76,12 +78,18 @@ class AppConfig:
             "sidebar_expanded": self.sidebar_expanded,
             "prompt_templates": [t.to_json() for t in self.prompt_templates],
             "recent_searches": self.recent_searches,
+            "code_block_theme": self.code_block_theme,
+            "code_block_font_size": self.code_block_font_size,
         }
 
     @classmethod
     def from_json(cls, data: dict[str, Any]) -> "AppConfig":
         providers = [Provider.from_json(p) for p in data.get("providers", [])]
         templates = [PromptTemplate.from_json(t) for t in data.get("prompt_templates", [])]
+        # 确保字号在有效范围内 (8-16)
+        font_size = data.get("code_block_font_size", 10)
+        if not isinstance(font_size, int) or font_size < 8 or font_size > 16:
+            font_size = 10
         return cls(
             providers=providers,
             current_provider_id=data.get("current_provider_id"),
@@ -89,6 +97,8 @@ class AppConfig:
             sidebar_expanded=data.get("sidebar_expanded", True),
             prompt_templates=templates,
             recent_searches=data.get("recent_searches", []),
+            code_block_theme=data.get("code_block_theme", "github_dark"),
+            code_block_font_size=font_size,
         )
 
 

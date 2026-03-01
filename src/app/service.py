@@ -223,6 +223,51 @@ class AppService:
         self._config.sidebar_expanded = expanded
         self._config_store.save(self._config)
 
+    # ========== 代码块主题管理 (v1.4.5) ==========
+
+    def get_code_block_theme(self) -> str:
+        """获取当前代码块主题。"""
+        return self._config.code_block_theme
+
+    def set_code_block_theme(self, theme_name: str) -> bool:
+        """
+        设置代码块主题并写回配置。
+
+        Args:
+            theme_name: 主题名称，必须是已注册的主题之一
+
+        Returns:
+            bool: 主题是否有效并已设置
+        """
+        from src.ui.enhanced_markdown import CodeBlockTheme
+        if theme_name in CodeBlockTheme.THEMES:
+            self._config.code_block_theme = theme_name
+            self._config_store.save(self._config)
+            return True
+        return False
+
+    # ========== 代码块字号管理 (v1.4.6) ==========
+
+    def get_code_block_font_size(self) -> int:
+        """获取当前代码块字号。"""
+        return self._config.code_block_font_size
+
+    def set_code_block_font_size(self, font_size: int) -> bool:
+        """
+        设置代码块字号并写回配置。
+
+        Args:
+            font_size: 字号，必须在 8-16 之间
+
+        Returns:
+            bool: 字号是否有效并已设置
+        """
+        if isinstance(font_size, int) and 8 <= font_size <= 16:
+            self._config.code_block_font_size = font_size
+            self._config_store.save(self._config)
+            return True
+        return False
+
     def update_session_title(self, session_id: str, title: str) -> None:
         """更新会话标题。"""
         self._session_repo.update_title(session_id, title)

@@ -739,6 +739,20 @@ class MainWindow:
         self._shift_pressed_on_click: bool = False  # 点击时 Shift 键状态 (v1.2.7)
 
         ctk.set_appearance_mode(self._app.config().theme)
+
+        # v1.4.5: 初始化代码块主题（从配置加载）
+        if _HAS_ENHANCED_MARKDOWN:
+            from src.ui.enhanced_markdown import CodeBlockFrame, set_theme_save_callback, set_font_size_save_callback
+            saved_theme = self._app.get_code_block_theme()
+            CodeBlockFrame.set_shared_theme(saved_theme)
+            # 设置主题保存回调
+            set_theme_save_callback(self._app.set_code_block_theme)
+            # v1.4.6: 初始化代码块字号（从配置加载）
+            saved_font_size = self._app.get_code_block_font_size()
+            CodeBlockFrame.set_shared_font_size(saved_font_size)
+            # 设置字号保存回调
+            set_font_size_save_callback(self._app.set_code_block_font_size)
+
         self._root = ctk.CTk()
         self._root.title("HuluChat")
         try:
