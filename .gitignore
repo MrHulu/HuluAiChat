@@ -120,8 +120,12 @@ credentials.json
 secrets.json
 
 # ====================
-# Auto-Loop Runtime (all state files in one directory)
+# Auto-Loop Runtime
 # ====================
+.auto-loop.pid
+.auto-loop-state
+.auto-loop-stop
+.auto-loop-paused
 
 # ====================
 # Logs
