@@ -2106,9 +2106,38 @@ class MainWindow:
                 self._insert_highlighted_text(tb, prefix, m.content, m.id)
                 tb.configure(state="disabled")
 
+            # 时间戳标签 (v1.2.8)
+            try:
+                # 解析 ISO 8601 时间戳
+                dt = datetime.fromisoformat(m.created_at.replace('Z', '+00:00'))
+                # 根据消息新旧程度显示不同格式
+                now = datetime.now(dt.tzinfo)
+                delta = now - dt
+                if delta.days < 1:
+                    # 今天内显示时间
+                    time_str = dt.strftime("%H:%M")
+                elif delta.days < 7:
+                    # 一周内显示星期几+时间
+                    weekdays = ["一", "二", "三", "四", "五", "六", "日"]
+                    time_str = f"周{weekdays[dt.weekday()]} {dt.strftime('%H:%M')}"
+                else:
+                    # 更早显示完整日期
+                    time_str = dt.strftime("%m-%d %H:%M")
+
+                timestamp_label = ctk.CTkLabel(
+                    frame,
+                    text=time_str,
+                    font=("", 9),
+                    text_color=("gray50", "gray65"),
+                    anchor="w",
+                )
+                timestamp_label.grid(row=1, column=0, sticky="w", padx=12, pady=(0, 4))
+            except (ValueError, TypeError):
+                pass  # 时间戳解析失败时不显示
+
             # 右侧按钮组
             btn_frame = ctk.CTkFrame(frame, fg_color="transparent")
-            btn_frame.grid(row=0, column=1, padx=(4, 8), pady=4)
+            btn_frame.grid(row=0, column=1, rowspan=2, padx=(4, 8), pady=4)
 
             # 置顶按钮
             pin_text = "📌" if m.is_pinned else "📍"
@@ -2236,9 +2265,33 @@ class MainWindow:
             tb.insert("1.0", f"{prefix}: {m.content}")
             tb.configure(state="disabled")
 
+            # 时间戳标签 (v1.2.8)
+            try:
+                dt = datetime.fromisoformat(m.created_at.replace('Z', '+00:00'))
+                now = datetime.now(dt.tzinfo)
+                delta = now - dt
+                if delta.days < 1:
+                    time_str = dt.strftime("%H:%M")
+                elif delta.days < 7:
+                    weekdays = ["一", "二", "三", "四", "五", "六", "日"]
+                    time_str = f"周{weekdays[dt.weekday()]} {dt.strftime('%H:%M')}"
+                else:
+                    time_str = dt.strftime("%m-%d %H:%M")
+
+                timestamp_label = ctk.CTkLabel(
+                    frame,
+                    text=time_str,
+                    font=("", 9),
+                    text_color=("gray50", "gray65"),
+                    anchor="w",
+                )
+                timestamp_label.grid(row=1, column=0, sticky="w", padx=12, pady=(0, 4))
+            except (ValueError, TypeError):
+                pass
+
             # 右侧按钮组
             btn_frame = ctk.CTkFrame(frame, fg_color="transparent")
-            btn_frame.grid(row=0, column=1, padx=(4, 8), pady=4)
+            btn_frame.grid(row=0, column=1, rowspan=2, padx=(4, 8), pady=4)
 
             # 置顶按钮（全局搜索结果中显示置顶状态但不提供切换）
             if m.is_pinned:
