@@ -732,6 +732,10 @@ class MainWindow:
         self._search_start_date: str | None = None  # 起始日期 (ISO 格式)
         self._search_end_date: str | None = None  # 结束日期 (ISO 格式)
         self._quoted_message: tuple[str, str] | None = None  # (message_id, content) 正在引用的消息
+        # 消息选择模式 (v1.2.5)
+        self._selection_mode: bool = False  # 是否处于选择模式
+        self._selected_messages: set[str] = set()  # 已选择的消息 ID 集合
+        self._message_checkboxes: dict[str, ctk.BooleanVar] = {}  # 消息复选框变量
 
         ctk.set_appearance_mode(self._app.config().theme)
         self._root = ctk.CTk()
@@ -1002,16 +1006,34 @@ class MainWindow:
         )
         self._quote_cancel_btn.pack(side="right", padx=(4, 8), pady=6)
 
+        # 模板和选择模式按钮容器
+        template_select_frame = ctk.CTkFrame(input_frame, fg_color="transparent")
+        template_select_frame.grid(row=1, column=0, padx=(0, 8))
+
         # 提示词模板快捷按钮
         self._template_var = ctk.StringVar(value="模板")
         self._template_menu = ctk.CTkOptionMenu(
-            input_frame,
+            template_select_frame,
             variable=self._template_var,
             values=self._template_options(),
             width=90,
             command=self._on_template_selected,
         )
-        self._template_menu.grid(row=1, column=0, padx=(0, 8))
+        self._template_menu.pack(side="left", padx=(0, 4))
+
+        # 选择模式切换按钮 (v1.2.5)
+        self._selection_mode_btn = ctk.CTkButton(
+            template_select_frame,
+            text="☐",
+            width=36,
+            height=36,
+            fg_color="transparent",
+            hover_color=("gray80", "gray28"),
+            border_width=1,
+            border_color=("gray70", "gray40"),
+            command=self._toggle_selection_mode,
+        )
+        self._selection_mode_btn.pack(side="left")
 
         self._input = ctk.CTkTextbox(input_frame, height=80, wrap="word")
         self._input.grid(row=1, column=1, sticky="ew", padx=(0, 8))
@@ -1463,6 +1485,272 @@ class MainWindow:
         self._quote_frame.grid_forget()
         ToastNotification(self._root, "❌ 已取消引用")
 
+    # ========== 消息选择模式 (v1.2.5) ==========
+
+    def _toggle_selection_mode(self) -> None:
+        """切换选择模式。"""
+        self._selection_mode = not self._selection_mode
+        if self._selection_mode:
+            self._selection_mode_btn.configure(
+                text="☑",
+                fg_color=("gray70", "gray35"),
+                border_color=("orange", "dark orange"),
+            )
+            # 创建批量操作面板
+            self._show_batch_actions_panel()
+            ToastNotification(self._root, "✓ 选择模式已开启")
+        else:
+            self._selection_mode_btn.configure(
+                text="☐",
+                fg_color="transparent",
+                border_color=("gray70", "gray40"),
+            )
+            # 清除选择
+            self._selected_messages.clear()
+            self._message_checkboxes.clear()
+            # 隐藏批量操作面板
+            if hasattr(self, '_batch_actions_frame') and self._batch_actions_frame:
+                self._batch_actions_frame.destroy()
+                self._batch_actions_frame = None
+            self._refresh_chat_area()
+            ToastNotification(self._root, "❌ 已退出选择模式")
+
+    def _show_batch_actions_panel(self) -> None:
+        """显示批量操作面板。"""
+        # 首先清除旧的面板
+        if hasattr(self, '_batch_actions_frame') and self._batch_actions_frame:
+            self._batch_actions_frame.destroy()
+
+        self._batch_actions_frame = ctk.CTkFrame(
+            self._chat_scroll,
+            fg_color=("gray75", "gray35"),
+            corner_radius=8,
+        )
+        # 使用 place 将面板固定在聊天区域顶部中央
+        self._batch_actions_frame.place(relx=0.5, rely=0.02, anchor="n")
+
+        # 选择计数标签
+        self._selection_count_label = ctk.CTkLabel(
+            self._batch_actions_frame,
+            text="已选择 0 条消息",
+            font=("", 11),
+            text_color=("gray40", "gray70"),
+        )
+        self._selection_count_label.pack(side="left", padx=12, pady=8)
+
+        # 全选/取消全选按钮
+        select_all_btn = ctk.CTkButton(
+            self._batch_actions_frame,
+            text="全选",
+            width=60,
+            height=28,
+            fg_color="transparent",
+            hover_color=("gray65", "gray30"),
+            command=self._select_all_messages,
+        )
+        select_all_btn.pack(side="left", padx=4)
+
+        # 批量复制按钮
+        copy_btn = ctk.CTkButton(
+            self._batch_actions_frame,
+            text="📋 复制",
+            width=70,
+            height=28,
+            fg_color="transparent",
+            hover_color=("gray65", "gray30"),
+            command=self._batch_copy_selected,
+        )
+        copy_btn.pack(side="left", padx=4)
+
+        # 批量删除按钮
+        delete_btn = ctk.CTkButton(
+            self._batch_actions_frame,
+            text="🗑️ 删除",
+            width=70,
+            height=28,
+            fg_color="transparent",
+            hover_color=("gray65", "gray30"),
+            command=self._batch_delete_selected,
+        )
+        delete_btn.pack(side="left", padx=4)
+
+        # 批量导出按钮
+        export_btn = ctk.CTkButton(
+            self._batch_actions_frame,
+            text="📦 导出",
+            width=70,
+            height=28,
+            fg_color="transparent",
+            hover_color=("gray65", "gray30"),
+            command=self._batch_export_selected,
+        )
+        export_btn.pack(side="left", padx=4)
+
+        # 刷新聊天区域以显示复选框
+        self._refresh_chat_area()
+
+    def _update_selection_count(self) -> None:
+        """更新选择计数显示。"""
+        if hasattr(self, '_selection_count_label') and self._selection_count_label:
+            count = len(self._selected_messages)
+            self._selection_count_label.configure(text=f"已选择 {count} 条消息")
+
+    def _on_message_checkbox_toggled(self, message_id: str, checked: bool) -> None:
+        """消息复选框状态变化回调。"""
+        if checked:
+            self._selected_messages.add(message_id)
+        else:
+            self._selected_messages.discard(message_id)
+        self._update_selection_count()
+
+    def _select_all_messages(self) -> None:
+        """全选/取消全选当前会话的所有消息。"""
+        messages = self._app.load_messages(self._app.current_session_id())
+        all_selected = all(msg.id in self._selected_messages for msg in messages)
+
+        if all_selected:
+            # 取消全选
+            self._selected_messages.clear()
+            for msg_id, var in self._message_checkboxes.items():
+                var.set(False)
+        else:
+            # 全选
+            for msg in messages:
+                self._selected_messages.add(msg.id)
+                if msg.id in self._message_checkboxes:
+                    self._message_checkboxes[msg.id].set(True)
+        self._update_selection_count()
+
+    def _batch_copy_selected(self) -> None:
+        """批量复制选中的消息。"""
+        if not self._selected_messages:
+            ToastNotification(self._root, "⚠️ 未选择任何消息")
+            return
+
+        messages = self._app.load_messages(self._app.current_session_id())
+        selected = [m for m in messages if m.id in self._selected_messages]
+        selected.sort(key=lambda m: m.created_at)  # 按时间排序
+
+        combined = []
+        for m in selected:
+            prefix = "你" if m.role == "user" else "助手"
+            combined.append(f"{prefix}: {m.content}")
+
+        copy_to_clipboard("\n\n".join(combined))
+        ToastNotification(self._root, f"📋 已复制 {len(selected)} 条消息")
+
+    def _batch_delete_selected(self) -> None:
+        """批量删除选中的消息。"""
+        if not self._selected_messages:
+            ToastNotification(self._root, "⚠️ 未选择任何消息")
+            return
+
+        count = len(self._selected_messages)
+        if not messagebox.askyesno(
+            "确认删除",
+            f"确定要删除选中的 {count} 条消息吗？\n此操作不可撤销。"
+        ):
+            return
+
+        # 逐个删除
+        success_count = 0
+        for msg_id in list(self._selected_messages):
+            if self._app.delete_message(msg_id):
+                success_count += 1
+
+        if success_count > 0:
+            ToastNotification(self._root, f"🗑️ 已删除 {success_count} 条消息")
+            # 清除选择并刷新
+            self._selected_messages.clear()
+            self._message_checkboxes.clear()
+            self._refresh_chat_area()
+            self._update_selection_count()
+        else:
+            ToastNotification(self._root, "❌ 删除失败")
+
+    def _batch_export_selected(self) -> None:
+        """批量导出选中的消息。"""
+        if not self._selected_messages:
+            ToastNotification(self._root, "⚠️ 未选择任何消息")
+            return
+
+        # 打开导出对话框
+        export_dialog = ctk.CTkToplevel(self._root)
+        export_dialog.title("导出选中消息")
+        export_dialog.geometry("350x180")
+        export_dialog.transient(self._root)
+        export_dialog.grab_set()
+
+        ctk.CTkLabel(
+            export_dialog,
+            text=f"导出 {len(self._selected_messages)} 条选中的消息",
+            font=("", 14)
+        ).pack(pady=(20, 15))
+
+        # 格式选择
+        format_frame = ctk.CTkFrame(export_dialog, fg_color="transparent")
+        format_frame.pack(fill="x", padx=20, pady=(0, 15))
+        ctk.CTkLabel(format_frame, text="格式：").pack(side="left", padx=4)
+
+        format_var = ctk.StringVar(value="md")
+        formats = [("md", "Markdown"), ("txt", "纯文本"), ("json", "JSON"),
+                   ("html", "HTML"), ("pdf", "PDF"), ("docx", "Word")]
+        format_options = [f[0] for f in formats]
+        format_labels = {f[0]: f[1] for f in formats}
+
+        format_menu = ctk.CTkOptionMenu(
+            format_frame,
+            variable=format_var,
+            values=format_options,
+            width=200,
+            command=lambda v: format_menu.configure(text=format_labels.get(v, v))
+        )
+        format_menu.set("md")
+        format_menu.configure(text="Markdown")
+        format_menu.pack(side="left", padx=4)
+
+        # 按钮区域
+        btn_frame = ctk.CTkFrame(export_dialog, fg_color="transparent")
+        btn_frame.pack(pady=(0, 20))
+
+        def do_export() -> None:
+            fmt = format_var.get()
+            messages = self._app.load_messages(self._app.current_session_id())
+            selected = [m for m in messages if m.id in self._selected_messages]
+            selected.sort(key=lambda m: m.created_at)
+
+            # 保存文件
+            ext = fmt
+            file_path = filedialog.asksaveasfilename(
+                defaultextension=f".{ext}",
+                filetypes=[(format_labels[fmt], f"*.{ext}")],
+                initialfile=f"selected_messages.{ext}",
+            )
+            if not file_path:
+                return
+
+            # 使用当前会话信息创建导出器
+            current_session = self._app.current_session()
+            if current_session:
+                try:
+                    exporter = ChatExporter(current_session, selected)
+                    exporter.save(file_path, fmt)
+                    ToastNotification(self._root, f"📦 已导出 {len(selected)} 条消息")
+                    export_dialog.destroy()
+                except Exception as e:
+                    ToastNotification(self._root, "❌ 导出失败")
+            else:
+                ToastNotification(self._root, "❌ 导出失败")
+
+        ctk.CTkButton(btn_frame, text="导出", width=100, command=do_export).pack(side="left", padx=8)
+        ctk.CTkButton(
+            btn_frame, text="取消", width=100,
+            fg_color=("gray70", "gray35"),
+            command=export_dialog.destroy
+        ).pack(side="left", padx=8)
+
+    # ========== 会话列表刷新 ==========
+
     def _refresh_sessions_list(self) -> None:
         for row in self._session_row_frames:
             row.destroy()
@@ -1681,6 +1969,25 @@ class MainWindow:
                 anchor="w",
             )
             num_label.grid(row=0, column=0, sticky="w", padx=14, pady=(2, 0))
+
+            # 选择模式复选框 (v1.2.5)
+            if self._selection_mode:
+                # 确保此消息有对应的 BooleanVar
+                if m.id not in self._message_checkboxes:
+                    self._message_checkboxes[m.id] = ctk.BooleanVar(value=m.id in self._selected_messages)
+
+                checkbox = ctk.CTkCheckBox(
+                    outer_frame,
+                    variable=self._message_checkboxes[m.id],
+                    command=lambda mid=m.id, var=self._message_checkboxes[m.id]: self._on_message_checkbox_toggled(mid, var.get()),
+                    width=20,
+                    height=20,
+                    border_width=2,
+                    fg_color=("gray70", "gray35"),
+                    hover_color=("gray60", "gray30"),
+                    checkmark_color=("gray40", "gray70"),
+                )
+                checkbox.grid(row=0, column=0, sticky="w", padx=(40, 0), pady=(2, 0))
 
             # 引用内容显示（如果有）
             content_row = 1
