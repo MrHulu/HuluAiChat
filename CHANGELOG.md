@@ -2,6 +2,30 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [2.8.0] - 2026-03-03
+
+### ✨ Features
+
+- **Message Pagination**: Large sessions now load in pages for better performance
+  - Automatically paginates sessions with more than 50 messages
+  - Page navigation controls at the bottom (Previous/Next)
+  - Shows message range: "📄 1-50 / 150 条消息"
+  - Pagination resets when switching sessions
+  - Sending new messages jumps to the last page
+  - Disabled when using search or starred-only filters (shows all results)
+
+### 🔧 Improvements
+
+- Significantly improved performance for sessions with 100+ messages
+- Reduced memory usage when loading large chat histories
+- Faster UI rendering with fewer widgets created
+- New `list_by_session_paginated()` method in MessageRepository
+- New `load_messages_paginated()` method in AppService
+
+### 🧪 Testing
+
+- All 415 tests passing
+
 ## [2.7.0] - 2026-03-03
 
 ### ✨ Features

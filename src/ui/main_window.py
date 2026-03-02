@@ -776,6 +776,12 @@ class MainWindow:
         # 日期范围过滤
         self._search_start_date: str | None = None  # 起始日期 (ISO 格式)
         self._search_end_date: str | None = None  # 结束日期 (ISO 格式)
+        # v2.8.0: 分页状态
+        self._pagination_enabled: bool = True  # 是否启用分页
+        self._pagination_page_size: int = 50  # 每页消息数
+        self._pagination_current_page: int = 0  # 当前页码（从0开始）
+        self._pagination_total_count: int = 0  # 总消息数
+        self._pagination_controls: ctk.CTkFrame | None = None  # 分页控件容器
         self._quoted_message: tuple[str, str] | None = None  # (message_id, content) 正在引用的消息
         # 消息选择模式 (v1.2.5)
         self._selection_mode: bool = False  # 是否处于选择模式
@@ -1443,6 +1449,82 @@ class MainWindow:
         # v2.4.0: 清除搜索结果面板
         if _HAS_SEARCH_RESULTS_PANEL and self._search_results_panel:
             self._search_results_panel.clear()
+
+    # ========== v2.8.0: 分页控件方法 ==========
+
+    def _add_pagination_controls(self) -> None:
+        """添加分页控件到聊天区域底部。"""
+        if self._pagination_controls:
+            return  # 已存在
+
+        # 计算页码信息
+        total_pages = (self._pagination_total_count + self._pagination_page_size - 1) // self._pagination_page_size
+        current_page_num = self._pagination_current_page + 1
+        start_idx = self._pagination_current_page * self._pagination_page_size + 1
+        end_idx = min(start_idx + self._pagination_page_size - 1, self._pagination_total_count)
+
+        # 分页控件容器
+        bg_color = Colors.BG_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray85", "gray22")
+        self._pagination_controls = ctk.CTkFrame(
+            self._chat_scroll,
+            fg_color=bg_color,
+            corner_radius=Radius.MD if _HAS_DESIGN_SYSTEM else 8,
+        )
+        self._pagination_controls.grid(sticky="ew", pady=Spacing.LG if _HAS_DESIGN_SYSTEM else 12,
+                                       padx=Spacing.MD if _HAS_DESIGN_SYSTEM else 0)
+
+        # 信息标签
+        text_color = Colors.TEXT_SECONDARY if _HAS_DESIGN_SYSTEM else ("gray50", "gray60")
+        font_size = FontSize.SM if _HAS_DESIGN_SYSTEM else 12
+        info_label = ctk.CTkLabel(
+            self._pagination_controls,
+            text=f"📄 {start_idx}-{end_idx} / {self._pagination_total_count} 条消息",
+            font=("", font_size),
+            text_color=text_color,
+        )
+        info_label.pack(side="left", padx=Spacing.MD if _HAS_DESIGN_SYSTEM else 12, pady=Spacing.SM)
+
+        # 按钮容器
+        btn_frame = ctk.CTkFrame(self._pagination_controls, fg_color="transparent")
+        btn_frame.pack(side="right", padx=Spacing.MD if _HAS_DESIGN_SYSTEM else 12)
+
+        # 上一页按钮
+        prev_btn = ctk.CTkButton(
+            btn_frame,
+            text="◀ 上一页",
+            width=80,
+            height=28,
+            state="normal" if self._pagination_current_page > 0 else "disabled",
+            command=self._pagination_prev_page,
+        )
+        prev_btn.pack(side="left", padx=Spacing.XS)
+
+        # 下一页按钮
+        next_btn = ctk.CTkButton(
+            btn_frame,
+            text="下一页 ▶",
+            width=80,
+            height=28,
+            state="normal" if self._pagination_current_page < total_pages - 1 else "disabled",
+            command=self._pagination_next_page,
+        )
+        next_btn.pack(side="left", padx=Spacing.XS)
+
+        # 滚动到底部
+        self._chat_scroll.after(100, lambda: self._chat_scroll._scrollbar.set(1.0, 1.0))
+
+    def _pagination_prev_page(self) -> None:
+        """翻到上一页。"""
+        if self._pagination_current_page > 0:
+            self._pagination_current_page -= 1
+            self._refresh_chat_area()
+
+    def _pagination_next_page(self) -> None:
+        """翻到下一页。"""
+        total_pages = (self._pagination_total_count + self._pagination_page_size - 1) // self._pagination_page_size
+        if self._pagination_current_page < total_pages - 1:
+            self._pagination_current_page += 1
+            self._refresh_chat_area()
 
     # ========== v2.4.0: 搜索结果面板方法 ==========
 
@@ -2901,6 +2983,11 @@ class MainWindow:
         self._chat_widgets.clear()
         sid = self._app.current_session_id()
 
+        # v2.8.0: 移除旧的分页控件
+        if self._pagination_controls:
+            self._pagination_controls.destroy()
+            self._pagination_controls = None
+
         # 全局搜索模式
         if self._search_global and self._search_query:
             self._refresh_global_search_results()
@@ -2914,38 +3001,56 @@ class MainWindow:
             lbl.grid(sticky="ew", pady=8)
             self._chat_scroll.columnconfigure(0, weight=1)
             return
-        messages = self._app.load_messages(sid)
 
-        # 搜索过滤
-        if self._search_query:
-            self._matched_message_ids = {m.id for m in self._app.search_messages(
-                sid, self._search_query, self._search_start_date, self._search_end_date,
-                self._search_case_sensitive, self._search_whole_word, self._search_regex
-            )}
-            filtered_messages = [m for m in messages if m.id in self._matched_message_ids]
-        else:
-            self._matched_message_ids = set()
+        # v2.8.0: 判断是否使用分页（仅在无过滤、无搜索时启用）
+        use_pagination = (
+            self._pagination_enabled and
+            not self._search_query and
+            not self._starred_only
+        )
+
+        if use_pagination:
+            # 分页模式：只加载当前页
+            offset = self._pagination_current_page * self._pagination_page_size
+            messages, total = self._app.load_messages_paginated(sid, offset, self._pagination_page_size)
+            self._pagination_total_count = total
             filtered_messages = messages
+            self._matched_message_ids = set()
+        else:
+            # 非分页模式：加载全部消息
+            self._pagination_total_count = 0
+            messages = self._app.load_messages(sid)
 
-        # v2.2.0: 星标过滤
-        if self._starred_only:
-            filtered_messages = [m for m in filtered_messages if m.is_starred]
-            # 如果没有收藏消息，显示提示
-            if not filtered_messages and not self._search_query:
-                lbl = ctk.CTkLabel(
-                    self._chat_scroll, text="⭐ 暂无收藏消息", anchor="w", justify="left", text_color=("gray40", "gray60")
-                )
-                lbl.grid(sticky="ew", pady=8)
-                self._chat_scroll.columnconfigure(0, weight=1)
-                return
+            # 搜索过滤
+            if self._search_query:
+                self._matched_message_ids = {m.id for m in self._app.search_messages(
+                    sid, self._search_query, self._search_start_date, self._search_end_date,
+                    self._search_case_sensitive, self._search_whole_word, self._search_regex
+                )}
+                filtered_messages = [m for m in messages if m.id in self._matched_message_ids]
+            else:
+                self._matched_message_ids = set()
+                filtered_messages = messages
+
+            # v2.2.0: 星标过滤
+            if self._starred_only:
+                filtered_messages = [m for m in filtered_messages if m.is_starred]
 
         if not filtered_messages:
-            hint = "没有匹配的消息" if self._search_query else "在下方输入并发送。"
+            if use_pagination:
+                hint = f"第 {self._pagination_current_page + 1} 页为空" if self._pagination_total_count > 0 else "在下方输入并发送。"
+            elif self._starred_only:
+                hint = "⭐ 暂无收藏消息"
+            else:
+                hint = "没有匹配的消息" if self._search_query else "在下方输入并发送。"
             lbl = ctk.CTkLabel(
                 self._chat_scroll, text=hint, anchor="w", justify="left", text_color=("gray40", "gray60")
             )
             lbl.grid(sticky="ew", pady=8)
             self._chat_scroll.columnconfigure(0, weight=1)
+            # 分页模式下即使没消息也显示分页控件
+            if use_pagination and self._pagination_total_count > 0:
+                self._add_pagination_controls()
             return
 
         # 收集所有匹配位置用于导航
@@ -3265,6 +3370,10 @@ class MainWindow:
             self._chat_widgets.append((m.id, frame))
         self._chat_scroll.columnconfigure(0, weight=1)
 
+        # v2.8.0: 添加分页控件
+        if use_pagination and self._pagination_total_count > self._pagination_page_size:
+            self._add_pagination_controls()
+
     def _refresh_global_search_results(self) -> None:
         """刷新全局搜索结果。v2.0.0 使用设计系统优化样式。"""
         all_messages = self._app.search_all_messages(
@@ -3486,6 +3595,8 @@ class MainWindow:
         self._search_global_btn.configure(text="本会话")
         self._search_var.set("")
         self._search_query = ""
+        # v2.8.0: 重置分页到第一页
+        self._pagination_current_page = 0
         self._refresh_sessions_list()
         self._refresh_chat_area()
 
@@ -3797,6 +3908,8 @@ class MainWindow:
 
     def _on_select_session(self, session_id: str) -> None:
         self._app.switch_session(session_id)
+        # v2.8.0: 重置分页到第一页
+        self._pagination_current_page = 0
         self._refresh_sessions_list()
         self._refresh_chat_area()
 
@@ -4351,6 +4464,10 @@ class MainWindow:
             sid = s.id
             self._refresh_sessions_list()
             self._refresh_chat_area()
+        # v2.8.0: 发送消息时跳转到最后一页
+        if self._pagination_enabled and self._pagination_total_count > 0:
+            total_pages = (self._pagination_total_count + self._pagination_page_size - 1) // self._pagination_page_size
+            self._pagination_current_page = max(0, total_pages - 1)
         self._input.delete("1.0", "end")
         self._error_label.configure(text="")
         self._char_count_label.configure(text="0 字符")  # v1.3.0: Reset counter
