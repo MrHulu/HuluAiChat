@@ -89,6 +89,19 @@ class MessageRepository(ABC):
         """获取指定会话的消息数量。"""
         ...
 
+    @abstractmethod
+    def forward_to_session(self, message_ids: list[str], target_session_id: str) -> int:
+        """将指定消息转发到另一个会话。
+
+        Args:
+            message_ids: 要转发的消息 ID 列表
+            target_session_id: 目标会话 ID
+
+        Returns:
+            int: 成功转发的消息数量
+        """
+        ...
+
 
 def _row_to_message(row: tuple) -> Message:
     is_pinned = bool(row[5]) if len(row) > 5 else False
@@ -443,3 +456,54 @@ class SqliteMessageRepository(MessageRepository):
             )
             row = cur.fetchone()
             return row[0] if row else 0
+
+    def forward_to_session(self, message_ids: list[str], target_session_id: str) -> int:
+        """将指定消息转发到另一个会话。
+
+        创建消息的副本，分配新的 ID，但保留原始内容、角色和时间戳。
+        引用关系也会被保留（quoted_message_id 和 quoted_content）。
+
+        Args:
+            message_ids: 要转发的消息 ID 列表
+            target_session_id: 目标会话 ID
+
+        Returns:
+            int: 成功转发的消息数量
+        """
+        import uuid
+
+        if not message_ids:
+            return 0
+
+        # 获取要转发的消息
+        with self._conn() as conn:
+            placeholders = ",".join("?" * len(message_ids))
+            sql = f"""
+                SELECT id, session_id, role, content, created_at, is_pinned, quoted_message_id, quoted_content
+                FROM message WHERE id IN ({placeholders}) ORDER BY created_at ASC
+            """
+            cur = conn.execute(sql, tuple(message_ids))
+            messages_to_forward = [_row_to_message(r) for r in cur.fetchall()]
+
+        if not messages_to_forward:
+            return 0
+
+        # 创建副本并插入到目标会话
+        count = 0
+        with self._conn() as conn:
+            for msg in messages_to_forward:
+                new_id = str(uuid.uuid4())
+                try:
+                    conn.execute(
+                        """INSERT INTO message (id, session_id, role, content, created_at, is_pinned, quoted_message_id, quoted_content)
+                           VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                        (new_id, target_session_id, msg.role, msg.content, msg.created_at,
+                         int(msg.is_pinned), msg.quoted_message_id, msg.quoted_content),
+                    )
+                    count += 1
+                except sqlite3.IntegrityError:
+                    # 如果插入失败（例如 ID 重复或会话不存在），跳过
+                    continue
+            conn.commit()
+
+        return count

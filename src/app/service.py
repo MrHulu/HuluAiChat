@@ -634,3 +634,31 @@ class AppService:
         if not self._folder_repo:
             return False
         return self._folder_repo.is_folder_collapsed(folder_id)
+
+    # ========== 消息转发 (v1.5.0) ==========
+
+    def forward_messages(self, message_ids: list[str], target_session_id: str) -> int:
+        """将消息转发到另一个会话。
+
+        Args:
+            message_ids: 要转发的消息 ID 列表
+            target_session_id: 目标会话 ID
+
+        Returns:
+            int: 成功转发的消息数量
+        """
+        # 验证目标会话是否存在
+        target_session = self._session_repo.get_by_id(target_session_id)
+        if not target_session:
+            logger.warning("forward_messages: 目标会话不存在 session_id=%s", target_session_id)
+            return 0
+
+        # 执行转发
+        count = self._message_repo.forward_to_session(message_ids, target_session_id)
+
+        # 更新目标会话的时间戳
+        if count > 0:
+            self._session_repo.update_updated_at(target_session_id, _now())
+
+        logger.info("forward_messages: 转发了 %d 条消息到会话 %s", count, target_session_id)
+        return count

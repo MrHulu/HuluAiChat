@@ -699,3 +699,155 @@ class TestRegexSearch:
         assert len(results) == 2
         result_ids = {r.id for r in results}
         assert result_ids == {"m1", "m2"}
+
+
+class TestMessageForward:
+    """消息转发功能测试 (v1.5.0)。"""
+
+    def test_forward_single_message(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：转发单条消息到另一个会话。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="Hello", created_at=now)
+
+        message_repo.append(m1)
+
+        # 转发到 s2
+        count = message_repo.forward_to_session(["m1"], "s2")
+        assert count == 1
+
+        # 验证目标会话有消息
+        target_messages = message_repo.list_by_session("s2")
+        assert len(target_messages) == 1
+        assert target_messages[0].content == "Hello"
+        assert target_messages[0].role == "user"
+        # ID 应该不同（新消息）
+        assert target_messages[0].id != "m1"
+        # session_id 应该是目标会话
+        assert target_messages[0].session_id == "s2"
+
+    def test_forward_multiple_messages(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：转发多条消息到另一个会话。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="First", created_at=now)
+        m2 = Message(id="m2", session_id="s1", role="assistant", content="Second", created_at=now)
+        m3 = Message(id="m3", session_id="s1", role="user", content="Third", created_at=now)
+
+        message_repo.append(m1)
+        message_repo.append(m2)
+        message_repo.append(m3)
+
+        # 转发 m1 和 m3 到 s2
+        count = message_repo.forward_to_session(["m1", "m3"], "s2")
+        assert count == 2
+
+        # 验证目标会话有 2 条消息
+        target_messages = message_repo.list_by_session("s2")
+        assert len(target_messages) == 2
+        assert target_messages[0].content == "First"
+        assert target_messages[1].content == "Third"
+
+    def test_forward_preserves_quotes(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：转发保留引用关系。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(
+            id="m1",
+            session_id="s1",
+            role="user",
+            content="Reply",
+            created_at=now,
+            quoted_message_id="orig_id",
+            quoted_content="Original message"
+        )
+
+        message_repo.append(m1)
+
+        # 转发到 s2
+        count = message_repo.forward_to_session(["m1"], "s2")
+        assert count == 1
+
+        # 验证引用信息被保留
+        target_messages = message_repo.list_by_session("s2")
+        assert len(target_messages) == 1
+        assert target_messages[0].quoted_message_id == "orig_id"
+        assert target_messages[0].quoted_content == "Original message"
+
+    def test_forward_preserves_pinned_status(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：转发保留置顶状态。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="Pinned", created_at=now, is_pinned=True)
+
+        message_repo.append(m1)
+
+        # 转发到 s2
+        count = message_repo.forward_to_session(["m1"], "s2")
+        assert count == 1
+
+        # 验证置顶状态被保留
+        target_messages = message_repo.list_by_session("s2")
+        assert len(target_messages) == 1
+        assert target_messages[0].is_pinned is True
+
+    def test_forward_empty_list(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：转发空消息列表返回 0。"""
+        count = message_repo.forward_to_session([], "s2")
+        assert count == 0
+
+    def test_forward_nonexistent_message(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：转发不存在的消息返回 0。"""
+        count = message_repo.forward_to_session(["nonexistent"], "s2")
+        assert count == 0
+
+    def test_forward_mixed_valid_invalid(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：转发包含有效和无效消息时，只转发有效的。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="Valid", created_at=now)
+
+        message_repo.append(m1)
+
+        # 混合有效和无效的消息 ID
+        count = message_repo.forward_to_session(["m1", "invalid", "also_invalid"], "s2")
+        assert count == 1
+
+        target_messages = message_repo.list_by_session("s2")
+        assert len(target_messages) == 1
+        assert target_messages[0].content == "Valid"
+
+    def test_forward_preserves_original_timestamp(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：转发保留原始时间戳。"""
+        base_time = datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
+        m1 = Message(
+            id="m1",
+            session_id="s1",
+            role="user",
+            content="Timestamp test",
+            created_at=base_time.isoformat()
+        )
+
+        message_repo.append(m1)
+
+        # 转发到 s2
+        count = message_repo.forward_to_session(["m1"], "s2")
+        assert count == 1
+
+        # 验证时间戳被保留
+        target_messages = message_repo.list_by_session("s2")
+        assert len(target_messages) == 1
+        assert target_messages[0].created_at == base_time.isoformat()
+
+    def test_forward_same_session(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：转发到同一会话（创建副本）。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="In s1", created_at=now)
+
+        message_repo.append(m1)
+
+        # 转发到同一会话
+        count = message_repo.forward_to_session(["m1"], "s1")
+        assert count == 1
+
+        # 验证现在有 2 条消息（原消息 + 副本）
+        all_messages = message_repo.list_by_session("s1")
+        assert len(all_messages) == 2
+        # 两条消息内容相同但 ID 不同
+        assert all_messages[0].id != all_messages[1].id
+        assert all_messages[0].content == all_messages[1].content == "In s1"
