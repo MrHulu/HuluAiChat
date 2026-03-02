@@ -1,51 +1,82 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-03 - Cycle #75
+2026-03-03 - Cycle #77
 
 ## Current Phase
-**v2.3.0 开发完成**
+**v2.4.0 已发布** 🚀
 
-## What We Did This Cycle (Cycle #75)
-- ✅ **创建 QuickActionBar 组件**: `src/ui/quick_action_bar.py`
-  - 模板快捷按钮（显示前4个模板）
-  - 星标切换按钮（一键切换星标视图）
-  - 最近会话按钮（快速访问最近5个会话）
-- ✅ **集成到主窗口**: 输入框上方新增快捷操作栏
-- ✅ **模板变量支持**: `{date}`, `{time}`, `{datetime}` 自动替换
-- ✅ **测试通过**: 415 tests passing
+## What We Did This Cycle (Cycle #77)
+- ✅ **规划 v2.4.0**: 确定搜索结果面板为优先功能
+- ✅ **创建 SearchResultsPanel 组件**: `src/ui/search_results_panel.py`
+  - 右侧面板显示搜索结果
+  - 按会话分组显示结果
+  - 消息预览（去除 markdown 标记）
+  - 点击跳转到目标会话
+- ✅ **集成到主窗口**:
+  - 新增网格第3列支持
+  - 添加 📋 切换按钮
+  - 快捷键 `Ctrl+Shift+H`
+  - 自动更新搜索结果
+- ✅ **测试通过**: 321 non-GUI tests passing
 
 ## Key Decisions Made
-- v2.3.0 功能方向：**快捷操作栏**
-- 放弃原有候选功能：搜索增强（已有）、会话归档（复杂度高）
-- 设计原则：小而美、快速实现、高用户价值
+- v2.4.0 功能方向：**搜索结果侧边面板**
+- 目标：改善大量搜索结果时的浏览体验
+- 保持简洁：不实现复杂的搜索语法，专注于结果展示
 
 ## Active Projects
-- HuluChat: **v2.3.0** - 开发完成，待发布
+- HuluChat: **v2.5.0** - 等待规划下一个功能
 
-## Next Action (Cycle #76)
-### 发布 v2.3.0
-1. 创建 PR 到 master
-2. 创建 release tag
-3. 更新 GitHub Release
+## Next Action (Cycle #78)
+### 规划 v2.5.0
+候选功能：
+1. 搜索快捷语法（`role:user keyword`）
+2. 会话归档功能
+3. 会话分组拖拽
+4. 性能优化（分页加载、虚拟化）
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
-- Latest Release: **v2.2.0** (2026-03-03)
-- Current Development: **v2.3.0** (Quick Action Bar)
+- Latest Release: **v2.4.0** (2026-03-03) ✅
+- Current Development: **v2.5.0** (TBD)
 - Tech Stack: Python, CustomTkinter, OpenAI API, SQLite, fpdf2, python-docx, CTkMarkdown
-- Tests: **415 passing**
-- Branch: `dev`
+- Tests: **321 passing** (non-GUI)
+- Branch: `master`
 
 ## Release History
 | Version | Date | Highlights |
 |---------|------|------------|
+| **v2.4.0** | **2026-03-03** | **📋 搜索结果面板** ✅ |
 | **v2.3.0** | **2026-03-03** | **⚡ 快捷操作栏 - 模板、星标、最近会话** |
 | **v2.2.0** | **2026-03-03** | **⭐ 消息星标/收藏功能** |
 | **v2.1.0** | **2026-03-02** | **➡️ 消息转发功能** |
 | **v2.0.0** | **2026-03-02** | **🎨 UI 彻底改造 - 统一设计系统** |
 
-## v2.3.0 新增功能
+## v2.4.0 新增功能
+
+### 搜索结果面板
+位于右侧，展示所有搜索结果：
+
+#### 功能特性
+- 点击 📋 按钮或按 `Ctrl+Shift+H` 切换面板显示
+- 按会话分组显示结果，显示匹配数量
+- 消息预览（自动去除 markdown 标记）
+- 显示消息角色（用户/AI）和时间
+- 点击结果跳转到目标会话
+
+#### 新增文件
+```
+src/ui/search_results_panel.py  # 搜索结果面板组件 (~270 行)
+```
+
+#### 修改文件
+```
+src/ui/main_window.py           # 集成搜索面板 (+100 行)
+CHANGELOG.md                    # 添加 v2.4.0 release notes
+```
+
+## v2.3.0 功能回顾
 
 ### 快捷操作栏
 位于输入框上方，提供常用功能的快速访问：
@@ -53,7 +84,7 @@
 #### 模板快捷按钮
 - 显示前4个常用模板
 - 一键应用模板内容到输入框
-- 支持变量：`{date}` → 当前日期, `{time}` → 当前时间
+- 支持变量：`{date}` → 当前日期, `{time}` → 当前时间, `{datetime}` → 完整时间
 
 #### 星标切换
 - 点击切换星标消息视图
@@ -62,17 +93,6 @@
 #### 最近会话
 - 下拉显示最近5个活跃会话
 - 快速切换会话
-
-### 新增文件
-```
-src/ui/quick_action_bar.py  # 快捷操作栏组件
-```
-
-### 修改文件
-```
-src/ui/main_window.py       # 集成快捷操作栏
-CHANGELOG.md                # 添加 v2.3.0 release notes
-```
 
 ## v2.2.0 新增功能
 
@@ -131,6 +151,13 @@ Message     # 消息气泡规范 (PADDING=(12,16), MAX_WIDTH_RATIO=0.75)
 | Ctrl + R | Regenerate response |
 | Ctrl + Shift + C | Copy last AI response |
 
+### Search
+| Shortcut | Action |
+|----------|--------|
+| Ctrl + Shift + H | Toggle search results panel (v2.4.0) |
+| F3 | Next search match |
+| Shift + F3 | Previous search match |
+
 ### Other
 | Shortcut | Action |
 |----------|--------|
@@ -166,11 +193,14 @@ Message     # 消息气泡规范 (PADDING=(12,16), MAX_WIDTH_RATIO=0.75)
 | DOCX | .docx | v1.0.9 | Word format |
 
 ## Open Questions
-- 无
+- v2.5.0 功能方向待确定
 
 ## Future Ideas
-- 搜索历史记录（已有搜索历史下拉）
+- 搜索快捷语法（`role:user keyword`）
+- 搜索结果导出
+- 会话归档功能
 - 会话分组拖拽
 - 大会话分页加载
 - 消息虚拟化渲染
 - UI 单元测试覆盖
+- 多语言支持 (i18n)
