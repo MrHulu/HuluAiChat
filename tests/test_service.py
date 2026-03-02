@@ -1145,3 +1145,88 @@ class TestAppService:
 
         assert service._config.recent_searches == []
         store.save.assert_called_once()
+
+
+class TestMessageForwarding:
+    """消息转发功能测试 (v1.5.0)。"""
+
+    def test_forward_messages_delegates_to_repo(self):
+        """测试转发消息委托给仓储层。"""
+        session_repo = MagicMock()
+        message_repo = MagicMock()
+        message_repo.forward_to_session.return_value = 2
+
+        # Mock target session exists
+        target_session = MagicMock(id="s2", title="Target")
+        session_repo.get_by_id.return_value = target_session
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=session_repo,
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+
+        count = service.forward_messages(["m1", "m2"], "s2")
+
+        assert count == 2
+        message_repo.forward_to_session.assert_called_once_with(["m1", "m2"], "s2")
+
+    def test_forward_messages_updates_target_session_timestamp(self):
+        """测试转发消息更新目标会话的时间戳。"""
+        session_repo = MagicMock()
+        message_repo = MagicMock()
+        message_repo.forward_to_session.return_value = 1
+
+        target_session = MagicMock(id="s2", title="Target")
+        session_repo.get_by_id.return_value = target_session
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=session_repo,
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+
+        service.forward_messages(["m1"], "s2")
+
+        session_repo.update_updated_at.assert_called_once()
+
+    def test_forward_messages_with_nonexistent_session(self):
+        """测试转发到不存在的会话返回 0。"""
+        session_repo = MagicMock()
+        message_repo = MagicMock()
+        session_repo.get_by_id.return_value = None
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=session_repo,
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+
+        count = service.forward_messages(["m1"], "nonexistent")
+
+        assert count == 0
+        message_repo.forward_to_session.assert_not_called()
+
+    def test_forward_messages_empty_list(self):
+        """测试转发空消息列表。"""
+        session_repo = MagicMock()
+        message_repo = MagicMock()
+        message_repo.forward_to_session.return_value = 0  # 返回 0 而不是 MagicMock
+
+        target_session = MagicMock(id="s2", title="Target")
+        session_repo.get_by_id.return_value = target_session
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=session_repo,
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+
+        count = service.forward_messages([], "s2")
+
+        assert count == 0
+        message_repo.forward_to_session.assert_called_once_with([], "s2")
