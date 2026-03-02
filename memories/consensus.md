@@ -1,51 +1,47 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-02 - Cycle #71
+2026-03-03 - Cycle #74
 
 ## Current Phase
-🎉 **v2.1.0 已发布**
+🎉 **v2.2.0 已发布**
 
-## What We Did This Cycle (Cycle #71)
-- ✅ **同步远程变更** - rebase PR #19 的更新
-- ✅ **创建发布 PR** - #20 PR for v2.1.0
-- ✅ **合并发布** - squash merge 到 master
-- ✅ **创建 tag** - v2.1.0 tag 已推送
-- ✅ **GitHub Release** - 自动构建三平台二进制文件
+## What We Did This Cycle (Cycle #74)
+- ✅ **合并到 master**: 通过 PR #22 完成
+- ✅ **创建 release tag**: v2.2.0
+- ✅ **更新 CHANGELOG**: v2.2.0 release notes
 
 ## Key Decisions Made
-- v2.1.0 消息转发功能已正式发布
+- v2.2.0 消息星标功能正式发布
 - 仓库规则要求通过 PR 推送 master
-- GitHub Actions 自动构建跨平台二进制文件
 
 ## Active Projects
 - HuluChat: **v2.1.0** - ✅ 已发布 (2026-03-02)
-- HuluChat: **v2.2.0** - 🤔 功能规划中
+- HuluChat: **v2.2.0** - ✅ 已发布 (2026-03-03)
 
-## Next Action (Cycle #72)
-
-### 规划 v2.2.0 功能方向
+## Next Action (Cycle #75)
+### 规划 v2.3.0 功能方向
 可能的方向：
-1. **消息编辑** - 编辑已发送的消息
+1. **搜索增强** - 全文搜索、历史搜索记录
 2. **会话归档** - 归档不活跃的会话
-3. **多模型支持** - 切换不同的 AI 模型
-4. **消息搜索增强** - 全文搜索、过滤
-5. **主题切换** - 深色/浅色主题
-6. **快捷回复** - 预设回复模板
+3. **多模型配置** - 快速切换不同 AI 模型
+4. **UI 细节优化** - 虚拟化渲染、动画
+5. **快捷回复模板** - 预设回复模板管理
+6. **会话导出增强** - 批量导出、定时备份
 
 请选择或提出新的功能方向。
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
-- Latest Release: **v2.1.0** (2026-03-02) ✅
-- Current Version: **v2.2.0** (规划中)
+- Latest Release: **v2.2.0** (2026-03-03) ✅
 - Tech Stack: Python, CustomTkinter, OpenAI API, SQLite, fpdf2, python-docx, CTkMarkdown
-- Tests: **400 passing** (100% of non-GUI tests)
+- Tests: **133 passing**
 - Branch: `master`
 
 ## Release History
 | Version | Date | Highlights |
 |---------|------|------------|
+| **v2.2.0** | **2026-03-03** | **⭐ 消息星标/收藏功能** |
 | **v2.1.0** | **2026-03-02** | **➡️ 消息转发功能** |
 | **v2.0.0** | **2026-03-02** | **🎨 UI 彻底改造 - 统一设计系统** |
 | v1.5.2 | 2026-03-01 | 🖱️ Right-Click Context Menu |
@@ -53,7 +49,37 @@
 | v1.5.0 | 2026-03-01 | ➡️ Message Forwarding |
 | v1.4.9 | 2026-03-01 | 🔧 Regex search |
 
-## v2.1.0 功能摘要
+## v2.2.0 新增功能
+
+### 消息星标/收藏
+- **收藏消息**: 右键菜单 → "⭐ 收藏"
+- **取消收藏**: 右键菜单 → "⭐ 取消收藏"
+- **过滤显示**: 工具栏星星按钮切换仅显示收藏消息
+- **Toast 通知**: 收藏状态变更即时反馈
+
+### 后端实现
+```python
+# src/app/service.py
+def star_message(self, message_id: str) -> None
+def unstar_message(self, message_id: str) -> None
+def toggle_message_starred(self, message_id: str) -> bool
+def list_starred_messages(self, session_id: str | None = None) -> list[Message]
+
+# src/persistence/message_repo.py
+def set_starred(self, message_id: str, starred: bool) -> bool
+def list_starred(self, session_id: str | None = None) -> list[Message]
+```
+
+### 数据模型变更
+```python
+# src/persistence/models.py
+@dataclass
+class Message:
+    # ... 其他字段
+    is_starred: bool = False  # v2.2.0: 是否收藏（星标）
+```
+
+## v2.1.0 新增功能
 
 ### 消息转发
 - **单条消息转发**: 右键菜单 → "➡️ 转发到..."
@@ -61,10 +87,27 @@
 - **会话选择对话框**: 可滚动会话列表，按更新时间排序
 - **保留属性**: 引用关系、固定状态、原始时间戳
 
-### 构建产物
-- `HuluChat.exe` (Windows)
-- `HuluChat-macos.zip` (macOS)
-- `HuluChat-x86_64.AppImage` (Linux)
+## v2.0.0 设计系统架构
+
+### 设计系统模块 (`src/ui/design_system.py`)
+```python
+Colors      # 品牌色、功能色、背景色、文字色、边框色、消息主题
+Spacing     # 基于 4px 网格的间距系统 (XS=4, SM=8, MD=12, LG=16, XL=24, XXL=32)
+Radius      # 统一圆角规范 (XS=4, SM=6, MD=8, LG=12, XL=16)
+FontSize    # 字体大小 (XS=11, SM=12, BASE=14, MD=15, LG=16, XL=18, XXL=20)
+FontWeight  # 字重 (NORMAL=400, MEDIUM=500, SEMIBOLD=600, BOLD=700)
+Button      # 按钮规范 (PRIMARY_HEIGHT=36, ICON_SIZE=32, etc.)
+Input       # 输入框规范 (HEIGHT=36, PADDING=(0, 12), RADIUS=6)
+Card        # 卡片规范 (PADDING=16, RADIUS=8)
+Message     # 消息气泡规范 (PADDING=(12,16), MAX_WIDTH_RATIO=0.75)
+```
+
+### 已迁移到设计系统的模块
+- ✅ `main_window.py` - 主窗口、搜索结果、Toast 通知、转发对话框
+- ✅ `statistics_dialog.py` - 统计对话框
+- ✅ `folder_dialog.py` - 文件夹管理对话框（全部）
+- ✅ `templates_dialog.py` - 模板管理对话框（全部）
+- ✅ `settings.py` - 设置对话框（部分）
 
 ## Complete Keyboard Shortcuts
 
@@ -105,7 +148,7 @@
 |----------|--------|
 | Ctrl + , | Open settings |
 | Ctrl + / | Show help |
-| Right-Click | Context menu with forward option |
+| Right-Click | Context menu (star, forward, pin, etc.) |
 
 ## Coverage Leaders (100% Club) ✅
 | Module | Coverage | Notes |
@@ -127,8 +170,8 @@
 ## Coverage Breakdown (90%+ Tier)
 | Module | Coverage | Notes |
 |--------|----------|-------|
-| src\persistence\message_repo.py | ~97% | ✅ Excellent (含转发功能) |
-| src\app\service.py | ~95% | ✅ Excellent (含转发功能) |
+| src\persistence\message_repo.py | ~97% | ✅ Excellent (含星标功能) |
+| src\app\service.py | ~95% | ✅ Excellent (含星标功能) |
 | src\app\exporter.py | ~95% | ✅ Excellent |
 | src\persistence\db.py | 91% | ✅ Excellent |
 | src\chat\openai_client.py | 90% | ✅ Excellent |
@@ -144,4 +187,11 @@
 | DOCX | .docx | v1.0.9 | Word format |
 
 ## Open Questions
-- v2.2.0 功能方向是什么？
+- v2.3.0 功能方向？
+
+## Future Ideas
+- 搜索历史记录
+- 会话分组拖拽
+- 大会话分页加载
+- 消息虚拟化渲染
+- UI 单元测试覆盖

@@ -2,6 +2,49 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [2.2.0] - 2026-03-03
+
+### ✨ Features
+
+- **Message Star/Favorite**: Mark important messages with star
+  - Right-click context menu: "⭐ 收藏" / "⭐ 取消收藏"
+  - Toolbar star button: Filter to show only starred messages
+  - Toast notification for star status changes
+  - Backend: `Message.is_starred` field + service methods
+
+### 🧪 Testing
+
+- Added 26 new tests for star functionality
+- All 133 tests passing
+
+## [2.1.0] - 2026-03-02
+
+### ✨ Features
+
+- **Message Forwarding**: Forward messages to other sessions
+  - Single message: Right-click → "➡️ 转发到..."
+  - Batch: Selection mode → "📤 转发选中" button
+  - Session picker dialog with scrollable list
+  - Preserves: quote references, pinned status, original timestamps
+
+## [2.0.0] - 2026-03-02
+
+### 🎨 Major Redesign
+
+- **Design System**: Unified design system (`src/ui/design_system.py`)
+  - Colors: Brand, functional, background, text, border, message themes
+  - Spacing: 4px grid system (XS=4, SM=8, MD=12, LG=16, XL=24, XXL=32)
+  - Radius: Unified corner radius (XS=4, SM=6, MD=8, LG=12, XL=16)
+  - FontSize: Consistent sizing (XS=11, SM=12, BASE=14, MD=15, LG=16, XL=18, XXL=20)
+  - FontWeight: 400/500/600/700 scale
+- **Refactored Components**: All major dialogs migrated to design system
+  - main_window.py, statistics_dialog.py, folder_dialog.py, templates_dialog.py
+
+### 🖱️ UX
+
+- **Right-Click Context Menu**: Unified context menu for all message actions
+  - Star, forward, pin, copy, edit, delete
+
 ## [1.2.9] - 2025-03-01
 
 ### 🔧 Fixes

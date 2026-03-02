@@ -851,3 +851,105 @@ class TestMessageForward:
         # 两条消息内容相同但 ID 不同
         assert all_messages[0].id != all_messages[1].id
         assert all_messages[0].content == all_messages[1].content == "In s1"
+
+
+class TestMessageStarred:
+    """v2.2.0: 消息收藏（星标）功能测试。"""
+
+    def test_set_starred_true(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：设置消息为收藏状态。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="Important", created_at=now)
+
+        message_repo.append(m1)
+        message_repo.set_starred("m1", True)
+
+        messages = message_repo.list_by_session("s1")
+        assert messages[0].is_starred is True
+
+    def test_set_starred_false(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：取消消息收藏状态。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="Important", created_at=now, is_starred=True)
+
+        message_repo.append(m1)
+        message_repo.set_starred("m1", False)
+
+        messages = message_repo.list_by_session("s1")
+        assert messages[0].is_starred is False
+
+    def test_list_starred_by_session(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：获取指定会话的收藏消息。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="Starred 1", created_at=now, is_starred=True)
+        m2 = Message(id="m2", session_id="s1", role="user", content="Normal", created_at=now, is_starred=False)
+        m3 = Message(id="m3", session_id="s1", role="user", content="Starred 2", created_at=now, is_starred=True)
+
+        message_repo.append(m1)
+        message_repo.append(m2)
+        message_repo.append(m3)
+
+        starred = message_repo.list_starred("s1")
+        assert len(starred) == 2
+        starred_ids = {m.id for m in starred}
+        assert starred_ids == {"m1", "m3"}
+
+    def test_list_starred_all_sessions(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：获取所有会话的收藏消息。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="Starred in s1", created_at=now, is_starred=True)
+        m2 = Message(id="m2", session_id="s2", role="user", content="Starred in s2", created_at=now, is_starred=True)
+        m3 = Message(id="m3", session_id="s1", role="user", content="Normal in s1", created_at=now, is_starred=False)
+
+        message_repo.append(m1)
+        message_repo.append(m2)
+        message_repo.append(m3)
+
+        # 不传 session_id，获取所有收藏消息
+        all_starred = message_repo.list_starred()
+        assert len(all_starred) == 2
+        starred_ids = {m.id for m in all_starred}
+        assert starred_ids == {"m1", "m2"}
+
+    def test_list_starred_empty_returns_empty(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：没有收藏消息时返回空列表。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="Normal", created_at=now, is_starred=False)
+
+        message_repo.append(m1)
+
+        starred = message_repo.list_starred("s1")
+        assert starred == []
+
+    def test_list_starred_ordered_by_created_at_desc(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：收藏消息按创建时间倒序排列（最新的在前）。"""
+        base_time = datetime(2024, 1, 1, tzinfo=timezone.utc)
+        m1 = Message(id="m1", session_id="s1", role="user", content="First", created_at=base_time.isoformat(), is_starred=True)
+        m2 = Message(id="m2", session_id="s1", role="user", content="Second", created_at=(base_time.replace(hour=1)).isoformat(), is_starred=True)
+        m3 = Message(id="m3", session_id="s1", role="user", content="Third", created_at=(base_time.replace(hour=2)).isoformat(), is_starred=True)
+
+        message_repo.append(m1)
+        message_repo.append(m2)
+        message_repo.append(m3)
+
+        starred = message_repo.list_starred("s1")
+        # 最新的在前
+        assert starred[0].id == "m3"
+        assert starred[1].id == "m2"
+        assert starred[2].id == "m1"
+
+    def test_forward_preserves_starred_status(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：转发保留收藏状态。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="Starred message", created_at=now, is_starred=True)
+
+        message_repo.append(m1)
+
+        # 转发到 s2
+        count = message_repo.forward_to_session(["m1"], "s2")
+        assert count == 1
+
+        # 验证收藏状态被保留
+        target_messages = message_repo.list_by_session("s2")
+        assert len(target_messages) == 1
+        assert target_messages[0].is_starred is True

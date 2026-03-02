@@ -37,7 +37,7 @@ class Session:
 
 @dataclass
 class Message:
-    """消息：id、会话 id、角色、内容、创建时间、置顶状态、引用消息。"""
+    """消息：id、会话 id、角色、内容、创建时间、置顶状态、引用消息、收藏状态。"""
     id: str
     session_id: str
     role: str  # "user" | "assistant"
@@ -46,3 +46,4 @@ class Message:
     is_pinned: bool = False  # 是否置顶
     quoted_message_id: str | None = None  # 引用的消息 ID
     quoted_content: str | None = None  # 引用的消息内容（快照）
+    is_starred: bool = False  # v2.2.0: 是否收藏（星标）
