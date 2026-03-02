@@ -44,6 +44,13 @@ try:
 except ImportError:
     _HAS_ENHANCED_MARKDOWN = False
 
+# v2.3.0: 快捷操作栏
+try:
+    from src.ui.quick_action_bar import QuickActionBar
+    _HAS_QUICK_ACTION_BAR = True
+except ImportError:
+    _HAS_QUICK_ACTION_BAR = False
+
 SIDEBAR_WIDTH = 220
 SIDEBAR_COLLAPSED = 40  # 折叠后仅图标条，尽量收窄
 POLL_MS = 50
@@ -1093,8 +1100,22 @@ class MainWindow:
         # 输入区
         input_frame = ctk.CTkFrame(main, fg_color="transparent")
         input_frame.grid(row=3, column=0, sticky="ew", padx=12, pady=8)
-        input_frame.grid_rowconfigure(1, weight=1)
+        # v2.3.0: 调整行配置，row=0 快捷操作栏, row=1 引用提示条, row=2 输入框
+        input_frame.grid_rowconfigure(2, weight=1)
         input_frame.grid_columnconfigure(1, weight=1)
+
+        # v2.3.0: 快捷操作栏（模板快捷访问、星标切换、最近会话）
+        if _HAS_QUICK_ACTION_BAR:
+            self._quick_action_bar = QuickActionBar(
+                input_frame,
+                app=self._app,
+                on_template_apply=self._apply_template_to_input,
+                on_toggle_starred=self._on_toggle_starred_from_quick_bar,
+                on_recent_session=self._on_switch_to_session,
+            )
+            self._quick_action_bar.grid(row=0, column=0, columnspan=4, sticky="ew", pady=(0, Spacing.XS))
+        else:
+            self._quick_action_bar = None  # type: ignore[assignment]
 
         # v2.0.0: 引用提示条（初始隐藏）
         self._quote_frame = ctk.CTkFrame(input_frame, fg_color=Colors.BTN_DEFAULT if _HAS_DESIGN_SYSTEM else ("gray75", "gray35"), corner_radius=Radius.SM if _HAS_DESIGN_SYSTEM else 6)
@@ -1125,7 +1146,7 @@ class MainWindow:
 
         # 模板和选择模式按钮容器
         template_select_frame = ctk.CTkFrame(input_frame, fg_color="transparent")
-        template_select_frame.grid(row=1, column=0, padx=(0, 8))
+        template_select_frame.grid(row=2, column=0, padx=(0, 8))
 
         # 提示词模板快捷按钮
         self._template_var = ctk.StringVar(value="模板")
@@ -1153,7 +1174,7 @@ class MainWindow:
         self._selection_mode_btn.pack(side="left")
 
         self._input = ctk.CTkTextbox(input_frame, height=80, wrap="word")
-        self._input.grid(row=1, column=1, sticky="ew", padx=(0, 8))
+        self._input.grid(row=2, column=1, sticky="ew", padx=(0, 8))
         self._input.bind("<Return>", self._on_input_return)
         self._input.bind("<Control-Return>", lambda e: None)  # Ctrl+Enter 换行由默认行为处理
         # v1.3.0: Bind KeyRelease to update character counter
@@ -1170,7 +1191,7 @@ class MainWindow:
             text_color=("white", "white") if _HAS_DESIGN_SYSTEM else None,
             corner_radius=Button.PRIMARY_RADIUS if _HAS_DESIGN_SYSTEM else None,
         )
-        self._send_btn.grid(row=1, column=2)
+        self._send_btn.grid(row=2, column=2)
 
         # v2.0.0: Enhanced loading indicator with animation support
         self._sending_label = ctk.CTkLabel(
@@ -1180,7 +1201,7 @@ class MainWindow:
             font=("", FontSize.SM),
             text_color=Colors.PRIMARY if _HAS_DESIGN_SYSTEM else ("#3b82f6", "#60a5fa")
         )
-        self._sending_label.grid(row=1, column=3, padx=8)
+        self._sending_label.grid(row=2, column=3, padx=8)
         self._loading_anim_step = 0  # v1.3.0: Animation step counter
         self._loading_anim_job = None  # v1.3.0: Animation job handle
 
@@ -1192,10 +1213,10 @@ class MainWindow:
             text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray50", "gray65"),
             anchor="e"
         )
-        self._char_count_label.grid(row=2, column=1, sticky="e", padx=(0, 8), pady=(2, 0))
+        self._char_count_label.grid(row=3, column=1, sticky="e", padx=(0, 8), pady=(2, 0))
 
         self._error_label = ctk.CTkLabel(input_frame, text="", text_color=("red", "orange"))
-        self._error_label.grid(row=3, column=0, columnspan=4, sticky="w", pady=(4, 0))
+        self._error_label.grid(row=4, column=0, columnspan=4, sticky="w", pady=(4, 0))
 
         self._refresh_sessions_list()
         self._refresh_chat_area()
@@ -1277,6 +1298,40 @@ class MainWindow:
                 # 重置下拉菜单显示
                 self._template_var.set("模板")
                 break
+
+    # ========== v2.3.0: 快捷操作栏回调 ==========
+
+    def _apply_template_to_input(self, content: str) -> None:
+        """快捷操作栏：应用模板到输入框。"""
+        # 获取当前选中的文本（如果有）
+        current_text = self._input.get("1.0", "end").strip()
+        # 替换模板中的 {selection} 占位符
+        content = content.replace("{selection}", current_text if current_text else "")
+        # 替换其他变量
+        content = content.replace("{date}", datetime.now().strftime("%Y-%m-%d"))
+        content = content.replace("{time}", datetime.now().strftime("%H:%M"))
+        content = content.replace("{datetime}", datetime.now().strftime("%Y-%m-%d %H:%M"))
+        # 插入内容
+        self._input.delete("1.0", "end")
+        self._input.insert("1.0", content)
+        self._input.focus_set()
+
+    def _on_toggle_starred_from_quick_bar(self) -> None:
+        """快捷操作栏：切换星标视图。"""
+        self._toggle_starred_filter()
+        # 同步快捷操作栏的状态
+        if self._quick_action_bar:
+            self._quick_action_bar.set_show_starred_only(self._starred_only)
+
+    def _on_switch_to_session(self, session_id: str) -> None:
+        """快捷操作栏：切换到指定会话。"""
+        session = self._app.get_session(session_id)
+        if session:
+            self._current_session_id = session_id
+            self._refresh_sessions_list()
+            self._refresh_chat_area()
+
+    # ========== v2.3.0: 快捷操作栏回调结束 ==========
 
     def _on_search_input(self, event) -> None:
         """搜索输入框内容变化时触发。"""
