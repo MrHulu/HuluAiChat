@@ -578,3 +578,124 @@ class TestMessageCount:
 
         message_repo.delete("m1")
         assert message_repo.count_by_session("s1") == 1
+
+
+class TestRegexSearch:
+    """v1.4.9: 正则表达式搜索测试。"""
+
+    def test_search_regex_basic_pattern(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：基本正则表达式模式匹配。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="Hello World", created_at=now)
+        m2 = Message(id="m2", session_id="s1", role="user", content="Hello There", created_at=now)
+        m3 = Message(id="m3", session_id="s1", role="user", content="Goodbye World", created_at=now)
+
+        message_repo.append(m1)
+        message_repo.append(m2)
+        message_repo.append(m3)
+
+        # 匹配 "Hello" 后跟任何内容
+        results = message_repo.search("s1", "Hello.*", regex=True)
+        assert len(results) == 2
+        result_ids = {r.id for r in results}
+        assert result_ids == {"m1", "m2"}
+
+    def test_search_regex_case_insensitive(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：正则表达式默认不区分大小写（可通过 case_sensitive 改变）。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="Python code", created_at=now)
+        m2 = Message(id="m2", session_id="s1", role="user", content="python code", created_at=now)
+        m3 = Message(id="m3", session_id="s1", role="user", content="PYTHON CODE", created_at=now)
+
+        message_repo.append(m1)
+        message_repo.append(m2)
+        message_repo.append(m3)
+
+        # 默认不区分大小写 - 匹配所有三种
+        results_default = message_repo.search("s1", r"python.*code", regex=True)
+        assert len(results_default) == 3
+
+        # 区分大小写 - 只匹配小写的 "python code"
+        results_case = message_repo.search("s1", r"python.*code", regex=True, case_sensitive=True)
+        assert len(results_case) == 1
+        assert results_case[0].id == "m2"
+
+        # 区分大小写 - 只匹配首字母大写的 "Python code"
+        results_case_upper = message_repo.search("s1", r"Python.*code", regex=True, case_sensitive=True)
+        assert len(results_case_upper) == 1
+        assert results_case_upper[0].id == "m1"
+
+    def test_search_regex_digit_pattern(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：正则表达式数字模式 \d。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="Version 1.2.3", created_at=now)
+        m2 = Message(id="m2", session_id="s1", role="user", content="Version X.Y.Z", created_at=now)
+        m3 = Message(id="m3", session_id="s1", role="user", content="Build 12345", created_at=now)
+
+        message_repo.append(m1)
+        message_repo.append(m2)
+        message_repo.append(m3)
+
+        # 匹配包含数字的版本号
+        results = message_repo.search("s1", r"Version \d+\.\d+\.\d+", regex=True)
+        assert len(results) == 1
+        assert results[0].id == "m1"
+
+    def test_search_regex_word_boundary(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：正则表达式词边界 \b。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="I love Python", created_at=now)
+        m2 = Message(id="m2", session_id="s1", role="user", content="I love Pythonic code", created_at=now)
+
+        message_repo.append(m1)
+        message_repo.append(m2)
+
+        # \bPython\b 只匹配完整的 "Python" 词
+        results = message_repo.search("s1", r"\bPython\b", regex=True)
+        assert len(results) == 1
+        assert results[0].id == "m1"
+
+    def test_search_regex_invalid_pattern(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：无效的正则表达式返回空结果。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="Hello World", created_at=now)
+
+        message_repo.append(m1)
+
+        # 无效的正则表达式（未闭合的括号）
+        results = message_repo.search("s1", "(unclosed", regex=True)
+        assert len(results) == 0
+
+    def test_search_all_regex_basic(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：全局搜索支持正则表达式。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="Error: 404", created_at=now)
+        m2 = Message(id="m2", session_id="s2", role="user", content="Error: 500", created_at=now)
+        m3 = Message(id="m3", session_id="s3", role="user", content="Success: 200", created_at=now)
+
+        message_repo.append(m1)
+        message_repo.append(m2)
+        message_repo.append(m3)
+
+        # 匹配所有 "Error: XXX"
+        results = message_repo.search_all(r"Error: \d+", regex=True)
+        assert len(results) == 2
+        result_ids = {r.id for r in results}
+        assert result_ids == {"m1", "m2"}
+
+    def test_search_regex_or_pattern(self, message_repo: SqliteMessageRepository) -> None:
+        """测试：正则表达式或模式 |。"""
+        now = datetime.now(timezone.utc).isoformat()
+        m1 = Message(id="m1", session_id="s1", role="user", content="Use Python", created_at=now)
+        m2 = Message(id="m2", session_id="s1", role="user", content="Use JavaScript", created_at=now)
+        m3 = Message(id="m3", session_id="s1", role="user", content="Use Go", created_at=now)
+
+        message_repo.append(m1)
+        message_repo.append(m2)
+        message_repo.append(m3)
+
+        # 匹配 Python 或 JavaScript
+        results = message_repo.search("s1", r"Python|JavaScript", regex=True)
+        assert len(results) == 2
+        result_ids = {r.id for r in results}
+        assert result_ids == {"m1", "m2"}
