@@ -662,3 +662,42 @@ class AppService:
 
         logger.info("forward_messages: 转发了 %d 条消息到会话 %s", count, target_session_id)
         return count
+
+    # ========== 消息收藏/星标 (v2.2.0) ==========
+
+    def toggle_message_starred(self, message_id: str) -> bool:
+        """切换消息的收藏（星标）状态，返回新状态。"""
+        # 从当前会话中查找消息
+        messages = self._message_repo.list_by_session(self._current_session_id or "")
+        for m in messages:
+            if m.id == message_id:
+                new_state = not m.is_starred
+                self._message_repo.set_starred(message_id, new_state)
+                logger.info("toggle_message_starred: 消息 %s 收藏状态=%s", message_id, new_state)
+                return new_state
+        # 如果在当前会话没找到，尝试从全局搜索
+        all_messages = self._message_repo.list_all()
+        for m in all_messages:
+            if m.id == message_id:
+                new_state = not m.is_starred
+                self._message_repo.set_starred(message_id, new_state)
+                logger.info("toggle_message_starred: 消息 %s 收藏状态=%s", message_id, new_state)
+                return new_state
+        return False
+
+    def star_message(self, message_id: str) -> None:
+        """收藏（星标）消息。"""
+        self._message_repo.set_starred(message_id, True)
+
+    def unstar_message(self, message_id: str) -> None:
+        """取消收藏（星标）消息。"""
+        self._message_repo.set_starred(message_id, False)
+
+    def list_starred_messages(self, session_id: str | None = None) -> list[Message]:
+        """获取收藏的消息。
+        Args:
+            session_id: 如果指定，只返回该会话的收藏消息；否则返回所有收藏消息
+        Returns:
+            按创建时间倒序排列的收藏消息列表
+        """
+        return self._message_repo.list_starred(session_id)
