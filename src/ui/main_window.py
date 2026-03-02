@@ -1879,25 +1879,37 @@ class MainWindow:
         self._refresh_chat_area()
 
     def _edit_message(self, message_id: str, current_content: str) -> None:
-        """编辑消息内容。"""
+        """v2.6.0: 编辑消息内容，支持编辑后重新生成 AI 回复。"""
         # 获取消息信息
         sid = self._app.current_session_id()
         if not sid:
             return
         messages = self._app.load_messages(sid)
         target_msg = None
-        for m in messages:
+        target_index = -1
+        for i, m in enumerate(messages):
             if m.id == message_id:
                 target_msg = m
+                target_index = i
                 break
         if not target_msg:
             ToastNotification(self._root, "❌ 消息不存在")
             return
 
+        # 检查是否有后续消息（仅对用户消息）
+        has_following_messages = False
+        next_assistant_msg_id = None
+        if target_msg.role == "user" and target_index < len(messages) - 1:
+            # 检查下一条是否是 assistant 消息
+            next_msg = messages[target_index + 1] if target_index + 1 < len(messages) else None
+            if next_msg and next_msg.role == "assistant":
+                has_following_messages = True
+                next_assistant_msg_id = next_msg.id
+
         # 创建编辑对话框
         dialog = ctk.CTkToplevel(self._root)
         dialog.title("编辑消息")
-        dialog.geometry("600x400")
+        dialog.geometry("600x450")
         dialog.transient(self._root)
         dialog.grab_set()
 
@@ -1913,11 +1925,34 @@ class MainWindow:
         textbox = ctk.CTkTextbox(
             dialog,
             wrap="word",
-            height=250,
+            height=220,
             font=("", 12)
         )
         textbox.pack(padx=16, pady=8, fill="both", expand=True)
         textbox.insert("1.0", current_content)
+
+        # v2.6.0: 重新生成选项（仅用户消息且有后续回复时显示）
+        regenerate_var = ctk.BooleanVar(value=False)
+        if has_following_messages:
+            regenerate_frame = ctk.CTkFrame(dialog, fg_color="transparent")
+            regenerate_frame.pack(pady=(4, 8), padx=16, fill="x")
+
+            regenerate_cb = ctk.CTkCheckBox(
+                regenerate_frame,
+                text="🔄 编辑后重新生成 AI 回复",
+                variable=regenerate_var,
+                onvalue=True,
+                offvalue=False,
+            )
+            regenerate_cb.pack(anchor="w")
+
+            hint_label = ctk.CTkLabel(
+                regenerate_frame,
+                text="   选中后将删除当前 AI 回复并重新生成",
+                font=("", 10),
+                text_color=("gray50", "gray60")
+            )
+            hint_label.pack(anchor="w")
 
         # 按钮容器
         btn_frame = ctk.CTkFrame(dialog, fg_color="transparent")
@@ -1928,12 +1963,36 @@ class MainWindow:
             if not new_content:
                 messagebox.showwarning("警告", "消息内容不能为空")
                 return
-            if self._app.update_message_content(message_id, new_content):
+            if not self._app.update_message_content(message_id, new_content):
+                messagebox.showerror("错误", "更新消息失败")
+                return
+
+            # v2.6.0: 检查是否需要重新生成
+            should_regenerate = regenerate_var.get() if has_following_messages else False
+            if should_regenerate and next_assistant_msg_id:
+                dialog.destroy()
+                # 删除后续的 AI 回复消息
+                self._app.delete_message(next_assistant_msg_id)
+                # 触发重新生成
+                self._refresh_chat_area()
+                # 检查是否正在流式输出
+                if self._streaming_session_id is not None:
+                    ToastNotification(self._root, "⚠️ 请等待当前回复完成")
+                    return
+                self._error_label.configure(text="")
+                self._start_loading_animation()
+                self._send_btn.configure(state="disabled")
+                self._streaming_session_id = sid
+                self._app.regenerate_response(
+                    sid,
+                    self._stream_queue,
+                    on_done=self._on_stream_done,
+                    on_error=self._on_stream_error,
+                )
+            else:
                 ToastNotification(self._root, "✓ 消息已更新")
                 self._refresh_chat_area()
                 dialog.destroy()
-            else:
-                messagebox.showerror("错误", "更新消息失败")
 
         def cancel_and_close():
             dialog.destroy()

@@ -2,6 +2,26 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [2.6.0] - 2026-03-03
+
+### ✨ Features
+
+- **Edit & Regenerate**: Edit user messages and optionally regenerate AI responses
+  - Edit dialog now shows "🔄 Edit & Regenerate" checkbox when editing user messages with AI replies
+  - When enabled, deletes the current AI response and generates a new one
+  - Seamless workflow for refining prompts and getting improved responses
+  - Edit dialog height adjusted from 400px to 450px to accommodate new option
+
+### 🔧 Improvements
+
+- Better UX for message editing workflow
+- Checkbox only appears when editing user messages that have AI replies
+- Hint text explains what will happen when regenerate is enabled
+
+### 🧪 Testing
+
+- All 415 tests passing
+
 ## [2.5.0] - 2026-03-03
 
 ### ✨ Features

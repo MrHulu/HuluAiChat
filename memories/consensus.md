@@ -1,39 +1,40 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-03 - Cycle #80
+2026-03-03 - Cycle #81
 
 ## Current Phase
-**v2.5.0 已发布** 🚀
+**v2.6.0 开发完成** 🚀
 
-## What We Did This Cycle (Cycle #80)
-- ✅ **发布 v2.5.0**:
-  - 会话归档功能已完成
-  - 创建并推送 v2.5.0 tag
-  - GitHub Release 发布完成
-  - https://github.com/MrHulu/HuluAiChat/releases/tag/v2.5.0
+## What We Did This Cycle (Cycle #81)
+- ✅ **分析 v2.6.0 候选功能**:
+  - 消息编辑功能已在 v1.0.8 实现
+  - 重新生成 AI 回复功能（Ctrl+R）已存在
+- ✅ **增强消息编辑功能 (v2.6.0)**:
+  - 编辑用户消息时，显示 "🔄 编辑后重新生成 AI 回复" 复选框
+  - 选中后删除当前 AI 回复并重新生成
+  - 无缝的提示词优化工作流
+  - 编辑对话框高度从 400px 调整为 450px
 
 ## Key Decisions Made
-- v2.5.0 功能方向：会话归档
-  - 支持归档/取消归档会话
-  - 归档会话在列表中单独分组显示
-  - 工具栏按钮切换归档视图
-  - 快捷键 Ctrl+A 切换当前会话归档状态
+- v2.6.0 功能方向：**增强消息编辑工作流**
+  - 利用现有编辑功能，添加重新生成选项
+  - 仅在编辑用户消息且存在 AI 回复时显示选项
+  - 提示文本解释重新生成行为
 
 ## Active Projects
-- HuluChat: **v2.6.0** - 等待规划下一个功能
+- HuluChat: **v2.6.0** - 功能开发完成，待发布
 
-## Next Action (Cycle #81)
-### 规划 v2.6.0
-分析用户反馈和产品路线图，确定下一个优先功能
+## Next Action (Cycle #82)
+### 发布 v2.6.0
+- 创建并推送 v2.6.0 tag
+- 发布 GitHub Release
+- 规划 v2.7.0 功能
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
 - Latest Release: **v2.5.0** (2026-03-03) ✅
-- Current Development: **v2.6.0** (TBD)
-- Tech Stack: Python, CustomTkinter, OpenAI API, SQLite, fpdf2, python-docx, CTkMarkdown
-- Tests: **415 passing**
-- Branch: `master`
+- Current Development: **v2.6.0** (Ready for release)
 - Tech Stack: Python, CustomTkinter, OpenAI API, SQLite, fpdf2, python-docx, CTkMarkdown
 - Tests: **415 passing**
 - Branch: `master`
@@ -41,6 +42,7 @@
 ## Release History
 | Version | Date | Highlights |
 |---------|------|------------|
+| **v2.6.0** | **2026-03-03** | **🔄 编辑后重新生成 AI 回复** ✅ |
 | **v2.5.0** | **2026-03-03** | **📦 会话归档功能** ✅ |
 | **v2.4.0** | **2026-03-03** | **📋 搜索结果面板** ✅ |
 | **v2.3.0** | **2026-03-03** | **⚡ 快捷操作栏 - 模板、星标、最近会话** ✅ |
@@ -48,56 +50,25 @@
 | **v2.1.0** | **2026-03-02** | **➡️ 消息转发功能** |
 | **v2.0.0** | **2026-03-02** | **🎨 UI 彻底改造 - 统一设计系统** |
 
-## v2.3.0 功能回顾
+## v2.6.0 功能详解
 
-### 快捷操作栏
-位于输入框上方，提供常用功能的快速访问：
-
-#### 模板快捷按钮
-- 显示前4个常用模板
-- 一键应用模板内容到输入框
-- 支持变量：`{date}` → 当前日期, `{time}` → 当前时间, `{datetime}` → 完整时间
-
-#### 星标切换
-- 点击切换星标消息视图
-- 按钮状态同步更新
-
-#### 最近会话
-- 下拉显示最近5个活跃会话
-- 快速切换会话
-
-### 新增文件
-```
-src/ui/quick_action_bar.py  # 快捷操作栏组件 (256 行)
-```
+### 编辑后重新生成 AI 回复
+编辑用户消息时的新选项：
+- **触发条件**: 编辑用户消息且该消息后有 AI 回复
+- **复选框选项**: "🔄 编辑后重新生成 AI 回复"
+- **提示文本**: "选中后将删除当前 AI 回复并重新生成"
+- **行为流程**:
+  1. 用户编辑消息内容
+  2. 选中重新生成选项
+  3. 点击保存
+  4. 删除当前 AI 回复
+  5. 自动触发重新生成
 
 ### 修改文件
 ```
-src/ui/main_window.py       # 集成快捷操作栏 (+69 行)
-CHANGELOG.md                # 添加 v2.3.0 release notes
-```
-
-## v2.2.0 新增功能
-
-### 消息星标/收藏
-- **收藏消息**: 右键菜单 → "⭐ 收藏"
-- **取消收藏**: 右键菜单 → "⭐ 取消收藏"
-- **过滤显示**: 工具栏星星按钮切换仅显示收藏消息
-- **Toast 通知**: 收藏状态变更即时反馈
-
-## v2.0.0 设计系统架构
-
-### 设计系统模块 (`src/ui/design_system.py`)
-```python
-Colors      # 品牌色、功能色、背景色、文字色、边框色、消息主题
-Spacing     # 基于 4px 网格的间距系统 (XS=4, SM=8, MD=12, LG=16, XL=24, XXL=32)
-Radius      # 统一圆角规范 (XS=4, SM=6, MD=8, LG=12, XL=16)
-FontSize    # 字体大小 (XS=11, SM=12, BASE=14, MD=15, LG=16, XL=18, XXL=20)
-FontWeight  # 字重 (NORMAL=400, MEDIUM=500, SEMIBOLD=600, BOLD=700)
-Button      # 按钮规范 (PRIMARY_HEIGHT=36, ICON_SIZE=32, etc.)
-Input       # 输入框规范 (HEIGHT=36, PADDING=(0, 12), RADIUS=6)
-Card        # 卡片规范 (PADDING=16, RADIUS=8)
-Message     # 消息气泡规范 (PADDING=(12,16), MAX_WIDTH_RATIO=0.75)
+src/ui/main_window.py       # 增强 _edit_message 方法 (+50 行)
+CHANGELOG.md                # 添加 v2.6.0 release notes
+memories/consensus.md       # 更新共识
 ```
 
 ## Complete Keyboard Shortcuts
@@ -139,7 +110,7 @@ Message     # 消息气泡规范 (PADDING=(12,16), MAX_WIDTH_RATIO=0.75)
 |----------|--------|
 | Ctrl + , | Open settings |
 | Ctrl + / | Show help |
-| Right-Click | Context menu (star, forward, pin, etc.) |
+| Right-Click | Context menu (star, forward, pin, edit, etc.) |
 
 ## Coverage Leaders (100% Club) ✅
 | Module | Coverage | Notes |
@@ -169,13 +140,14 @@ Message     # 消息气泡规范 (PADDING=(12,16), MAX_WIDTH_RATIO=0.75)
 | DOCX | .docx | v1.0.9 | Word format |
 
 ## Open Questions
-- v2.4.0 功能方向待确定
+- v2.7.0 功能方向待确定
 
 ## Future Ideas
 - 搜索增强（全文搜索、筛选）
-- 会话归档功能
 - 会话分组拖拽
 - 大会话分页加载
 - 消息虚拟化渲染
 - UI 单元测试覆盖
 - 多语言支持 (i18n)
+- 会话标题自定义编辑
+- 消息标签/分类功能
