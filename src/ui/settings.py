@@ -9,6 +9,15 @@ from src.config.models import AppConfig, Provider
 from src.ui.settings_constants import MODEL_ID_CUSTOM_VALUE, MODEL_ID_PRESETS
 from src.ui.settings_validation import validate_provider
 
+# v2.0.0: 使用设计系统
+try:
+    from src.ui.design_system import (
+        Colors, Spacing, Radius, FontSize, FontWeight, Button, Card,
+    )
+    _HAS_DESIGN_SYSTEM = True
+except ImportError:
+    _HAS_DESIGN_SYSTEM = False
+
 # 主题显示：文字+图标，随当前外观区分
 THEME_LIGHT_DISPLAY = "☀️ 明亮"
 THEME_DARK_DISPLAY = "🌙 暗夜"
@@ -25,12 +34,20 @@ def open_settings(parent: ctk.CTk, app: AppService, on_save: Callable[[], None] 
     dialog.transient(parent)
     dialog.grab_set()
 
+    # v2.0.0: 使用设计系统间距
+    dialog_pad = Spacing.LG if _HAS_DESIGN_SYSTEM else 16
     main = ctk.CTkScrollableFrame(dialog, fg_color="transparent")
-    main.pack(fill="both", expand=True, padx=16, pady=16)
+    main.pack(fill="both", expand=True, padx=dialog_pad, pady=dialog_pad)
     main.grid_columnconfigure(0, weight=1)
 
     # ---------- 第一项：主题（下拉 + 文字+图标，图标随主题） ----------
-    ctk.CTkLabel(main, text="主题", font=("", 14, "bold")).grid(row=0, column=0, sticky="w", pady=(0, 8))
+    # v2.0.0: 使用设计系统字体和颜色
+    title_font = ("", FontSize.LG, FontWeight.SEMIBOLD) if _HAS_DESIGN_SYSTEM else ("", 14, "bold")
+    title_color = Colors.TEXT_PRIMARY if _HAS_DESIGN_SYSTEM else None
+
+    ctk.CTkLabel(main, text="主题", font=title_font, text_color=title_color).grid(
+        row=0, column=0, sticky="w", pady=(0, Spacing.SM if _HAS_DESIGN_SYSTEM else 8)
+    )
     theme_var = ctk.StringVar(value=THEME_TO_DISPLAY.get(config.theme, THEME_DARK_DISPLAY))
     theme_options = [THEME_LIGHT_DISPLAY, THEME_DARK_DISPLAY]
     theme_menu = ctk.CTkOptionMenu(main, variable=theme_var, values=theme_options, width=180)
@@ -86,18 +103,23 @@ def open_settings(parent: ctk.CTk, app: AppService, on_save: Callable[[], None] 
         _update_confirm_button(row_index)
 
     def add_provider_row(p: Provider, row: int, is_draft: bool = False) -> None:
+        # v2.0.0: 使用设计系统颜色
+        row_bg = Colors.BG_SECONDARY if not is_draft else Colors.BG_TERTIARY
+        row_border = Colors.BORDER_DEFAULT if _HAS_DESIGN_SYSTEM else ("gray70", "gray40")
+        row_radius = Card.RADIUS if _HAS_DESIGN_SYSTEM else 8
+
         f = ctk.CTkFrame(
             providers_frame,
-            fg_color=("gray90", "gray25") if not is_draft else ("gray95", "gray20"),
-            corner_radius=8,
+            fg_color=row_bg if _HAS_DESIGN_SYSTEM else ("gray90", "gray25") if not is_draft else ("gray95", "gray20"),
+            corner_radius=row_radius,
             border_width=2 if is_draft else 0,
-            border_color=("gray70", "gray40"),
+            border_color=row_border,
         )
-        f.grid(row=row, column=0, sticky="ew", pady=4, padx=0)
-        f.grid_rowconfigure((0, 1, 2, 3, 4), pad=8)
-        f.grid_columnconfigure(0, pad=8)
-        f.grid_columnconfigure(1, weight=1, pad=8)
-        f.grid_columnconfigure(2, pad=8)
+        f.grid(row=row, column=0, sticky="ew", pady=Spacing.XS if _HAS_DESIGN_SYSTEM else 4, padx=0)
+        f.grid_rowconfigure((0, 1, 2, 3, 4), pad=Spacing.SM if _HAS_DESIGN_SYSTEM else 8)
+        f.grid_columnconfigure(0, pad=Spacing.SM if _HAS_DESIGN_SYSTEM else 8)
+        f.grid_columnconfigure(1, weight=1, pad=Spacing.SM if _HAS_DESIGN_SYSTEM else 8)
+        f.grid_columnconfigure(2, pad=Spacing.SM if _HAS_DESIGN_SYSTEM else 8)
 
         name_var = ctk.StringVar(value=p.name)
         base_var = ctk.StringVar(value=p.base_url)
@@ -187,8 +209,10 @@ def open_settings(parent: ctk.CTk, app: AppService, on_save: Callable[[], None] 
         r["is_draft"] = False
         r["confirm_btn"].configure(text="设为当前", state="normal", command=lambda: _set_current(p.id))
         r["del_btn"].configure(command=lambda: _del_row(row_index))
-        r["del_btn"].grid(row=1, column=2, padx=8)
-        r["frame"].configure(fg_color=("gray90", "gray25"), border_width=0)
+        r["del_btn"].grid(row=1, column=2, padx=Spacing.SM if _HAS_DESIGN_SYSTEM else 8)
+        # v2.0.0: 使用设计系统颜色
+        confirmed_bg = Colors.BG_SECONDARY if _HAS_DESIGN_SYSTEM else ("gray90", "gray25")
+        r["frame"].configure(fg_color=confirmed_bg, border_width=0)
 
     def _del_row(row_index: int) -> None:
         if 0 <= row_index < len(providers):

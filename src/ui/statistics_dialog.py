@@ -8,6 +8,13 @@ from src.app.statistics import (
     save_global_stats,
 )
 
+# v2.0.0: 设计系统
+try:
+    from src.ui.design_system import Colors, Spacing, Radius, FontSize
+    _HAS_DESIGN_SYSTEM = True
+except ImportError:
+    _HAS_DESIGN_SYSTEM = False
+
 
 def _get_color_for_level(level: int, max_level: int) -> tuple[str, str]:
     """根据活跃程度获取颜色。
@@ -142,71 +149,75 @@ class StatisticsDialog:
             message_count=self._stats.message_count_ai,
         )
 
-        # 时间范围信息
+        # v2.0.0: 时间范围信息 - 使用设计系统
         if self._stats.first_message_time or self._stats.last_message_time:
+            time_bg = Colors.BG_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray90", "gray25")
+            time_radius = Radius.MD if _HAS_DESIGN_SYSTEM else 8
             time_frame = ctk.CTkFrame(
                 main,
-                fg_color=("gray90", "gray25"),
-                corner_radius=8,
+                fg_color=time_bg,
+                corner_radius=time_radius,
             )
             time_frame.pack(fill="x", pady=(0, 16))
 
             ctk.CTkLabel(
                 time_frame,
                 text="📅 时间范围",
-                font=("", 13, "bold"),
-            ).pack(anchor="w", padx=12, pady=(8, 4))
+                font=("", FontSize.LG, "bold"),
+            ).pack(anchor="w", padx=Spacing.MD, pady=(Spacing.SM, Spacing.XS))
 
             if self._stats.first_message_time:
                 ctk.CTkLabel(
                     time_frame,
                     text=f"开始: {self._stats.first_message_time}",
-                    font=("", 11),
-                    text_color=("gray50", "gray60"),
-                ).pack(anchor="w", padx=12, pady=2)
+                    font=("", FontSize.SM),
+                    text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray50", "gray60"),
+                ).pack(anchor="w", padx=Spacing.MD, pady=2)
 
             if self._stats.last_message_time:
                 ctk.CTkLabel(
                     time_frame,
                     text=f"结束: {self._stats.last_message_time}",
-                    font=("", 11),
-                    text_color=("gray50", "gray60"),
-                ).pack(anchor="w", padx=12, pady=(2, 8))
+                    font=("", FontSize.SM),
+                    text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray50", "gray60"),
+                ).pack(anchor="w", padx=Spacing.MD, pady=(2, Spacing.SM))
 
         # 每日活动图表
         if self._stats.daily_stats:
             self._create_daily_chart(main)
 
-        # 提示信息
+        # v2.0.0: 提示信息 - 使用设计系统
         if not self._stats.has_data:
+            hint_bg = Colors.BG_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray90", "gray25")
+            hint_radius = Radius.MD if _HAS_DESIGN_SYSTEM else 8
             hint_frame = ctk.CTkFrame(
                 main,
-                fg_color=("gray90", "gray25"),
-                corner_radius=8,
+                fg_color=hint_bg,
+                corner_radius=hint_radius,
             )
             hint_frame.pack(fill="x", pady=(0, 16))
 
             ctk.CTkLabel(
                 hint_frame,
                 text="💡 此会话还没有消息",
-                font=("", 11),
-                text_color=("gray50", "gray60"),
-                padx=12,
-                pady=8,
+                font=("", FontSize.SM),
+                text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray50", "gray60"),
+                padx=Spacing.MD,
+                pady=Spacing.SM,
             ).pack()
 
         # 按钮容器
         button_frame = ctk.CTkFrame(main, fg_color="transparent")
-        button_frame.pack(pady=(8, 0))
+        button_frame.pack(pady=(Spacing.XS, 0))
 
-        # 导出按钮
+        # v2.0.0: 导出按钮 - 使用品牌色
         export_btn = ctk.CTkButton(
             button_frame,
             text="📤 导出",
             width=100,
             command=self._export,
-            fg_color=("#60a5fa", "#3b82f6"),
-            hover_color=("#3b82f6", "#2563eb"),
+            fg_color=Colors.PRIMARY if _HAS_DESIGN_SYSTEM else ("#60a5fa", "#3b82f6"),
+            hover_color=Colors.PRIMARY_HOVER if _HAS_DESIGN_SYSTEM else ("#3b82f6", "#2563eb"),
         )
         export_btn.pack(side="left", padx=(0, 8))
 
@@ -347,22 +358,25 @@ class StatisticsDialog:
         label: str,
         color: tuple[str, str],
     ) -> None:
-        """创建统计卡片。"""
+        """v2.0.0: 创建统计卡片 - 使用设计系统。"""
+        card_bg = Colors.BG_ELEVATED if _HAS_DESIGN_SYSTEM else ("gray95", "gray20")
+        card_border = Colors.BORDER_SUBTLE if _HAS_DESIGN_SYSTEM else ("gray80", "gray30")
+        card_radius = Radius.LG if _HAS_DESIGN_SYSTEM else 12
         card = ctk.CTkFrame(
             parent,
-            fg_color=("gray95", "gray20"),
-            corner_radius=12,
+            fg_color=card_bg,
+            corner_radius=card_radius,
             border_width=1,
-            border_color=("gray80", "gray30"),
+            border_color=card_border,
         )
-        card.pack(side="left", expand=True, fill="both", padx=4)
+        card.pack(side="left", expand=True, fill="both", padx=Spacing.XS)
 
         # 图标
         ctk.CTkLabel(
             card,
             text=icon,
             font=("", 20),
-        ).pack(pady=(12, 4))
+        ).pack(pady=(Spacing.MD, Spacing.XS))
 
         # 数值
         ctk.CTkLabel(
@@ -370,7 +384,7 @@ class StatisticsDialog:
             text=value,
             font=("", 24, "bold"),
             text_color=color,
-        ).pack(pady=(4, 2))
+        ).pack(pady=(Spacing.XS, 2))
 
         # 标签
         ctk.CTkLabel(
@@ -388,37 +402,40 @@ class StatisticsDialog:
         word_count: int,
         message_count: int,
     ) -> None:
-        """创建详细统计卡片。"""
+        """v2.0.0: 创建详细统计卡片 - 使用设计系统。"""
+        card_bg = Colors.BG_ELEVATED if _HAS_DESIGN_SYSTEM else ("gray95", "gray20")
+        card_border = Colors.BORDER_SUBTLE if _HAS_DESIGN_SYSTEM else ("gray80", "gray30")
+        card_radius = Radius.LG if _HAS_DESIGN_SYSTEM else 12
         card = ctk.CTkFrame(
             parent,
-            fg_color=("gray95", "gray20"),
-            corner_radius=12,
+            fg_color=card_bg,
+            corner_radius=card_radius,
             border_width=1,
-            border_color=("gray80", "gray30"),
+            border_color=card_border,
         )
-        card.pack(side="left", expand=True, fill="both", padx=4)
+        card.pack(side="left", expand=True, fill="both", padx=Spacing.XS)
 
         # 标题行
         header = ctk.CTkFrame(card, fg_color="transparent")
-        header.pack(pady=(12, 8))
-        ctk.CTkLabel(header, text=icon, font=("", 16)).pack(side="left", padx=(12, 4))
-        ctk.CTkLabel(header, text=title, font=("", 13, "bold")).pack(side="left")
+        header.pack(pady=(Spacing.MD, Spacing.SM))
+        ctk.CTkLabel(header, text=icon, font=("", FontSize.XL)).pack(side="left", padx=(Spacing.MD, Spacing.XS))
+        ctk.CTkLabel(header, text=title, font=("", FontSize.LG, "bold")).pack(side="left")
 
         # 字数
         ctk.CTkLabel(
             card,
             text=f"{self._format_number(word_count)} 字",
-            font=("", 16, "bold"),
-            text_color=("#60a5fa", "#3b82f6"),
-        ).pack(anchor="w", padx=12, pady=2)
+            font=("", FontSize.XL, "bold"),
+            text_color=Colors.PRIMARY if _HAS_DESIGN_SYSTEM else ("#60a5fa", "#3b82f6"),
+        ).pack(anchor="w", padx=Spacing.MD, pady=2)
 
         # 消息数
         ctk.CTkLabel(
             card,
             text=f"{message_count} 条消息",
-            font=("", 11),
-            text_color=("gray50", "gray60"),
-        ).pack(anchor="w", padx=12, pady=(2, 12))
+            font=("", FontSize.SM),
+            text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray50", "gray60"),
+        ).pack(anchor="w", padx=Spacing.MD, pady=(2, Spacing.MD))
 
     def _format_number(self, num: int) -> str:
         """格式化数字（K/M 后缀）。"""
