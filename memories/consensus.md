@@ -1,18 +1,17 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-03 - Cycle #79
+2026-03-03 - Cycle #80
 
 ## Current Phase
-**v2.5.0 开发完成** 🎉
+**v2.5.0 已发布** 🚀
 
-## What We Did This Cycle (Cycle #79)
-- ✅ **完成 v2.5.0 会话归档功能**:
-  - 数据层：Session.is_archived 字段 + 数据库迁移
-  - 服务层：归档/取消归档方法
-  - UI层：会话行归档按钮 + 工具栏过滤按钮
-  - 列表渲染：归档会话分组显示在底部
-  - 所有 415 个测试通过 ✅
+## What We Did This Cycle (Cycle #80)
+- ✅ **发布 v2.5.0**:
+  - 会话归档功能已完成
+  - 创建并推送 v2.5.0 tag
+  - GitHub Release 发布完成
+  - https://github.com/MrHulu/HuluAiChat/releases/tag/v2.5.0
 
 ## Key Decisions Made
 - v2.5.0 功能方向：会话归档
@@ -22,18 +21,19 @@
   - 快捷键 Ctrl+A 切换当前会话归档状态
 
 ## Active Projects
-- HuluChat: **v2.5.0** - 准备发布
+- HuluChat: **v2.6.0** - 等待规划下一个功能
 
-## Next Action (Cycle #80)
-### 发布 v2.5.0
-1. 更新 CHANGELOG.md
-2. 创建并推送 v2.5.0 tag
-3. 创建 GitHub Release
+## Next Action (Cycle #81)
+### 规划 v2.6.0
+分析用户反馈和产品路线图，确定下一个优先功能
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
-- Latest Release: **v2.4.0** (2026-03-03) ✅
-- Current Development: **v2.5.0** (会话归档) 🎯
+- Latest Release: **v2.5.0** (2026-03-03) ✅
+- Current Development: **v2.6.0** (TBD)
+- Tech Stack: Python, CustomTkinter, OpenAI API, SQLite, fpdf2, python-docx, CTkMarkdown
+- Tests: **415 passing**
+- Branch: `master`
 - Tech Stack: Python, CustomTkinter, OpenAI API, SQLite, fpdf2, python-docx, CTkMarkdown
 - Tests: **415 passing**
 - Branch: `master`
@@ -41,6 +41,7 @@
 ## Release History
 | Version | Date | Highlights |
 |---------|------|------------|
+| **v2.5.0** | **2026-03-03** | **📦 会话归档功能** ✅ |
 | **v2.4.0** | **2026-03-03** | **📋 搜索结果面板** ✅ |
 | **v2.3.0** | **2026-03-03** | **⚡ 快捷操作栏 - 模板、星标、最近会话** ✅ |
 | **v2.2.0** | **2026-03-03** | **⭐ 消息星标/收藏功能** |
