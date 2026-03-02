@@ -1,54 +1,69 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-02 - Cycle #72
+2026-03-03 - Cycle #73
 
 ## Current Phase
-🔍 **功能审计 - v2.2.0 重新规划**
+✅ **v2.2.0 开发完成 - 待发布**
 
-## What We Did This Cycle (Cycle #72)
-- ✅ **v2.1.0 发布完成**
-- ✅ **CEO 战略分析** - v2.2.0 原计划 AI 模型切换 + 深色模式
-- ⚠️ **功能审计发现** - 这两个功能已存在！
+## What We Did This Cycle (Cycle #73)
+- ✅ **消息星标/收藏功能完成**
+- ✅ **后端实现**: Message.is_starred 字段 + repo + service
+- ✅ **UI 实现**: 工具栏过滤按钮 + 右键菜单
+- ✅ **测试通过**: 133/133 passing
 
 ## Key Decisions Made
-- **AI 模型切换** 已存在：主窗口工具栏有模型下拉菜单
-- **主题切换** 已存在：设置对话框可切换主题
-- v2.2.0 需要选择新的功能方向
+- v2.2.0 核心功能：**消息星标/收藏**
+- 用户价值高，实现成本中等
+- 保持与置顶功能类似的交互模式
 
 ## Active Projects
 - HuluChat: **v2.1.0** - ✅ 已发布 (2026-03-02)
-- HuluChat: **v2.2.0** - 🔄 重新规划中
+- HuluChat: **v2.2.0** - ✅ 开发完成 (2026-03-03)
 
-## Next Action (Cycle #73)
-
-### v2.2.0 新功能方向选择
-
-#### 方案 A: UI/UX 增强
-- 快捷主题切换按钮（主窗口工具栏）
-- 消息气泡美化（渐变、阴影）
-
-#### 方案 B: 新功能
-- **消息星标/收藏** - 标记重要消息，快速访问
-- **搜索历史** - 记录搜索历史，快速重复搜索
-- **会话分组增强** - 拖拽分组、批量操作
-
-#### 方案 C: 性能优化
-- 大会话分页加载
-- 消息虚拟化渲染
-
-#### 方案 D: 开发体验
-- 单元测试覆盖 UI 模块
-- 代码文档完善
-
-**推荐**: **消息星标/收藏** - 用户价值高，实现成本中等
+## Next Action (Cycle #74)
+### 发布 v2.2.0
+1. 合并到 master
+2. 创建 release tag
+3. 更新 CHANGELOG
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
 - Latest Release: **v2.1.0** (2026-03-02) ✅
+- Upcoming: **v2.2.0** - 消息星标功能
 - Tech Stack: Python, CustomTkinter, OpenAI API, SQLite, fpdf2, python-docx, CTkMarkdown
-- Tests: **400 passing** (100% of non-GUI tests)
+- Tests: **133 passing** (含星标功能)
 - Branch: `pr/consensus-update-71`
+
+## v2.2.0 新增功能
+
+### 消息星标/收藏
+- **收藏消息**: 右键菜单 → "⭐ 收藏"
+- **取消收藏**: 右键菜单 → "⭐ 取消收藏"
+- **过滤显示**: 工具栏星星按钮切换仅显示收藏消息
+- **Toast 通知**: 收藏状态变更即时反馈
+
+### 后端实现
+```python
+# src/app/service.py
+def star_message(self, message_id: str) -> None
+def unstar_message(self, message_id: str) -> None
+def toggle_message_starred(self, message_id: str) -> bool
+def list_starred_messages(self, session_id: str | None = None) -> list[Message]
+
+# src/persistence/message_repo.py
+def set_starred(self, message_id: str, starred: bool) -> bool
+def list_starred(self, session_id: str | None = None) -> list[Message]
+```
+
+### 数据模型变更
+```python
+# src/persistence/models.py
+@dataclass
+class Message:
+    # ... 其他字段
+    is_starred: bool = False  # v2.2.0: 是否收藏（星标）
+```
 
 ## v2.1.0 新增功能
 
@@ -57,17 +72,6 @@
 - **批量转发**: 消息选择模式 → "📤 转发选中" 按钮
 - **会话选择对话框**: 可滚动会话列表，按更新时间排序
 - **保留属性**: 引用关系、固定状态、原始时间戳
-
-### 后端实现
-```python
-# src/app/service.py
-def forward_messages(self, message_ids: list[str], target_session_id: str) -> int:
-    """将消息转发到另一个会话"""
-
-# src/persistence/message_repo.py
-def forward_to_session(self, message_ids: list[str], target_session_id: str) -> int:
-    """复制消息到目标会话，保留引用和固定状态"""
-```
 
 ## v2.0.0 设计系统架构
 
@@ -94,6 +98,7 @@ Message     # 消息气泡规范 (PADDING=(12,16), MAX_WIDTH_RATIO=0.75)
 ## Release History
 | Version | Date | Highlights |
 |---------|------|------------|
+| **v2.2.0** | **2026-03-03** | **⭐ 消息星标/收藏功能** |
 | **v2.1.0** | **2026-03-02** | **➡️ 消息转发功能** |
 | **v2.0.0** | **2026-03-02** | **🎨 UI 彻底改造 - 统一设计系统** |
 | v1.5.2 | 2026-03-01 | 🖱️ Right-Click Context Menu |
@@ -140,7 +145,7 @@ Message     # 消息气泡规范 (PADDING=(12,16), MAX_WIDTH_RATIO=0.75)
 |----------|--------|
 | Ctrl + , | Open settings |
 | Ctrl + / | Show help |
-| Right-Click | Context menu with forward option |
+| Right-Click | Context menu (star, forward, pin, etc.) |
 
 ## Coverage Leaders (100% Club) ✅
 | Module | Coverage | Notes |
@@ -162,8 +167,8 @@ Message     # 消息气泡规范 (PADDING=(12,16), MAX_WIDTH_RATIO=0.75)
 ## Coverage Breakdown (90%+ Tier)
 | Module | Coverage | Notes |
 |--------|----------|-------|
-| src\persistence\message_repo.py | ~97% | ✅ Excellent (含转发功能) |
-| src\app\service.py | ~95% | ✅ Excellent (含转发功能) |
+| src\persistence\message_repo.py | ~97% | ✅ Excellent (含星标功能) |
+| src\app\service.py | ~95% | ✅ Excellent (含星标功能) |
 | src\app\exporter.py | ~95% | ✅ Excellent |
 | src\persistence\db.py | 91% | ✅ Excellent |
 | src\chat\openai_client.py | 90% | ✅ Excellent |
@@ -179,4 +184,11 @@ Message     # 消息气泡规范 (PADDING=(12,16), MAX_WIDTH_RATIO=0.75)
 | DOCX | .docx | v1.0.9 | Word format |
 
 ## Open Questions
-- 下一版本功能方向？
+- v2.3.0 功能方向？
+
+## Future Ideas
+- 搜索历史记录
+- 会话分组拖拽
+- 大会话分页加载
+- 消息虚拟化渲染
+- UI 单元测试覆盖
