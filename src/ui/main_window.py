@@ -51,6 +51,13 @@ try:
 except ImportError:
     _HAS_QUICK_ACTION_BAR = False
 
+# v2.4.0: 搜索结果面板
+try:
+    from src.ui.search_results_panel import SearchResultsPanel
+    _HAS_SEARCH_RESULTS_PANEL = True
+except ImportError:
+    _HAS_SEARCH_RESULTS_PANEL = False
+
 SIDEBAR_WIDTH = 220
 SIDEBAR_COLLAPSED = 40  # 折叠后仅图标条，尽量收窄
 POLL_MS = 50
@@ -802,9 +809,11 @@ class MainWindow:
         self._root.geometry("900x600")
         self._root.minsize(400, 300)
 
-        # 主网格：侧边栏 | 主区（column 0 的 minsize 在 _refresh_sidebar_width 中按展开/收起设置）
+        # 主网格：侧边栏 | 主区 | 搜索结果面板（column 0 的 minsize 在 _refresh_sidebar_width 中按展开/收起设置）
+        # v2.4.0: 添加第3列支持搜索结果面板
         self._root.grid_columnconfigure(0, weight=0)
         self._root.grid_columnconfigure(1, weight=1)
+        self._root.grid_columnconfigure(2, weight=0)  # 搜索结果面板
         self._root.grid_rowconfigure(0, weight=1)
 
         # v2.0.0: 侧边栏 - 使用设计系统
@@ -924,11 +933,27 @@ class MainWindow:
         )
         self._starred_filter_btn.grid(row=0, column=3, padx=(4, 0))
 
+        # v2.4.0: 搜索结果面板按钮
+        if _HAS_SEARCH_RESULTS_PANEL:
+            self._search_panel_btn = ctk.CTkButton(
+                top,
+                text="📋",
+                width=36,
+                height=search_height,
+                command=self._toggle_search_results_panel,
+                fg_color="transparent",
+                hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray80", "gray28"),
+                text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray60")
+            )
+            self._search_panel_btn.grid(row=0, column=4, padx=(4, 0))
+            # 更新后续按钮的列位置
+            search_options_column = 5
+        else:
+            search_options_column = 4
+
         # v1.4.8: 高级搜索选项容器
         search_options_frame = ctk.CTkFrame(top, fg_color="transparent")
-        search_options_frame.grid(row=0, column=4, padx=(4, 0))
-        search_options_frame = ctk.CTkFrame(top, fg_color="transparent")
-        search_options_frame.grid(row=0, column=3, padx=(4, 0))
+        search_options_frame.grid(row=0, column=search_options_column, padx=(4, 0))
 
         # v2.0.0: 区分大小写切换 (Aa)
         self._case_sensitive_var = ctk.BooleanVar(value=False)
@@ -1218,6 +1243,19 @@ class MainWindow:
         self._error_label = ctk.CTkLabel(input_frame, text="", text_color=("red", "orange"))
         self._error_label.grid(row=4, column=0, columnspan=4, sticky="w", pady=(4, 0))
 
+        # v2.4.0: 搜索结果面板
+        self._search_results_panel: SearchResultsPanel | None = None
+        self._search_panel_visible = False
+        if _HAS_SEARCH_RESULTS_PANEL:
+            self._search_results_panel = SearchResultsPanel(
+                self._root,
+                app_service=self._app,
+                on_message_click=self._on_search_result_click,
+                on_close=self._toggle_search_results_panel,
+            )
+            # 初始隐藏面板
+            # self._search_results_panel.grid(row=0, column=2, sticky="nsew")  # 取消注释以显示
+
         self._refresh_sessions_list()
         self._refresh_chat_area()
         self._root.after(POLL_MS, self._poll_stream)
@@ -1252,6 +1290,9 @@ class MainWindow:
         # 搜索结果导航
         self._root.bind("<F3>", lambda e: self._next_search_match())
         self._root.bind("<Shift-F3>", lambda e: self._prev_search_match())
+        # v2.4.0: 搜索结果面板 Ctrl+Shift+H
+        if _HAS_SEARCH_RESULTS_PANEL:
+            self._root.bind("<Control-H>", lambda e: self._toggle_search_results_panel())
         # 快速会话切换 Ctrl+Tab / Ctrl+Shift+Tab
         self._root.bind("<Control-Tab>", lambda e: self._on_quick_switcher(1))  # Ctrl+Tab 下一个
         self._root.bind("<Control-ISO_Left_Tab>", lambda e: self._on_quick_switcher(-1))  # Ctrl+Shift+Tab 上一个
@@ -1340,6 +1381,10 @@ class MainWindow:
             self._search_query = query
             self._refresh_chat_area()
 
+        # v2.4.0: 同时更新搜索结果面板
+        if _HAS_SEARCH_RESULTS_PANEL and self._search_results_panel:
+            self._update_search_results_panel()
+
         # 取消之前的防抖任务
         if self._search_debounce_job:
             self._root.after_cancel(self._search_debounce_job)
@@ -1368,6 +1413,106 @@ class MainWindow:
         self._search_query = ""
         self._refresh_chat_area()
         self._search_entry.focus_set()
+
+        # v2.4.0: 清除搜索结果面板
+        if _HAS_SEARCH_RESULTS_PANEL and self._search_results_panel:
+            self._search_results_panel.clear()
+
+    # ========== v2.4.0: 搜索结果面板方法 ==========
+
+    def _update_search_results_panel(self) -> None:
+        """v2.4.0: 更新搜索结果面板。"""
+        if not self._search_results_panel:
+            return
+
+        query = self._search_var.get().strip()
+        if not query:
+            self._search_results_panel.clear()
+            return
+
+        # 执行搜索
+        if self._search_global:
+            messages = self._app.search_all_messages(
+                query,
+                limit=100,
+                start_date=self._search_start_date,
+                end_date=self._search_end_date,
+                case_sensitive=self._search_case_sensitive,
+                whole_word=self._search_whole_word,
+                regex=self._search_regex,
+            )
+        else:
+            messages = self._app.search_messages(
+                self._current_session_id or "",
+                query,
+                start_date=self._search_start_date,
+                end_date=self._search_end_date,
+                case_sensitive=self._search_case_sensitive,
+                whole_word=self._search_whole_word,
+                regex=self._search_regex,
+            )
+
+        # 获取涉及的会话
+        session_ids = set(msg.session_id for msg in messages)
+        sessions = {}
+        for sid in session_ids:
+            session = self._app.get_session(sid)
+            if session:
+                sessions[sid] = session
+
+        # 更新面板
+        self._search_results_panel.set_results(messages, sessions, query)
+
+    def _toggle_search_results_panel(self) -> None:
+        """v2.4.0: 切换搜索结果面板显示。"""
+        if not self._search_results_panel:
+            return
+
+        self._search_panel_visible = not self._search_panel_visible
+        if self._search_panel_visible:
+            self._search_results_panel.grid(row=0, column=2, sticky="nsew")
+            # 如果有搜索查询，更新面板内容
+            if self._search_var.get().strip():
+                self._update_search_results_panel()
+            # 更新按钮状态
+            if _HAS_SEARCH_RESULTS_PANEL and hasattr(self, '_search_panel_btn'):
+                self._search_panel_btn.configure(
+                    fg_color=Colors.BTN_DEFAULT if _HAS_DESIGN_SYSTEM else ("gray70", "gray35"),
+                    text_color=Colors.TEXT_HIGH_CONTRAST if _HAS_DESIGN_SYSTEM else ("gray10", "gray90")
+                )
+        else:
+            self._search_results_panel.grid_forget()
+            # 更新按钮状态
+            if _HAS_SEARCH_RESULTS_PANEL and hasattr(self, '_search_panel_btn'):
+                self._search_panel_btn.configure(
+                    fg_color="transparent",
+                    text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray60")
+                )
+
+    def _on_search_result_click(self, session_id: str, message_id: str) -> None:
+        """v2.4.0: 点击搜索结果时的回调。
+
+        跳转到指定会话和消息。
+        """
+        # 切换到目标会话
+        if session_id != self._current_session_id:
+            session = self._app.get_session(session_id)
+            if session:
+                self._current_session_id = session_id
+                self._refresh_sessions_list()
+                self._refresh_chat_area()
+
+        # 滚动到指定消息
+        if self._search_global:
+            # 全局搜索模式：需要特殊处理，暂时切换到该会话
+            self._search_global = False
+            self._search_global_btn.configure(text="本会话")
+            self._refresh_chat_area()
+
+        # TODO: 添加滚动到特定消息的功能
+        # 目前可以先跳转到会话，用户可以手动查找
+
+    # ========== v2.4.0: 搜索结果面板方法结束 ==========
 
     def _update_search_counter(self) -> None:
         """更新搜索框旁的计数器显示。"""
