@@ -5,7 +5,7 @@ import sys
 from typing import Callable
 from datetime import datetime, timedelta
 from tkinter import filedialog
-from tkinter import messagebox, PhotoImage
+from tkinter import messagebox, PhotoImage, Menu
 
 import customtkinter as ctk
 
@@ -13,6 +13,16 @@ from src.app.service import AppService
 from src.app.exporter import ChatExporter
 from src.chat import TextChunk, DoneChunk, ChatError, is_error
 from src.persistence import Session, Message
+
+# v2.0.0: 设计系统
+try:
+    from src.ui.design_system import (
+        Colors, Spacing, Radius, FontSize, FontWeight,
+        Button, Input, Card, Message as MessageSpec,
+    )
+    _HAS_DESIGN_SYSTEM = True
+except ImportError:
+    _HAS_DESIGN_SYSTEM = False
 
 try:
     from src.ui.statistics_dialog import open_statistics_dialog, open_global_statistics_dialog
@@ -40,29 +50,35 @@ POLL_MS = 50
 
 
 class ToastNotification:
-    """简单的浮动提示框，用于显示操作反馈。"""
+    """v2.0.0: 浮动提示框，用于显示操作反馈。"""
     def __init__(self, parent: ctk.CTk, message: str, duration_ms: int = 1500) -> None:
         self._parent = parent
         self._duration = duration_ms
         self._widget: ctk.CTkFrame | None = None
 
+        # v2.0.0: 使用设计系统配色
+        bg_color = Colors.TOAST_BG if _HAS_DESIGN_SYSTEM else ("gray80", "gray30")
+        text_color = Colors.TOAST_TEXT if _HAS_DESIGN_SYSTEM else ("gray15", "gray88")
+        border_color = Colors.TOAST_BORDER if _HAS_DESIGN_SYSTEM else ("gray70", "gray40")
+        radius = Radius.MD if _HAS_DESIGN_SYSTEM else 8
+
         # 创建半透明背景的提示框
         self._widget = ctk.CTkFrame(
             parent,
-            fg_color=("gray80", "gray30"),
-            corner_radius=8,
+            fg_color=bg_color,
+            corner_radius=radius,
             border_width=1,
-            border_color=("gray70", "gray40")
+            border_color=border_color
         )
         self._widget.place(relx=0.5, rely=0.85, anchor="center")
 
         label = ctk.CTkLabel(
             self._widget,
             text=message,
-            font=("", 12),
-            text_color=("gray15", "gray88"),
-            padx=16,
-            pady=8
+            font=("", FontSize.SM),
+            text_color=text_color,
+            padx=Spacing.LG,
+            pady=Spacing.SM
         )
         label.pack()
 
@@ -169,11 +185,11 @@ class QuickSwitcherDialog:
         search_entry.bind("<Return>", lambda e: self._confirm())
         search_entry.focus_set()
 
-        # 会话列表
+        # v2.0.0: 会话列表 - 使用设计系统
         self._session_list_frame = ctk.CTkScrollableFrame(
             main,
-            fg_color=("gray85", "gray22"),
-            corner_radius=8,
+            fg_color=Colors.BG_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray85", "gray22"),
+            corner_radius=Radius.MD if _HAS_DESIGN_SYSTEM else 8,
         )
         self._session_list_frame.grid(row=1, column=0, sticky="nsew")
 
@@ -210,15 +226,16 @@ class QuickSwitcherDialog:
             title = session.title or "未命名会话"
             display_text = f"{pin_icon} {title} {count_text}".strip()
 
-            # 创建按钮
+            # v2.0.0: 创建按钮 - 使用设计系统
             btn = ctk.CTkButton(
                 self._session_list_frame,
                 text=display_text,
                 height=40,
-                fg_color=("gray75", "gray30") if not is_current else ("gray60", "gray45"),
-                hover_color=("gray70", "gray28"),
-                text_color=("gray15", "gray88"),
+                fg_color=Colors.BG_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray75", "gray30") if not is_current else Colors.SELECTED_BG if _HAS_DESIGN_SYSTEM else ("gray60", "gray45"),
+                hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray70", "gray28"),
+                text_color=Colors.TEXT_PRIMARY if _HAS_DESIGN_SYSTEM else ("gray15", "gray88"),
                 anchor="w",
+                corner_radius=Radius.SM if _HAS_DESIGN_SYSTEM else 0,
                 command=lambda sid=session.id: self._select_session(sid),
             )
             btn.pack(fill="x", padx=8, pady=4)
@@ -258,18 +275,18 @@ class QuickSwitcherDialog:
 
                 if is_selected:
                     btn.configure(
-                        fg_color=("gray50", "gray40"),
+                        fg_color=Colors.SELECTED_BG if _HAS_DESIGN_SYSTEM else ("gray50", "gray40"),
                         border_width=2,
-                        border_color=("gray40", "gray35"),
+                        border_color=Colors.BORDER_DEFAULT if _HAS_DESIGN_SYSTEM else ("gray40", "gray35"),
                     )
                 elif is_current:
                     btn.configure(
-                        fg_color=("gray60", "gray45"),
+                        fg_color=Colors.SELECTED_BG if _HAS_DESIGN_SYSTEM else ("gray60", "gray45"),
                         border_width=0,
                     )
                 else:
                     btn.configure(
-                        fg_color=("gray75", "gray30"),
+                        fg_color=Colors.BTN_DEFAULT if _HAS_DESIGN_SYSTEM else ("gray75", "gray30"),
                         border_width=0,
                     )
 
@@ -372,7 +389,7 @@ class GoToMessageDialog:
             main,
             text="📍 跳转到消息",
             font=("", 16, "bold"),
-            text_color=("gray15", "gray88")
+            text_color=Colors.TEXT_PRIMARY if _HAS_DESIGN_SYSTEM else ("gray15", "gray88")
         )
         title.grid(row=0, column=0, pady=(0, 8))
 
@@ -380,7 +397,7 @@ class GoToMessageDialog:
         hint = ctk.CTkLabel(
             main,
             text=f"输入消息编号 (1 - {self._total_messages})",
-            text_color=("gray40", "gray60")
+            text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray60")
         )
         hint.grid(row=1, column=0, pady=(0, 16))
 
@@ -416,8 +433,8 @@ class GoToMessageDialog:
             text="取消",
             width=100,
             height=36,
-            fg_color=("gray70", "gray35"),
-            hover_color=("gray60", "gray30"),
+            fg_color=Colors.BTN_DEFAULT if _HAS_DESIGN_SYSTEM else ("gray70", "gray35"),
+            hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray60", "gray30"),
             command=self._close,
         ).grid(row=0, column=1, padx=(8, 0))
 
@@ -546,7 +563,7 @@ class DatePickerDialog:
                 weekday_frame, text=wd,
                 width=40, height=32,
                 font=("", 11),
-                text_color=("gray50", "gray65")
+                text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray50", "gray65")
             )
             lbl.grid(row=0, column=i)
 
@@ -565,8 +582,8 @@ class DatePickerDialog:
 
         ctk.CTkButton(
             btn_frame, text="清除", width=100, height=36,
-            fg_color=("gray70", "gray35"),
-            hover_color=("gray60", "gray30"),
+            fg_color=Colors.BTN_DEFAULT if _HAS_DESIGN_SYSTEM else ("gray70", "gray35"),
+            hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray60", "gray30"),
             command=self._clear
         ).grid(row=0, column=0, padx=(0, 8))
 
@@ -628,9 +645,9 @@ class DatePickerDialog:
                         self._date_frame,
                         text=str(day),
                         width=40, height=32,
-                        fg_color=("gray65", "gray30") if is_selected else ("gray85", "gray25"),
-                        hover_color=("gray55", "gray28"),
-                        text_color=("gray15", "gray88"),
+                        fg_color=Colors.SELECTED_BG if _HAS_DESIGN_SYSTEM else ("gray65", "gray30") if is_selected else Colors.BTN_DEFAULT if _HAS_DESIGN_SYSTEM else ("gray85", "gray25"),
+                        hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray55", "gray28"),
+                        text_color=Colors.TEXT_PRIMARY if _HAS_DESIGN_SYSTEM else ("gray15", "gray88"),
                         command=lambda d=day: self._select_day(d)
                     )
                     btn.grid(row=week, column=wd, padx=1, pady=1)
@@ -688,10 +705,10 @@ class DatePickerDialog:
             self._widget = None
 
 
-# 侧边栏图标按钮：透明、仅图标，悬浮(hover_color)/按压(绑定临时色) 三态
+# v2.0.0: 侧边栏图标按钮：透明、仅图标，悬浮(hover_color)/按压(绑定临时色) 三态
 def _bind_pressed_style(btn: ctk.CTkButton) -> None:
     def on_press(_e: object) -> None:
-        btn.configure(fg_color=("gray72", "gray32"))
+        btn.configure(fg_color=Colors.HOVER_MEDIUM if _HAS_DESIGN_SYSTEM else ("gray72", "gray32"))
     def on_release(_e: object) -> None:
         btn.configure(fg_color="transparent")
     btn.bind("<Button-1>", on_press)
@@ -782,41 +799,49 @@ class MainWindow:
         self._root.grid_columnconfigure(1, weight=1)
         self._root.grid_rowconfigure(0, weight=1)
 
-        # 侧边栏
-        self._sidebar = ctk.CTkFrame(self._root, width=SIDEBAR_WIDTH, corner_radius=0, fg_color=("gray90", "gray17"))
+        # v2.0.0: 侧边栏 - 使用设计系统
+        sidebar_bg = Colors.BG_SECONDARY if _HAS_DESIGN_SYSTEM else ("gray90", "gray17")
+        sidebar_text = Colors.TEXT_PRIMARY if _HAS_DESIGN_SYSTEM else ("gray15", "gray88")
+        sidebar_hover = Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray80", "gray28")
+
+        self._sidebar = ctk.CTkFrame(self._root, width=SIDEBAR_WIDTH, corner_radius=0, fg_color=sidebar_bg)
         self._sidebar.grid(row=0, column=0, sticky="nsew")
         self._sidebar.grid_rowconfigure(1, weight=1)
         self._sidebar_expanded = self._app.config().sidebar_expanded
+
         # 侧边栏按钮文字/图标需与背景有对比（明/暗主题）
-        _sidebar_btn_text = ("gray15", "gray88")
+        _sidebar_btn_text = sidebar_text
         # 新对话：展开时带文字，折叠时仅图标；透明 + 悬浮/按压样式
         self._sidebar_btn_new = ctk.CTkButton(
             self._sidebar,
             text="新对话",
             command=self._on_new_chat,
             fg_color="transparent",
-            hover_color=("gray80", "gray28"),
+            hover_color=sidebar_hover,
             border_width=0,
             text_color=_sidebar_btn_text,
         )
-        self._sidebar_btn_new.grid(row=0, column=0, padx=12, pady=12, sticky="ew")
+        sidebar_pad = Spacing.MD if _HAS_DESIGN_SYSTEM else 12
+        self._sidebar_btn_new.grid(row=0, column=0, padx=sidebar_pad, pady=sidebar_pad, sticky="ew")
         # 折叠/展开：仅图标，透明
         self._sidebar_toggle = ctk.CTkButton(
             self._sidebar,
             text="◀" if self._sidebar_expanded else "▶",
             command=self._toggle_sidebar,
             fg_color="transparent",
-            hover_color=("gray80", "gray28"),
+            hover_color=sidebar_hover,
             border_width=0,
             width=32,
             height=32,
             text_color=_sidebar_btn_text,
         )
-        self._sidebar_toggle.grid(row=0, column=1, padx=2, pady=12)
+        self._sidebar_toggle.grid(row=0, column=1, padx=2, pady=sidebar_pad)
         _bind_pressed_style(self._sidebar_btn_new)
         _bind_pressed_style(self._sidebar_toggle)
         self._session_list_frame = ctk.CTkScrollableFrame(self._sidebar, fg_color="transparent")
-        self._session_list_frame.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=8, pady=4)
+        session_padx = Spacing.SM if _HAS_DESIGN_SYSTEM else 8
+        session_pady = 4 if _HAS_DESIGN_SYSTEM else 4
+        self._session_list_frame.grid(row=1, column=0, columnspan=2, sticky="nsew", padx=session_padx, pady=session_pady)
         self._session_row_frames: list[ctk.CTkFrame] = []
         self._refresh_sidebar_width()
 
@@ -831,14 +856,18 @@ class MainWindow:
         top.grid(row=0, column=0, sticky="ew", padx=12, pady=8)
         top.grid_columnconfigure(1, weight=1)
 
-        # 搜索框
+        # v2.0.0: 搜索框 - 使用设计系统
         self._search_var = ctk.StringVar()
+        search_height = Input.HEIGHT if _HAS_DESIGN_SYSTEM else 32
         self._search_entry = ctk.CTkEntry(
             top,
             placeholder_text="🔍 搜索... (Ctrl+K)",
             width=200,
             textvariable=self._search_var,
-            height=32
+            height=search_height,
+            border_width=1 if _HAS_DESIGN_SYSTEM else 0,
+            border_color=Colors.BORDER_SUBTLE if _HAS_DESIGN_SYSTEM else ("gray70", "gray40"),
+            corner_radius=Input.RADIUS if _HAS_DESIGN_SYSTEM else 0,
         )
         self._search_entry.grid(row=0, column=0, sticky="w")
         self._search_entry.bind("<KeyRelease>", self._on_search_input)
@@ -846,29 +875,30 @@ class MainWindow:
         self._search_entry.bind("<FocusIn>", lambda e: self._show_search_dropdown())
         self._search_entry.bind("<FocusOut>", self._on_search_focus_out)
         self._search_entry.bind("<Return>", self._on_search_enter)
-        # 全局搜索切换按钮
+        # v2.0.0: 全局搜索切换按钮
         self._search_global_btn = ctk.CTkButton(
             top,
             text="本会话",
             width=70,
-            height=32,
+            height=search_height,
             command=self._toggle_search_scope,
-            fg_color=("gray75", "gray30"),
-            hover_color=("gray70", "gray28"),
-            text_color=("gray15", "gray88"),
+            fg_color=Colors.BG_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray75", "gray30"),
+            hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray70", "gray28"),
+            text_color=Colors.TEXT_PRIMARY if _HAS_DESIGN_SYSTEM else ("gray15", "gray88"),
+            corner_radius=Button.GHOST_RADIUS if _HAS_DESIGN_SYSTEM else 0,
         )
         self._search_global_btn.grid(row=0, column=1, padx=(4, 0))
 
-        # 日期范围过滤按钮
+        # v2.0.0: 日期范围过滤按钮
         self._date_filter_btn = ctk.CTkButton(
             top,
             text="📅",
             width=36,
-            height=32,
+            height=search_height,
             command=self._toggle_date_filter,
             fg_color="transparent",
-            hover_color=("gray80", "gray28"),
-            text_color=("gray40", "gray60")
+            hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray80", "gray28"),
+            text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray60")
         )
         self._date_filter_btn.grid(row=0, column=2, padx=(4, 0))
 
@@ -876,59 +906,58 @@ class MainWindow:
         search_options_frame = ctk.CTkFrame(top, fg_color="transparent")
         search_options_frame.grid(row=0, column=3, padx=(4, 0))
 
-        # 区分大小写切换 (Aa)
+        # v2.0.0: 区分大小写切换 (Aa)
         self._case_sensitive_var = ctk.BooleanVar(value=False)
         self._case_sensitive_btn = ctk.CTkButton(
             search_options_frame,
             text="Aa",
             width=28,
-            height=32,
+            height=search_height,
             command=self._toggle_case_sensitive,
             fg_color="transparent",
-            hover_color=("gray80", "gray28"),
-            text_color=("gray40", "gray60"),
-            font=("", 10, "bold")
+            hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray80", "gray28"),
+            text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray60"),
+            font=("", FontSize.XS, "bold")
         )
         self._case_sensitive_btn.pack(side="left", padx=(0, 2))
 
-        # 全词匹配切换 (W)
+        # v2.0.0: 全词匹配切换 (W)
         self._whole_word_var = ctk.BooleanVar(value=False)
         self._whole_word_btn = ctk.CTkButton(
             search_options_frame,
             text="W",
             width=28,
-            height=32,
+            height=search_height,
             command=self._toggle_whole_word,
             fg_color="transparent",
-            hover_color=("gray80", "gray28"),
-            text_color=("gray40", "gray60"),
-            font=("", 10, "bold")
+            hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray80", "gray28"),
+            text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray60"),
+            font=("", FontSize.XS, "bold")
         )
         self._whole_word_btn.pack(side="left", padx=(0, 2))
 
-        # v1.4.9: 正则表达式切换 (.*)
-        self._search_regex = False
+        # v2.0.0: 正则表达式切换 (.*)
         self._regex_btn = ctk.CTkButton(
             search_options_frame,
             text=".*",
             width=28,
-            height=32,
+            height=search_height,
             command=self._toggle_regex,
             fg_color="transparent",
-            hover_color=("gray80", "gray28"),
-            text_color=("gray40", "gray60"),
-            font=("", 10, "bold")
+            hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray80", "gray28"),
+            text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray60"),
+            font=("", FontSize.XS, "bold")
         )
         self._regex_btn.pack(side="left")
 
-        # 搜索结果计数器
+        # v2.0.0: 搜索结果计数器
         self._search_counter_var = ctk.StringVar()
         self._search_counter = ctk.CTkLabel(
             top,
             textvariable=self._search_counter_var,
             width=50,
-            font=("", 11),
-            text_color=("gray50", "gray65"),
+            font=("", FontSize.SM),
+            text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray50", "gray65"),
             anchor="e"
         )
         self._search_counter.grid(row=0, column=4, padx=(4, 8))
@@ -952,8 +981,8 @@ class MainWindow:
             width=36,
             command=self._show_shortcuts_help,
             fg_color="transparent",
-            hover_color=("gray80", "gray28"),
-            text_color=("gray40", "gray60")
+            hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray80", "gray28"),
+            text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray60")
         ).grid(row=0, column=9, padx=4)
         # 添加 column 1 的权重，让搜索按钮有足够空间
         top.grid_columnconfigure(1, weight=0)
@@ -963,8 +992,8 @@ class MainWindow:
         # 日期范围过滤面板（初始隐藏）
         self._date_filter_frame = ctk.CTkFrame(
             main,
-            fg_color=("gray85", "gray28"),
-            corner_radius=8
+            fg_color=Colors.HOVER_MEDIUM if _HAS_DESIGN_SYSTEM else ("gray85", "gray28"),
+            corner_radius=Radius.MD if _HAS_DESIGN_SYSTEM else 8
         )
         # 初始不显示，有日期过滤时才显示
 
@@ -974,8 +1003,8 @@ class MainWindow:
         date_label = ctk.CTkLabel(
             self._date_filter_frame,
             text="📅 日期范围:",
-            font=("", 11),
-            text_color=("gray40", "gray70")
+            font=("", FontSize.XS if _HAS_DESIGN_SYSTEM else 11),
+            text_color=Colors.TEXT_SECONDARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray70")
         )
         date_label.grid(row=0, column=0, padx=(8, 4), pady=6)
 
@@ -994,16 +1023,16 @@ class MainWindow:
             width=36,
             height=32,
             command=lambda: self._open_date_picker("start"),
-            fg_color=("gray75", "gray32"),
-            hover_color=("gray70", "gray28")
+            fg_color=Colors.BTN_DEFAULT if _HAS_DESIGN_SYSTEM else ("gray75", "gray32"),
+            hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray70", "gray28")
         )
         self._date_start_btn.grid(row=0, column=2, padx=(0, 4), pady=6)
 
         to_label = ctk.CTkLabel(
             self._date_filter_frame,
             text="至",
-            font=("", 11),
-            text_color=("gray50", "gray65")
+            font=("", FontSize.XS if _HAS_DESIGN_SYSTEM else 11),
+            text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray50", "gray65")
         )
         to_label.grid(row=0, column=3, padx=4, pady=6)
 
@@ -1022,8 +1051,8 @@ class MainWindow:
             width=36,
             height=32,
             command=lambda: self._open_date_picker("end"),
-            fg_color=("gray75", "gray32"),
-            hover_color=("gray70", "gray28")
+            fg_color=Colors.BTN_DEFAULT if _HAS_DESIGN_SYSTEM else ("gray75", "gray32"),
+            hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray70", "gray28")
         )
         self._date_end_btn.grid(row=0, column=5, padx=(0, 4), pady=6)
 
@@ -1033,8 +1062,8 @@ class MainWindow:
             width=60,
             height=32,
             command=self._clear_date_filter,
-            fg_color=("gray70", "gray30"),
-            hover_color=("gray65", "gray28")
+            fg_color=Colors.BTN_DEFAULT if _HAS_DESIGN_SYSTEM else ("gray70", "gray30"),
+            hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray65", "gray28")
         )
         self._date_clear_btn.grid(row=0, column=6, padx=(8, 8), pady=6)
 
@@ -1050,18 +1079,18 @@ class MainWindow:
         input_frame.grid_rowconfigure(1, weight=1)
         input_frame.grid_columnconfigure(1, weight=1)
 
-        # 引用提示条（初始隐藏）
-        self._quote_frame = ctk.CTkFrame(input_frame, fg_color=("gray75", "gray35"), corner_radius=6)
+        # v2.0.0: 引用提示条（初始隐藏）
+        self._quote_frame = ctk.CTkFrame(input_frame, fg_color=Colors.BTN_DEFAULT if _HAS_DESIGN_SYSTEM else ("gray75", "gray35"), corner_radius=Radius.SM if _HAS_DESIGN_SYSTEM else 6)
         # 不 grid，有引用时才显示
 
         self._quote_label = ctk.CTkLabel(
             self._quote_frame,
             text="",
             anchor="w",
-            text_color=("gray40", "gray70"),
-            font=("", 10),
-            padx=12,
-            pady=6,
+            text_color=Colors.TEXT_SECONDARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray70"),
+            font=("", FontSize.XS if _HAS_DESIGN_SYSTEM else 10),
+            padx=Spacing.MD if _HAS_DESIGN_SYSTEM else 12,
+            pady=Spacing.SM if _HAS_DESIGN_SYSTEM else 6,
         )
         self._quote_label.pack(side="left", fill="x", expand=True, padx=(12, 4), pady=6)
 
@@ -1071,7 +1100,7 @@ class MainWindow:
             width=24,
             height=24,
             fg_color="transparent",
-            hover_color=("gray65", "gray30"),
+            hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray65", "gray30"),
             border_width=0,
             command=self._cancel_quote,
         )
@@ -1092,16 +1121,16 @@ class MainWindow:
         )
         self._template_menu.pack(side="left", padx=(0, 4))
 
-        # 选择模式切换按钮 (v1.2.5)
+        # v2.0.0: 选择模式切换按钮 (v1.2.5)
         self._selection_mode_btn = ctk.CTkButton(
             template_select_frame,
             text="☐",
             width=36,
             height=36,
             fg_color="transparent",
-            hover_color=("gray80", "gray28"),
+            hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray80", "gray28"),
             border_width=1,
-            border_color=("gray70", "gray40"),
+            border_color=Colors.BORDER_DEFAULT if _HAS_DESIGN_SYSTEM else ("gray70", "gray40"),
             command=self._toggle_selection_mode,
         )
         self._selection_mode_btn.pack(side="left")
@@ -1113,27 +1142,37 @@ class MainWindow:
         # v1.3.0: Bind KeyRelease to update character counter
         self._input.bind("<KeyRelease>", self._on_input_key_release)
 
-        self._send_btn = ctk.CTkButton(input_frame, text="发送", width=80, command=self._on_send)
+        # v2.0.0: 发送按钮使用品牌色
+        self._send_btn = ctk.CTkButton(
+            input_frame,
+            text="发送",
+            width=80,
+            command=self._on_send,
+            fg_color=Colors.PRIMARY if _HAS_DESIGN_SYSTEM else None,
+            hover_color=Colors.PRIMARY_HOVER if _HAS_DESIGN_SYSTEM else None,
+            text_color=("white", "white") if _HAS_DESIGN_SYSTEM else None,
+            corner_radius=Button.PRIMARY_RADIUS if _HAS_DESIGN_SYSTEM else None,
+        )
         self._send_btn.grid(row=1, column=2)
 
-        # v1.3.0: Enhanced loading indicator with animation support
+        # v2.0.0: Enhanced loading indicator with animation support
         self._sending_label = ctk.CTkLabel(
             input_frame,
             text="",
             fg_color="transparent",
-            font=("", 11),
-            text_color=("#3b82f6", "#60a5fa")  # Blue color for loading state
+            font=("", FontSize.SM),
+            text_color=Colors.PRIMARY if _HAS_DESIGN_SYSTEM else ("#3b82f6", "#60a5fa")
         )
         self._sending_label.grid(row=1, column=3, padx=8)
         self._loading_anim_step = 0  # v1.3.0: Animation step counter
         self._loading_anim_job = None  # v1.3.0: Animation job handle
 
-        # v1.3.0: Character counter label (positioned at bottom right of input area)
+        # v2.0.0: Character counter label (positioned at bottom right of input area)
         self._char_count_label = ctk.CTkLabel(
             input_frame,
             text="0 字符",
-            font=("", 9),
-            text_color=("gray50", "gray65"),
+            font=("", FontSize.XS),
+            text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray50", "gray65"),
             anchor="e"
         )
         self._char_count_label.grid(row=2, column=1, sticky="e", padx=(0, 8), pady=(2, 0))
@@ -1285,16 +1324,16 @@ class MainWindow:
     def _toggle_case_sensitive(self) -> None:
         """切换区分大小写搜索 (v1.4.8)。"""
         self._search_case_sensitive = not self._search_case_sensitive
-        # 更新按钮样式
+        # v2.0.0: 更新按钮样式
         if self._search_case_sensitive:
             self._case_sensitive_btn.configure(
-                fg_color=("gray70", "gray35"),
-                text_color=("gray10", "gray90")
+                fg_color=Colors.BTN_DEFAULT if _HAS_DESIGN_SYSTEM else ("gray70", "gray35"),
+                text_color=Colors.TEXT_HIGH_CONTRAST if _HAS_DESIGN_SYSTEM else ("gray10", "gray90")
             )
         else:
             self._case_sensitive_btn.configure(
                 fg_color="transparent",
-                text_color=("gray40", "gray60")
+                text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray60")
             )
         # 刷新搜索结果
         self._refresh_chat_area()
@@ -1302,16 +1341,16 @@ class MainWindow:
     def _toggle_whole_word(self) -> None:
         """切换全词匹配搜索 (v1.4.8)。"""
         self._search_whole_word = not self._search_whole_word
-        # 更新按钮样式
+        # v2.0.0: 更新按钮样式
         if self._search_whole_word:
             self._whole_word_btn.configure(
-                fg_color=("gray70", "gray35"),
-                text_color=("gray10", "gray90")
+                fg_color=Colors.BTN_DEFAULT if _HAS_DESIGN_SYSTEM else ("gray70", "gray35"),
+                text_color=Colors.TEXT_HIGH_CONTRAST if _HAS_DESIGN_SYSTEM else ("gray10", "gray90")
             )
         else:
             self._whole_word_btn.configure(
                 fg_color="transparent",
-                text_color=("gray40", "gray60")
+                text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray60")
             )
         # 刷新搜索结果
         self._refresh_chat_area()
@@ -1319,16 +1358,16 @@ class MainWindow:
     def _toggle_regex(self) -> None:
         """切换正则表达式搜索 (v1.4.9)。"""
         self._search_regex = not self._search_regex
-        # 更新按钮样式
+        # v2.0.0: 更新按钮样式
         if self._search_regex:
             self._regex_btn.configure(
-                fg_color=("gray70", "gray35"),
-                text_color=("gray10", "gray90")
+                fg_color=Colors.BTN_DEFAULT if _HAS_DESIGN_SYSTEM else ("gray70", "gray35"),
+                text_color=Colors.TEXT_HIGH_CONTRAST if _HAS_DESIGN_SYSTEM else ("gray10", "gray90")
             )
         else:
             self._regex_btn.configure(
                 fg_color="transparent",
-                text_color=("gray40", "gray60")
+                text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray60")
             )
         # 刷新搜索结果
         self._refresh_chat_area()
@@ -1413,13 +1452,13 @@ class MainWindow:
         y = self._search_entry.winfo_y() + self._search_entry.winfo_height()
         width = self._search_entry.winfo_width()
 
-        # 创建下拉框容器
+        # v2.0.0: 创建下拉框容器
         self._search_dropdown = ctk.CTkFrame(
             self._root,
-            fg_color=("gray95", "gray22"),
+            fg_color=Colors.DROPDOWN_BG if _HAS_DESIGN_SYSTEM else ("gray95", "gray22"),
             border_width=1,
-            border_color=("gray70", "gray40"),
-            corner_radius=6,
+            border_color=Colors.BORDER_DEFAULT if _HAS_DESIGN_SYSTEM else ("gray70", "gray40"),
+            corner_radius=Radius.SM if _HAS_DESIGN_SYSTEM else 6,
         )
         self._search_dropdown.place(x=x, y=y, width=width, anchor="nw")
         self._search_dropdown_open = True
@@ -1430,8 +1469,8 @@ class MainWindow:
                 self._search_dropdown,
                 text=f"🕐 {query}",
                 fg_color="transparent",
-                hover_color=("gray85", "gray30"),
-                text_color=("gray15", "gray88"),
+                hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray85", "gray30"),
+                text_color=Colors.TEXT_PRIMARY if _HAS_DESIGN_SYSTEM else ("gray15", "gray88"),
                 height=28,
                 anchor="w",
                 corner_radius=0,
@@ -1445,8 +1484,8 @@ class MainWindow:
             self._search_dropdown,
             text="🗑️ 清除搜索历史",
             fg_color="transparent",
-            hover_color=("gray80", "gray28"),
-            text_color=("gray40", "gray60"),
+            hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray80", "gray28"),
+            text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray60"),
             height=28,
             anchor="w",
             corner_radius=0,
@@ -1512,6 +1551,57 @@ class MainWindow:
         self._sidebar_expanded = not self._sidebar_expanded
         self._app.set_sidebar_expanded(self._sidebar_expanded)
         self._refresh_sidebar_width()
+
+    def _show_message_context_menu(self, event, message_id: str, content: str, role: str, is_pinned: bool) -> None:
+        """显示消息的右键上下文菜单 (v1.5.2)。"""
+        # v2.0.0: 创建上下文菜单 - 使用设计系统
+        if _HAS_DESIGN_SYSTEM:
+            menu_bg = Colors.DROPDOWN_BG[0] if self._appearance == "Light" else Colors.DROPDOWN_BG[1]
+            menu_fg = Colors.TEXT_PRIMARY[0] if self._appearance == "Light" else Colors.TEXT_PRIMARY[1]
+            menu_active_bg = Colors.HOVER_BG[0] if self._appearance == "Light" else Colors.HOVER_BG[1]
+            menu_active_fg = Colors.TEXT_PRIMARY[0] if self._appearance == "Light" else Colors.TEXT_PRIMARY[1]
+        else:
+            menu_bg = "gray95" if self._appearance == "Light" else "gray25"
+            menu_fg = "black" if self._appearance == "Light" else "white"
+            menu_active_bg = "gray80" if self._appearance == "Light" else "gray35"
+            menu_active_fg = "black" if self._appearance == "Light" else "white"
+
+        context_menu = Menu(self._root, tearoff=0, bg=menu_bg,
+                           fg=menu_fg,
+                           activebackground=menu_active_bg,
+                           activeforeground=menu_active_fg,
+                           borderwidth=1, relief="solid",
+                           font=("", FontSize.XS if _HAS_DESIGN_SYSTEM else 10))
+
+        # 复制
+        context_menu.add_command(label="📋 复制", command=lambda: self._copy_message(content))
+
+        # 引用
+        context_menu.add_command(label="💬 引用回复", command=lambda: self._quote_message(message_id, content))
+
+        # 转发
+        context_menu.add_command(label="➡️ 转发到...", command=lambda: self._forward_single_message(message_id))
+
+        context_menu.add_separator()
+
+        # 置顶/取消置顶
+        pin_label = "📍 取消置顶" if is_pinned else "📌 置顶"
+        context_menu.add_command(label=pin_label, command=lambda: self._toggle_pin(message_id))
+
+        # 编辑 (仅用户消息)
+        if role == "user":
+            context_menu.add_command(label="✏️ 编辑", command=lambda: self._edit_message(message_id, content))
+
+        context_menu.add_separator()
+
+        # 删除
+        context_menu.add_command(label="🗑️ 删除", command=lambda: self._delete_message(message_id))
+
+        # 在鼠标位置显示菜单
+        try:
+            context_menu.tk_popup(event.x_root, event.y_root)
+        finally:
+            context_menu.grab_release()
 
     def _copy_message(self, content: str) -> None:
         """复制消息内容到剪贴板，并显示提示。"""
@@ -1585,18 +1675,18 @@ class MainWindow:
         def cancel_and_close():
             dialog.destroy()
 
-        # 保存按钮
+        # v2.0.0: 保存按钮
         save_btn = ctk.CTkButton(
             btn_frame,
             text="保存",
             command=save_and_close,
             width=100,
-            fg_color=("gray70", "gray30"),
-            hover_color=("gray60", "gray20")
+            fg_color=Colors.PRIMARY if _HAS_DESIGN_SYSTEM else ("gray70", "gray30"),
+            hover_color=Colors.PRIMARY_HOVER if _HAS_DESIGN_SYSTEM else ("gray60", "gray20")
         )
         save_btn.pack(side="left", padx=8)
 
-        # 取消按钮
+        # v2.0.0: 取消按钮
         cancel_btn = ctk.CTkButton(
             btn_frame,
             text="取消",
@@ -1604,7 +1694,7 @@ class MainWindow:
             width=100,
             fg_color="transparent",
             border_width=1,
-            border_color=("gray60", "gray40")
+            border_color=Colors.BORDER_DEFAULT if _HAS_DESIGN_SYSTEM else ("gray60", "gray40")
         )
         cancel_btn.pack(side="left", padx=8)
 
@@ -1690,10 +1780,11 @@ class MainWindow:
         if hasattr(self, '_batch_actions_frame') and self._batch_actions_frame:
             self._batch_actions_frame.destroy()
 
+        # v2.0.0: 使用设计系统
         self._batch_actions_frame = ctk.CTkFrame(
             self._chat_scroll,
-            fg_color=("gray75", "gray35"),
-            corner_radius=8,
+            fg_color=Colors.BTN_DEFAULT if _HAS_DESIGN_SYSTEM else ("gray75", "gray35"),
+            corner_radius=Radius.MD if _HAS_DESIGN_SYSTEM else 8,
         )
         # 使用 place 将面板固定在聊天区域顶部中央
         self._batch_actions_frame.place(relx=0.5, rely=0.02, anchor="n")
@@ -1702,10 +1793,10 @@ class MainWindow:
         self._selection_count_label = ctk.CTkLabel(
             self._batch_actions_frame,
             text="已选择 0 条消息",
-            font=("", 11),
-            text_color=("gray40", "gray70"),
+            font=("", FontSize.XS if _HAS_DESIGN_SYSTEM else 11),
+            text_color=Colors.TEXT_SECONDARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray70"),
         )
-        self._selection_count_label.pack(side="left", padx=12, pady=8)
+        self._selection_count_label.pack(side="left", padx=Spacing.MD if _HAS_DESIGN_SYSTEM else 12, pady=Spacing.SM if _HAS_DESIGN_SYSTEM else 8)
 
         # 全选/取消全选按钮
         select_all_btn = ctk.CTkButton(
@@ -1714,7 +1805,7 @@ class MainWindow:
             width=60,
             height=28,
             fg_color="transparent",
-            hover_color=("gray65", "gray30"),
+            hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray65", "gray30"),
             command=self._select_all_messages,
         )
         select_all_btn.pack(side="left", padx=4)
@@ -1726,7 +1817,7 @@ class MainWindow:
             width=70,
             height=28,
             fg_color="transparent",
-            hover_color=("gray65", "gray30"),
+            hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray65", "gray30"),
             command=self._batch_copy_selected,
         )
         copy_btn.pack(side="left", padx=4)
@@ -1738,7 +1829,7 @@ class MainWindow:
             width=70,
             height=28,
             fg_color="transparent",
-            hover_color=("gray65", "gray30"),
+            hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray65", "gray30"),
             command=self._batch_delete_selected,
         )
         delete_btn.pack(side="left", padx=4)
@@ -1750,10 +1841,22 @@ class MainWindow:
             width=70,
             height=28,
             fg_color="transparent",
-            hover_color=("gray65", "gray30"),
+            hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray65", "gray30"),
             command=self._batch_export_selected,
         )
         export_btn.pack(side="left", padx=4)
+
+        # v2.0.0: 批量转发按钮 (v1.5.0)
+        forward_btn = ctk.CTkButton(
+            self._batch_actions_frame,
+            text="➡️ 转发",
+            width=70,
+            height=28,
+            fg_color="transparent",
+            hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray65", "gray30"),
+            command=self._batch_forward_selected,
+        )
+        forward_btn.pack(side="left", padx=4)
 
         # 刷新聊天区域以显示复选框
         self._refresh_chat_area()
@@ -1957,11 +2060,222 @@ class MainWindow:
                 ToastNotification(self._root, "❌ 导出失败")
 
         ctk.CTkButton(btn_frame, text="导出", width=100, command=do_export).pack(side="left", padx=8)
+        # v2.0.0: 取消按钮
         ctk.CTkButton(
             btn_frame, text="取消", width=100,
-            fg_color=("gray70", "gray35"),
+            fg_color=Colors.BTN_DEFAULT if _HAS_DESIGN_SYSTEM else ("gray70", "gray35"),
             command=export_dialog.destroy
         ).pack(side="left", padx=8)
+
+    def _batch_forward_selected(self) -> None:
+        """批量转发选中的消息到另一个会话 (v1.5.0)。"""
+        if not self._selected_messages:
+            ToastNotification(self._root, "⚠️ 未选择任何消息")
+            return
+
+        current_session_id = self._app.current_session_id()
+        if not current_session_id:
+            ToastNotification(self._root, "⚠️ 当前会话不存在")
+            return
+
+        # 获取所有会话列表（排除当前会话）
+        all_sessions = self._app.load_sessions()
+        other_sessions = [s for s in all_sessions if s.id != current_session_id]
+
+        if not other_sessions:
+            ToastNotification(self._root, "⚠️ 没有其他会话可转发")
+            return
+
+        # 打开转发对话框
+        forward_dialog = ctk.CTkToplevel(self._root)
+        forward_dialog.title("转发消息")
+        forward_dialog.geometry("400x350")
+        forward_dialog.transient(self._root)
+        forward_dialog.grab_set()
+
+        # 标题
+        ctk.CTkLabel(
+            forward_dialog,
+            text=f"转发 {len(self._selected_messages)} 条消息",
+            font=("", FontSize.LG if _HAS_DESIGN_SYSTEM else 14)
+        ).pack(pady=(20, 10))
+
+        ctk.CTkLabel(
+            forward_dialog,
+            text="选择目标会话：",
+            text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray50", "gray60"),
+            font=("", FontSize.XS if _HAS_DESIGN_SYSTEM else 11)
+        ).pack(pady=(0, 10))
+
+        # 会话列表（使用 ScrollableFrame 以支持多会话）
+        from customtkinter import CTkScrollableFrame
+        session_frame = CTkScrollableFrame(
+            forward_dialog,
+            height=180,
+            fg_color=Colors.BG_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray90", "gray25"),
+            corner_radius=Radius.MD if _HAS_DESIGN_SYSTEM else 8,
+        )
+        session_frame.pack(fill="both", expand=True, padx=20, pady=(0, 15))
+
+        # 会话选择变量
+        selected_session_id = [None]  # 使用列表以在闭包中修改
+
+        # 按更新时间排序会话
+        other_sessions.sort(key=lambda s: s.updated_at, reverse=True)
+
+        for session in other_sessions:
+            session_btn = ctk.CTkButton(
+                session_frame,
+                text=f"📄 {session.title[:30]}{'...' if len(session.title) > 30 else ''}",
+                height=36,
+                fg_color="transparent",
+                hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray70", "gray30"),
+                anchor="w",
+                command=lambda sid=session.id, stitle=session.title: _select_session(sid, stitle)
+            )
+            session_btn.pack(fill="x", pady=2)
+
+        def _select_session(session_id: str, title: str) -> None:
+            """选择目标会话并执行转发。"""
+            selected_session_id[0] = session_id
+            # 确认转发
+            if not messagebox.askyesno(
+                "确认转发",
+                f"确定将 {len(self._selected_messages)} 条消息转发到「{title}」吗？"
+            ):
+                return
+
+            # 执行转发
+            message_ids = list(self._selected_messages)
+            count = self._app.forward_messages(message_ids, session_id)
+
+            if count > 0:
+                ToastNotification(self._root, f"✅ 已转发 {count} 条消息")
+                # 清除选择并刷新
+                self._selected_messages.clear()
+                self._message_checkboxes.clear()
+                self._refresh_chat_area()
+                self._update_selection_count()
+                forward_dialog.destroy()
+            else:
+                ToastNotification(self._root, "❌ 转发失败")
+
+        # 底部提示
+        ctk.CTkLabel(
+            forward_dialog,
+            text="点击会话名称进行转发",
+            text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray50", "gray60"),
+            font=("", FontSize.XS if _HAS_DESIGN_SYSTEM else 10)
+        ).pack(pady=(0, 15))
+
+        # 取消按钮
+        ctk.CTkButton(
+            forward_dialog,
+            text="取消",
+            width=100,
+            fg_color=Colors.BTN_DEFAULT if _HAS_DESIGN_SYSTEM else ("gray70", "gray35"),
+            command=forward_dialog.destroy
+        ).pack()
+
+    def _forward_single_message(self, message_id: str) -> None:
+        """转发单条消息到另一个会话 (v1.5.1)。"""
+        current_session_id = self._app.current_session_id()
+        if not current_session_id:
+            ToastNotification(self._root, "⚠️ 当前会话不存在")
+            return
+
+        # 获取所有会话列表（排除当前会话）
+        all_sessions = self._app.load_sessions()
+        other_sessions = [s for s in all_sessions if s.id != current_session_id]
+
+        if not other_sessions:
+            ToastNotification(self._root, "⚠️ 没有其他会话可转发")
+            return
+
+        # 打开转发对话框
+        forward_dialog = ctk.CTkToplevel(self._root)
+        forward_dialog.title("转发消息")
+        forward_dialog.geometry("400x350")
+        forward_dialog.transient(self._root)
+        forward_dialog.grab_set()
+
+        # 标题
+        ctk.CTkLabel(
+            forward_dialog,
+            text="转发 1 条消息",
+            font=("", 14)
+        ).pack(pady=(20, 10))
+
+        ctk.CTkLabel(
+            forward_dialog,
+            text="选择目标会话：",
+            text_color=("gray50", "gray60"),
+            font=("", 11)
+        ).pack(pady=(0, 10))
+
+        # 会话列表（使用 ScrollableFrame 以支持多会话）
+        from customtkinter import CTkScrollableFrame
+        session_frame = CTkScrollableFrame(
+            forward_dialog,
+            height=180,
+            fg_color=("gray90", "gray25"),
+            corner_radius=8,
+        )
+        session_frame.pack(fill="both", expand=True, padx=20, pady=(0, 15))
+
+        # 会话选择变量
+        selected_session_id = [None]  # 使用列表以在闭包中修改
+
+        # 按更新时间排序会话
+        other_sessions.sort(key=lambda s: s.updated_at, reverse=True)
+
+        for session in other_sessions:
+            session_btn = ctk.CTkButton(
+                session_frame,
+                text=f"📄 {session.title[:30]}{'...' if len(session.title) > 30 else ''}",
+                height=36,
+                fg_color="transparent",
+                hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray70", "gray30"),
+                anchor="w",
+                command=lambda sid=session.id, stitle=session.title: _select_session(sid, stitle)
+            )
+            session_btn.pack(fill="x", pady=2)
+
+        def _select_session(session_id: str, title: str) -> None:
+            """选择目标会话并执行转发。"""
+            selected_session_id[0] = session_id
+            # 确认转发
+            if not messagebox.askyesno(
+                "确认转发",
+                f"确定将这条消息转发到「{title}」吗？"
+            ):
+                return
+
+            # 执行转发
+            count = self._app.forward_messages([message_id], session_id)
+
+            if count > 0:
+                ToastNotification(self._root, "✅ 已转发 1 条消息")
+                forward_dialog.destroy()
+            else:
+                ToastNotification(self._root, "❌ 转发失败")
+
+        # 底部提示
+        ctk.CTkLabel(
+            forward_dialog,
+            text="点击会话名称进行转发",
+            text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray50", "gray60"),
+            font=("", FontSize.XS if _HAS_DESIGN_SYSTEM else 10)
+        ).pack(pady=(0, 15))
+
+        # 取消按钮
+        ctk.CTkButton(
+            forward_dialog,
+            text="取消",
+            width=100,
+            fg_color=Colors.BTN_DEFAULT if _HAS_DESIGN_SYSTEM else ("gray70", "gray35"),
+            command=forward_dialog.destroy
+        ).pack()
 
     # ========== 会话列表刷新 ==========
 
@@ -2062,39 +2376,43 @@ class MainWindow:
         return row
 
     def _add_session_row(self, s: Session, current: str | None) -> None:
-        """添加单个会话行。"""
+        """v2.0.0: 添加单个会话行 - 使用设计系统。"""
         row = ctk.CTkFrame(self._session_list_frame, fg_color="transparent")
-        row.grid(sticky="ew", pady=2)
+        row.grid(sticky="ew", pady=Spacing.XS if _HAS_DESIGN_SYSTEM else 2)
         row.grid_columnconfigure(0, weight=1)
         title_text = (s.title or "新对话")[:20]
         # 会话标题与图标需与侧边栏背景有对比，明/暗主题下均可见
-        _side_text = ("gray15", "gray88")
+        _side_text = Colors.TEXT_PRIMARY if _HAS_DESIGN_SYSTEM else ("gray15", "gray88")
+        _selected_bg = Colors.SELECTED_BG if _HAS_DESIGN_SYSTEM else ("gray75", "gray30")
+        _hover_bg = Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray78", "gray28")
         btn_title = ctk.CTkButton(
             row,
             text=title_text,
             anchor="w",
-            fg_color=("gray75", "gray30") if s.id == current else "transparent",
+            fg_color=_selected_bg if s.id == current else "transparent",
             text_color=_side_text,
-            hover_color=("gray78", "gray28"),
+            hover_color=_hover_bg,
             border_width=0,
+            corner_radius=Radius.SM if _HAS_DESIGN_SYSTEM else 0,
             command=lambda sid=s.id: self._on_select_session(sid),
         )
-        btn_title.grid(row=0, column=0, sticky="ew", padx=(0, 4))
+        btn_title.grid(row=0, column=0, sticky="ew", padx=(0, Spacing.XS if _HAS_DESIGN_SYSTEM else 4))
         # 消息数量标签
         msg_count = self._app.get_message_count(s.id)
         count_label = ctk.CTkLabel(
             row,
             text=str(msg_count),
-            font=("", 10),
-            text_color=("gray50", "gray65"),
+            font=("", FontSize.XS),
+            text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray50", "gray65"),
             width=20,
         )
         count_label.grid(row=0, column=1, padx=(0, 2))
         # 置顶按钮
         pin_text = "📌" if s.is_pinned else "📍"
+        _hover_btn = Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray80", "gray28")
         btn_pin = ctk.CTkButton(
             row, text=pin_text, width=26, height=26,
-            fg_color="transparent", hover_color=("gray80", "gray28"), border_width=0,
+            fg_color="transparent", hover_color=_hover_btn, border_width=0,
             text_color=_side_text,
             command=lambda sid=s.id: self._on_toggle_session_pinned(sid),
         )
@@ -2103,7 +2421,7 @@ class MainWindow:
         # 移动到文件夹按钮
         btn_folder = ctk.CTkButton(
             row, text="📁", width=26, height=26,
-            fg_color="transparent", hover_color=("gray80", "gray28"), border_width=0,
+            fg_color="transparent", hover_color=_hover_btn, border_width=0,
             text_color=_side_text,
             command=lambda sid=s.id: self._on_move_session_to_folder(sid),
         )
@@ -2111,7 +2429,7 @@ class MainWindow:
         _bind_pressed_style(btn_folder)
         btn_rename = ctk.CTkButton(
             row, text="✏️", width=26, height=26,
-            fg_color="transparent", hover_color=("gray80", "gray28"), border_width=0,
+            fg_color="transparent", hover_color=_hover_btn, border_width=0,
             text_color=_side_text,
             command=lambda sid=s.id, tit=s.title: self._on_rename_session(sid, tit),
         )
@@ -2119,7 +2437,7 @@ class MainWindow:
         _bind_pressed_style(btn_rename)
         btn_del = ctk.CTkButton(
             row, text="🗑️", width=26, height=26,
-            fg_color="transparent", hover_color=("gray80", "gray28"), border_width=0,
+            fg_color="transparent", hover_color=_hover_btn, border_width=0,
             text_color=_side_text,
             command=lambda sid=s.id: self._on_delete_session(sid),
         )
@@ -2264,39 +2582,45 @@ class MainWindow:
             count_label.grid(sticky="ew", pady=(0, 8))
 
         for idx, m in enumerate(filtered_messages, start=1):
-            # v1.3.0: Enhanced message bubble colors with better visual hierarchy
+            # v2.0.0: 使用设计系统的消息气泡颜色
             if m.role == "user":
-                # User messages: warmer, more prominent
-                fg = ("#e8f4fd", "#1e3a5f")  # Soft blue gradient
-                border_color_user = ("#c5e1f5", "#2a4a6f")  # Subtle blue border
+                # 用户消息：柔和紫色，更现代的视觉效果
+                fg = Colors.USER_MSG_BG if _HAS_DESIGN_SYSTEM else ("#7C5DF0", "#9B7FE8")
+                border_color_user = Colors.USER_MSG_BORDER if _HAS_DESIGN_SYSTEM else ("#6B4CE0", "#8A6FD8")
+                text_color = Colors.USER_MSG_TEXT if _HAS_DESIGN_SYSTEM else ("#FFFFFF", "#FFFFFF")
             else:
-                # AI messages: neutral, readable
-                fg = ("#f5f5f5", "#2d2d2d")  # Light gray gradient (better contrast)
-                border_color_user = ("#e0e0e0", "#3d3d3d")  # Subtle gray border
+                # AI 消息：中性背景，清晰可读
+                fg = Colors.AI_MSG_BG if _HAS_DESIGN_SYSTEM else ("#F4F4F5", "#252525")
+                border_color_user = Colors.AI_MSG_BORDER if _HAS_DESIGN_SYSTEM else ("#E5E5E5", "#383838")
+                text_color = Colors.AI_MSG_TEXT if _HAS_DESIGN_SYSTEM else ("#1A1A1A", "#EAEAEA")
 
-            # 当前匹配的消息添加橙色边框作为视觉指示器
+            # 当前匹配的消息添加高亮边框作为视觉指示器
             is_current_match = (m.id == self._current_match_msg_id)
-            border_color = ("#ff9500", "#ff6b00") if is_current_match else border_color_user
-            border_width = 2 if is_current_match else 1
+            if is_current_match:
+                border_color = Colors.INFO if _HAS_DESIGN_SYSTEM else ("#ff9500", "#ff6b00")
+                border_width = 2
+            else:
+                border_color = border_color_user
+                border_width = 1
 
-            # 消息容器 frame - v1.3.0: Added subtle border for depth
+            # v2.0.0: 消息容器 - 使用设计系统
             outer_frame = ctk.CTkFrame(
                 self._chat_scroll,
-                fg_color="transparent",
-                corner_radius=12,  # v1.3.0: More rounded for modern look
+                fg_color=Colors.MSG_CONTAINER_BG if _HAS_DESIGN_SYSTEM else "transparent",
+                corner_radius=Radius.XL if _HAS_DESIGN_SYSTEM else 16,
             )
-            outer_frame.grid(sticky="ew", pady=6)  # v1.3.0: More spacing
+            outer_frame.grid(sticky="ew", pady=Spacing.SM if _HAS_DESIGN_SYSTEM else 6)
             outer_frame.grid_columnconfigure(0, weight=1)
 
             # 消息编号标签（左上角小数字）
             num_label = ctk.CTkLabel(
                 outer_frame,
                 text=f"#{idx}",
-                font=("", 9),
-                text_color=("gray50", "gray65"),
+                font=("", FontSize.XS),
+                text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray50", "gray65"),
                 anchor="w",
             )
-            num_label.grid(row=0, column=0, sticky="w", padx=14, pady=(2, 0))
+            num_label.grid(row=0, column=0, sticky="w", padx=Spacing.MD, pady=(Spacing.XS, 0))
 
             # 选择模式复选框 (v1.2.5)
             if self._selection_mode:
@@ -2322,12 +2646,15 @@ class MainWindow:
             # 引用内容显示（如果有）
             content_row = 1
             if m.quoted_content:
+                # v2.0.0: 引用框使用设计系统
                 quote_frame = ctk.CTkFrame(
                     outer_frame,
-                    fg_color=("gray70", "gray35"),
-                    corner_radius=6,
+                    fg_color=Colors.BG_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray70", "gray35"),
+                    corner_radius=Radius.MD if _HAS_DESIGN_SYSTEM else 8,
+                    border_width=1,
+                    border_color=Colors.BORDER_SUBTLE if _HAS_DESIGN_SYSTEM else ("gray60", "gray40"),
                 )
-                quote_frame.grid(row=content_row, column=0, sticky="ew", padx=12, pady=(4, 0))
+                quote_frame.grid(row=content_row, column=0, sticky="ew", padx=Spacing.MD, pady=(Spacing.XS, 0))
                 content_row += 1
 
                 quote_label = ctk.CTkLabel(
@@ -2335,24 +2662,31 @@ class MainWindow:
                     text=f"💬 {m.quoted_content[:100]}{'...' if len(m.quoted_content) > 100 else ''}",
                     anchor="w",
                     justify="left",
-                    text_color=("gray40", "gray70"),
-                    font=("", 10),
-                    padx=12,
-                    pady=6,
+                    text_color=Colors.TEXT_SECONDARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray70"),
+                    font=("", FontSize.SM),
+                    padx=Spacing.MD,
+                    pady=Spacing.SM,
                 )
                 quote_label.pack(fill="x")
 
-            # 主消息 frame - v1.3.0: Enhanced styling with refined colors
+            # v2.0.0: 主消息 frame - 使用设计系统
             frame = ctk.CTkFrame(
                 outer_frame,
                 fg_color=fg,
-                corner_radius=12,  # v1.3.0: More rounded corners
+                corner_radius=Radius.XL if _HAS_DESIGN_SYSTEM else 16,
                 border_color=border_color,
                 border_width=border_width
             )
-            frame.grid(row=content_row, column=0, sticky="ew", padx=16, pady=(2, 0))  # v1.3.0: Better spacing
+            frame.grid(row=content_row, column=0, sticky="ew", padx=Spacing.MD, pady=(Spacing.XS, 0))
             frame.grid_columnconfigure(0, weight=1)
             frame.grid_columnconfigure(1, weight=0)
+
+            # v1.5.2: 绑定右键上下文菜单
+            frame.bind("<Button-3>", lambda e, mid=m.id, content=m.content, role=m.role, pinned=m.is_pinned:
+                       self._show_message_context_menu(e, mid, content, role, pinned))
+            # macOS 右键支持
+            frame.bind("<Button-2>", lambda e, mid=m.id, content=m.content, role=m.role, pinned=m.is_pinned:
+                       self._show_message_context_menu(e, mid, content, role, pinned))
 
             # v1.4.0: Use enhanced markdown with code block copy buttons for AI responses
             if m.role == "assistant" and _HAS_ENHANCED_MARKDOWN:
@@ -2394,7 +2728,7 @@ class MainWindow:
                 self._insert_highlighted_text(tb, prefix, m.content, m.id)
                 tb.configure(state="disabled")
 
-            # 时间戳标签 (v1.2.8, enhanced v1.3.0)
+            # v2.0.0: 时间戳标签 - 使用设计系统
             try:
                 # 解析 ISO 8601 时间戳
                 dt = datetime.fromisoformat(m.created_at.replace('Z', '+00:00'))
@@ -2412,77 +2746,88 @@ class MainWindow:
                     # 更早显示完整日期
                     time_str = dt.strftime("%m-%d %H:%M")
 
-                # v1.3.0: Better timestamp styling with more subtle color
+                # 使用设计系统的颜色和字体
+                timestamp_color = Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray60")
+                # 根据消息角色调整时间戳颜色以获得更好对比度
+                if m.role == "user":
+                    timestamp_color = ("rgba(255,255,255,0.7)", "rgba(255,255,255,0.7)") if _HAS_DESIGN_SYSTEM else ("rgba(255,255,255,0.7)", "rgba(255,255,255,0.7)")
+
                 timestamp_label = ctk.CTkLabel(
                     frame,
                     text=time_str,
-                    font=("", 9),
-                    text_color=("gray40", "gray60"),  # v1.3.0: More subtle
+                    font=("", FontSize.XS),
+                    text_color=timestamp_color,
                     anchor="w",
                 )
-                timestamp_label.grid(row=1, column=0, sticky="w", padx=12, pady=(0, 6))  # v1.3.0: More bottom padding
+                timestamp_label.grid(row=1, column=0, sticky="w", padx=Spacing.MD, pady=(0, Spacing.SM))
             except (ValueError, TypeError):
                 pass  # 时间戳解析失败时不显示
 
-            # 右侧按钮组
+            # v2.0.0: 右侧按钮组 - 使用设计系统
             btn_frame = ctk.CTkFrame(frame, fg_color="transparent")
-            btn_frame.grid(row=0, column=1, rowspan=2, padx=(4, 8), pady=4)
+            btn_frame.grid(row=0, column=1, rowspan=2, padx=(Spacing.XS, Spacing.SM), pady=Spacing.XS)
 
             # 置顶按钮
             pin_text = "📌" if m.is_pinned else "📍"
+            pin_bg = Colors.PINNED if m.is_pinned else "transparent"
+            pin_hover = Colors.PIN_GOLD_HOVER if m.is_pinned else Colors.HOVER_BG
             pin_btn = ctk.CTkButton(
                 btn_frame,
                 text=pin_text,
-                width=28,
-                height=28,
-                fg_color=("yellow", "dark goldenrod") if m.is_pinned else "transparent",
-                hover_color=("gold", "goldenrod") if m.is_pinned else ("gray80", "gray28"),
+                width=Button.ICON_SIZE,
+                height=Button.ICON_SIZE,
+                fg_color=pin_bg if _HAS_DESIGN_SYSTEM else ("yellow", "dark goldenrod") if m.is_pinned else "transparent",
+                hover_color=pin_hover if _HAS_DESIGN_SYSTEM else ("gold", "goldenrod") if m.is_pinned else ("gray80", "gray28"),
+                corner_radius=Button.ICON_RADIUS if _HAS_DESIGN_SYSTEM else 6,
                 border_width=0,
                 command=lambda msg_id=m.id: self._toggle_pin(msg_id)
             )
-            pin_btn.grid(row=0, column=0, pady=2)
+            pin_btn.grid(row=0, column=0, pady=Spacing.XS)
             _bind_pressed_style(pin_btn)
 
             # 复制按钮
             copy_btn = ctk.CTkButton(
                 btn_frame,
                 text="📋",
-                width=28,
-                height=28,
+                width=Button.ICON_SIZE,
+                height=Button.ICON_SIZE,
                 fg_color="transparent",
-                hover_color=("gray80", "gray28"),
+                hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray80", "gray28"),
+                corner_radius=Button.ICON_RADIUS if _HAS_DESIGN_SYSTEM else 6,
                 border_width=0,
                 command=lambda content=m.content: self._copy_message(content)
             )
-            copy_btn.grid(row=1, column=0, pady=2)
+            copy_btn.grid(row=1, column=0, pady=Spacing.XS)
             _bind_pressed_style(copy_btn)
 
             # 编辑按钮
             edit_btn = ctk.CTkButton(
                 btn_frame,
                 text="✏️",
-                width=28,
-                height=28,
+                width=Button.ICON_SIZE,
+                height=Button.ICON_SIZE,
                 fg_color="transparent",
-                hover_color=("gray80", "gray28"),
+                hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray80", "gray28"),
+                corner_radius=Button.ICON_RADIUS if _HAS_DESIGN_SYSTEM else 6,
                 border_width=0,
                 command=lambda msg_id=m.id, content=m.content: self._edit_message(msg_id, content)
             )
-            edit_btn.grid(row=2, column=0, pady=2)
+            edit_btn.grid(row=2, column=0, pady=Spacing.XS)
             _bind_pressed_style(edit_btn)
 
             # 删除按钮
             delete_btn = ctk.CTkButton(
                 btn_frame,
                 text="🗑️",
-                width=28,
-                height=28,
+                width=Button.ICON_SIZE,
+                height=Button.ICON_SIZE,
                 fg_color="transparent",
-                hover_color=("gray80", "gray28"),
+                hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray80", "gray28"),
+                corner_radius=Button.ICON_RADIUS if _HAS_DESIGN_SYSTEM else 6,
                 border_width=0,
                 command=lambda msg_id=m.id: self._delete_message(msg_id)
             )
-            delete_btn.grid(row=3, column=0, pady=2)
+            delete_btn.grid(row=3, column=0, pady=Spacing.XS)
             _bind_pressed_style(delete_btn)
 
             # 引用按钮
@@ -2492,70 +2837,123 @@ class MainWindow:
                 width=28,
                 height=28,
                 fg_color="transparent",
-                hover_color=("gray80", "gray28"),
+                hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray80", "gray28"),
                 border_width=0,
                 command=lambda msg_id=m.id, content=m.content: self._quote_message(msg_id, content)
             )
             quote_btn.grid(row=4, column=0, pady=2)
             _bind_pressed_style(quote_btn)
 
+            # 转发按钮 (v1.5.1)
+            forward_btn = ctk.CTkButton(
+                btn_frame,
+                text="➡️",
+                width=28,
+                height=28,
+                fg_color="transparent",
+                hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray80", "gray28"),
+                border_width=0,
+                command=lambda msg_id=m.id: self._forward_single_message(msg_id)
+            )
+            forward_btn.grid(row=5, column=0, pady=2)
+            _bind_pressed_style(forward_btn)
+
             self._chat_widgets.append((m.id, frame))
         self._chat_scroll.columnconfigure(0, weight=1)
 
     def _refresh_global_search_results(self) -> None:
-        """刷新全局搜索结果。"""
+        """刷新全局搜索结果。v2.0.0 使用设计系统优化样式。"""
         all_messages = self._app.search_all_messages(
             self._search_query, 100, self._search_start_date, self._search_end_date,
             self._search_case_sensitive, self._search_whole_word, self._search_regex
         )
 
         if not all_messages:
-            hint = f"没有找到包含「{self._search_query}」的消息"
-            lbl = ctk.CTkLabel(
-                self._chat_scroll, text=hint, anchor="w", justify="left", text_color=("gray40", "gray60")
+            # v2.0.0: 使用设计系统的空状态提示
+            hint_bg = Colors.BG_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray90", "gray25")
+            hint_radius = Radius.MD if _HAS_DESIGN_SYSTEM else 8
+            hint_frame = ctk.CTkFrame(
+                self._chat_scroll,
+                fg_color=hint_bg,
+                corner_radius=hint_radius,
             )
-            lbl.grid(sticky="ew", pady=8)
+            hint_frame.grid(sticky="ew", pady=Spacing.LG if _HAS_DESIGN_SYSTEM else 8, padx=Spacing.MD if _HAS_DESIGN_SYSTEM else 0)
+
+            hint_text_color = Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray60")
+            hint_font = ( "", FontSize.SM if _HAS_DESIGN_SYSTEM else 11)
+            hint = f"🔍 没有找到包含「{self._search_query}」的消息"
+            lbl = ctk.CTkLabel(
+                hint_frame, text=hint, anchor="w", justify="left",
+                text_color=hint_text_color, font=hint_font,
+                padx=Spacing.MD if _HAS_DESIGN_SYSTEM else 12,
+                pady=Spacing.SM if _HAS_DESIGN_SYSTEM else 8,
+            )
+            lbl.pack()
             self._chat_scroll.columnconfigure(0, weight=1)
             return
 
-        # 显示搜索结果数量提示
+        # v2.0.0: 显示搜索结果数量提示 - 使用设计系统
+        count_text_color = Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray60")
+        count_font = ("", FontSize.SM if _HAS_DESIGN_SYSTEM else 11)
         count_label = ctk.CTkLabel(
             self._chat_scroll,
-            text=f"在全部会话中找到 {len(all_messages)} 条匹配消息",
+            text=f"🔎 在全部会话中找到 {len(all_messages)} 条匹配消息",
             anchor="w",
-            text_color=("gray40", "gray60"),
-            font=("", 11)
+            text_color=count_text_color,
+            font=count_font,
         )
-        count_label.grid(sticky="ew", pady=(0, 8))
+        count_label.grid(sticky="ew", pady=(0, Spacing.MD if _HAS_DESIGN_SYSTEM else 8),
+                        padx=Spacing.MD if _HAS_DESIGN_SYSTEM else 0)
 
         # 获取所有会话信息用于显示标题
         sessions = {s.id: s for s in self._app.load_sessions()}
 
         for m in all_messages:
-            fg = ("gray85", "gray25") if m.role == "user" else ("gray70", "gray30")
+            # v2.0.0: 使用设计系统的消息卡片颜色
+            if _HAS_DESIGN_SYSTEM:
+                card_bg = Colors.USER_MSG_BG if m.role == "user" else Colors.AI_MSG_BG
+                card_border = Colors.USER_MSG_BORDER if m.role == "user" else Colors.AI_MSG_BORDER
+                card_radius = Radius.MD
+            else:
+                card_bg = ("gray85", "gray25") if m.role == "user" else ("gray70", "gray30")
+                card_border = ("gray75", "gray32")
+                card_radius = 8
+
             session = sessions.get(m.session_id)
             session_title = session.title if session else "未知会话"
 
+            # v2.0.0: 搜索结果卡片 - 带边框和圆角
             frame = ctk.CTkFrame(
                 self._chat_scroll,
-                fg_color=fg,
-                corner_radius=8,
+                fg_color=card_bg,
+                corner_radius=card_radius,
+                border_width=1 if _HAS_DESIGN_SYSTEM else 0,
+                border_color=card_border if _HAS_DESIGN_SYSTEM else "transparent",
             )
-            frame.grid(sticky="ew", pady=4)
+            frame.grid(sticky="ew", pady=Spacing.XS if _HAS_DESIGN_SYSTEM else 4,
+                      padx=Spacing.XS if _HAS_DESIGN_SYSTEM else 0)
             frame.grid_columnconfigure(0, weight=1)
             frame.grid_columnconfigure(1, weight=0)
 
-            # 消息内容 (v1.2.9: 使用高亮显示搜索匹配)
+            # v1.5.2: 绑定右键上下文菜单（搜索结果）
+            frame.bind("<Button-3>", lambda e, mid=m.id, content=m.content, role=m.role, pinned=m.is_pinned:
+                       self._show_message_context_menu(e, mid, content, role, pinned))
+            # macOS 右键支持
+            frame.bind("<Button-2>", lambda e, mid=m.id, content=m.content, role=m.role, pinned=m.is_pinned:
+                       self._show_message_context_menu(e, mid, content, role, pinned))
+
+            # v2.0.0: 消息内容 - 使用设计系统间距
+            msg_padding = Spacing.MD if _HAS_DESIGN_SYSTEM else 12
             tb = ctk.CTkTextbox(
                 frame, wrap="word", height=self._message_textbox_height(m.content),
                 fg_color="transparent", border_width=0, state="normal"
             )
-            tb.grid(row=0, column=0, sticky="ew", padx=12, pady=8)
+            tb.grid(row=0, column=0, sticky="ew", padx=msg_padding, pady=(msg_padding, Spacing.XS if _HAS_DESIGN_SYSTEM else 8))
             prefix = '你' if m.role == 'user' else '助手'
             self._insert_highlighted_text(tb, prefix, m.content, m.id)
             tb.configure(state="disabled")
 
-            # 时间戳标签 (v1.2.8)
+            # v2.0.0: 时间戳标签 - 使用设计系统
             try:
                 dt = datetime.fromisoformat(m.created_at.replace('Z', '+00:00'))
                 now = datetime.now(dt.tzinfo)
@@ -2568,96 +2966,111 @@ class MainWindow:
                 else:
                     time_str = dt.strftime("%m-%d %H:%M")
 
+                time_text_color = Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray50", "gray65")
+                time_font = ("", FontSize.XS if _HAS_DESIGN_SYSTEM else 9)
                 timestamp_label = ctk.CTkLabel(
                     frame,
-                    text=time_str,
-                    font=("", 9),
-                    text_color=("gray50", "gray65"),
+                    text=f"🕐 {time_str}",
+                    font=time_font,
+                    text_color=time_text_color,
                     anchor="w",
                 )
-                timestamp_label.grid(row=1, column=0, sticky="w", padx=12, pady=(0, 4))
+                timestamp_label.grid(row=1, column=0, sticky="w", padx=msg_padding, pady=(0, 2))
             except (ValueError, TypeError):
                 pass
 
-            # 右侧按钮组
+            # v2.0.0: 右侧按钮组 - 使用设计系统
+            btn_padding = Spacing.XS if _HAS_DESIGN_SYSTEM else 4
             btn_frame = ctk.CTkFrame(frame, fg_color="transparent")
-            btn_frame.grid(row=0, column=1, rowspan=2, padx=(4, 8), pady=4)
+            btn_frame.grid(row=0, column=1, rowspan=2, padx=(Spacing.XS if _HAS_DESIGN_SYSTEM else 4, msg_padding), pady=btn_padding)
+
+            # v2.0.0: 按钮悬停颜色 - 使用设计系统
+            btn_hover = Colors.HOVER_LIGHT if _HAS_DESIGN_SYSTEM else ("gray80", "gray28")
+            icon_size = Button.ICON_SIZE if _HAS_DESIGN_SYSTEM else 28
 
             # 置顶按钮（全局搜索结果中显示置顶状态但不提供切换）
             if m.is_pinned:
+                pin_color = Colors.PIN_GOLD if _HAS_DESIGN_SYSTEM else ("orange", "dark goldenrod")
                 pin_label = ctk.CTkLabel(
                     btn_frame,
                     text="📌",
-                    width=28,
-                    text_color=("orange", "dark goldenrod")
+                    width=icon_size,
+                    text_color=pin_color,
                 )
-                pin_label.grid(row=0, column=0, pady=2)
+                pin_label.grid(row=0, column=0, pady=Spacing.XS if _HAS_DESIGN_SYSTEM else 2)
 
             # 复制按钮
             copy_btn = ctk.CTkButton(
                 btn_frame,
                 text="📋",
-                width=28,
-                height=28,
+                width=icon_size,
+                height=icon_size,
                 fg_color="transparent",
-                hover_color=("gray80", "gray28"),
+                hover_color=btn_hover,
                 border_width=0,
+                corner_radius=Radius.SM if _HAS_DESIGN_SYSTEM else 0,
                 command=lambda content=m.content: self._copy_message(content)
             )
-            copy_btn.grid(row=1 if m.is_pinned else 0, column=0, pady=2)
+            copy_btn.grid(row=1 if m.is_pinned else 0, column=0, pady=Spacing.XS if _HAS_DESIGN_SYSTEM else 2)
             _bind_pressed_style(copy_btn)
 
             # 跳转到会话按钮
             goto_btn = ctk.CTkButton(
                 btn_frame,
                 text="🔗",
-                width=28,
-                height=28,
+                width=icon_size,
+                height=icon_size,
                 fg_color="transparent",
-                hover_color=("gray80", "gray28"),
+                hover_color=btn_hover,
                 border_width=0,
+                corner_radius=Radius.SM if _HAS_DESIGN_SYSTEM else 0,
                 command=lambda sid=m.session_id: self._goto_session(sid)
             )
-            goto_btn.grid(row=2 if m.is_pinned else 1, column=0, pady=2)
+            goto_btn.grid(row=2 if m.is_pinned else 1, column=0, pady=Spacing.XS if _HAS_DESIGN_SYSTEM else 2)
             _bind_pressed_style(goto_btn)
 
             # 编辑按钮
             edit_btn = ctk.CTkButton(
                 btn_frame,
                 text="✏️",
-                width=28,
-                height=28,
+                width=icon_size,
+                height=icon_size,
                 fg_color="transparent",
-                hover_color=("gray80", "gray28"),
+                hover_color=btn_hover,
                 border_width=0,
+                corner_radius=Radius.SM if _HAS_DESIGN_SYSTEM else 0,
                 command=lambda msg_id=m.id, content=m.content: self._edit_message(msg_id, content)
             )
-            edit_btn.grid(row=3 if m.is_pinned else 2, column=0, pady=2)
+            edit_btn.grid(row=3 if m.is_pinned else 2, column=0, pady=Spacing.XS if _HAS_DESIGN_SYSTEM else 2)
             _bind_pressed_style(edit_btn)
 
-            # 删除按钮
+            # 删除按钮 - 使用警告色悬停
+            delete_hover = Colors.ERROR if _HAS_DESIGN_SYSTEM else ("gray80", "gray28")
             delete_btn = ctk.CTkButton(
                 btn_frame,
                 text="🗑️",
-                width=28,
-                height=28,
+                width=icon_size,
+                height=icon_size,
                 fg_color="transparent",
-                hover_color=("gray80", "gray28"),
+                hover_color=delete_hover,
                 border_width=0,
+                corner_radius=Radius.SM if _HAS_DESIGN_SYSTEM else 0,
                 command=lambda msg_id=m.id: self._delete_message(msg_id)
             )
-            delete_btn.grid(row=4 if m.is_pinned else 3, column=0, pady=2)
+            delete_btn.grid(row=4 if m.is_pinned else 3, column=0, pady=Spacing.XS if _HAS_DESIGN_SYSTEM else 2)
             _bind_pressed_style(delete_btn)
 
-            # 会话标题标签
+            # v2.0.0: 会话标题标签 - 使用设计系统
+            title_text_color = Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray50", "gray70")
+            title_font = ("", FontSize.XS if _HAS_DESIGN_SYSTEM else 10)
             title_label = ctk.CTkLabel(
                 frame,
                 text=f"📁 {session_title}",
                 anchor="w",
-                text_color=("gray50", "gray70"),
-                font=("", 10)
+                text_color=title_text_color,
+                font=title_font,
             )
-            title_label.grid(row=1, column=0, sticky="w", padx=12, pady=(0, 4))
+            title_label.grid(row=1, column=0, sticky="w", padx=msg_padding, pady=(0, Spacing.SM if _HAS_DESIGN_SYSTEM else 4))
 
             self._chat_widgets.append((m.id, frame))
         self._chat_scroll.columnconfigure(0, weight=1)
@@ -3497,21 +3910,24 @@ class MainWindow:
         )
 
     def _append_user_message(self, session_id: str, content: str, quoted_content: str | None = None) -> None:
-        # v1.3.0: Enhanced styling matches new design
+        # v2.0.0: 使用设计系统
         # 外层容器
-        outer_frame = ctk.CTkFrame(self._chat_scroll, fg_color="transparent", corner_radius=12)
-        outer_frame.grid(sticky="ew", pady=6)
+        outer_radius = Radius.XL if _HAS_DESIGN_SYSTEM else 12
+        outer_frame = ctk.CTkFrame(self._chat_scroll, fg_color="transparent", corner_radius=outer_radius)
+        outer_frame.grid(sticky="ew", pady=Spacing.SM if _HAS_DESIGN_SYSTEM else 6)
         outer_frame.grid_columnconfigure(0, weight=1)
 
         content_row = 0
         # 显示引用内容（如果有）
         if quoted_content:
+            quote_bg = Colors.BG_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray70", "gray35")
             quote_frame = ctk.CTkFrame(
                 outer_frame,
-                fg_color=("gray70", "gray35"),
-                corner_radius=6,
+                fg_color=quote_bg,
+                corner_radius=Radius.SM if _HAS_DESIGN_SYSTEM else 6,
             )
-            quote_frame.grid(row=content_row, column=0, sticky="ew", padx=16, pady=(4, 0))
+            quote_pad = MessageSpec.PADDING[1] if _HAS_DESIGN_SYSTEM else 16
+            quote_frame.grid(row=content_row, column=0, sticky="ew", padx=quote_pad, pady=(Spacing.XS, 0))
             content_row += 1
 
             quote_label = ctk.CTkLabel(
@@ -3519,20 +3935,19 @@ class MainWindow:
                 text=f"💬 {quoted_content[:100]}{'...' if len(quoted_content) > 100 else ''}",
                 anchor="w",
                 justify="left",
-                text_color=("gray40", "gray70"),
-                font=("", 10),
-                padx=12,
-                pady=6,
+                text_color=Colors.TEXT_SECONDARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray70"),
+                font=("", FontSize.XS),
+                padx=Spacing.MD,
+                pady=Spacing.XS,
             )
             quote_label.pack(fill="x")
 
-        # v1.3.0: User message uses refined blue color scheme
+        # v2.0.0: 用户消息使用设计系统品牌色
         frame = ctk.CTkFrame(
             outer_frame,
-            fg_color=("#e8f4fd", "#1e3a5f"),  # Soft blue gradient
-            corner_radius=12,  # More rounded
-            border_color=("#c5e1f5", "#2a4a6f"),  # Subtle blue border
-            border_width=1
+            fg_color=Colors.USER_MSG_BG if _HAS_DESIGN_SYSTEM else ("#e8f4fd", "#1e3a5f"),
+            corner_radius=MessageSpec.RADIUS_USER[0] if _HAS_DESIGN_SYSTEM else 12,
+            border_width=0,
         )
         frame.grid(row=content_row, column=0, sticky="ew", padx=16, pady=(2, 0))
         frame.grid_columnconfigure(0, weight=1)
@@ -3637,21 +4052,21 @@ class MainWindow:
                     continue
                 if isinstance(chunk, TextChunk):
                     if self._streaming_textbox_id is None:
-                        # v1.3.0: Use refined AI message styling
+                        # v2.0.0: 使用设计系统
+                        outer_radius = Radius.XL if _HAS_DESIGN_SYSTEM else 12
                         outer_frame = ctk.CTkFrame(
                             self._chat_scroll,
                             fg_color="transparent",
-                            corner_radius=12
+                            corner_radius=outer_radius
                         )
-                        outer_frame.grid(sticky="ew", pady=6)
+                        outer_frame.grid(sticky="ew", pady=Spacing.SM if _HAS_DESIGN_SYSTEM else 6)
                         outer_frame.grid_columnconfigure(0, weight=1)
 
                         frame = ctk.CTkFrame(
                             outer_frame,
-                            fg_color=("#f5f5f5", "#2d2d2d"),  # Refined AI message color
-                            corner_radius=12,
-                            border_color=("#e0e0e0", "#3d3d3d"),
-                            border_width=1
+                            fg_color=Colors.AI_MSG_BG if _HAS_DESIGN_SYSTEM else ("#f5f5f5", "#2d2d2d"),
+                            corner_radius=MessageSpec.RADIUS_AI[1] if _HAS_DESIGN_SYSTEM else 12,
+                            border_width=0,
                         )
                         frame.grid(sticky="ew", padx=16, pady=(2, 0))
                         frame.grid_columnconfigure(0, weight=1)
