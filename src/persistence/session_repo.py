@@ -11,7 +11,7 @@ from src.persistence.models import Session
 
 
 class SessionRepository(ABC):
-    """会话仓储：创建、列表、按 id 获取、更新 title/updated_at/pinned/folder。"""
+    """会话仓储：创建、列表、按 id 获取、更新 title/updated_at/pinned/folder/archived。"""
 
     @abstractmethod
     def create(self, session_id: str, title: str) -> Session:
@@ -50,6 +50,11 @@ class SessionRepository(ABC):
         ...
 
     @abstractmethod
+    def set_archived(self, session_id: str, archived: bool) -> None:
+        """v2.5.0: 设置会话归档状态。"""
+        ...
+
+    @abstractmethod
     def get_sessions_by_folder(self, folder_id: str | None) -> list[Session]:
         """获取指定文件夹下的会话（None 表示根目录）。"""
         ...
@@ -61,16 +66,18 @@ class SessionRepository(ABC):
 
 
 def _row_to_session(row: tuple) -> Session:
-    # row: (id, title, created_at, updated_at, is_pinned, [folder_id])
+    # row: (id, title, created_at, updated_at, is_pinned, [folder_id], [is_archived])
     is_pinned = bool(row[4]) if len(row) > 4 else False
     folder_id = row[5] if len(row) > 5 else None
+    is_archived = bool(row[6]) if len(row) > 6 else False
     return Session(
         id=row[0],
         title=row[1],
         created_at=row[2],
         updated_at=row[3],
         is_pinned=is_pinned,
-        folder_id=folder_id
+        folder_id=folder_id,
+        is_archived=is_archived
     )
 
 
@@ -107,7 +114,7 @@ class SqliteSessionRepository(SessionRepository):
         with self._conn() as conn:
             # 置顶优先，然后按更新时间降序
             cur = conn.execute(
-                "SELECT id, title, created_at, updated_at, is_pinned, folder_id FROM session ORDER BY is_pinned DESC, updated_at DESC"
+                "SELECT id, title, created_at, updated_at, is_pinned, folder_id, is_archived FROM session ORDER BY is_pinned DESC, updated_at DESC"
             )
             return [_row_to_session(r) for r in cur.fetchall()]
 
@@ -115,14 +122,14 @@ class SqliteSessionRepository(SessionRepository):
         """获取所有会话（用于统计）。"""
         with self._conn() as conn:
             cur = conn.execute(
-                "SELECT id, title, created_at, updated_at, is_pinned, folder_id FROM session"
+                "SELECT id, title, created_at, updated_at, is_pinned, folder_id, is_archived FROM session"
             )
             return [_row_to_session(r) for r in cur.fetchall()]
 
     def get_by_id(self, session_id: str) -> Session | None:
         with self._conn() as conn:
             cur = conn.execute(
-                "SELECT id, title, created_at, updated_at, is_pinned, folder_id FROM session WHERE id = ?",
+                "SELECT id, title, created_at, updated_at, is_pinned, folder_id, is_archived FROM session WHERE id = ?",
                 (session_id,)
             )
             row = cur.fetchone()
@@ -154,17 +161,26 @@ class SqliteSessionRepository(SessionRepository):
             )
             conn.commit()
 
+    def set_archived(self, session_id: str, archived: bool) -> None:
+        """v2.5.0: 设置会话归档状态。"""
+        with self._conn() as conn:
+            conn.execute(
+                "UPDATE session SET is_archived = ? WHERE id = ?",
+                (1 if archived else 0, session_id)
+            )
+            conn.commit()
+
     def get_sessions_by_folder(self, folder_id: str | None) -> list[Session]:
         with self._conn() as conn:
             if folder_id is None:
                 # 根目录的会话（folder_id IS NULL）
                 cur = conn.execute(
-                    "SELECT id, title, created_at, updated_at, is_pinned, folder_id FROM session WHERE folder_id IS NULL ORDER BY is_pinned DESC, updated_at DESC"
+                    "SELECT id, title, created_at, updated_at, is_pinned, folder_id, is_archived FROM session WHERE folder_id IS NULL ORDER BY is_pinned DESC, updated_at DESC"
                 )
             else:
                 # 指定文件夹的会话
                 cur = conn.execute(
-                    "SELECT id, title, created_at, updated_at, is_pinned, folder_id FROM session WHERE folder_id = ? ORDER BY is_pinned DESC, updated_at DESC",
+                    "SELECT id, title, created_at, updated_at, is_pinned, folder_id, is_archived FROM session WHERE folder_id = ? ORDER BY is_pinned DESC, updated_at DESC",
                     (folder_id,)
                 )
             return [_row_to_session(r) for r in cur.fetchall()]

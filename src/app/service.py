@@ -289,6 +289,33 @@ class AppService:
             return new_pinned
         return False
 
+    # ========== 会话归档 (v2.5.0) ==========
+
+    def toggle_session_archived(self, session_id: str) -> bool:
+        """切换会话归档状态，返回新的归档状态。"""
+        session = self._session_repo.get_by_id(session_id)
+        if session:
+            new_archived = not session.is_archived
+            self._session_repo.set_archived(session_id, new_archived)
+            logger.info("toggle_session_archived: 会话 %s 归档状态=%s", session_id, new_archived)
+            return new_archived
+        return False
+
+    def archive_session(self, session_id: str) -> None:
+        """归档会话。"""
+        self._session_repo.set_archived(session_id, True)
+        logger.info("archive_session: 会话 %s 已归档", session_id)
+
+    def unarchive_session(self, session_id: str) -> None:
+        """取消归档会话。"""
+        self._session_repo.set_archived(session_id, False)
+        logger.info("unarchive_session: 会话 %s 已取消归档", session_id)
+
+    def is_session_archived(self, session_id: str) -> bool:
+        """检查会话是否已归档。"""
+        session = self._session_repo.get_by_id(session_id)
+        return session.is_archived if session else False
+
     # ========== 提示词模板管理 ==========
 
     def list_prompt_templates(self) -> list:

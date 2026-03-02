@@ -16,13 +16,14 @@ class Folder:
 
 @dataclass
 class Session:
-    """会话：id、标题、创建与更新时间、置顶状态、所属文件夹。"""
+    """会话：id、标题、创建与更新时间、置顶状态、所属文件夹、归档状态。"""
     id: str
     title: str
     created_at: str  # ISO 格式
     updated_at: str  # ISO 格式
     is_pinned: bool = False  # 是否置顶
     folder_id: str | None = None  # 所属文件夹 ID，None 表示在根目录
+    is_archived: bool = False  # v2.5.0: 是否归档
 
     @property
     def pinned(self) -> bool:
@@ -33,6 +34,16 @@ class Session:
     def pinned(self, value: bool) -> None:
         """向后兼容的 pinned 设置器。"""
         self.is_pinned = value
+
+    @property
+    def archived(self) -> bool:
+        """v2.5.0: 向后兼容的 archived 属性。"""
+        return self.is_archived
+
+    @archived.setter
+    def archived(self, value: bool) -> None:
+        """v2.5.0: 向后兼容的 archived 设置器。"""
+        self.is_archived = value
 
 
 @dataclass
