@@ -2,6 +2,29 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [2.4.0] - 2026-03-03
+
+### ✨ Features
+
+- **Search Results Panel**: Dedicated sidebar for search results
+  - Click 📋 button or press `Ctrl+Shift+H` to toggle panel
+  - Results grouped by session with count badges
+  - Message preview with context around matched text
+  - One-click navigation to any search result
+  - Automatic markdown stripping for clean previews
+  - New component: `src/ui/search_results_panel.py`
+
+### 🔧 Improvements
+
+- Search results now display in a dedicated panel on the right
+- Better visibility into search result distribution across sessions
+- Cleaner preview text without markdown formatting
+
+### 🧪 Testing
+
+- All core tests passing (321 non-GUI tests)
+- Code syntax validated
+
 ## [2.3.0] - 2026-03-03
 
 ### ✨ Features
