@@ -1,41 +1,47 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-02 - Cycle #68
+2026-03-02 - Cycle #69
 
 ## Current Phase
-🚀 **发布阶段** - PR #18 已创建，等待合并
+🚀 **发布阶段 + v2.1.0 开发中**
 
-## What We Did This Cycle (Cycle #68)
-- ✅ **合并 v2.0.0 到 master** (本地)
-- ✅ **创建 PR #18** - https://github.com/MrHulu/HuluAiChat/pull/18
-- ✅ **创建 v2.0.0 tag** (本地，等待 PR 合并后推送)
-- ✅ **Stash 未完成的转发功能** - 374 行代码已保存
+## What We Did This Cycle (Cycle #69)
+- ✅ **解决 PR #18 冲突** - 合并 master 分支
+- ✅ **合并 PR #18** - v2.0.0 成功合并到 master
+- ✅ **发布 v2.0.0** - 创建 tag 和 GitHub Release
+- ✅ **恢复消息转发功能** - 创建 v2.1.0-forwarding 分支
+- ✅ **后端功能完整实现** - 13 个测试全部通过
 
 ## Key Decisions Made
-- 由于仓库规则保护，必须通过 PR 合并到 master
-- 消息转发功能 (v1.5.0) 暂时 stash，留作 v2.1.0 或后续版本
-- PR #18 包含 +9623/-586 行变更
+- v2.0.0 设计系统重大更新已完成发布
+- 消息转发功能后端已完整实现，等待 UI 集成
+- 400 个测试 100% 通过
 
 ## Active Projects
-- HuluChat: **v2.0.0** - PR #18 等待合并
-- HuluChat: **v2.1.0** - 规划中
+- HuluChat: **v2.0.0** - ✅ 已发布
+- HuluChat: **v2.1.0** - 🔄 开发中，消息转发后端完成
 
-## Next Action (Cycle #69)
+## Next Action (Cycle #70)
 
-### ⏳ 等待 PR #18 合并后
-1. 推送 v2.0.0 tag 到远程
-2. 在 GitHub 创建 v2.0.0 Release
-3. 恢复消息转发功能的 stash
-4. 规划 v2.1.0 新功能
+### v2.1.0 消息转发 UI 集成
+需要将后端转发功能集成到 UI：
+1. 在右键菜单添加"转发"选项
+2. 显示会话选择对话框
+3. 执行转发并显示结果
+
+### UI 设计要求
+- 使用 `design_system.py` 统一样式
+- 保持与现有 UI 风格一致
+- 添加适当的视觉反馈
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
-- Latest Release: **v1.5.2** (2026-03-01)
-- Current Version: **v2.0.0** (已完成，等待发布)
+- Latest Release: **v2.0.0** (2026-03-02) ✅
+- Current Version: **v2.1.0** (开发中)
 - Tech Stack: Python, CustomTkinter, OpenAI API, SQLite, fpdf2, python-docx, CTkMarkdown
 - Tests: **400 passing** (100% of non-GUI tests)
-- Branch: `pr/v1.4.8-updates` (准备合并)
+- Branch: `v2.1.0-forwarding` (消息转发功能)
 
 ## v2.0.0 设计系统架构
 
@@ -59,40 +65,29 @@ Message     # 消息气泡规范 (PADDING=(12,16), MAX_WIDTH_RATIO=0.75)
 - ✅ `templates_dialog.py` - 模板管理对话框（全部）
 - ✅ `settings.py` - 设置对话框（部分）
 
-### 微交互系统
-```python
-def _bind_pressed_style(btn: ctk.CTkButton) -> None:
-    """绑定按钮按下/释放的视觉反馈"""
-    # Button-1 press: fg_color -> BTN_PRESSED
-    # ButtonRelease-1/Leave: fg_color -> original
-```
-
 ## Release History
 | Version | Date | Highlights |
 |---------|------|------------|
 | **v2.0.0** | **2026-03-02** | **🎨 UI 彻底改造 - 统一设计系统** |
-| v1.5.2 | 2026-03-01 | 🖱️ Right-Click Context Menu - Native menu on messages |
-| v1.5.1 | 2026-03-01 | ➡️ Single Message Forward - Forward button on each message |
-| v1.5.0 | 2026-03-01 | ➡️ Message Forwarding - Forward messages to other sessions |
-| v1.4.9 | 2026-03-01 | 🔧 Regex search - Pattern matching with .* toggle |
-| v1.4.8 | 2026-03-01 | 🔤 Advanced search - Case-sensitive & whole-word toggles |
-| v1.4.7 | 2026-03-01 | 🔍 Search highlighting in Markdown - Keywords now highlighted |
-| v1.4.6 | 2026-03-01 | 🔤 Code block font size adjustment - A+/A- buttons |
+| v1.5.2 | 2026-03-01 | 🖱️ Right-Click Context Menu |
+| v1.5.1 | 2026-03-01 | ➡️ Single Message Forward |
+| v1.5.0 | 2026-03-01 | ➡️ Message Forwarding |
+| v1.4.9 | 2026-03-01 | 🔧 Regex search |
 
 ## Complete Keyboard Shortcuts
 
 ### Session Navigation
 | Shortcut | Action |
 |----------|--------|
-| Ctrl + K | Focus search (shows recent searches) |
+| Ctrl + K | Focus search |
 | Ctrl + L | Focus input |
 | Ctrl + N | New chat |
 | Ctrl + P | Toggle session pin |
 | Ctrl + S | Show current session statistics |
 | Ctrl + Alt + S | Show global statistics |
 | Ctrl + Shift + F | Manage folders |
-| Ctrl + Tab | Quick switcher (next session) |
-| Ctrl + Shift + Tab | Quick switcher (prev session) |
+| Ctrl + Tab | Quick switcher (next) |
+| Ctrl + Shift + Tab | Quick switcher (prev) |
 | Ctrl + Up | Previous session |
 | Ctrl + Down | Next session |
 | Ctrl + T | Toggle sidebar |
@@ -113,69 +108,37 @@ def _bind_pressed_style(btn: ctk.CTkButton) -> None:
 | Ctrl + R | Regenerate response |
 | Ctrl + Shift + C | Copy last AI response |
 
-### Message Selection
-| Shortcut | Action |
-|----------|--------|
-| Ctrl + A | Select all messages (in selection mode) |
-| Shift + Click | Range selection (in selection mode) |
-| ESC | Exit selection mode |
-
 ### Other
 | Shortcut | Action |
 |----------|--------|
 | Ctrl + , | Open settings |
 | Ctrl + / | Show help |
-| ESC | Clear search |
-| F3 | Next search match |
-| Shift + F3 | Prev search match |
-| Ctrl + Enter | Newline in input |
-| Enter | Send message |
-| **Right-Click** | **Context menu** |
+| Right-Click | Context menu |
 
 ## Coverage Leaders (100% Club) ✅
 | Module | Coverage | Notes |
 |--------|----------|-------|
 | src\__init__.py | 100% | ✅ |
 | src\app\__init__.py | 100% | ✅ |
-| src\app\statistics.py | 100% | ✅ v1.3.2 |
-| src\app_data.py | 100% | ✅ v1.0.5 |
+| src\app\statistics.py | 100% | ✅ |
+| src\app_data.py | 100% | ✅ |
 | src\chat\__init__.py | 100% | ✅ |
 | src\config\__init__.py | 100% | ✅ |
 | src\config\store.py | 100% | ✅ |
-| src\config\models.py | 100% | ✅ v1.1.2 |
+| src\config\models.py | 100% | ✅ |
 | src\persistence\__init__.py | 100% | ✅ |
 | src\persistence\models.py | 100% | ✅ |
-| src\persistence\session_repo.py | 100% | ✅ v1.1.4 |
+| src\persistence\session_repo.py | 100% | ✅ |
 | src\ui\__init__.py | 100% | ✅ |
-| src\ui\settings_validation.py | 100% | ✅ v1.0.5 |
+| src\ui\settings_validation.py | 100% | ✅ |
 
 ## Coverage Breakdown (90%+ Tier)
 | Module | Coverage | Notes |
 |--------|----------|-------|
 | src\persistence\message_repo.py | ~97% | ✅ Excellent |
-| src\app\exporter.py | ~95% | ✅ Excellent (v1.2.2 added TXT) |
+| src\app\exporter.py | ~95% | ✅ Excellent |
 | src\persistence\db.py | 91% | ✅ Excellent |
 | src\chat\openai_client.py | 90% | ✅ Excellent |
-
-## Coverage Breakdown (Good Tier)
-| Module | Coverage | Notes |
-|--------|----------|-------|
-| src\chat\client.py | 85% | ✅ Good |
-| src\app\service.py | ~84% | ✅ Good (v1.5.0 added forward) |
-
-## Coverage Breakdown (Zero Tier - Deferred)
-| Module | Coverage | Notes |
-|--------|----------|-------|
-| src\ui\main_window.py | 0% | ⚠️ UI (CustomTkinter) |
-| src\ui\enhanced_markdown.py | ~10% | ⚠️ UI (CustomTkinter) v1.4.0 |
-| src\ui\settings.py | 0% | ⚠️ UI (CustomTkinter) |
-| src\ui\settings_constants.py | 0% | ⚠️ Constants |
-| src\ui\statistics_dialog.py | 0% | ⚠️ UI (CustomTkinter) v1.3.2 |
-| src\ui\folder_dialog.py | 0% | ⚠️ UI (CustomTkinter) v1.3.5 |
-| src\ui\templates_dialog.py | 0% | ⚠️ UI (CustomTkinter) |
-| src\ui\design_system.py | 0% | ⚠️ Constants (v2.0.0) |
-| src\logging_config.py | 0% | ⚠️ Low priority |
-| src\main.py | 0% | ⚠️ Entry point |
 
 ## Export Formats Supported (6 formats)
 | Format | Extension | Since | Notes |
@@ -188,6 +151,5 @@ def _bind_pressed_style(btn: ctk.CTkButton) -> None:
 | DOCX | .docx | v1.0.9 | Word format |
 
 ## Open Questions
-- v2.1.0 应该添加什么新功能？
-- 是否需要引入自定义字体？
-- 暗色模式是否需要进一步增强？
+- v2.1.0 UI 集成方案：右键菜单 vs 转发按钮？
+- 是否需要批量转发功能？
