@@ -2,6 +2,22 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [2.3.0] - 2026-03-03
+
+### ✨ Features
+
+- **Quick Action Bar**: Fast access to common features above input area
+  - Template shortcuts: Click to apply frequently used templates directly
+  - Star filter toggle: One-click switch to starred messages view
+  - Recent sessions dropdown: Quick jump to last 5 active sessions
+  - Variable support: `{date}`, `{time}`, `{datetime}` in templates
+  - New component: `src/ui/quick_action_bar.py`
+
+### 🧪 Testing
+
+- All 415 tests passing
+- Quick Action Bar fully integrated with existing star filter
+
 ## [2.2.0] - 2026-03-03
 
 ### ✨ Features
