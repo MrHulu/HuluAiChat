@@ -180,6 +180,19 @@ class AppService:
         """加载指定会话的消息列表。"""
         return self._message_repo.list_by_session(session_id)
 
+    def load_messages_paginated(self, session_id: str, offset: int = 0, limit: int = 50) -> tuple[list[Message], int]:
+        """v2.8.0: 分页加载指定会话的消息。
+
+        Args:
+            session_id: 会话ID
+            offset: 偏移量（跳过的消息数）
+            limit: 每页消息数
+
+        Returns:
+            (消息列表, 总消息数)
+        """
+        return self._message_repo.list_by_session_paginated(session_id, offset, limit)
+
     def search_messages(self, session_id: str, query: str, start_date: str | None = None, end_date: str | None = None,
                        case_sensitive: bool = False, whole_word: bool = False, regex: bool = False) -> list[Message]:
         """在指定会话中搜索消息。

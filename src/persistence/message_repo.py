@@ -90,6 +90,20 @@ class MessageRepository(ABC):
         ...
 
     @abstractmethod
+    def list_by_session_paginated(self, session_id: str, offset: int = 0, limit: int = 50) -> tuple[list[Message], int]:
+        """v2.8.0: 分页获取会话消息，返回消息列表和总数。
+
+        Args:
+            session_id: 会话ID
+            offset: 偏移量（跳过的消息数）
+            limit: 每页消息数
+
+        Returns:
+            (消息列表, 总消息数)
+        """
+        ...
+
+    @abstractmethod
     def forward_to_session(self, message_ids: list[str], target_session_id: str) -> int:
         """将指定消息转发到另一个会话。
 
@@ -553,3 +567,27 @@ class SqliteMessageRepository(MessageRepository):
                     "ORDER BY created_at DESC"
                 )
             return [_row_to_message(r) for r in cur.fetchall()]
+
+    def list_by_session_paginated(self, session_id: str, offset: int = 0, limit: int = 50) -> tuple[list[Message], int]:
+        """v2.8.0: 分页获取会话消息。"""
+        # 先获取总数
+        with self._conn() as conn:
+            cur = conn.execute(
+                "SELECT COUNT(*) FROM message WHERE session_id = ?",
+                (session_id,)
+            )
+            total = cur.fetchone()[0]
+
+        # 获取分页数据
+        with self._conn() as conn:
+            cur = conn.execute(
+                """SELECT id, session_id, role, content, created_at, is_pinned, quoted_message_id, quoted_content, is_starred
+                   FROM message
+                   WHERE session_id = ?
+                   ORDER BY created_at ASC
+                   LIMIT ? OFFSET ?""",
+                (session_id, limit, offset),
+            )
+            messages = [_row_to_message(r) for r in cur.fetchall()]
+
+        return messages, total
