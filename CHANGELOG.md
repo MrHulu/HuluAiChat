@@ -2,6 +2,27 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [2.7.0] - 2026-03-03
+
+### ✨ Features
+
+- **Custom Session Titles**: Rename your chat sessions for better organization
+  - Double-click any session in the sidebar to rename it
+  - Right-click context menu with "Rename" and "Delete" options
+  - Clean dialog for editing session titles
+  - Changes are saved immediately to the database
+  - Perfect for organizing your conversations by topic
+
+### 🔧 Improvements
+
+- Better session management with custom titles
+- More intuitive ways to organize your chat history
+- Context menu provides quick access to session actions
+
+### 🧪 Testing
+
+- All tests passing
+
 ## [2.6.0] - 2026-03-03
 
 ### ✨ Features

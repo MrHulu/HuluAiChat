@@ -253,6 +253,14 @@ class QuickSwitcherDialog:
                 command=lambda sid=session.id: self._select_session(sid),
             )
             btn.pack(fill="x", padx=8, pady=4)
+
+            # v2.7.0: 绑定双击事件编辑标题
+            btn.bind("<Double-Button-1>", lambda e, sid=session.id, title=session.title: self._rename_session(sid, title))
+            # v2.7.0: 绑定右键菜单
+            btn.bind("<Button-3>", lambda e, sid=session.id, title=session.title: self._show_session_context_menu(e, sid, title))
+            # macOS 右键支持
+            btn.bind("<Button-2>", lambda e, sid=session.id, title=session.title: self._show_session_context_menu(e, sid, title))
+
             self._session_buttons.append(btn)
 
         # 更新选中状态
@@ -3948,6 +3956,28 @@ class MainWindow:
         if result:
             self._app.update_session_title(session_id, result[0])
             self._refresh_sessions_list()
+
+    def _rename_session(self, session_id: str, current_title: str) -> None:
+        """v2.7.0: 重命名会话标题。"""
+        self._on_rename_session(session_id, current_title)
+
+    def _show_session_context_menu(self, event, session_id: str, title: str) -> None:
+        """v2.7.0: 显示会话的右键上下文菜单。"""
+        import tkinter as tk
+        # 创建右键菜单
+        menu = tk.Menu(self._root, tearoff=0)
+        if _HAS_DESIGN_SYSTEM:
+            menu_bg = Colors.DROPDOWN_BG[0] if self._appearance == "Light" else Colors.DROPDOWN_BG[1]
+            menu_fg = Colors.TEXT_PRIMARY[0] if self._appearance == "Light" else Colors.TEXT_PRIMARY[1]
+            menu.configure(bg=menu_bg, fg=menu_fg, activebackground=Colors.PRIMARY[0], activeforeground="white")
+
+        # 添加菜单项
+        menu.add_command(label="✏️ 重命名", command=lambda: [self._rename_session(session_id, title), menu.destroy()])
+        menu.add_separator()
+        menu.add_command(label="🗑️ 删除", command=lambda: [self._on_delete_session(session_id), menu.destroy()])
+
+        # 在鼠标位置显示菜单
+        menu.tk_popup(event.x_root, event.y_root)
 
     def _on_delete_session(self, session_id: str) -> None:
         if messagebox.askyesno("删除会话", "确定删除该会话？", parent=self._root):
