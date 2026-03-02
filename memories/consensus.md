@@ -1,53 +1,78 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-03 - Cycle #74
+2026-03-03 - Cycle #75
 
 ## Current Phase
-🎉 **v2.2.0 已发布**
+**v2.3.0 开发完成**
 
-## What We Did This Cycle (Cycle #74)
-- ✅ **合并到 master**: 通过 PR #22 完成
-- ✅ **创建 release tag**: v2.2.0
-- ✅ **更新 CHANGELOG**: v2.2.0 release notes
+## What We Did This Cycle (Cycle #75)
+- ✅ **创建 QuickActionBar 组件**: `src/ui/quick_action_bar.py`
+  - 模板快捷按钮（显示前4个模板）
+  - 星标切换按钮（一键切换星标视图）
+  - 最近会话按钮（快速访问最近5个会话）
+- ✅ **集成到主窗口**: 输入框上方新增快捷操作栏
+- ✅ **模板变量支持**: `{date}`, `{time}`, `{datetime}` 自动替换
+- ✅ **测试通过**: 415 tests passing
 
 ## Key Decisions Made
-- v2.2.0 消息星标功能正式发布
-- 仓库规则要求通过 PR 推送 master
+- v2.3.0 功能方向：**快捷操作栏**
+- 放弃原有候选功能：搜索增强（已有）、会话归档（复杂度高）
+- 设计原则：小而美、快速实现、高用户价值
 
 ## Active Projects
-- HuluChat: **v2.1.0** - ✅ 已发布 (2026-03-02)
-- HuluChat: **v2.2.0** - ✅ 已发布 (2026-03-03)
+- HuluChat: **v2.3.0** - 开发完成，待发布
 
-## Next Action (Cycle #75)
-### 规划 v2.3.0 功能方向
-可能的方向：
-1. **搜索增强** - 全文搜索、历史搜索记录
-2. **会话归档** - 归档不活跃的会话
-3. **多模型配置** - 快速切换不同 AI 模型
-4. **UI 细节优化** - 虚拟化渲染、动画
-5. **快捷回复模板** - 预设回复模板管理
-6. **会话导出增强** - 批量导出、定时备份
-
-请选择或提出新的功能方向。
+## Next Action (Cycle #76)
+### 发布 v2.3.0
+1. 创建 PR 到 master
+2. 创建 release tag
+3. 更新 GitHub Release
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
-- Latest Release: **v2.2.0** (2026-03-03) ✅
+- Latest Release: **v2.2.0** (2026-03-03)
+- Current Development: **v2.3.0** (Quick Action Bar)
 - Tech Stack: Python, CustomTkinter, OpenAI API, SQLite, fpdf2, python-docx, CTkMarkdown
-- Tests: **133 passing**
-- Branch: `master`
+- Tests: **415 passing**
+- Branch: `dev`
 
 ## Release History
 | Version | Date | Highlights |
 |---------|------|------------|
+| **v2.3.0** | **2026-03-03** | **⚡ 快捷操作栏 - 模板、星标、最近会话** |
 | **v2.2.0** | **2026-03-03** | **⭐ 消息星标/收藏功能** |
 | **v2.1.0** | **2026-03-02** | **➡️ 消息转发功能** |
 | **v2.0.0** | **2026-03-02** | **🎨 UI 彻底改造 - 统一设计系统** |
-| v1.5.2 | 2026-03-01 | 🖱️ Right-Click Context Menu |
-| v1.5.1 | 2026-03-01 | ➡️ Single Message Forward |
-| v1.5.0 | 2026-03-01 | ➡️ Message Forwarding |
-| v1.4.9 | 2026-03-01 | 🔧 Regex search |
+
+## v2.3.0 新增功能
+
+### 快捷操作栏
+位于输入框上方，提供常用功能的快速访问：
+
+#### 模板快捷按钮
+- 显示前4个常用模板
+- 一键应用模板内容到输入框
+- 支持变量：`{date}` → 当前日期, `{time}` → 当前时间
+
+#### 星标切换
+- 点击切换星标消息视图
+- 按钮状态同步更新
+
+#### 最近会话
+- 下拉显示最近5个活跃会话
+- 快速切换会话
+
+### 新增文件
+```
+src/ui/quick_action_bar.py  # 快捷操作栏组件
+```
+
+### 修改文件
+```
+src/ui/main_window.py       # 集成快捷操作栏
+CHANGELOG.md                # 添加 v2.3.0 release notes
+```
 
 ## v2.2.0 新增功能
 
@@ -56,36 +81,6 @@
 - **取消收藏**: 右键菜单 → "⭐ 取消收藏"
 - **过滤显示**: 工具栏星星按钮切换仅显示收藏消息
 - **Toast 通知**: 收藏状态变更即时反馈
-
-### 后端实现
-```python
-# src/app/service.py
-def star_message(self, message_id: str) -> None
-def unstar_message(self, message_id: str) -> None
-def toggle_message_starred(self, message_id: str) -> bool
-def list_starred_messages(self, session_id: str | None = None) -> list[Message]
-
-# src/persistence/message_repo.py
-def set_starred(self, message_id: str, starred: bool) -> bool
-def list_starred(self, session_id: str | None = None) -> list[Message]
-```
-
-### 数据模型变更
-```python
-# src/persistence/models.py
-@dataclass
-class Message:
-    # ... 其他字段
-    is_starred: bool = False  # v2.2.0: 是否收藏（星标）
-```
-
-## v2.1.0 新增功能
-
-### 消息转发
-- **单条消息转发**: 右键菜单 → "➡️ 转发到..."
-- **批量转发**: 消息选择模式 → "📤 转发选中" 按钮
-- **会话选择对话框**: 可滚动会话列表，按更新时间排序
-- **保留属性**: 引用关系、固定状态、原始时间戳
 
 ## v2.0.0 设计系统架构
 
@@ -101,13 +96,6 @@ Input       # 输入框规范 (HEIGHT=36, PADDING=(0, 12), RADIUS=6)
 Card        # 卡片规范 (PADDING=16, RADIUS=8)
 Message     # 消息气泡规范 (PADDING=(12,16), MAX_WIDTH_RATIO=0.75)
 ```
-
-### 已迁移到设计系统的模块
-- ✅ `main_window.py` - 主窗口、搜索结果、Toast 通知、转发对话框
-- ✅ `statistics_dialog.py` - 统计对话框
-- ✅ `folder_dialog.py` - 文件夹管理对话框（全部）
-- ✅ `templates_dialog.py` - 模板管理对话框（全部）
-- ✅ `settings.py` - 设置对话框（部分）
 
 ## Complete Keyboard Shortcuts
 
@@ -167,15 +155,6 @@ Message     # 消息气泡规范 (PADDING=(12,16), MAX_WIDTH_RATIO=0.75)
 | src\ui\__init__.py | 100% | ✅ |
 | src\ui\settings_validation.py | 100% | ✅ |
 
-## Coverage Breakdown (90%+ Tier)
-| Module | Coverage | Notes |
-|--------|----------|-------|
-| src\persistence\message_repo.py | ~97% | ✅ Excellent (含星标功能) |
-| src\app\service.py | ~95% | ✅ Excellent (含星标功能) |
-| src\app\exporter.py | ~95% | ✅ Excellent |
-| src\persistence\db.py | 91% | ✅ Excellent |
-| src\chat\openai_client.py | 90% | ✅ Excellent |
-
 ## Export Formats Supported (6 formats)
 | Format | Extension | Since | Notes |
 |--------|-----------|-------|-------|
@@ -187,10 +166,10 @@ Message     # 消息气泡规范 (PADDING=(12,16), MAX_WIDTH_RATIO=0.75)
 | DOCX | .docx | v1.0.9 | Word format |
 
 ## Open Questions
-- v2.3.0 功能方向？
+- 无
 
 ## Future Ideas
-- 搜索历史记录
+- 搜索历史记录（已有搜索历史下拉）
 - 会话分组拖拽
 - 大会话分页加载
 - 消息虚拟化渲染
