@@ -2,6 +2,28 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [2.5.0] - 2026-03-03
+
+### ✨ Features
+
+- **Session Archive**: Archive sessions to keep your chat list organized
+  - Click 📦/📂 button next to each session to toggle archive status
+  - Toolbar 📂 button: Toggle between showing all sessions or archived only
+  - Archived sessions are grouped at the bottom of the session list
+  - Keyboard shortcut: `Ctrl+A` to toggle archive status of current session
+  - Toast notifications for archive status changes
+
+### 🔧 Improvements
+
+- Session list now separates archived sessions into their own group
+- Better organization for users with many conversations
+- Archive filter button in toolbar matches star filter behavior
+
+### 🧪 Testing
+
+- All 415 tests passing
+- Database migration for `is_archived` column tested
+
 ## [2.4.0] - 2026-03-03
 
 ### ✨ Features

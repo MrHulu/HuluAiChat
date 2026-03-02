@@ -759,6 +759,8 @@ class MainWindow:
         self._search_whole_word: bool = False  # 全词匹配
         self._search_regex: bool = False  # 正则表达式 (v1.4.9)
         self._starred_only: bool = False  # v2.2.0: 仅显示收藏消息
+        self._archived_only: bool = False  # v2.5.0: 仅显示归档会话
+        self._show_archived_only: bool = False  # v2.5.0: 会话列表归档过滤
         # 最近搜索下拉框
         self._search_dropdown: ctk.CTkFrame | None = None  # 下拉框容器
         self._search_dropdown_open: bool = False  # 下拉框是否打开
@@ -933,6 +935,20 @@ class MainWindow:
         )
         self._starred_filter_btn.grid(row=0, column=3, padx=(4, 0))
 
+        # v2.5.0: 归档过滤按钮
+        self._archived_only_var = ctk.BooleanVar(value=False)
+        self._archived_filter_btn = ctk.CTkButton(
+            top,
+            text="📂",
+            width=36,
+            height=search_height,
+            command=self._toggle_archived_filter,
+            fg_color="transparent",
+            hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray80", "gray28"),
+            text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray60")
+        )
+        self._archived_filter_btn.grid(row=0, column=4, padx=(4, 0))
+
         # v2.4.0: 搜索结果面板按钮
         if _HAS_SEARCH_RESULTS_PANEL:
             self._search_panel_btn = ctk.CTkButton(
@@ -945,11 +961,11 @@ class MainWindow:
                 hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray80", "gray28"),
                 text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray60")
             )
-            self._search_panel_btn.grid(row=0, column=4, padx=(4, 0))
+            self._search_panel_btn.grid(row=0, column=5, padx=(4, 0))
             # 更新后续按钮的列位置
-            search_options_column = 5
+            search_options_column = 6
         else:
-            search_options_column = 4
+            search_options_column = 5
 
         # v1.4.8: 高级搜索选项容器
         search_options_frame = ctk.CTkFrame(top, fg_color="transparent")
@@ -1283,6 +1299,8 @@ class MainWindow:
         self._root.bind("<Control-Alt-S>", lambda e: self._on_show_global_statistics())  # 大写 S 兼容
         self._root.bind("<Control-p>", lambda e: self._on_toggle_current_session_pinned())  # Ctrl+P 切换置顶
         self._root.bind("<Control-P>", lambda e: self._on_toggle_current_session_pinned())  # 大写 P 兼容
+        # v2.5.0: Ctrl+Shift+A 切换归档
+        self._root.bind("<Control-A>", lambda e: self._on_toggle_current_session_archived())  # Ctrl+A 切换归档
         self._root.bind("<Control-F>", lambda e: self._on_manage_folders())  # Ctrl+Shift+F 管理文件夹
         self._root.bind("<Control-C>", lambda e: self._on_copy_last_message())  # Ctrl+Shift+C 复制最后一条 AI 回复
         self._root.bind("<Control-Up>", lambda e: self._on_next_session(-1))  # Ctrl+Up 上一个会话
@@ -2525,7 +2543,7 @@ class MainWindow:
     # ========== 会话列表刷新 ==========
 
     def _refresh_sessions_list(self) -> None:
-        """刷新会话列表，按文件夹分组显示。"""
+        """v2.5.0: 刷新会话列表，按文件夹分组显示，支持归档会话过滤/分组。"""
         for row in self._session_row_frames:
             row.destroy()
         self._session_row_frames.clear()
@@ -2534,25 +2552,42 @@ class MainWindow:
         folders = self._app.list_folders()
 
         # 按文件夹分组会话
-        root_sessions = []  # 根目录的会话
-        folder_sessions = {}  # {folder_id: [sessions]}
+        root_sessions = []  # 根目录的会话（非归档）
+        folder_sessions = {}  # {folder_id: [sessions]} （非归档）
+        archived_root_sessions = []  # 归档的根目录会话
+        archived_folder_sessions = {}  # {folder_id: [sessions]} 归档的文件夹会话
 
         all_sessions = self._app.load_sessions()
         for s in all_sessions:
-            if s.folder_id is None:
-                root_sessions.append(s)
+            # v2.5.0: 过滤归档会话
+            if self._show_archived_only and not s.is_archived:
+                continue
+            if not self._show_archived_only and s.is_archived:
+                # 如果不是只显示归档模式，跳过归档会话（它们会单独显示）
+                pass  # 稍后处理
+            if s.is_archived:
+                # 归档会话单独分组
+                if s.folder_id is None:
+                    archived_root_sessions.append(s)
+                else:
+                    if s.folder_id not in archived_folder_sessions:
+                        archived_folder_sessions[s.folder_id] = []
+                    archived_folder_sessions[s.folder_id].append(s)
             else:
-                if s.folder_id not in folder_sessions:
-                    folder_sessions[s.folder_id] = []
-                folder_sessions[s.folder_id].append(s)
+                # 非归档会话正常分组
+                if s.folder_id is None:
+                    root_sessions.append(s)
+                else:
+                    if s.folder_id not in folder_sessions:
+                        folder_sessions[s.folder_id] = []
+                    folder_sessions[s.folder_id].append(s)
 
-        # 先显示根目录的会话
+        # 先显示根目录的会话（非归档）
         if root_sessions:
-            # 根目录标题（可选）
             for s in root_sessions:
                 self._add_session_row(s, current)
 
-        # 然后显示每个文件夹的会话
+        # 然后显示每个文件夹的会话（非归档）
         for folder in folders:
             if folder.id not in folder_sessions:
                 continue
@@ -2565,6 +2600,41 @@ class MainWindow:
             # 如果未折叠，显示会话
             if not is_collapsed:
                 for s in folder_sessions[folder.id]:
+                    self._add_session_row(s, current)
+
+        # v2.5.0: 如果不是只显示归档模式，在列表底部显示归档会话分组
+        if not self._show_archived_only and (archived_root_sessions or archived_folder_sessions):
+            # 添加归档分隔线
+            separator = ctk.CTkFrame(
+                self._session_list_frame,
+                height=1,
+                fg_color=Colors.BORDER_SUBTLE if _HAS_DESIGN_SYSTEM else ("gray75", "gray30"),
+            )
+            separator.grid(sticky="ew", pady=(12, 4))
+            self._session_row_frames.append(separator)
+
+            # 归档标题
+            archived_header = ctk.CTkFrame(self._session_list_frame, fg_color="transparent")
+            archived_header.grid(sticky="ew", pady=(0, 4))
+            archived_label = ctk.CTkLabel(
+                archived_header,
+                text="📦 归档会话",
+                font=("", FontSize.SM, "bold"),
+                text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray50", "gray65"),
+                anchor="w",
+            )
+            archived_label.pack(side="left", padx=(0, Spacing.SM))
+            self._session_row_frames.append(archived_header)
+
+            # 显示归档的根目录会话
+            for s in archived_root_sessions:
+                self._add_session_row(s, current)
+
+            # 显示归档的文件夹会话
+            for folder in folders:
+                if folder.id not in archived_folder_sessions:
+                    continue
+                for s in archived_folder_sessions[folder.id]:
                     self._add_session_row(s, current)
 
         self._session_list_frame.columnconfigure(0, weight=1)
@@ -2621,7 +2691,7 @@ class MainWindow:
         return row
 
     def _add_session_row(self, s: Session, current: str | None) -> None:
-        """v2.0.0: 添加单个会话行 - 使用设计系统。"""
+        """v2.0.0: 添加单个会话行 - 使用设计系统。v2.5.0: 添加归档按钮。"""
         row = ctk.CTkFrame(self._session_list_frame, fg_color="transparent")
         row.grid(sticky="ew", pady=Spacing.XS if _HAS_DESIGN_SYSTEM else 2)
         row.grid_columnconfigure(0, weight=1)
@@ -2663,14 +2733,24 @@ class MainWindow:
         )
         btn_pin.grid(row=0, column=2, padx=2)
         _bind_pressed_style(btn_pin)
-        # 移动到文件夹按钮
+        # v2.5.0: 归档按钮
+        archive_text = "📦" if s.is_archived else "📂"
+        btn_archive = ctk.CTkButton(
+            row, text=archive_text, width=26, height=26,
+            fg_color="transparent", hover_color=_hover_btn, border_width=0,
+            text_color=_side_text,
+            command=lambda sid=s.id: self._on_toggle_session_archived(sid),
+        )
+        btn_archive.grid(row=0, column=3, padx=2)
+        _bind_pressed_style(btn_archive)
+        # 移动到文件夹按钮 (列号后移)
         btn_folder = ctk.CTkButton(
             row, text="📁", width=26, height=26,
             fg_color="transparent", hover_color=_hover_btn, border_width=0,
             text_color=_side_text,
             command=lambda sid=s.id: self._on_move_session_to_folder(sid),
         )
-        btn_folder.grid(row=0, column=3, padx=2)
+        btn_folder.grid(row=0, column=4, padx=2)
         _bind_pressed_style(btn_folder)
         btn_rename = ctk.CTkButton(
             row, text="✏️", width=26, height=26,
@@ -2678,7 +2758,7 @@ class MainWindow:
             text_color=_side_text,
             command=lambda sid=s.id, tit=s.title: self._on_rename_session(sid, tit),
         )
-        btn_rename.grid(row=0, column=4, padx=2)
+        btn_rename.grid(row=0, column=5, padx=2)
         _bind_pressed_style(btn_rename)
         btn_del = ctk.CTkButton(
             row, text="🗑️", width=26, height=26,
@@ -2686,7 +2766,7 @@ class MainWindow:
             text_color=_side_text,
             command=lambda sid=s.id: self._on_delete_session(sid),
         )
-        btn_del.grid(row=0, column=5, padx=2)
+        btn_del.grid(row=0, column=6, padx=2)
         _bind_pressed_style(btn_del)
         self._session_row_frames.append(row)
 
@@ -3660,6 +3740,46 @@ class MainWindow:
         status = "已置顶" if new_pinned else "已取消置顶"
         ToastNotification(self._root, f"{icon} {status}")
         self._refresh_sessions_list()
+
+    # ========== v2.5.0: 会话归档 ==========
+
+    def _on_toggle_session_archived(self, session_id: str) -> None:
+        """切换会话归档状态。"""
+        new_archived = self._app.toggle_session_archived(session_id)
+        icon = "📦" if new_archived else "📂"
+        status = "已归档" if new_archived else "已取消归档"
+        ToastNotification(self._root, f"{icon} {status}")
+        self._refresh_sessions_list()
+
+    def _on_toggle_current_session_archived(self) -> None:
+        """切换当前会话的归档状态（键盘快捷键 Ctrl+A，仅在选择模式外有效）。"""
+        # 如果在选择模式下，执行全选操作
+        if self._selection_mode:
+            self._select_all_messages()
+            return
+        # 否则切换归档状态
+        current_session_id = self._app.current_session_id()
+        if current_session_id:
+            self._on_toggle_session_archived(current_session_id)
+
+    def _toggle_archived_filter(self) -> None:
+        """v2.5.0: 切换仅显示归档会话过滤。"""
+        self._show_archived_only = not self._show_archived_only
+        # 更新按钮样式
+        if self._show_archived_only:
+            self._archived_filter_btn.configure(
+                fg_color=Colors.BTN_DEFAULT if _HAS_DESIGN_SYSTEM else ("gray70", "gray35"),
+                text_color=Colors.TEXT_HIGH_CONTRAST if _HAS_DESIGN_SYSTEM else ("gray10", "gray90")
+            )
+        else:
+            self._archived_filter_btn.configure(
+                fg_color="transparent",
+                text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray60")
+            )
+        # 刷新会话列表
+        self._refresh_sessions_list()
+
+    # ========== v2.5.0: 归档结束 ==========
 
     def _on_toggle_current_session_pinned(self) -> None:
         """切换当前会话的置顶状态（键盘快捷键 Ctrl+P）。"""
