@@ -744,6 +744,7 @@ class MainWindow:
         self._search_case_sensitive: bool = False  # 区分大小写
         self._search_whole_word: bool = False  # 全词匹配
         self._search_regex: bool = False  # 正则表达式 (v1.4.9)
+        self._starred_only: bool = False  # v2.2.0: 仅显示收藏消息
         # 最近搜索下拉框
         self._search_dropdown: ctk.CTkFrame | None = None  # 下拉框容器
         self._search_dropdown_open: bool = False  # 下拉框是否打开
@@ -902,7 +903,23 @@ class MainWindow:
         )
         self._date_filter_btn.grid(row=0, column=2, padx=(4, 0))
 
+        # v2.2.0: 星标过滤按钮
+        self._starred_only_var = ctk.BooleanVar(value=False)
+        self._starred_filter_btn = ctk.CTkButton(
+            top,
+            text="⭐",
+            width=36,
+            height=search_height,
+            command=self._toggle_starred_filter,
+            fg_color="transparent",
+            hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray80", "gray28"),
+            text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray60")
+        )
+        self._starred_filter_btn.grid(row=0, column=3, padx=(4, 0))
+
         # v1.4.8: 高级搜索选项容器
+        search_options_frame = ctk.CTkFrame(top, fg_color="transparent")
+        search_options_frame.grid(row=0, column=4, padx=(4, 0))
         search_options_frame = ctk.CTkFrame(top, fg_color="transparent")
         search_options_frame.grid(row=0, column=3, padx=(4, 0))
 
@@ -1372,6 +1389,23 @@ class MainWindow:
         # 刷新搜索结果
         self._refresh_chat_area()
 
+    def _toggle_starred_filter(self) -> None:
+        """v2.2.0: 切换仅显示收藏消息过滤。"""
+        self._starred_only = not self._starred_only
+        # 更新按钮样式
+        if self._starred_only:
+            self._starred_filter_btn.configure(
+                fg_color=Colors.BTN_DEFAULT if _HAS_DESIGN_SYSTEM else ("gray70", "gray35"),
+                text_color=Colors.TEXT_HIGH_CONTRAST if _HAS_DESIGN_SYSTEM else ("gray10", "gray90")
+            )
+        else:
+            self._starred_filter_btn.configure(
+                fg_color="transparent",
+                text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray60")
+            )
+        # 刷新聊天区域
+        self._refresh_chat_area()
+
     def _open_date_picker(self, field: str) -> None:
         """打开日期选择器。
 
@@ -1552,7 +1586,7 @@ class MainWindow:
         self._app.set_sidebar_expanded(self._sidebar_expanded)
         self._refresh_sidebar_width()
 
-    def _show_message_context_menu(self, event, message_id: str, content: str, role: str, is_pinned: bool) -> None:
+    def _show_message_context_menu(self, event, message_id: str, content: str, role: str, is_pinned: bool, is_starred: bool = False) -> None:
         """显示消息的右键上下文菜单 (v1.5.2)。"""
         # v2.0.0: 创建上下文菜单 - 使用设计系统
         if _HAS_DESIGN_SYSTEM:
@@ -1584,6 +1618,10 @@ class MainWindow:
 
         context_menu.add_separator()
 
+        # v2.2.0: 收藏/取消收藏
+        star_label = "⭐ 取消收藏" if is_starred else "⭐ 收藏"
+        context_menu.add_command(label=star_label, command=lambda: self._toggle_star(message_id))
+
         # 置顶/取消置顶
         pin_label = "📍 取消置顶" if is_pinned else "📌 置顶"
         context_menu.add_command(label=pin_label, command=lambda: self._toggle_pin(message_id))
@@ -1612,6 +1650,13 @@ class MainWindow:
         """切换消息的置顶状态。"""
         is_pinned = self._app.toggle_message_pin(message_id)
         msg = "📌 已置顶" if is_pinned else "📍 已取消置顶"
+        ToastNotification(self._root, msg)
+        self._refresh_chat_area()
+
+    def _toggle_star(self, message_id: str) -> None:
+        """v2.2.0: 切换消息的收藏（星标）状态。"""
+        is_starred = self._app.toggle_message_starred(message_id)
+        msg = "⭐ 已收藏" if is_starred else "⭐ 已取消收藏"
         ToastNotification(self._root, msg)
         self._refresh_chat_area()
 
@@ -2535,6 +2580,18 @@ class MainWindow:
             self._matched_message_ids = set()
             filtered_messages = messages
 
+        # v2.2.0: 星标过滤
+        if self._starred_only:
+            filtered_messages = [m for m in filtered_messages if m.is_starred]
+            # 如果没有收藏消息，显示提示
+            if not filtered_messages and not self._search_query:
+                lbl = ctk.CTkLabel(
+                    self._chat_scroll, text="⭐ 暂无收藏消息", anchor="w", justify="left", text_color=("gray40", "gray60")
+                )
+                lbl.grid(sticky="ew", pady=8)
+                self._chat_scroll.columnconfigure(0, weight=1)
+                return
+
         if not filtered_messages:
             hint = "没有匹配的消息" if self._search_query else "在下方输入并发送。"
             lbl = ctk.CTkLabel(
@@ -2682,11 +2739,11 @@ class MainWindow:
             frame.grid_columnconfigure(1, weight=0)
 
             # v1.5.2: 绑定右键上下文菜单
-            frame.bind("<Button-3>", lambda e, mid=m.id, content=m.content, role=m.role, pinned=m.is_pinned:
-                       self._show_message_context_menu(e, mid, content, role, pinned))
+            frame.bind("<Button-3>", lambda e, mid=m.id, content=m.content, role=m.role, pinned=m.is_pinned, starred=m.is_starred:
+                       self._show_message_context_menu(e, mid, content, role, pinned, starred))
             # macOS 右键支持
-            frame.bind("<Button-2>", lambda e, mid=m.id, content=m.content, role=m.role, pinned=m.is_pinned:
-                       self._show_message_context_menu(e, mid, content, role, pinned))
+            frame.bind("<Button-2>", lambda e, mid=m.id, content=m.content, role=m.role, pinned=m.is_pinned, starred=m.is_starred:
+                       self._show_message_context_menu(e, mid, content, role, pinned, starred))
 
             # v1.4.0: Use enhanced markdown with code block copy buttons for AI responses
             if m.role == "assistant" and _HAS_ENHANCED_MARKDOWN:
@@ -2936,11 +2993,11 @@ class MainWindow:
             frame.grid_columnconfigure(1, weight=0)
 
             # v1.5.2: 绑定右键上下文菜单（搜索结果）
-            frame.bind("<Button-3>", lambda e, mid=m.id, content=m.content, role=m.role, pinned=m.is_pinned:
-                       self._show_message_context_menu(e, mid, content, role, pinned))
+            frame.bind("<Button-3>", lambda e, mid=m.id, content=m.content, role=m.role, pinned=m.is_pinned, starred=m.is_starred:
+                       self._show_message_context_menu(e, mid, content, role, pinned, starred))
             # macOS 右键支持
-            frame.bind("<Button-2>", lambda e, mid=m.id, content=m.content, role=m.role, pinned=m.is_pinned:
-                       self._show_message_context_menu(e, mid, content, role, pinned))
+            frame.bind("<Button-2>", lambda e, mid=m.id, content=m.content, role=m.role, pinned=m.is_pinned, starred=m.is_starred:
+                       self._show_message_context_menu(e, mid, content, role, pinned, starred))
 
             # v2.0.0: 消息内容 - 使用设计系统间距
             msg_padding = Spacing.MD if _HAS_DESIGN_SYSTEM else 12

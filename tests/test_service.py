@@ -1230,3 +1230,164 @@ class TestMessageForwarding:
 
         assert count == 0
         message_repo.forward_to_session.assert_called_once_with([], "s2")
+
+
+class TestMessageStarred:
+    """v2.2.0: 消息收藏（星标）功能测试。"""
+
+    def test_star_message(self):
+        """测试收藏消息。"""
+        message_repo = MagicMock()
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=MagicMock(),
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+
+        service.star_message("m1")
+
+        message_repo.set_starred.assert_called_once_with("m1", True)
+
+    def test_unstar_message(self):
+        """测试取消收藏消息。"""
+        message_repo = MagicMock()
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=MagicMock(),
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+
+        service.unstar_message("m1")
+
+        message_repo.set_starred.assert_called_once_with("m1", False)
+
+    def test_list_starred_messages_delegates_to_repo(self):
+        """测试获取收藏消息列表委托给仓储。"""
+        message_repo = MagicMock()
+        starred = [
+            Message(id="m1", session_id="s1", role="user", content="Starred", created_at="2024-01-01T00:00:00Z", is_starred=True)
+        ]
+        message_repo.list_starred.return_value = starred
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=MagicMock(),
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+
+        # 不指定 session_id，获取所有收藏消息
+        result = service.list_starred_messages()
+
+        assert result == starred
+        message_repo.list_starred.assert_called_once_with(None)
+
+    def test_list_starred_messages_by_session(self):
+        """测试获取指定会话的收藏消息。"""
+        message_repo = MagicMock()
+        starred = [
+            Message(id="m1", session_id="s1", role="user", content="Starred", created_at="2024-01-01T00:00:00Z", is_starred=True)
+        ]
+        message_repo.list_starred.return_value = starred
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=MagicMock(),
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+
+        result = service.list_starred_messages("s1")
+
+        assert result == starred
+        message_repo.list_starred.assert_called_once_with("s1")
+
+    def test_toggle_message_starred_from_unstarred_to_starred(self):
+        """测试从未收藏切换到收藏。"""
+        message_repo = MagicMock()
+        messages = [
+            Message(id="m1", session_id="s1", role="user", content="Test", created_at="2024-01-01T00:00:00Z", is_starred=False)
+        ]
+        message_repo.list_by_session.return_value = messages
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=MagicMock(),
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+        service.switch_session("s1")
+
+        result = service.toggle_message_starred("m1")
+
+        assert result is True
+        message_repo.set_starred.assert_called_once_with("m1", True)
+
+    def test_toggle_message_starred_from_starred_to_unstarred(self):
+        """测试从收藏切换到未收藏。"""
+        message_repo = MagicMock()
+        messages = [
+            Message(id="m1", session_id="s1", role="user", content="Test", created_at="2024-01-01T00:00:00Z", is_starred=True)
+        ]
+        message_repo.list_by_session.return_value = messages
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=MagicMock(),
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+        service.switch_session("s1")
+
+        result = service.toggle_message_starred("m1")
+
+        assert result is False
+        message_repo.set_starred.assert_called_once_with("m1", False)
+
+    def test_toggle_message_starred_searches_all_sessions_when_not_in_current(self):
+        """测试当消息不在当前会话时，从全局搜索。"""
+        message_repo = MagicMock()
+        # 当前会话没有该消息
+        message_repo.list_by_session.return_value = []
+        # 全局搜索找到该消息
+        all_messages = [
+            Message(id="m1", session_id="s2", role="user", content="Test", created_at="2024-01-01T00:00:00Z", is_starred=False)
+        ]
+        message_repo.list_all.return_value = all_messages
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=MagicMock(),
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+        service.switch_session("s1")
+
+        result = service.toggle_message_starred("m1")
+
+        assert result is True
+        message_repo.set_starred.assert_called_once_with("m1", True)
+        message_repo.list_all.assert_called_once()
+
+    def test_toggle_message_starred_returns_false_when_not_found(self):
+        """测试切换不存在的消息返回 False。"""
+        message_repo = MagicMock()
+        message_repo.list_by_session.return_value = []
+        message_repo.list_all.return_value = []
+
+        service = AppService(
+            config_store=MagicMock(),
+            session_repo=MagicMock(),
+            message_repo=message_repo,
+            chat_client=MagicMock(),
+        )
+        service.switch_session("s1")
+
+        result = service.toggle_message_starred("nonexistent")
+
+        assert result is False
+        message_repo.set_starred.assert_not_called()
