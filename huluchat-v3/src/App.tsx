@@ -2,12 +2,13 @@
  * HuluChat v3 - Main App
  * Tauri + React + FastAPI AI Chat Application
  */
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useState, useEffect, useCallback, lazy, Suspense } from "react";
 import { Toaster, toast } from "sonner";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ChatView } from "@/components/chat";
 import { SessionList } from "@/components/sidebar";
 import { UpdateNotification } from "@/components/UpdateNotification";
+import { KeyboardHelpDialog } from "@/components/keyboard/KeyboardHelpDialog";
 import { useSession, useKeyboardShortcuts } from "@/hooks";
 import { exportSession, ExportFormat } from "@/api/client";
 
@@ -19,6 +20,7 @@ const SettingsDialog = lazy(() =>
 function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [keyboardHelpOpen, setKeyboardHelpOpen] = useState(false);
 
   const {
     sessions,
@@ -81,10 +83,42 @@ function App() {
     onOpenSettings: () => setSettingsOpen(true),
   });
 
+  // F1 和 ? 键打开快捷键帮助
+  const handleHelpKeyDown = useCallback((event: KeyboardEvent) => {
+    // F1 键
+    if (event.key === "F1") {
+      event.preventDefault();
+      setKeyboardHelpOpen((prev) => !prev);
+      return;
+    }
+
+    // ? 键（不在输入框中时）
+    if (event.key === "?") {
+      const target = event.target as HTMLElement;
+      const isInputFocused =
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable;
+
+      if (!isInputFocused) {
+        event.preventDefault();
+        setKeyboardHelpOpen((prev) => !prev);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleHelpKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleHelpKeyDown);
+    };
+  }, [handleHelpKeyDown]);
+
   return (
     <>
       <Toaster position="top-center" richColors closeButton />
       <UpdateNotification />
+      <KeyboardHelpDialog open={keyboardHelpOpen} onOpenChange={setKeyboardHelpOpen} />
       <div className="flex h-screen bg-background text-foreground">
       {/* 侧边栏 */}
       <SessionList
@@ -106,7 +140,7 @@ function App() {
           <div className="flex items-center gap-3">
             <h1 className="text-lg font-bold">HuluChat</h1>
             <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-              v3.3.0
+              v3.4.0
             </span>
           </div>
           <div className="flex items-center gap-2">
