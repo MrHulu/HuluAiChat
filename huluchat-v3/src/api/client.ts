@@ -155,3 +155,35 @@ export async function testConnection(): Promise<{ status: string; message: strin
   const response = await fetch(`${API_BASE}/settings/test`, { method: "POST" });
   return response.json();
 }
+
+// Export format types
+export type ExportFormat = "markdown" | "json" | "txt";
+
+/**
+ * Export a session with all messages in specified format
+ * Returns a blob that can be downloaded
+ */
+export async function exportSession(
+  sessionId: string,
+  format: ExportFormat = "markdown"
+): Promise<{ blob: Blob; filename: string }> {
+  const response = await fetch(
+    `${API_BASE}/sessions/${sessionId}/export?format=${format}`
+  );
+  if (!response.ok) {
+    throw new Error(`Export failed: ${response.statusText}`);
+  }
+
+  // Extract filename from Content-Disposition header
+  const contentDisposition = response.headers.get("Content-Disposition");
+  let filename = `export.${format}`;
+  if (contentDisposition) {
+    const match = contentDisposition.match(/filename="(.+)"/);
+    if (match) {
+      filename = match[1];
+    }
+  }
+
+  const blob = await response.blob();
+  return { blob, filename };
+}

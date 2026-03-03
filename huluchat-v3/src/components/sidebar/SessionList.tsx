@@ -3,7 +3,7 @@
  * 会话列表侧边栏
  */
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
-import { Session, SessionSearchResult, searchSessions } from "@/api/client";
+import { Session, SessionSearchResult, searchSessions, ExportFormat } from "@/api/client";
 import { SessionItem } from "./SessionItem";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,7 @@ export interface SessionListProps {
   onSelectSession: (id: string) => void;
   onCreateSession: () => void;
   onDeleteSession: (id: string) => void;
+  onExportSession?: (sessionId: string, format: ExportFormat) => void;
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
 }
@@ -27,6 +28,7 @@ export function SessionList({
   onSelectSession,
   onCreateSession,
   onDeleteSession,
+  onExportSession,
   isCollapsed = false,
   onToggleCollapse,
 }: SessionListProps) {
@@ -274,6 +276,7 @@ export function SessionList({
                     isActive={session.id === currentSessionId}
                     onClick={() => onSelectSession(session.id)}
                     onDelete={() => onDeleteSession(session.id)}
+                    onExport={onExportSession}
                   />
                   {/* Show matched messages if in search mode */}
                   {searchResults && matchedMessages.length > 0 && (

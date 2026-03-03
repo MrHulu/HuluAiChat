@@ -9,6 +9,7 @@ import { ChatView } from "@/components/chat";
 import { SessionList } from "@/components/sidebar";
 import { UpdateNotification } from "@/components/UpdateNotification";
 import { useSession, useKeyboardShortcuts } from "@/hooks";
+import { exportSession, ExportFormat } from "@/api/client";
 
 // 懒加载设置对话框（非核心功能）
 const SettingsDialog = lazy(() =>
@@ -49,6 +50,30 @@ function App() {
     }
   };
 
+  // 导出会话
+  const handleExportSession = async (sessionId: string, format: ExportFormat) => {
+    try {
+      const { blob, filename } = await exportSession(sessionId, format);
+
+      // Create download link
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+
+      // Cleanup
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      toast.success(`Exported as ${format.toUpperCase()}`);
+    } catch (error) {
+      console.error("Export failed:", error);
+      toast.error("Failed to export session");
+    }
+  };
+
   // 键盘快捷键
   useKeyboardShortcuts({
     onNewSession: handleCreateSession,
@@ -69,6 +94,7 @@ function App() {
         onSelectSession={selectSession}
         onCreateSession={handleCreateSession}
         onDeleteSession={handleDeleteSession}
+        onExportSession={handleExportSession}
         isCollapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
@@ -80,7 +106,7 @@ function App() {
           <div className="flex items-center gap-3">
             <h1 className="text-lg font-bold">HuluChat</h1>
             <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-              v3.2.0
+              v3.3.0
             </span>
           </div>
           <div className="flex items-center gap-2">
