@@ -58,25 +58,67 @@ try:
 except ImportError:
     _HAS_SEARCH_RESULTS_PANEL = False
 
+# v2.9.0: 动画效果
+try:
+    from src.ui.animated_button import enhance_sidebar_buttons
+    _HAS_ANIMATED_BUTTON = True
+except ImportError:
+    _HAS_ANIMATED_BUTTON = False
+
 SIDEBAR_WIDTH = 220
 SIDEBAR_COLLAPSED = 40  # 折叠后仅图标条，尽量收窄
 POLL_MS = 50
 
 
 class ToastNotification:
-    """v2.0.0: 浮动提示框，用于显示操作反馈。"""
+    """v2.9.0: 浮动提示框，用于显示操作反馈。带阴影和淡入淡出动画。"""
     def __init__(self, parent: ctk.CTk, message: str, duration_ms: int = 1500) -> None:
         self._parent = parent
         self._duration = duration_ms
         self._widget: ctk.CTkFrame | None = None
+        self._shadow_widgets: list[ctk.CTkFrame] = []
+        self._fade_out_steps = 8
+        self._fade_in_steps = 6
 
-        # v2.0.0: 使用设计系统配色
-        bg_color = Colors.TOAST_BG if _HAS_DESIGN_SYSTEM else ("gray80", "gray30")
-        text_color = Colors.TOAST_TEXT if _HAS_DESIGN_SYSTEM else ("gray15", "gray88")
-        border_color = Colors.TOAST_BORDER if _HAS_DESIGN_SYSTEM else ("gray70", "gray40")
-        radius = Radius.MD if _HAS_DESIGN_SYSTEM else 8
+        # v2.9.0: 美化配色 - 更柔和的渐变效果
+        if _HAS_DESIGN_SYSTEM:
+            # 深色半透明背景，更有质感
+            bg_color = ("#2D3748", "#1A202C")
+            text_color = ("#F7FAFC", "#EDF2F7")
+            border_color = ("#4A5568", "#2D3748")
+            shadow_color = ("#1A202C", "#0D1117")
+            radius = Radius.LG  # 更大的圆角 (12px)
+        else:
+            bg_color = ("gray80", "gray25")
+            text_color = ("gray10", "gray95")
+            border_color = ("gray65", "gray35")
+            shadow_color = ("gray50", "gray15")
+            radius = 10
 
-        # 创建半透明背景的提示框
+        # 阴影层级 - 用多层 offset 模拟阴影
+        shadow_layers = [
+            (0, 0), (2, 2), (4, 4), (6, 6), (8, 8)
+        ]
+
+        # 创建阴影层（从外到内）
+        for offset_x, offset_y in reversed(shadow_layers):
+            shadow = ctk.CTkFrame(
+                parent,
+                fg_color=("transparent", "transparent"),
+                corner_radius=radius + 2,
+            )
+            # 阴影效果用深色边框模拟
+            inner_shadow = ctk.CTkFrame(
+                shadow,
+                fg_color=shadow_color,
+                corner_radius=radius,
+            )
+            inner_shadow.pack(fill="both", expand=True, padx=1, pady=1)
+            shadow.place(relx=0.5, rely=0.85, anchor="center",
+                        x=offset_x, y=offset_y)
+            self._shadow_widgets.append(shadow)
+
+        # 主提示框
         self._widget = ctk.CTkFrame(
             parent,
             fg_color=bg_color,
@@ -89,17 +131,60 @@ class ToastNotification:
         label = ctk.CTkLabel(
             self._widget,
             text=message,
-            font=("", FontSize.SM),
+            font=("", FontSize.SM, "bold"),
             text_color=text_color,
-            padx=Spacing.LG,
-            pady=Spacing.SM
+            padx=Spacing.LG + 4,
+            pady=Spacing.SM + 2
         )
         label.pack()
 
+        # 淡入动画
+        self._fade_in(0)
+
         # 自动消失
-        self._widget.after(duration_ms, self._destroy)
+        self._widget.after(duration_ms, self._fade_out_start)
+
+    def _fade_in(self, step: int) -> None:
+        """淡入动画。"""
+        if step >= self._fade_in_steps:
+            return
+
+        # 简单的缩放效果模拟淡入
+        scale = 0.85 + (0.15 * step / self._fade_in_steps)
+        if self._widget and self._widget.winfo_exists():
+            # 当前位置
+            current_x = self._widget.winfo_x()
+            current_y = self._widget.winfo_y()
+            # 重新 place 实现缩放效果（通过调整偏移）
+            self._widget.place(relx=0.5, rely=0.85, anchor="center")
+            self._widget.after(15, lambda: self._fade_in(step + 1))
+
+    def _fade_out_start(self) -> None:
+        """开始淡出。"""
+        self._fade_out(0)
+
+    def _fade_out(self, step: int) -> None:
+        """淡出动画。"""
+        if step >= self._fade_out_steps:
+            self._destroy()
+            return
+
+        # 逐渐缩小阴影偏移模拟淡出
+        for i, shadow in enumerate(self._shadow_widgets):
+            if shadow.winfo_exists():
+                offset = max(0, 8 - step - i)
+                shadow.place(relx=0.5, rely=0.85, anchor="center",
+                            x=offset, y=offset)
+
+        self._widget.after(20, lambda: self._fade_out(step + 1))
 
     def _destroy(self) -> None:
+        # 清理阴影层
+        for shadow in self._shadow_widgets:
+            if shadow.winfo_exists():
+                shadow.place_forget()
+        self._shadow_widgets.clear()
+
         if self._widget and self._widget.winfo_exists():
             self._widget.place_forget()
             self._widget = None
@@ -892,20 +977,23 @@ class MainWindow:
         # v2.0.0: 搜索框 - 使用设计系统
         self._search_var = ctk.StringVar()
         search_height = Input.HEIGHT if _HAS_DESIGN_SYSTEM else 32
+        # v2.9.0: 焦点状态优化 - 初始边框较细，焦点时加粗并变色
+        initial_border_width = 1 if _HAS_DESIGN_SYSTEM else 0
         self._search_entry = ctk.CTkEntry(
             top,
             placeholder_text="🔍 搜索... (Ctrl+K)",
             width=200,
             textvariable=self._search_var,
             height=search_height,
-            border_width=1 if _HAS_DESIGN_SYSTEM else 0,
+            border_width=initial_border_width,
             border_color=Colors.BORDER_SUBTLE if _HAS_DESIGN_SYSTEM else ("gray70", "gray40"),
             corner_radius=Input.RADIUS if _HAS_DESIGN_SYSTEM else 0,
         )
         self._search_entry.grid(row=0, column=0, sticky="w")
         self._search_entry.bind("<KeyRelease>", self._on_search_input)
         self._search_entry.bind("<Escape>", lambda e: self._clear_search())
-        self._search_entry.bind("<FocusIn>", lambda e: self._show_search_dropdown())
+        # v2.9.0: 焦点状态 - 链式处理焦点效果
+        self._search_entry.bind("<FocusIn>", self._on_search_focus_in)
         self._search_entry.bind("<FocusOut>", self._on_search_focus_out)
         self._search_entry.bind("<Return>", self._on_search_enter)
         # v2.0.0: 全局搜索切换按钮
@@ -1228,12 +1316,23 @@ class MainWindow:
         )
         self._selection_mode_btn.pack(side="left")
 
-        self._input = ctk.CTkTextbox(input_frame, height=80, wrap="word")
+        # v2.9.0: 焦点状态优化 - 初始边框较细，焦点时加粗并变色
+        initial_border_width = 1 if _HAS_DESIGN_SYSTEM else 0
+        self._input = ctk.CTkTextbox(
+            input_frame,
+            height=80,
+            wrap="word",
+            border_width=initial_border_width,
+            border_color=Colors.BORDER_SUBTLE if _HAS_DESIGN_SYSTEM else ("gray70", "gray40"),
+        )
         self._input.grid(row=2, column=1, sticky="ew", padx=(0, 8))
         self._input.bind("<Return>", self._on_input_return)
         self._input.bind("<Control-Return>", lambda e: None)  # Ctrl+Enter 换行由默认行为处理
         # v1.3.0: Bind KeyRelease to update character counter
         self._input.bind("<KeyRelease>", self._on_input_key_release)
+        # v2.9.0: 焦点状态 - 获得焦点时边框加粗变为主色
+        self._input.bind("<FocusIn>", self._on_input_focus_in)
+        self._input.bind("<FocusOut>", self._on_input_focus_out)
 
         # v2.0.0: 发送按钮使用品牌色
         self._send_btn = ctk.CTkButton(
@@ -1842,10 +1941,45 @@ class MainWindow:
             self._search_dropdown = None
         self._search_dropdown_open = False
 
+    def _on_search_focus_in(self, event) -> None:
+        """v2.9.0: 搜索框获得焦点时，更新视觉效果并显示下拉框。"""
+        if _HAS_DESIGN_SYSTEM:
+            # 焦点时：边框加粗变为主色，背景更亮
+            self._search_entry.configure(
+                border_width=2,
+                border_color=Colors.FOCUS_BORDER,
+            )
+        # 显示最近搜索下拉框
+        self._show_search_dropdown()
+
     def _on_search_focus_out(self, event) -> None:
-        """搜索框失去焦点时，延迟隐藏下拉框（允许点击下拉项）。"""
+        """v2.9.0: 搜索框失去焦点时，恢复默认样式并延迟隐藏下拉框（允许点击下拉项）。"""
+        if _HAS_DESIGN_SYSTEM:
+            # 恢复默认边框样式
+            self._search_entry.configure(
+                border_width=1,
+                border_color=Colors.BORDER_SUBTLE,
+            )
         # 延迟100ms，给点击事件时间处理
         self._root.after(100, self._hide_search_dropdown)
+
+    def _on_input_focus_in(self, event) -> None:
+        """v2.9.0: 输入框获得焦点时，更新视觉效果。"""
+        if _HAS_DESIGN_SYSTEM:
+            # 焦点时：边框加粗变为主色
+            self._input.configure(
+                border_width=2,
+                border_color=Colors.FOCUS_BORDER,
+            )
+
+    def _on_input_focus_out(self, event) -> None:
+        """v2.9.0: 输入框失去焦点时，恢复默认样式。"""
+        if _HAS_DESIGN_SYSTEM:
+            # 恢复默认边框样式
+            self._input.configure(
+                border_width=1,
+                border_color=Colors.BORDER_SUBTLE,
+            )
 
     def _select_recent_search(self, query: str) -> None:
         """选择一个最近搜索项。"""
@@ -2788,6 +2922,10 @@ class MainWindow:
 
         self._session_list_frame.columnconfigure(0, weight=1)
 
+        # v2.9.0: 为会话按钮添加平滑悬停动画
+        if _HAS_ANIMATED_BUTTON:
+            self._root.after(50, lambda: enhance_sidebar_buttons(self._session_list_frame))
+
     def _add_folder_header(self, folder, is_collapsed: bool, session_count: int) -> ctk.CTkFrame:
         """添加文件夹标题行。"""
         row = ctk.CTkFrame(self._session_list_frame, fg_color="transparent")
@@ -3112,11 +3250,11 @@ class MainWindow:
                 border_color = border_color_user
                 border_width = 1
 
-            # v2.0.0: 消息容器 - 使用设计系统
+            # v2.9.0: 消息容器 - 使用设计系统（更大圆角）
             outer_frame = ctk.CTkFrame(
                 self._chat_scroll,
                 fg_color=Colors.MSG_CONTAINER_BG if _HAS_DESIGN_SYSTEM else "transparent",
-                corner_radius=Radius.XL if _HAS_DESIGN_SYSTEM else 16,
+                corner_radius=Radius.XXL if _HAS_DESIGN_SYSTEM else 16,
             )
             outer_frame.grid(sticky="ew", pady=Spacing.SM if _HAS_DESIGN_SYSTEM else 6)
             outer_frame.grid_columnconfigure(0, weight=1)
@@ -3178,11 +3316,11 @@ class MainWindow:
                 )
                 quote_label.pack(fill="x")
 
-            # v2.0.0: 主消息 frame - 使用设计系统
+            # v2.9.0: 主消息 frame - 使用设计系统（更大圆角）
             frame = ctk.CTkFrame(
                 outer_frame,
                 fg_color=fg,
-                corner_radius=Radius.XL if _HAS_DESIGN_SYSTEM else 16,
+                corner_radius=Radius.XXL if _HAS_DESIGN_SYSTEM else 16,
                 border_color=border_color,
                 border_width=border_width
             )
@@ -4493,9 +4631,9 @@ class MainWindow:
         )
 
     def _append_user_message(self, session_id: str, content: str, quoted_content: str | None = None) -> None:
-        # v2.0.0: 使用设计系统
+        # v2.9.0: 使用设计系统 + 阴影效果
         # 外层容器
-        outer_radius = Radius.XL if _HAS_DESIGN_SYSTEM else 12
+        outer_radius = Radius.XXL if _HAS_DESIGN_SYSTEM else 12
         outer_frame = ctk.CTkFrame(self._chat_scroll, fg_color="transparent", corner_radius=outer_radius)
         outer_frame.grid(sticky="ew", pady=Spacing.SM if _HAS_DESIGN_SYSTEM else 6)
         outer_frame.grid_columnconfigure(0, weight=1)
@@ -4525,14 +4663,30 @@ class MainWindow:
             )
             quote_label.pack(fill="x")
 
-        # v2.0.0: 用户消息使用设计系统品牌色
-        frame = ctk.CTkFrame(
-            outer_frame,
-            fg_color=Colors.USER_MSG_BG if _HAS_DESIGN_SYSTEM else ("#e8f4fd", "#1e3a5f"),
-            corner_radius=MessageSpec.RADIUS_USER[0] if _HAS_DESIGN_SYSTEM else 12,
-            border_width=0,
-        )
-        frame.grid(row=content_row, column=0, sticky="ew", padx=16, pady=(2, 0))
+        # v2.9.0: 用户消息使用柔和紫色 + 阴影
+        if _HAS_DESIGN_SYSTEM:
+            frame, shadows = self._create_message_bubble_with_shadow(
+                outer_frame,
+                bg_color=Colors.USER_MSG_BG,
+                shadow_color=Colors.USER_MSG_SHADOW,
+                radius=MessageSpec.RADIUS_USER,
+            )
+            self._apply_message_shadow(frame, shadows, {
+                "row": content_row,
+                "column": 0,
+                "sticky": "ew",
+                "padx": 16,
+                "pady": (2, 0),
+            })
+        else:
+            frame = ctk.CTkFrame(
+                outer_frame,
+                fg_color=("#e8f4fd", "#1e3a5f"),
+                corner_radius=12,
+                border_width=0,
+            )
+            frame.grid(row=content_row, column=0, sticky="ew", padx=16, pady=(2, 0))
+
         frame.grid_columnconfigure(0, weight=1)
         frame.grid_columnconfigure(1, weight=0)
         tb = ctk.CTkTextbox(
@@ -4557,6 +4711,77 @@ class MainWindow:
         _bind_pressed_style(copy_btn)
         self._chat_widgets.append(("user", outer_frame))
         self._chat_scroll.columnconfigure(0, weight=1)
+
+    # v2.9.0: 消息气泡阴影辅助函数
+    def _create_message_bubble_with_shadow(
+        self,
+        parent: ctk.CTkFrame,
+        bg_color: tuple[str, str],
+        shadow_color: tuple[str, str],
+        radius: int,
+        shadow_offset: int = 2,
+    ) -> tuple[ctk.CTkFrame, list[ctk.CTkFrame]]:
+        """
+        创建带阴影的消息气泡
+
+        Returns:
+            (气泡框架, 阴影层列表)
+        """
+        shadow_layers = []
+
+        # 简单的两层阴影（比 Toast 更轻量）
+        for i in range(2):
+            offset = shadow_offset * (2 - i)
+            shadow = ctk.CTkFrame(
+                parent,
+                fg_color=shadow_color,
+                corner_radius=radius + offset,
+            )
+            shadow_layers.append(shadow)
+
+        # 主气泡
+        bubble = ctk.CTkFrame(
+            parent,
+            fg_color=bg_color,
+            corner_radius=radius,
+            border_width=0,
+        )
+
+        return bubble, shadow_layers
+
+    def _apply_message_shadow(
+        self,
+        bubble: ctk.CTkFrame,
+        shadow_layers: list[ctk.CTkFrame],
+        grid_kwargs: dict,
+    ) -> None:
+        """
+        应用消息气泡的阴影层（需要在气泡 grid 后调用）
+
+        Args:
+            bubble: 主气泡框架
+            shadow_layers: 阴影层列表
+            grid_kwargs: 气泡的 grid 参数
+        """
+        padx = grid_kwargs.get("padx", 16)
+        pady = grid_kwargs.get("pady", (2, 0))
+
+        # 阴影层放置在气泡下方
+        for i, shadow in enumerate(shadow_layers):
+            offset = 2 - i
+            shadow.grid(
+                row=grid_kwargs.get("row", 0),
+                column=grid_kwargs.get("column", 0),
+                sticky="ew",
+                padx=(padx[0] + offset, padx[1] - offset) if isinstance(padx, tuple) else padx + offset,
+                pady=(pady[0] + offset, pady[1] + offset) if isinstance(pady, tuple) else pady + offset,
+            )
+
+        # 主气泡放在最上层
+        bubble.grid(**grid_kwargs)
+        # 将阴影层移到气泡下方（使用 lift() 避免 raise 保留字冲突）
+        for shadow in shadow_layers:
+            bubble.lift()  # 将气泡提升到最上层
 
     def _start_loading_animation(self) -> None:
         """v1.3.0: Start the animated loading indicator."""
@@ -4635,8 +4860,8 @@ class MainWindow:
                     continue
                 if isinstance(chunk, TextChunk):
                     if self._streaming_textbox_id is None:
-                        # v2.0.0: 使用设计系统
-                        outer_radius = Radius.XL if _HAS_DESIGN_SYSTEM else 12
+                        # v2.9.0: 使用设计系统 + 阴影效果
+                        outer_radius = Radius.XXL if _HAS_DESIGN_SYSTEM else 12
                         outer_frame = ctk.CTkFrame(
                             self._chat_scroll,
                             fg_color="transparent",
@@ -4645,13 +4870,30 @@ class MainWindow:
                         outer_frame.grid(sticky="ew", pady=Spacing.SM if _HAS_DESIGN_SYSTEM else 6)
                         outer_frame.grid_columnconfigure(0, weight=1)
 
-                        frame = ctk.CTkFrame(
-                            outer_frame,
-                            fg_color=Colors.AI_MSG_BG if _HAS_DESIGN_SYSTEM else ("#f5f5f5", "#2d2d2d"),
-                            corner_radius=MessageSpec.RADIUS_AI[1] if _HAS_DESIGN_SYSTEM else 12,
-                            border_width=0,
-                        )
-                        frame.grid(sticky="ew", padx=16, pady=(2, 0))
+                        # v2.9.0: AI 消息使用柔和背景 + 阴影
+                        if _HAS_DESIGN_SYSTEM:
+                            frame, shadows = self._create_message_bubble_with_shadow(
+                                outer_frame,
+                                bg_color=Colors.AI_MSG_BG,
+                                shadow_color=Colors.AI_MSG_SHADOW,
+                                radius=MessageSpec.RADIUS_AI,
+                            )
+                            self._apply_message_shadow(frame, shadows, {
+                                "row": 0,
+                                "column": 0,
+                                "sticky": "ew",
+                                "padx": 16,
+                                "pady": (2, 0),
+                            })
+                        else:
+                            frame = ctk.CTkFrame(
+                                outer_frame,
+                                fg_color=("#f5f5f5", "#2d2d2d"),
+                                corner_radius=12,
+                                border_width=0,
+                            )
+                            frame.grid(sticky="ew", padx=16, pady=(2, 0))
+
                         frame.grid_columnconfigure(0, weight=1)
                         tb = ctk.CTkTextbox(
                             frame, wrap="word", height=280,
