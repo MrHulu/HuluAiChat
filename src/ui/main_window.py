@@ -60,10 +60,11 @@ except ImportError:
 
 # v2.9.0: 动画效果
 try:
-    from src.ui.animated_button import enhance_sidebar_buttons
+    from src.ui.animated_button import enhance_sidebar_buttons, SendButton
     _HAS_ANIMATED_BUTTON = True
 except ImportError:
     _HAS_ANIMATED_BUTTON = False
+    SendButton = None  # type: ignore[misc, assignment]
 
 SIDEBAR_WIDTH = 220
 SIDEBAR_COLLAPSED = 40  # 折叠后仅图标条，尽量收窄
@@ -1335,16 +1336,23 @@ class MainWindow:
         self._input.bind("<FocusOut>", self._on_input_focus_out)
 
         # v2.0.0: 发送按钮使用品牌色
-        self._send_btn = ctk.CTkButton(
-            input_frame,
-            text="发送",
-            width=80,
-            command=self._on_send,
-            fg_color=Colors.PRIMARY if _HAS_DESIGN_SYSTEM else None,
-            hover_color=Colors.PRIMARY_HOVER if _HAS_DESIGN_SYSTEM else None,
-            text_color=("white", "white") if _HAS_DESIGN_SYSTEM else None,
-            corner_radius=Button.PRIMARY_RADIUS if _HAS_DESIGN_SYSTEM else None,
-        )
+        # v2.10.0: 使用带动画的 SendButton
+        if _HAS_ANIMATED_BUTTON and SendButton is not None:
+            self._send_btn = SendButton(
+                input_frame,
+                command=self._on_send,
+            )
+        else:
+            self._send_btn = ctk.CTkButton(
+                input_frame,
+                text="发送",
+                width=80,
+                command=self._on_send,
+                fg_color=Colors.PRIMARY if _HAS_DESIGN_SYSTEM else None,
+                hover_color=Colors.PRIMARY_HOVER if _HAS_DESIGN_SYSTEM else None,
+                text_color=("white", "white") if _HAS_DESIGN_SYSTEM else None,
+                corner_radius=Button.PRIMARY_RADIUS if _HAS_DESIGN_SYSTEM else None,
+            )
         self._send_btn.grid(row=2, column=2)
 
         # v2.0.0: Enhanced loading indicator with animation support
@@ -2205,7 +2213,7 @@ class MainWindow:
                     return
                 self._error_label.configure(text="")
                 self._start_loading_animation()
-                self._send_btn.configure(state="disabled")
+                self._set_send_button_sending(True)
                 self._streaming_session_id = sid
                 self._app.regenerate_response(
                     sid,
@@ -4035,7 +4043,7 @@ class MainWindow:
             return
         self._error_label.configure(text="")
         self._start_loading_animation()  # v1.3.0: Start animation
-        self._send_btn.configure(state="disabled")
+        self._set_send_button_sending(True)
         self._streaming_session_id = sid
         self._app.regenerate_response(
             sid,
@@ -4592,6 +4600,19 @@ class MainWindow:
         if abs(self._input.cget("height") - new_height) > 5:
             self._input.configure(height=new_height)
 
+    def _set_send_button_sending(self, sending: bool) -> None:
+        """v2.10.0: 设置发送按钮状态（带动画）。
+
+        Args:
+            sending: True 显示发送中状态，False 恢复正常
+        """
+        if _HAS_ANIMATED_BUTTON and SendButton is not None and isinstance(self._send_btn, SendButton):
+            self._send_btn.set_sending(sending)
+        else:
+            # 回退到原始方式
+            state = "disabled" if sending else "normal"
+            self._send_btn.configure(state=state)
+
     def _on_send(self) -> None:
         text = self._input.get("1.0", "end").strip()
         if not text:
@@ -4611,7 +4632,7 @@ class MainWindow:
         self._char_count_label.configure(text="0 字符")  # v1.3.0: Reset counter
         self._input.configure(height=80)  # v1.3.1: Reset input height after send
         self._start_loading_animation()  # v1.3.0: Start animation
-        self._send_btn.configure(state="disabled")
+        self._set_send_button_sending(True)
         self._streaming_session_id = sid
 
         # 获取引用消息
@@ -4809,7 +4830,7 @@ class MainWindow:
 
     def _stream_done_ui(self) -> None:
         self._stop_loading_animation()  # v1.3.0: Stop animation
-        self._send_btn.configure(state="normal")
+        self._set_send_button_sending(False)
         self._streaming_session_id = None
         self._streaming_textbox_id = None
         self._streaming_text = []
@@ -4821,7 +4842,7 @@ class MainWindow:
     def _stream_error_ui(self, message: str) -> None:
         self._stop_loading_animation()  # v1.3.0: Stop animation
         self._error_label.configure(text=message)
-        self._send_btn.configure(state="normal")
+        self._set_send_button_sending(False)
         self._streaming_session_id = None
         self._streaming_textbox_id = None
         self._streaming_text = []
@@ -4833,14 +4854,14 @@ class MainWindow:
                 if is_error(chunk):
                     self._stop_loading_animation()  # v1.3.0: Stop animation
                     self._error_label.configure(text=chunk.message)
-                    self._send_btn.configure(state="normal")
+                    self._set_send_button_sending(False)
                     self._streaming_session_id = None
                     self._streaming_textbox_id = None
                     self._streaming_text = []
                     continue
                 if isinstance(chunk, DoneChunk):
                     self._stop_loading_animation()  # v1.3.0: Stop animation
-                    self._send_btn.configure(state="normal")
+                    self._set_send_button_sending(False)
                     if self._streaming_textbox_id is not None:
                         tb = self._find_streaming_textbox()
                         if tb is not None and _USE_MARKDOWN and CTkMarkdown:
