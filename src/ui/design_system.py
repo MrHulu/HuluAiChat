@@ -113,6 +113,8 @@ class Colors:
     BTN_DEFAULT: ColorPair = ("#F0F1F3", "#3A3A3A")      # 默认按钮背景
     BTN_HOVER: ColorPair = ("#E8E9EA", "#454545")        # 按钮悬停
     BTN_PRESSED: ColorPair = ("#D8D9DA", "#505050")      # 按钮按下
+    BTN_SECONDARY: ColorPair = ("#E5E5E5", "#3D3D3D")    # 次要按钮背景
+    BTN_SECONDARY_HOVER: ColorPair = ("#D5D5D5", "#4D4D4D")  # 次要按钮悬停
 
 
 # ============================================================================
