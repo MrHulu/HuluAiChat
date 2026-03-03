@@ -48,7 +48,7 @@
 
 ## Company State
 - Current Feature: [描述]
-- Tech Stack: Python, PyQt6, OpenAI API
+- Tech Stack: Python, FastAPI, Tauri, React, TypeScript
 - Pending: [待处理事项]
 
 ## Open Questions
@@ -62,5 +62,44 @@
 3. 每轮必须产出实物（代码、文档、配置），纯讨论禁止
 4. 同一个 Next Action 连续出现 2 轮 → 卡住了，换方向或缩范围直接 ship
 
+---
+
+## 🚨 当前最高优先级任务
+
+### UI 架构重构 - Tauri + FastAPI
+
+**状态**：待启动
+**详细需求**：见 `docs/UI_REFACTORING.md`
+
+**技术方案**：
+- 桌面框架：Tauri 2.0 (Rust + 系统 WebView)
+- 前端：React 18 + TypeScript + TailwindCSS
+- 后端：FastAPI (Python) 作为 Sidecar 运行
+- 通信：HTTP REST + WebSocket
+
+**执行阶段**：
+
+| Phase | 内容 | 周期 |
+|-------|------|------|
+| Phase 1 | 基础架构搭建 | 2 周 |
+| Phase 2 | 核心功能迁移 | 3 周 |
+| Phase 3 | UI 完善 | 2 周 |
+| Phase 4 | 打包发布 | 1 周 |
+
+**当前行动**：
+1. 阅读 `docs/UI_REFACTORING.md` 了解完整需求
+2. 创建 Tauri + React 项目骨架
+3. 创建 FastAPI 后端项目骨架
+4. 验证 Sidecar 通信
+
+**注意事项**：
+- 后端 Python 代码（OpenAI API、SQLite）尽量复用
+- 优先保证核心功能可用
+- 每个阶段完成后更新 `docs/UI_REFACTORING.md` 的进度
+
+---
+
 ## 长期任务
-优化UI/UX，你有一个有高级审美的工程师
+
+1. **UI 重构**：使用 Tauri + FastAPI 重构（当前最高优先级）
+2. **UI/UX 优化**：保持高级审美的工程师视角
