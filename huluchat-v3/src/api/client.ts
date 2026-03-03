@@ -19,6 +19,21 @@ export interface Message {
   created_at: string;
 }
 
+// Search types
+export interface MessageMatch {
+  id: string;
+  session_id: string;
+  role: "user" | "assistant";
+  content_snippet: string;
+  created_at: string;
+}
+
+export interface SessionSearchResult {
+  session: Session;
+  matched_messages: MessageMatch[];
+  match_type: "title" | "content" | "both";
+}
+
 /**
  * Health check
  */
@@ -56,6 +71,14 @@ export async function getSession(id: string): Promise<Session> {
  */
 export async function deleteSession(id: string): Promise<void> {
   await fetch(`${API_BASE}/sessions/${id}`, { method: "DELETE" });
+}
+
+/**
+ * Search sessions by title and message content
+ */
+export async function searchSessions(query: string): Promise<SessionSearchResult[]> {
+  const response = await fetch(`${API_BASE}/sessions/search/?q=${encodeURIComponent(query)}`);
+  return response.json();
 }
 
 /**
