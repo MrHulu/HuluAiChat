@@ -54,7 +54,8 @@ jobs:
         run: |
           cd huluchat-v3/backend
           pyinstaller --onefile --name huluchat-backend-${{ matrix.target }} main.py
-          mv dist/huluchat-backend-${{ matrix.target }}.exe ../src-tauri/binaries/
+          Move-Item -Force dist/huluchat-backend-${{ matrix.target }}.exe ../src-tauri/binaries/
+        shell: pwsh
 
       - name: Upload backend binary
         uses: actions/upload-artifact@v4
