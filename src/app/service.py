@@ -180,6 +180,19 @@ class AppService:
         """加载指定会话的消息列表。"""
         return self._message_repo.list_by_session(session_id)
 
+    def load_messages_paginated(self, session_id: str, offset: int = 0, limit: int = 50) -> tuple[list[Message], int]:
+        """v2.8.0: 分页加载指定会话的消息。
+
+        Args:
+            session_id: 会话ID
+            offset: 偏移量（跳过的消息数）
+            limit: 每页消息数
+
+        Returns:
+            (消息列表, 总消息数)
+        """
+        return self._message_repo.list_by_session_paginated(session_id, offset, limit)
+
     def search_messages(self, session_id: str, query: str, start_date: str | None = None, end_date: str | None = None,
                        case_sensitive: bool = False, whole_word: bool = False, regex: bool = False) -> list[Message]:
         """在指定会话中搜索消息。
@@ -288,6 +301,33 @@ class AppService:
             self._session_repo.set_pinned(session_id, new_pinned)
             return new_pinned
         return False
+
+    # ========== 会话归档 (v2.5.0) ==========
+
+    def toggle_session_archived(self, session_id: str) -> bool:
+        """切换会话归档状态，返回新的归档状态。"""
+        session = self._session_repo.get_by_id(session_id)
+        if session:
+            new_archived = not session.is_archived
+            self._session_repo.set_archived(session_id, new_archived)
+            logger.info("toggle_session_archived: 会话 %s 归档状态=%s", session_id, new_archived)
+            return new_archived
+        return False
+
+    def archive_session(self, session_id: str) -> None:
+        """归档会话。"""
+        self._session_repo.set_archived(session_id, True)
+        logger.info("archive_session: 会话 %s 已归档", session_id)
+
+    def unarchive_session(self, session_id: str) -> None:
+        """取消归档会话。"""
+        self._session_repo.set_archived(session_id, False)
+        logger.info("unarchive_session: 会话 %s 已取消归档", session_id)
+
+    def is_session_archived(self, session_id: str) -> bool:
+        """检查会话是否已归档。"""
+        session = self._session_repo.get_by_id(session_id)
+        return session.is_archived if session else False
 
     # ========== 提示词模板管理 ==========
 

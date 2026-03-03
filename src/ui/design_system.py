@@ -41,18 +41,22 @@ class Colors:
     BORDER_SUBTLE: ColorPair = ("#E5E5E5", "#404040")     # 细边框
     BORDER_DEFAULT: ColorPair = ("#D0D0D0", "#505050")    # 默认边框
 
-    # 消息气泡颜色 (Message Colors) - v2.0.0 优化
-    # 用户消息：更柔和的紫色渐变，参考 ChatGPT/Claude 的视觉层次
-    USER_MSG_BG: ColorPair = ("#7C5DF0", "#9B7FE8")      # 用户消息背景（柔和紫）
-    USER_MSG_BG_INNER: ColorPair = ("#8B6CF8", "#A891F5") # 用户消息内层（渐变感）
+    # 消息气泡颜色 (Message Colors) - v2.9.0 优化
+    # 用户消息：更柔和的紫色，参考现代聊天应用的视觉层次
+    USER_MSG_BG: ColorPair = ("#8B6CF8", "#A891F5")      # 用户消息背景（柔和紫 - v2.9.0 微调）
+    USER_MSG_BG_INNER: ColorPair = ("#9B7CF8", "#B8A1FF") # 用户消息内层（渐变感 - v2.9.0 微调）
     USER_MSG_TEXT: ColorPair = ("#FFFFFF", "#FFFFFF")     # 用户消息文字
-    USER_MSG_BORDER: ColorPair = ("#6B4CE0", "#8A6FD8")   # 用户消息边框
+    USER_MSG_BORDER: ColorPair = ("#7B5CE8", "#9881E8")   # 用户消息边框（v2.9.0 微调）
+    # 用户消息阴影颜色（柔和阴影）
+    USER_MSG_SHADOW: ColorPair = ("#6B4CE0", "#8870D8")   # v2.9.0 新增
 
     # AI 消息：中性背景，清晰可读
-    AI_MSG_BG: ColorPair = ("#F4F4F5", "#252525")        # AI 消息背景（更纯净）
-    AI_MSG_BG_INNER: ColorPair = ("#FAFAFA", "#2A2A2A")  # AI 消息内层
-    AI_MSG_TEXT: ColorPair = ("#1A1A1A", "#EAEAEA")      # AI 消息文字
-    AI_MSG_BORDER: ColorPair = ("#E5E5E5", "#383838")    # AI 消息边框
+    AI_MSG_BG: ColorPair = ("#F6F6F7", "#262626")        # AI 消息背景（v2.9.0 微调 - 更柔和）
+    AI_MSG_BG_INNER: ColorPair = ("#FBFBFB", "#2B2B2B")  # AI 消息内层
+    AI_MSG_TEXT: ColorPair = ("#1A1A1A", "#ECECEC")      # AI 消息文字
+    AI_MSG_BORDER: ColorPair = ("#E8E8E8", "#3A3A3A")    # AI 消息边框
+    # AI 消息阴影颜色
+    AI_MSG_SHADOW: ColorPair = ("#D8D8D8", "#202020")    # v2.9.0 新增
 
     # 系统消息
     SYSTEM_MSG_BG: ColorPair = ("#FFF8DC", "#4A4020")    # 系统消息背景
@@ -113,6 +117,8 @@ class Colors:
     BTN_DEFAULT: ColorPair = ("#F0F1F3", "#3A3A3A")      # 默认按钮背景
     BTN_HOVER: ColorPair = ("#E8E9EA", "#454545")        # 按钮悬停
     BTN_PRESSED: ColorPair = ("#D8D9DA", "#505050")      # 按钮按下
+    BTN_SECONDARY: ColorPair = ("#E5E5E5", "#3D3D3D")    # 次要按钮背景
+    BTN_SECONDARY_HOVER: ColorPair = ("#D5D5D5", "#4D4D4D")  # 次要按钮悬停
 
 
 # ============================================================================
@@ -141,7 +147,8 @@ class Radius:
     SM = 6     # 输入框、小卡片
     MD = 8     # 按钮、卡片
     LG = 12    # 对话框、面板
-    XL = 16    # 消息气泡
+    XL = 16    # 卡片
+    XXL = 18   # 消息气泡（v2.9.0 新增 - 更圆润）
     FULL = 0   # 直角（用于侧边栏等）
 
 
@@ -213,12 +220,16 @@ class Card:
 
 
 class Message:
-    """消息气泡规范"""
+    """消息气泡规范 - v2.9.0 优化"""
 
     PADDING = (12, 16)
-    RADIUS_USER = (Radius.XL, Radius.XS, Radius.XL, Radius.XL)  # 左下角小圆角
-    RADIUS_AI = (Radius.XS, Radius.XL, Radius.XL, Radius.XL)    # 右上角小圆角
-    MAX_WIDTH_RATIO = 0.75  # 最大宽度占容器 75%
+    RADIUS_USER = Radius.XXL  # v2.9.0: 用户消息圆角（18，更圆润）
+    RADIUS_AI = Radius.XXL    # v2.9.0: AI 消息圆角（18，更圆润）
+    MAX_WIDTH_RATIO = 0.75    # 最大宽度占容器 75%
+
+    # v2.9.0 新增：阴影配置
+    SHADOW_OFFSET = 2         # 阴影偏移量
+    SHADOW_BLUR = 4           # 阴影模糊度（模拟）
 
 
 # ============================================================================

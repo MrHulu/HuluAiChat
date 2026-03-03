@@ -2,6 +2,93 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [2.8.0] - 2026-03-03
+
+### ✨ Features
+
+- **Message Pagination**: Large sessions now load in pages for better performance
+  - Automatically paginates sessions with more than 50 messages
+  - Page navigation controls at the bottom (Previous/Next)
+  - Shows message range: "📄 1-50 / 150 条消息"
+  - Pagination resets when switching sessions
+  - Sending new messages jumps to the last page
+  - Disabled when using search or starred-only filters (shows all results)
+
+### 🔧 Improvements
+
+- Significantly improved performance for sessions with 100+ messages
+- Reduced memory usage when loading large chat histories
+- Faster UI rendering with fewer widgets created
+- New `list_by_session_paginated()` method in MessageRepository
+- New `load_messages_paginated()` method in AppService
+
+### 🧪 Testing
+
+- All 415 tests passing
+
+## [2.7.0] - 2026-03-03
+
+### ✨ Features
+
+- **Custom Session Titles**: Rename your chat sessions for better organization
+  - Double-click any session in the sidebar to rename it
+  - Right-click context menu with "Rename" and "Delete" options
+  - Clean dialog for editing session titles
+  - Changes are saved immediately to the database
+  - Perfect for organizing your conversations by topic
+
+### 🔧 Improvements
+
+- Better session management with custom titles
+- More intuitive ways to organize your chat history
+- Context menu provides quick access to session actions
+
+### 🧪 Testing
+
+- All tests passing
+
+## [2.6.0] - 2026-03-03
+
+### ✨ Features
+
+- **Edit & Regenerate**: Edit user messages and optionally regenerate AI responses
+  - Edit dialog now shows "🔄 Edit & Regenerate" checkbox when editing user messages with AI replies
+  - When enabled, deletes the current AI response and generates a new one
+  - Seamless workflow for refining prompts and getting improved responses
+  - Edit dialog height adjusted from 400px to 450px to accommodate new option
+
+### 🔧 Improvements
+
+- Better UX for message editing workflow
+- Checkbox only appears when editing user messages that have AI replies
+- Hint text explains what will happen when regenerate is enabled
+
+### 🧪 Testing
+
+- All 415 tests passing
+
+## [2.5.0] - 2026-03-03
+
+### ✨ Features
+
+- **Session Archive**: Archive sessions to keep your chat list organized
+  - Click 📦/📂 button next to each session to toggle archive status
+  - Toolbar 📂 button: Toggle between showing all sessions or archived only
+  - Archived sessions are grouped at the bottom of the session list
+  - Keyboard shortcut: `Ctrl+A` to toggle archive status of current session
+  - Toast notifications for archive status changes
+
+### 🔧 Improvements
+
+- Session list now separates archived sessions into their own group
+- Better organization for users with many conversations
+- Archive filter button in toolbar matches star filter behavior
+
+### 🧪 Testing
+
+- All 415 tests passing
+- Database migration for `is_archived` column tested
+
 ## [2.4.0] - 2026-03-03
 
 ### ✨ Features
