@@ -1,9 +1,16 @@
 /**
  * SessionList Component
- * 会话列表侧边栏
+ * 会话列表侧边栏，支持文件夹分组
  */
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
-import { Session, SessionSearchResult, searchSessions, ExportFormat } from "@/api/client";
+import {
+  Session,
+  Folder,
+  SessionSearchResult,
+  searchSessions,
+  ExportFormat,
+  moveSessionToFolder,
+} from "@/api/client";
 import { SessionItem } from "./SessionItem";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,30 +18,46 @@ import { cn } from "@/lib/utils";
 
 export interface SessionListProps {
   sessions: Session[];
+  folders: Folder[];
   currentSessionId: string | null;
   isLoading: boolean;
   onSelectSession: (id: string) => void;
   onCreateSession: () => void;
   onDeleteSession: (id: string) => void;
   onExportSession?: (sessionId: string, format: ExportFormat) => void;
+  onCreateFolder: (name: string) => void;
+  onDeleteFolder: (id: string) => void;
+  onRenameFolder: (id: string, name: string) => void;
+  onMoveSession?: (sessionId: string, folderId: string | null) => void;
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
 }
 
 export function SessionList({
   sessions,
+  folders,
   currentSessionId,
   isLoading,
   onSelectSession,
   onCreateSession,
   onDeleteSession,
   onExportSession,
+  onCreateFolder,
+  onDeleteFolder,
+  onRenameFolder,
+  onMoveSession,
   isCollapsed = false,
   onToggleCollapse,
 }: SessionListProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SessionSearchResult[] | null>(null);
   const [isSearching, setIsSearching] = useState(false);
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
+  const [showNewFolderInput, setShowNewFolderInput] = useState(false);
+  const [newFolderName, setNewFolderName] = useState("");
+  const [editingFolderId, setEditingFolderId] = useState<string | null>(null);
+  const [editingFolderName, setEditingFolderName] = useState("");
+  const [activeFolderFilter, setActiveFolderFilter] = useState<string | null>(null);
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Debounced search
@@ -78,13 +101,76 @@ export function SessionList({
     };
   }, [searchQuery, performSearch]);
 
+  // Group sessions by folder
+  const sessionsByFolder = useMemo(() => {
+    const grouped: Record<string, Session[]> = {
+      root: [], // Sessions without a folder
+    };
+
+    // Initialize folders
+    folders.forEach((folder) => {
+      grouped[folder.id] = [];
+    });
+
+    // Group sessions
+    sessions.forEach((session) => {
+      const folderId = session.folder_id || "root";
+      if (!grouped[folderId]) {
+        grouped[folderId] = [];
+      }
+      grouped[folderId].push(session);
+    });
+
+    return grouped;
+  }, [sessions, folders]);
+
   // Display sessions based on search state
   const displaySessions = useMemo(() => {
     if (searchResults) {
-      return searchResults.map(r => r.session);
+      return searchResults.map((r) => r.session);
+    }
+    if (activeFolderFilter !== null) {
+      return sessionsByFolder[activeFolderFilter] || [];
     }
     return sessions;
-  }, [sessions, searchResults]);
+  }, [sessions, sessionsByFolder, searchResults, activeFolderFilter]);
+
+  const toggleFolder = (folderId: string) => {
+    setExpandedFolders((prev) => {
+      const next = new Set(prev);
+      if (next.has(folderId)) {
+        next.delete(folderId);
+      } else {
+        next.add(folderId);
+      }
+      return next;
+    });
+  };
+
+  const handleCreateFolder = () => {
+    if (newFolderName.trim()) {
+      onCreateFolder(newFolderName.trim());
+      setNewFolderName("");
+      setShowNewFolderInput(false);
+    }
+  };
+
+  const handleRenameFolder = () => {
+    if (editingFolderId && editingFolderName.trim()) {
+      onRenameFolder(editingFolderId, editingFolderName.trim());
+      setEditingFolderId(null);
+      setEditingFolderName("");
+    }
+  };
+
+  const handleMoveSession = async (sessionId: string, folderId: string | null) => {
+    if (onMoveSession) {
+      onMoveSession(sessionId, folderId);
+    } else {
+      // Fallback: call API directly
+      await moveSessionToFolder(sessionId, folderId);
+    }
+  };
 
   if (isCollapsed) {
     return (
@@ -136,11 +222,13 @@ export function SessionList({
   }
 
   return (
-    <div className={cn(
-      "flex flex-col h-full border-r border-border bg-muted/30",
-      "transition-all duration-300 ease-in-out"
-    )}>
-      {/* 头部 */}
+    <div
+      className={cn(
+        "flex flex-col h-full border-r border-border bg-muted/30",
+        "transition-all duration-300 ease-in-out"
+      )}
+    >
+      {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border">
         <h2 className="font-semibold text-foreground">Chats</h2>
         <div className="flex items-center gap-1">
@@ -168,7 +256,7 @@ export function SessionList({
         </div>
       </div>
 
-      {/* 新建按钮 */}
+      {/* New Chat Button */}
       <div className="p-3">
         <Button
           onClick={onCreateSession}
@@ -193,7 +281,7 @@ export function SessionList({
         </Button>
       </div>
 
-      {/* 搜索框 */}
+      {/* Search Box */}
       <div className="px-3 pb-3">
         <div className="relative">
           <svg
@@ -242,70 +330,426 @@ export function SessionList({
         </div>
       </div>
 
-      {/* 会话列表 */}
+      {/* Session List */}
       <div className="flex-1 overflow-y-auto px-2">
         {isLoading || isSearching ? (
           <div className="flex items-center justify-center py-8">
             <div className="animate-spin w-5 h-5 border-2 border-primary border-t-transparent rounded-full" />
           </div>
-        ) : displaySessions.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            {searchQuery ? (
-              <>
-                <p className="text-sm">No results found</p>
-                <p className="text-xs mt-1">Try a different search term</p>
-              </>
-            ) : (
-              <>
-                <p className="text-sm">No conversations yet</p>
-                <p className="text-xs mt-1">Create a new chat to get started</p>
-              </>
-            )}
-          </div>
-        ) : (
-          <div className="space-y-1">
-            {displaySessions.map((session) => {
-              // Find search result for this session
-              const searchResult = searchResults?.find(r => r.session.id === session.id);
-              const matchedMessages = searchResult?.matched_messages || [];
+        ) : searchQuery ? (
+          // Search Results
+          displaySessions.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <p className="text-sm">No results found</p>
+              <p className="text-xs mt-1">Try a different search term</p>
+            </div>
+          ) : (
+            <div className="space-y-1">
+              {displaySessions.map((session) => {
+                const searchResult = searchResults?.find((r) => r.session.id === session.id);
+                const matchedMessages = searchResult?.matched_messages || [];
 
-              return (
-                <div key={session.id}>
-                  <SessionItem
-                    session={session}
-                    isActive={session.id === currentSessionId}
-                    onClick={() => onSelectSession(session.id)}
-                    onDelete={() => onDeleteSession(session.id)}
-                    onExport={onExportSession}
-                  />
-                  {/* Show matched messages if in search mode */}
-                  {searchResults && matchedMessages.length > 0 && (
-                    <div className="ml-4 mt-1 mb-2 space-y-1">
-                      {matchedMessages.map((msg) => (
-                        <div
-                          key={msg.id}
-                          className="text-xs p-2 rounded bg-muted/50 cursor-pointer hover:bg-muted transition-colors"
-                          onClick={() => onSelectSession(session.id)}
-                        >
-                          <span className={cn(
-                            "font-medium",
-                            msg.role === "user" ? "text-blue-500" : "text-green-500"
-                          )}>
-                            {msg.role === "user" ? "You" : "AI"}:
-                          </span>
-                          <span className="ml-1 text-muted-foreground line-clamp-2">
-                            <HighlightText text={msg.content_snippet} query={searchQuery} />
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                return (
+                  <div key={session.id}>
+                    <SessionItem
+                      session={session}
+                      folders={folders}
+                      isActive={session.id === currentSessionId}
+                      onClick={() => onSelectSession(session.id)}
+                      onDelete={() => onDeleteSession(session.id)}
+                      onExport={onExportSession}
+                      onMoveToFolder={handleMoveSession}
+                    />
+                    {matchedMessages.length > 0 && (
+                      <div className="ml-4 mt-1 mb-2 space-y-1">
+                        {matchedMessages.map((msg) => (
+                          <div
+                            key={msg.id}
+                            className="text-xs p-2 rounded bg-muted/50 cursor-pointer hover:bg-muted transition-colors"
+                            onClick={() => onSelectSession(session.id)}
+                          >
+                            <span
+                              className={cn(
+                                "font-medium",
+                                msg.role === "user" ? "text-blue-500" : "text-green-500"
+                              )}
+                            >
+                              {msg.role === "user" ? "You" : "AI"}:
+                            </span>
+                            <span className="ml-1 text-muted-foreground line-clamp-2">
+                              <HighlightText text={msg.content_snippet} query={searchQuery} />
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )
+        ) : (
+          // Folder View
+          <>
+            {/* Folders Section */}
+            <div className="mb-2">
+              {/* Folders Header */}
+              <div className="flex items-center justify-between px-2 py-1.5">
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Folders
+                </span>
+                <button
+                  onClick={() => setShowNewFolderInput(true)}
+                  className="p-1 rounded hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                  title="New folder"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M12 5v14" />
+                    <path d="M5 12h14" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* New Folder Input */}
+              {showNewFolderInput && (
+                <div className="px-2 pb-2">
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      handleCreateFolder();
+                    }}
+                  >
+                    <Input
+                      autoFocus
+                      value={newFolderName}
+                      onChange={(e) => setNewFolderName(e.target.value)}
+                      onBlur={() => {
+                        if (!newFolderName.trim()) {
+                          setShowNewFolderInput(false);
+                        }
+                      }}
+                      placeholder="Folder name..."
+                      className="h-7 text-sm"
+                    />
+                  </form>
                 </div>
-              );
-            })}
-          </div>
+              )}
+
+              {/* Folder List */}
+              {folders.map((folder) => (
+                <FolderItem
+                  key={folder.id}
+                  folder={folder}
+                  sessions={sessionsByFolder[folder.id] || []}
+                  isExpanded={expandedFolders.has(folder.id)}
+                  isActive={activeFolderFilter === folder.id}
+                  isEditing={editingFolderId === folder.id}
+                  editingName={editingFolderName}
+                  onToggle={() => toggleFolder(folder.id)}
+                  onClick={() =>
+                    setActiveFolderFilter(activeFolderFilter === folder.id ? null : folder.id)
+                  }
+                  onStartEdit={() => {
+                    setEditingFolderId(folder.id);
+                    setEditingFolderName(folder.name);
+                  }}
+                  onEditChange={setEditingFolderName}
+                  onEditSubmit={handleRenameFolder}
+                  onEditCancel={() => {
+                    setEditingFolderId(null);
+                    setEditingFolderName("");
+                  }}
+                  onDelete={() => onDeleteFolder(folder.id)}
+                  onSelectSession={onSelectSession}
+                  currentSessionId={currentSessionId}
+                  onDeleteSession={onDeleteSession}
+                  onExportSession={onExportSession}
+                  onMoveSession={handleMoveSession}
+                  folders={folders}
+                />
+              ))}
+            </div>
+
+            {/* Uncategorized Sessions */}
+            {activeFolderFilter === null && sessionsByFolder.root.length > 0 && (
+              <div className="mt-2">
+                <div className="px-2 py-1.5">
+                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Uncategorized
+                  </span>
+                </div>
+                <div className="space-y-1">
+                  {sessionsByFolder.root.map((session) => (
+                    <SessionItem
+                      key={session.id}
+                      session={session}
+                      folders={folders}
+                      isActive={session.id === currentSessionId}
+                      onClick={() => onSelectSession(session.id)}
+                      onDelete={() => onDeleteSession(session.id)}
+                      onExport={onExportSession}
+                      onMoveToFolder={handleMoveSession}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Sessions in selected folder */}
+            {activeFolderFilter !== null && (
+              <div className="mt-2">
+                <button
+                  onClick={() => setActiveFolderFilter(null)}
+                  className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="m15 18-6-6 6-6" />
+                  </svg>
+                  Back to all
+                </button>
+                <div className="space-y-1 mt-1">
+                  {(sessionsByFolder[activeFolderFilter] || []).map((session) => (
+                    <SessionItem
+                      key={session.id}
+                      session={session}
+                      folders={folders}
+                      isActive={session.id === currentSessionId}
+                      onClick={() => onSelectSession(session.id)}
+                      onDelete={() => onDeleteSession(session.id)}
+                      onExport={onExportSession}
+                      onMoveToFolder={handleMoveSession}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
+    </div>
+  );
+}
+
+/**
+ * Folder Item Component
+ */
+interface FolderItemProps {
+  folder: Folder;
+  sessions: Session[];
+  isExpanded: boolean;
+  isActive: boolean;
+  isEditing: boolean;
+  editingName: string;
+  onToggle: () => void;
+  onClick: () => void;
+  onStartEdit: () => void;
+  onEditChange: (name: string) => void;
+  onEditSubmit: () => void;
+  onEditCancel: () => void;
+  onDelete: () => void;
+  onSelectSession: (id: string) => void;
+  currentSessionId: string | null;
+  onDeleteSession: (id: string) => void;
+  onExportSession?: (sessionId: string, format: ExportFormat) => void;
+  onMoveSession: (sessionId: string, folderId: string | null) => void;
+  folders: Folder[];
+}
+
+function FolderItem({
+  folder,
+  sessions,
+  isExpanded,
+  isActive,
+  isEditing,
+  editingName,
+  onToggle,
+  onClick,
+  onStartEdit,
+  onEditChange,
+  onEditSubmit,
+  onEditCancel,
+  onDelete,
+  onSelectSession,
+  currentSessionId,
+  onDeleteSession,
+  onExportSession,
+  onMoveSession,
+  folders,
+}: FolderItemProps) {
+  const [showMenu, setShowMenu] = useState(false);
+
+  return (
+    <div className="select-none">
+      <div
+        className={cn(
+          "flex items-center gap-1 px-2 py-1.5 rounded-md cursor-pointer transition-colors group",
+          isActive ? "bg-muted" : "hover:bg-muted/50"
+        )}
+        onClick={onClick}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          setShowMenu(!showMenu);
+        }}
+      >
+        {/* Expand/Collapse Toggle */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggle();
+          }}
+          className="p-0.5 rounded hover:bg-muted transition-colors"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={cn("transition-transform", isExpanded ? "rotate-90" : "")}
+          >
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </button>
+
+        {/* Folder Icon */}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={isExpanded ? "text-primary" : "text-muted-foreground"}
+        >
+          <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" />
+        </svg>
+
+        {/* Folder Name */}
+        {isEditing ? (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              onEditSubmit();
+            }}
+            className="flex-1"
+          >
+            <Input
+              autoFocus
+              value={editingName}
+              onChange={(e) => onEditChange(e.target.value)}
+              onBlur={onEditCancel}
+              className="h-6 text-sm px-1"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </form>
+        ) : (
+          <span className="flex-1 text-sm truncate">{folder.name}</span>
+        )}
+
+        {/* Session Count */}
+        <span className="text-xs text-muted-foreground">{sessions.length}</span>
+
+        {/* Context Menu Button */}
+        <div className="relative">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowMenu(!showMenu);
+            }}
+            className={cn(
+              "p-0.5 rounded hover:bg-muted transition-colors",
+              "opacity-0 group-hover:opacity-100"
+            )}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="12" r="1" />
+              <circle cx="12" cy="5" r="1" />
+              <circle cx="12" cy="19" r="1" />
+            </svg>
+          </button>
+
+          {/* Dropdown Menu */}
+          {showMenu && (
+            <div className="absolute right-0 top-full mt-1 bg-popover border border-border rounded-md shadow-lg py-1 z-50 min-w-[120px]">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowMenu(false);
+                  onStartEdit();
+                }}
+                className="w-full px-3 py-1.5 text-sm text-left hover:bg-muted transition-colors"
+              >
+                Rename
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowMenu(false);
+                  onDelete();
+                }}
+                className="w-full px-3 py-1.5 text-sm text-left hover:bg-muted text-destructive transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Sessions in Folder */}
+      {isExpanded && sessions.length > 0 && (
+        <div className="ml-4 border-l border-border pl-2 space-y-1">
+          {sessions.map((session) => (
+            <SessionItem
+              key={session.id}
+              session={session}
+              folders={folders}
+              isActive={session.id === currentSessionId}
+              onClick={() => onSelectSession(session.id)}
+              onDelete={() => onDeleteSession(session.id)}
+              onExport={onExportSession}
+              onMoveToFolder={onMoveSession}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -323,7 +767,10 @@ function HighlightText({ text, query }: { text: string; query: string }) {
     <>
       {parts.map((part, i) =>
         part.toLowerCase() === query.toLowerCase() ? (
-          <mark key={i} className="bg-yellow-200 dark:bg-yellow-800 text-inherit rounded px-0.5">
+          <mark
+            key={i}
+            className="bg-yellow-200 dark:bg-yellow-800 text-inherit rounded px-0.5"
+          >
             {part}
           </mark>
         ) : (
@@ -335,5 +782,5 @@ function HighlightText({ text, query }: { text: string; query: string }) {
 }
 
 function escapeRegex(string: string) {
-  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
