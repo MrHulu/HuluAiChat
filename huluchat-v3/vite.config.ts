@@ -15,6 +15,32 @@ export default defineConfig(async () => ({
     },
   },
 
+  // 代码分割优化
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // React 核心
+          "vendor-react": ["react", "react-dom"],
+          // Markdown 渲染（体积大，单独分割）
+          "vendor-markdown": ["react-markdown", "remark-gfm", "rehype-highlight", "highlight.js"],
+          // Radix UI 组件
+          "vendor-radix": [
+            "@radix-ui/react-dialog",
+            "@radix-ui/react-label",
+            "@radix-ui/react-select",
+          ],
+          // 图标库
+          "vendor-icons": ["lucide-react"],
+          // 工具库
+          "vendor-utils": ["clsx", "tailwind-merge", "class-variance-authority"],
+        },
+      },
+    },
+    // 提高 chunk 大小警告阈值
+    chunkSizeWarningLimit: 500,
+  },
+
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
   // 1. prevent Vite from obscuring rust errors
