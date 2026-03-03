@@ -2,8 +2,8 @@
  * SessionList Component
  * 会话列表侧边栏
  */
-import { useState, useMemo } from "react";
-import { Session } from "@/api/client";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import { Session, SessionSearchResult, searchSessions } from "@/api/client";
 import { SessionItem } from "./SessionItem";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,17 +31,58 @@ export function SessionList({
   onToggleCollapse,
 }: SessionListProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<SessionSearchResult[] | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // 过滤会话列表
-  const filteredSessions = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return sessions;
+  // Debounced search
+  const performSearch = useCallback(async (query: string) => {
+    if (!query.trim()) {
+      setSearchResults(null);
+      return;
     }
-    const query = searchQuery.toLowerCase();
-    return sessions.filter((session) =>
-      session.title.toLowerCase().includes(query)
-    );
-  }, [sessions, searchQuery]);
+
+    setIsSearching(true);
+    try {
+      const results = await searchSessions(query);
+      setSearchResults(results);
+    } catch (error) {
+      console.error("Search failed:", error);
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  }, []);
+
+  // Debounce search input
+  useEffect(() => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    if (!searchQuery.trim()) {
+      setSearchResults(null);
+      return;
+    }
+
+    searchTimeoutRef.current = setTimeout(() => {
+      performSearch(searchQuery);
+    }, 300);
+
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [searchQuery, performSearch]);
+
+  // Display sessions based on search state
+  const displaySessions = useMemo(() => {
+    if (searchResults) {
+      return searchResults.map(r => r.session);
+    }
+    return sessions;
+  }, [sessions, searchResults]);
 
   if (isCollapsed) {
     return (
@@ -201,11 +242,11 @@ export function SessionList({
 
       {/* 会话列表 */}
       <div className="flex-1 overflow-y-auto px-2">
-        {isLoading ? (
+        {isLoading || isSearching ? (
           <div className="flex items-center justify-center py-8">
             <div className="animate-spin w-5 h-5 border-2 border-primary border-t-transparent rounded-full" />
           </div>
-        ) : filteredSessions.length === 0 ? (
+        ) : displaySessions.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             {searchQuery ? (
               <>
@@ -221,18 +262,75 @@ export function SessionList({
           </div>
         ) : (
           <div className="space-y-1">
-            {filteredSessions.map((session) => (
-              <SessionItem
-                key={session.id}
-                session={session}
-                isActive={session.id === currentSessionId}
-                onClick={() => onSelectSession(session.id)}
-                onDelete={() => onDeleteSession(session.id)}
-              />
-            ))}
+            {displaySessions.map((session) => {
+              // Find search result for this session
+              const searchResult = searchResults?.find(r => r.session.id === session.id);
+              const matchedMessages = searchResult?.matched_messages || [];
+
+              return (
+                <div key={session.id}>
+                  <SessionItem
+                    session={session}
+                    isActive={session.id === currentSessionId}
+                    onClick={() => onSelectSession(session.id)}
+                    onDelete={() => onDeleteSession(session.id)}
+                  />
+                  {/* Show matched messages if in search mode */}
+                  {searchResults && matchedMessages.length > 0 && (
+                    <div className="ml-4 mt-1 mb-2 space-y-1">
+                      {matchedMessages.map((msg) => (
+                        <div
+                          key={msg.id}
+                          className="text-xs p-2 rounded bg-muted/50 cursor-pointer hover:bg-muted transition-colors"
+                          onClick={() => onSelectSession(session.id)}
+                        >
+                          <span className={cn(
+                            "font-medium",
+                            msg.role === "user" ? "text-blue-500" : "text-green-500"
+                          )}>
+                            {msg.role === "user" ? "You" : "AI"}:
+                          </span>
+                          <span className="ml-1 text-muted-foreground line-clamp-2">
+                            <HighlightText text={msg.content_snippet} query={searchQuery} />
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
     </div>
   );
+}
+
+/**
+ * Highlight matching text in search results
+ */
+function HighlightText({ text, query }: { text: string; query: string }) {
+  if (!query.trim()) return <>{text}</>;
+
+  const regex = new RegExp(`(${escapeRegex(query)})`, "gi");
+  const parts = text.split(regex);
+
+  return (
+    <>
+      {parts.map((part, i) =>
+        part.toLowerCase() === query.toLowerCase() ? (
+          <mark key={i} className="bg-yellow-200 dark:bg-yellow-800 text-inherit rounded px-0.5">
+            {part}
+          </mark>
+        ) : (
+          part
+        )
+      )}
+    </>
+  );
+}
+
+function escapeRegex(string: string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
