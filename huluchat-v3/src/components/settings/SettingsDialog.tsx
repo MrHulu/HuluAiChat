@@ -28,10 +28,16 @@ import { getSettings, updateSettings, getModels, testConnection, type ModelInfo 
 
 interface SettingsDialogProps {
   onSettingsChange?: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function SettingsDialog({ onSettingsChange }: SettingsDialogProps) {
-  const [open, setOpen] = useState(false);
+export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenChange }: SettingsDialogProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
+
+  // Support both controlled and uncontrolled modes
+  const open = externalOpen !== undefined ? externalOpen : internalOpen;
+  const setOpen = onOpenChange || setInternalOpen;
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);

@@ -8,7 +8,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { ChatView } from "@/components/chat";
 import { SessionList } from "@/components/sidebar";
 import { UpdateNotification } from "@/components/UpdateNotification";
-import { useSession } from "@/hooks";
+import { useSession, useKeyboardShortcuts } from "@/hooks";
 
 // 懒加载设置对话框（非核心功能）
 const SettingsDialog = lazy(() =>
@@ -17,6 +17,7 @@ const SettingsDialog = lazy(() =>
 
 function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const {
     sessions,
@@ -48,6 +49,13 @@ function App() {
     }
   };
 
+  // 键盘快捷键
+  useKeyboardShortcuts({
+    onNewSession: handleCreateSession,
+    onToggleSidebar: () => setSidebarCollapsed((prev) => !prev),
+    onOpenSettings: () => setSettingsOpen(true),
+  });
+
   return (
     <>
       <Toaster position="top-center" richColors closeButton />
@@ -72,12 +80,12 @@ function App() {
           <div className="flex items-center gap-3">
             <h1 className="text-lg font-bold">HuluChat</h1>
             <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-              v3.0.2
+              v3.1.0
             </span>
           </div>
           <div className="flex items-center gap-2">
             <Suspense fallback={null}>
-              <SettingsDialog />
+              <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
             </Suspense>
             <ThemeToggle />
           </div>
