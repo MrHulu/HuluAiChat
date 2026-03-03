@@ -1,10 +1,12 @@
 """Session management API"""
 from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import PlainTextResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, or_
 from typing import List, Optional
 from datetime import datetime
 from pydantic import BaseModel
+from enum import Enum
 
 from core.database import get_session, Base
 from sqlalchemy.orm import Mapped, mapped_column
@@ -191,3 +193,159 @@ async def delete_session(
     await db.delete(session)
     await db.commit()
     return {"status": "deleted"}
+
+
+class ExportFormat(str, Enum):
+    """Export format options"""
+    markdown = "markdown"
+    json = "json"
+    txt = "txt"
+
+
+class ExportMessage(BaseModel):
+    """Message format for export"""
+    role: str
+    content: str
+    created_at: datetime
+
+
+class ExportData(BaseModel):
+    """Full export data structure"""
+    session: SessionResponse
+    messages: List[ExportMessage]
+
+
+@router.get("/{session_id}/export")
+async def export_session(
+    session_id: str,
+    format: ExportFormat = Query(default=ExportFormat.markdown, description="Export format"),
+    db: AsyncSession = Depends(get_session)
+):
+    """Export a session with all messages in specified format"""
+    # Get session
+    result = await db.execute(select(SessionModel).where(SessionModel.id == session_id))
+    session = result.scalar_one_or_none()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    # Get messages
+    msg_result = await db.execute(
+        select(MessageModel)
+        .where(MessageModel.session_id == session_id)
+        .order_by(MessageModel.created_at.asc())
+    )
+    messages = msg_result.scalars().all()
+
+    # Build export data
+    export_messages = [
+        ExportMessage(
+            role=msg.role,
+            content=msg.content,
+            created_at=msg.created_at
+        )
+        for msg in messages
+    ]
+
+    export_data = ExportData(
+        session=SessionResponse(
+            id=session.id,
+            title=session.title,
+            created_at=session.created_at,
+            updated_at=session.updated_at
+        ),
+        messages=export_messages
+    )
+
+    # Generate export content based on format
+    if format == ExportFormat.json:
+        content = export_data.model_dump_json(indent=2)
+        filename = f"{session.title}_{session.created_at.strftime('%Y%m%d')}.json"
+        media_type = "application/json"
+    elif format == ExportFormat.txt:
+        content = _export_as_txt(export_data)
+        filename = f"{session.title}_{session.created_at.strftime('%Y%m%d')}.txt"
+        media_type = "text/plain"
+    else:  # markdown
+        content = _export_as_markdown(export_data)
+        filename = f"{session.title}_{session.created_at.strftime('%Y%m%d')}.md"
+        media_type = "text/markdown"
+
+    # Sanitize filename (remove invalid characters)
+    import re
+    filename = re.sub(r'[<>:"/\\|?*]', '_', filename)
+
+    return PlainTextResponse(
+        content=content,
+        media_type=media_type,
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"'
+        }
+    )
+
+
+def _export_as_markdown(data: ExportData) -> str:
+    """Export session as Markdown format"""
+    lines = [
+        f"# {data.session.title}",
+        "",
+        f"> Created: {data.session.created_at.strftime('%Y-%m-%d %H:%M')}",
+        f"> Last Updated: {data.session.updated_at.strftime('%Y-%m-%d %H:%M')}",
+        "",
+        "---",
+        "",
+        "## Conversation",
+        ""
+    ]
+
+    for msg in data.messages:
+        role_emoji = "👤" if msg.role == "user" else "🤖"
+        role_label = "User" if msg.role == "user" else "Assistant"
+        lines.extend([
+            f"### {role_emoji} {role_label}",
+            f"*{msg.created_at.strftime('%Y-%m-%d %H:%M')}*",
+            "",
+            msg.content,
+            "",
+            "---",
+            ""
+        ])
+
+    lines.extend([
+        "",
+        "---",
+        "",
+        f"*Exported from HuluChat on {datetime.utcnow().strftime('%Y-%m-%d %H:%M')}*"
+    ])
+
+    return "\n".join(lines)
+
+
+def _export_as_txt(data: ExportData) -> str:
+    """Export session as plain text format"""
+    lines = [
+        f"Title: {data.session.title}",
+        f"Created: {data.session.created_at.strftime('%Y-%m-%d %H:%M')}",
+        f"Last Updated: {data.session.updated_at.strftime('%Y-%m-%d %H:%M')}",
+        "",
+        "=" * 50,
+        "",
+        "Conversation:",
+        ""
+    ]
+
+    for msg in data.messages:
+        role_label = "USER" if msg.role == "user" else "ASSISTANT"
+        lines.extend([
+            f"[{role_label}] {msg.created_at.strftime('%Y-%m-%d %H:%M')}",
+            msg.content,
+            "",
+            "-" * 50,
+            ""
+        ])
+
+    lines.extend([
+        "",
+        f"Exported from HuluChat on {datetime.utcnow().strftime('%Y-%m-%d %H:%M')}"
+    ])
+
+    return "\n".join(lines)
