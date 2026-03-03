@@ -7,6 +7,7 @@ import { Toaster, toast } from "sonner";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ChatView } from "@/components/chat";
 import { SessionList } from "@/components/sidebar";
+import { UpdateNotification } from "@/components/UpdateNotification";
 import { useSession } from "@/hooks";
 
 // 懒加载设置对话框（非核心功能）
@@ -50,6 +51,7 @@ function App() {
   return (
     <>
       <Toaster position="top-center" richColors closeButton />
+      <UpdateNotification />
       <div className="flex h-screen bg-background text-foreground">
       {/* 侧边栏 */}
       <SessionList
@@ -70,7 +72,7 @@ function App() {
           <div className="flex items-center gap-3">
             <h1 className="text-lg font-bold">HuluChat</h1>
             <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-              v3.0.1
+              v3.0.2
             </span>
           </div>
           <div className="flex items-center gap-2">
