@@ -124,6 +124,12 @@ export const KEYBOARD_SHORTCUTS = [
     windows: "Ctrl+,",
   },
   {
+    key: "? / F1",
+    description: "显示快捷键帮助",
+    mac: "? / F1",
+    windows: "? / F1",
+  },
+  {
     key: "Escape",
     description: "关闭对话框",
     mac: "Esc",
