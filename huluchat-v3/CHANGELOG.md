@@ -4,6 +4,54 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [3.6.0] - 2026-03-04
+
+### Added
+- **GitHub Actions CI/CD**: Automated multi-platform builds and releases
+  - CI workflow for PR/push validation (typecheck, lint, build)
+  - Release workflow for tag-triggered deployments
+  - Multi-platform support: macOS (Intel & Apple Silicon), Windows, Linux
+
+### Technical
+- `ci.yml`: Frontend & backend testing, Tauri build verification
+- `release.yml`: PyInstaller backend packaging, Tauri app bundling
+- Auto-generated `latest.json` for in-app updates
+- Platform-specific build optimizations and caching
+
+## [3.5.0] - 2026-03-04
+
+### Added
+- **Virtual List**: Performance optimization for long conversations
+  - @tanstack/react-virtual integration
+  - Dynamic height estimation and measurement
+  - Smooth scrolling with overscan for better UX
+
+## [3.4.0] - 2026-03-04
+
+### Added
+- **Keyboard Shortcuts Help Dialog**: Press `?` to view all shortcuts
+
+## [3.3.0] - 2026-03-04
+
+### Added
+- **Session Export**: Export conversations to Markdown, JSON, or TXT
+
+## [3.2.0] - 2026-03-04
+
+### Added
+- **Message Search**: Search within conversation content with highlighting
+
+## [3.1.0] - 2026-03-04
+
+### Added
+- **Keyboard Shortcuts**: Full keyboard navigation support
+- **Cross-platform**: macOS, Windows, Linux support
+
+## [3.0.2] - 2026-03-04
+
+### Added
+- **Auto Update**: In-app update notification and installation
+
 ## [3.0.1] - 2026-03-04
 
 ### Added
