@@ -1,4 +1,7 @@
-"""快捷操作栏 - v2.3.0。位于输入框上方，提供常用功能的快速访问。"""
+"""快捷操作栏 - v2.3.0。位于输入框上方，提供常用功能的快速访问。
+
+v2.9.0: 使用 AnimatedButton 实现平滑悬停动画。
+"""
 from typing import Callable, TYPE_CHECKING
 
 import customtkinter as ctk
@@ -13,6 +16,13 @@ try:
     _HAS_DESIGN_SYSTEM = True
 except ImportError:
     _HAS_DESIGN_SYSTEM = False
+
+# v2.9.0: 动画按钮
+try:
+    from src.ui.animated_button import create_animated_button, AnimatedIconButton
+    _HAS_ANIMATED_BUTTON = True
+except ImportError:
+    _HAS_ANIMATED_BUTTON = False
 
 if TYPE_CHECKING:
     from src.app.service import AppService
@@ -87,7 +97,7 @@ class QuickActionBar(ctk.CTkFrame):
         self._build_recent_sessions_button()
 
     def _build_template_section(self) -> None:
-        """构建模板快捷按钮区域。"""
+        """构建模板快捷按钮区域。v2.9.0: 使用动画按钮。"""
         container = ctk.CTkFrame(self, fg_color="transparent")
         container.grid(row=0, column=0, sticky="w", padx=(Spacing.SM, 0), pady=Spacing.XS)
 
@@ -96,9 +106,47 @@ class QuickActionBar(ctk.CTkFrame):
 
         for i, template in enumerate(templates):
             icon = TEMPLATE_ICONS.get(template.title, "📋")
-            btn = ctk.CTkButton(
-                container,
-                text=f"{icon} {template.title[:4]}",
+            text = f"{icon} {template.title[:4]}"
+
+            # v2.9.0: 使用动画按钮
+            if _HAS_ANIMATED_BUTTON and _HAS_DESIGN_SYSTEM:
+                btn = create_animated_button(
+                    container,
+                    text=text,
+                    command=lambda t=template: self._on_template_apply(t.content),
+                    style="secondary",
+                    width=Button.ICON_SIZE,
+                )
+            else:
+                btn = ctk.CTkButton(
+                    container,
+                    text=text,
+                    width=Button.ICON_SIZE if _HAS_DESIGN_SYSTEM else 70,
+                    height=Button.SECONDARY_HEIGHT if _HAS_DESIGN_SYSTEM else 28,
+                    corner_radius=Radius.SM if _HAS_DESIGN_SYSTEM else 4,
+                    fg_color=Colors.BTN_SECONDARY if _HAS_DESIGN_SYSTEM else ("gray70", "gray35"),
+                    hover_color=Colors.BTN_SECONDARY_HOVER if _HAS_DESIGN_SYSTEM else ("gray60", "gray30"),
+                    text_color=Colors.TEXT_PRIMARY if _HAS_DESIGN_SYSTEM else ("gray15", "gray88"),
+                    font=("", FontSize.XS if _HAS_DESIGN_SYSTEM else 10),
+                )
+                btn.configure(command=lambda t=template: self._on_template_apply(t.content))
+
+            btn.grid(row=0, column=i, padx=(0, Spacing.XS))
+
+    def _build_star_button(self) -> None:
+        """构建星标切换按钮。v2.9.0: 使用动画按钮。"""
+        if _HAS_ANIMATED_BUTTON and _HAS_DESIGN_SYSTEM:
+            self._star_btn = create_animated_button(
+                self,
+                text="⭐ 收藏",
+                command=self._toggle_starred,
+                style="secondary",
+                width=Button.ICON_SIZE,
+            )
+        else:
+            self._star_btn = ctk.CTkButton(
+                self,
+                text="⭐ 收藏",
                 width=Button.ICON_SIZE if _HAS_DESIGN_SYSTEM else 70,
                 height=Button.SECONDARY_HEIGHT if _HAS_DESIGN_SYSTEM else 28,
                 corner_radius=Radius.SM if _HAS_DESIGN_SYSTEM else 4,
@@ -106,41 +154,33 @@ class QuickActionBar(ctk.CTkFrame):
                 hover_color=Colors.BTN_SECONDARY_HOVER if _HAS_DESIGN_SYSTEM else ("gray60", "gray30"),
                 text_color=Colors.TEXT_PRIMARY if _HAS_DESIGN_SYSTEM else ("gray15", "gray88"),
                 font=("", FontSize.XS if _HAS_DESIGN_SYSTEM else 10),
+                command=self._toggle_starred,
             )
-            btn.grid(row=0, column=i, padx=(0, Spacing.XS))
-            # 传递模板内容
-            btn.configure(command=lambda t=template: self._on_template_apply(t.content))
-
-    def _build_star_button(self) -> None:
-        """构建星标切换按钮。"""
-        self._star_btn = ctk.CTkButton(
-            self,
-            text="⭐ 收藏",
-            width=Button.ICON_SIZE if _HAS_DESIGN_SYSTEM else 70,
-            height=Button.SECONDARY_HEIGHT if _HAS_DESIGN_SYSTEM else 28,
-            corner_radius=Radius.SM if _HAS_DESIGN_SYSTEM else 4,
-            fg_color=Colors.BTN_SECONDARY if _HAS_DESIGN_SYSTEM else ("gray70", "gray35"),
-            hover_color=Colors.BTN_SECONDARY_HOVER if _HAS_DESIGN_SYSTEM else ("gray60", "gray30"),
-            text_color=Colors.TEXT_PRIMARY if _HAS_DESIGN_SYSTEM else ("gray15", "gray88"),
-            font=("", FontSize.XS if _HAS_DESIGN_SYSTEM else 10),
-            command=self._toggle_starred,
-        )
         self._star_btn.grid(row=0, column=2, padx=Spacing.XS, pady=Spacing.XS)
 
     def _build_recent_sessions_button(self) -> None:
-        """构建最近会话按钮。"""
-        self._recent_btn = ctk.CTkButton(
-            self,
-            text="🕐 最近",
-            width=Button.ICON_SIZE if _HAS_DESIGN_SYSTEM else 70,
-            height=Button.SECONDARY_HEIGHT if _HAS_DESIGN_SYSTEM else 28,
-            corner_radius=Radius.SM if _HAS_DESIGN_SYSTEM else 4,
-            fg_color=Colors.BTN_SECONDARY if _HAS_DESIGN_SYSTEM else ("gray70", "gray35"),
-            hover_color=Colors.BTN_SECONDARY_HOVER if _HAS_DESIGN_SYSTEM else ("gray60", "gray30"),
-            text_color=Colors.TEXT_PRIMARY if _HAS_DESIGN_SYSTEM else ("gray15", "gray88"),
-            font=("", FontSize.XS if _HAS_DESIGN_SYSTEM else 10),
-            command=self._show_recent_sessions,
-        )
+        """构建最近会话按钮。v2.9.0: 使用动画按钮。"""
+        if _HAS_ANIMATED_BUTTON and _HAS_DESIGN_SYSTEM:
+            self._recent_btn = create_animated_button(
+                self,
+                text="🕐 最近",
+                command=self._show_recent_sessions,
+                style="secondary",
+                width=Button.ICON_SIZE,
+            )
+        else:
+            self._recent_btn = ctk.CTkButton(
+                self,
+                text="🕐 最近",
+                width=Button.ICON_SIZE if _HAS_DESIGN_SYSTEM else 70,
+                height=Button.SECONDARY_HEIGHT if _HAS_DESIGN_SYSTEM else 28,
+                corner_radius=Radius.SM if _HAS_DESIGN_SYSTEM else 4,
+                fg_color=Colors.BTN_SECONDARY if _HAS_DESIGN_SYSTEM else ("gray70", "gray35"),
+                hover_color=Colors.BTN_SECONDARY_HOVER if _HAS_DESIGN_SYSTEM else ("gray60", "gray30"),
+                text_color=Colors.TEXT_PRIMARY if _HAS_DESIGN_SYSTEM else ("gray15", "gray88"),
+                font=("", FontSize.XS if _HAS_DESIGN_SYSTEM else 10),
+                command=self._show_recent_sessions,
+            )
         self._recent_btn.grid(row=0, column=3, padx=(Spacing.XS, Spacing.SM), pady=Spacing.XS)
 
         # 最近会话下拉菜单
