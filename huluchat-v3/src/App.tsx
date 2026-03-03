@@ -2,13 +2,17 @@
  * HuluChat v3 - Main App
  * Tauri + React + FastAPI AI Chat Application
  */
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { Toaster, toast } from "sonner";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ChatView } from "@/components/chat";
 import { SessionList } from "@/components/sidebar";
-import { SettingsDialog } from "@/components/settings";
 import { useSession } from "@/hooks";
+
+// 懒加载设置对话框（非核心功能）
+const SettingsDialog = lazy(() =>
+  import("@/components/settings").then((mod) => ({ default: mod.SettingsDialog }))
+);
 
 function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -70,7 +74,9 @@ function App() {
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <SettingsDialog />
+            <Suspense fallback={null}>
+              <SettingsDialog />
+            </Suspense>
             <ThemeToggle />
           </div>
         </header>
