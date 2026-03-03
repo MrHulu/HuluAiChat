@@ -8,7 +8,7 @@ from datetime import datetime
 from pydantic import BaseModel
 from enum import Enum
 
-from core.database import get_session, Base
+from core.database import get_session as get_db_session, Base
 from sqlalchemy.orm import Mapped, mapped_column
 from models.schemas import MessageModel
 
@@ -21,6 +21,7 @@ class SessionModel(Base):
 
     id: Mapped[str] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(default="New Chat")
+    folder_id: Mapped[Optional[str]] = mapped_column(nullable=True, index=True)
     created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -29,11 +30,17 @@ class SessionResponse(BaseModel):
     """Pydantic response model"""
     id: str
     title: str
+    folder_id: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 
     class Config:
         from_attributes = True
+
+
+class SessionMoveToFolder(BaseModel):
+    """Schema for moving session to folder"""
+    folder_id: Optional[str] = None  # None = move to root
 
 
 class MessageMatch(BaseModel):
@@ -54,10 +61,14 @@ class SessionSearchResult(BaseModel):
 
 @router.get("/", response_model=List[SessionResponse])
 async def list_sessions(
-    db: AsyncSession = Depends(get_session)
+    folder_id: Optional[str] = Query(None, description="Filter by folder ID"),
+    db: AsyncSession = Depends(get_db_session)
 ):
-    """List all sessions"""
-    result = await db.execute(select(SessionModel).order_by(SessionModel.updated_at.desc()))
+    """List all sessions, optionally filtered by folder"""
+    query = select(SessionModel).order_by(SessionModel.updated_at.desc())
+    if folder_id is not None:
+        query = query.where(SessionModel.folder_id == folder_id)
+    result = await db.execute(query)
     sessions = result.scalars().all()
     return sessions
 
@@ -65,7 +76,7 @@ async def list_sessions(
 @router.get("/search/", response_model=List[SessionSearchResult])
 async def search_sessions(
     q: str = Query(..., min_length=1, description="Search query"),
-    db: AsyncSession = Depends(get_session)
+    db: AsyncSession = Depends(get_db_session)
 ):
     """Search sessions by title and message content"""
     query = q.lower().strip()
@@ -156,7 +167,7 @@ async def search_sessions(
 
 @router.post("/", response_model=SessionResponse)
 async def create_session(
-    db: AsyncSession = Depends(get_session)
+    db: AsyncSession = Depends(get_db_session)
 ):
     """Create a new session"""
     import uuid
@@ -170,7 +181,7 @@ async def create_session(
 @router.get("/{session_id}", response_model=SessionResponse)
 async def get_session(
     session_id: str,
-    db: AsyncSession = Depends(get_session)
+    db: AsyncSession = Depends(get_db_session)
 ):
     """Get a session by ID"""
     result = await db.execute(select(SessionModel).where(SessionModel.id == session_id))
@@ -183,7 +194,7 @@ async def get_session(
 @router.delete("/{session_id}")
 async def delete_session(
     session_id: str,
-    db: AsyncSession = Depends(get_session)
+    db: AsyncSession = Depends(get_db_session)
 ):
     """Delete a session"""
     result = await db.execute(select(SessionModel).where(SessionModel.id == session_id))
@@ -193,6 +204,36 @@ async def delete_session(
     await db.delete(session)
     await db.commit()
     return {"status": "deleted"}
+
+
+@router.put("/{session_id}/folder", response_model=SessionResponse)
+async def move_session_to_folder(
+    session_id: str,
+    move_request: SessionMoveToFolder,
+    db: AsyncSession = Depends(get_db_session)
+):
+    """Move a session to a folder (or root if folder_id is None)"""
+    # Get session
+    result = await db.execute(select(SessionModel).where(SessionModel.id == session_id))
+    session = result.scalar_one_or_none()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    # Validate folder_id if provided
+    if move_request.folder_id:
+        from api.folders import FolderModel
+        folder_result = await db.execute(
+            select(FolderModel).where(FolderModel.id == move_request.folder_id)
+        )
+        folder = folder_result.scalar_one_or_none()
+        if not folder:
+            raise HTTPException(status_code=404, detail="Folder not found")
+
+    session.folder_id = move_request.folder_id
+    session.updated_at = datetime.utcnow()
+    await db.commit()
+    await db.refresh(session)
+    return session
 
 
 class ExportFormat(str, Enum):
@@ -219,7 +260,7 @@ class ExportData(BaseModel):
 async def export_session(
     session_id: str,
     format: ExportFormat = Query(default=ExportFormat.markdown, description="Export format"),
-    db: AsyncSession = Depends(get_session)
+    db: AsyncSession = Depends(get_db_session)
 ):
     """Export a session with all messages in specified format"""
     # Get session

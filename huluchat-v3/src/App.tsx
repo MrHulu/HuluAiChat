@@ -9,8 +9,8 @@ import { ChatView } from "@/components/chat";
 import { SessionList } from "@/components/sidebar";
 import { UpdateNotification } from "@/components/UpdateNotification";
 import { KeyboardHelpDialog } from "@/components/keyboard/KeyboardHelpDialog";
-import { useSession, useKeyboardShortcuts } from "@/hooks";
-import { exportSession, ExportFormat } from "@/api/client";
+import { useSession, useKeyboardShortcuts, useFolders } from "@/hooks";
+import { exportSession, moveSessionToFolder, ExportFormat } from "@/api/client";
 
 // 懒加载设置对话框（非核心功能）
 const SettingsDialog = lazy(() =>
@@ -30,7 +30,15 @@ function App() {
     selectSession,
     createNewSession,
     removeSession,
+    refreshSessions,
   } = useSession();
+
+  const {
+    folders,
+    createFolder,
+    renameFolder,
+    removeFolder,
+  } = useFolders();
 
   // 显示错误 toast
   useEffect(() => {
@@ -73,6 +81,48 @@ function App() {
     } catch (error) {
       console.error("Export failed:", error);
       toast.error("Failed to export session");
+    }
+  };
+
+  // 创建文件夹
+  const handleCreateFolder = async (name: string) => {
+    const folder = await createFolder(name);
+    if (folder) {
+      toast.success(`Created folder "${name}"`);
+    }
+  };
+
+  // 重命名文件夹
+  const handleRenameFolder = async (id: string, name: string) => {
+    const folder = await renameFolder(id, name);
+    if (folder) {
+      toast.success(`Renamed folder to "${name}"`);
+    }
+  };
+
+  // 删除文件夹
+  const handleDeleteFolder = async (id: string) => {
+    const folder = folders.find((f) => f.id === id);
+    if (!folder) return;
+
+    if (window.confirm(`Delete folder "${folder.name}"? Sessions will be moved to uncategorized.`)) {
+      await removeFolder(id);
+      toast.success(`Deleted folder "${folder.name}"`);
+    }
+  };
+
+  // 移动会话到文件夹
+  const handleMoveSessionToFolder = async (sessionId: string, folderId: string | null) => {
+    try {
+      await moveSessionToFolder(sessionId, folderId);
+      refreshSessions(); // 刷新会话列表
+      const folderName = folderId
+        ? folders.find((f) => f.id === folderId)?.name || "folder"
+        : "uncategorized";
+      toast.success(`Moved to ${folderName}`);
+    } catch (error) {
+      console.error("Failed to move session:", error);
+      toast.error("Failed to move session");
     }
   };
 
@@ -123,12 +173,17 @@ function App() {
       {/* 侧边栏 */}
       <SessionList
         sessions={sessions}
+        folders={folders}
         currentSessionId={currentSession?.id || null}
         isLoading={isLoading}
         onSelectSession={selectSession}
         onCreateSession={handleCreateSession}
         onDeleteSession={handleDeleteSession}
         onExportSession={handleExportSession}
+        onCreateFolder={handleCreateFolder}
+        onDeleteFolder={handleDeleteFolder}
+        onRenameFolder={handleRenameFolder}
+        onMoveSession={handleMoveSessionToFolder}
         isCollapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
@@ -140,7 +195,7 @@ function App() {
           <div className="flex items-center gap-3">
             <h1 className="text-lg font-bold">HuluChat</h1>
             <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-              v3.4.0
+              v3.7.0
             </span>
           </div>
           <div className="flex items-center gap-2">
