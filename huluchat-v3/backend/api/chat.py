@@ -9,7 +9,7 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from core.database import get_session
+from core.database import get_session as get_db_session
 from models.schemas import MessageModel
 from services.openai_service import openai_service
 
@@ -79,7 +79,7 @@ async def save_message(
 async def chat_websocket(
     websocket: WebSocket,
     session_id: str,
-    db: AsyncSession = Depends(get_session),
+    db: AsyncSession = Depends(get_db_session),
 ):
     """WebSocket endpoint for streaming chat with AI."""
     await manager.connect(websocket, session_id)
@@ -170,7 +170,7 @@ async def chat_websocket(
 @router.get("/{session_id}/messages")
 async def get_messages(
     session_id: str,
-    db: AsyncSession = Depends(get_session),
+    db: AsyncSession = Depends(get_db_session),
     limit: int = 50,
     offset: int = 0,
 ):

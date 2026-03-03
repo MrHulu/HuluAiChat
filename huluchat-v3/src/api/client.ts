@@ -7,6 +7,16 @@ const API_BASE = "http://127.0.0.1:8765/api";
 export interface Session {
   id: string;
   title: string;
+  folder_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// Folder types
+export interface Folder {
+  id: string;
+  name: string;
+  parent_id: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -186,4 +196,71 @@ export async function exportSession(
 
   const blob = await response.blob();
   return { blob, filename };
+}
+
+// ============== Folder APIs ==============
+
+/**
+ * List all folders
+ */
+export async function listFolders(): Promise<Folder[]> {
+  const response = await fetch(`${API_BASE}/folders/`);
+  return response.json();
+}
+
+/**
+ * Create a new folder
+ */
+export async function createFolder(name: string, parentId?: string): Promise<Folder> {
+  const response = await fetch(`${API_BASE}/folders/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, parent_id: parentId || null }),
+  });
+  return response.json();
+}
+
+/**
+ * Update a folder's name
+ */
+export async function updateFolder(id: string, name: string): Promise<Folder> {
+  const response = await fetch(`${API_BASE}/folders/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name }),
+  });
+  return response.json();
+}
+
+/**
+ * Delete a folder
+ */
+export async function deleteFolder(id: string): Promise<void> {
+  await fetch(`${API_BASE}/folders/${id}`, { method: "DELETE" });
+}
+
+/**
+ * Move a session to a folder (or root if folderId is null)
+ */
+export async function moveSessionToFolder(
+  sessionId: string,
+  folderId: string | null
+): Promise<Session> {
+  const response = await fetch(`${API_BASE}/sessions/${sessionId}/folder`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ folder_id: folderId }),
+  });
+  return response.json();
+}
+
+/**
+ * List sessions filtered by folder
+ */
+export async function listSessionsByFolder(folderId: string | null): Promise<Session[]> {
+  const url = folderId
+    ? `${API_BASE}/sessions/?folder_id=${folderId}`
+    : `${API_BASE}/sessions/`;
+  const response = await fetch(url);
+  return response.json();
 }

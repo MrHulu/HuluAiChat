@@ -3,7 +3,7 @@
  * 单个会话项
  */
 import { useState } from "react";
-import { Session, ExportFormat } from "@/api/client";
+import { Session, Folder, ExportFormat } from "@/api/client";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -14,13 +14,23 @@ import {
 
 export interface SessionItemProps {
   session: Session;
+  folders?: Folder[];
   isActive: boolean;
   onClick: () => void;
   onDelete?: () => void;
   onExport?: (sessionId: string, format: ExportFormat) => void;
+  onMoveToFolder?: (sessionId: string, folderId: string | null) => void;
 }
 
-export function SessionItem({ session, isActive, onClick, onDelete, onExport }: SessionItemProps) {
+export function SessionItem({
+  session,
+  folders = [],
+  isActive,
+  onClick,
+  onDelete,
+  onExport,
+  onMoveToFolder,
+}: SessionItemProps) {
   const [isExporting, setIsExporting] = useState(false);
 
   const formatDate = (dateStr: string) => {
@@ -57,6 +67,11 @@ export function SessionItem({ session, isActive, onClick, onDelete, onExport }: 
     }
   };
 
+  const handleMoveToFolder = (folderId: string | null) => (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onMoveToFolder?.(session.id, folderId);
+  };
+
   return (
     <div
       onClick={onClick}
@@ -77,9 +92,9 @@ export function SessionItem({ session, isActive, onClick, onDelete, onExport }: 
         </div>
       </div>
 
-      {/* 操作按钮组 */}
+      {/* Action buttons */}
       <div className="flex items-center gap-1">
-        {/* 导出按钮 */}
+        {/* Export button */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
@@ -112,7 +127,17 @@ export function SessionItem({ session, isActive, onClick, onDelete, onExport }: 
           <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
             <DropdownMenuItem onClick={handleExport("markdown")}>
               <span className="flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <path d="M14 3v4a1 1 0 0 0 1 1h4" />
                   <path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z" />
                 </svg>
@@ -121,7 +146,17 @@ export function SessionItem({ session, isActive, onClick, onDelete, onExport }: 
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleExport("json")}>
               <span className="flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <path d="M14 3v4a1 1 0 0 0 1 1h4" />
                   <path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z" />
                 </svg>
@@ -130,7 +165,17 @@ export function SessionItem({ session, isActive, onClick, onDelete, onExport }: 
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleExport("txt")}>
               <span className="flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <path d="M14 3v4a1 1 0 0 0 1 1h4" />
                   <path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z" />
                 </svg>
@@ -140,7 +185,97 @@ export function SessionItem({ session, isActive, onClick, onDelete, onExport }: 
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* 删除按钮 */}
+        {/* Move to folder submenu */}
+        {folders.length > 0 && onMoveToFolder && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                onClick={(e) => e.stopPropagation()}
+                className={cn(
+                  "opacity-0 group-hover:opacity-100 transition-opacity",
+                  "p-1 rounded hover:bg-primary/20 text-muted-foreground hover:text-primary"
+                )}
+                title="Move to folder"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" />
+                </svg>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+              <DropdownMenuItem onClick={handleMoveToFolder(null)}>
+                <span className="flex items-center gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="m15 18-6-6 6-6" />
+                  </svg>
+                  Uncategorized
+                </span>
+              </DropdownMenuItem>
+              {folders.map((folder) => (
+                <DropdownMenuItem
+                  key={folder.id}
+                  onClick={handleMoveToFolder(folder.id)}
+                  className={session.folder_id === folder.id ? "bg-muted" : ""}
+                >
+                  <span className="flex items-center gap-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" />
+                    </svg>
+                    {folder.name}
+                    {session.folder_id === folder.id && (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="ml-auto text-primary"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    )}
+                  </span>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+
+        {/* Delete button */}
         <button
           onClick={handleDelete}
           className={cn(
