@@ -770,3 +770,236 @@ def enhance_sidebar_buttons(
                             normal_color="transparent",
                             hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray78", "gray28"),
                         )
+
+
+# ============================================================================
+# 发送按钮动画 (v2.10.0)
+# ============================================================================
+
+class SendButton(ctk.CTkButton):
+    """带点击和发送动画的发送按钮。
+
+    动画效果：
+    - 点击时缩放微交互（1.0 → 0.95 → 1.0）
+    - 发送中状态显示加载动画
+    - 悬停时轻微放大
+    - 平滑过渡
+
+    Args:
+        parent: 父容器
+        command: 发送回调
+        normal_text: 正常状态文字（默认"发送"）
+        loading_text: 发送中文字（默认空，使用图标）
+        **kwargs: 其他 CTkButton 参数
+    """
+
+    # 全局动画管理
+    _animating_buttons = set()
+
+    def __init__(
+        self,
+        parent: ctk.CTk,
+        command: Callable[[], Any] | None = None,
+        normal_text: str = "发送",
+        loading_text: str = "",
+        **kwargs,
+    ) -> None:
+        # 默认样式（与主窗口发送按钮一致）
+        if _HAS_DESIGN_SYSTEM:
+            kwargs.setdefault("fg_color", Colors.PRIMARY)
+            kwargs.setdefault("hover_color", Colors.PRIMARY_HOVER)
+            kwargs.setdefault("text_color", ("white", "white"))
+            kwargs.setdefault("corner_radius", ButtonSpec.PRIMARY_RADIUS)
+        else:
+            kwargs.setdefault("fg_color", None)
+            kwargs.setdefault("hover_color", None)
+            kwargs.setdefault("text_color", None)
+            kwargs.setdefault("corner_radius", None)
+
+        kwargs.setdefault("width", 80)
+        kwargs.setdefault("font", ("", FontSize.SM))
+
+        # 状态管理
+        self._normal_text = normal_text
+        self._loading_text = loading_text
+        self._is_sending = False
+        self._loading_step = 0
+
+        # 缩放动画
+        self._current_scale = 1.0
+        self._target_scale = 1.0
+        self._anim_id: str | None = None
+
+        # 初始化父类
+        super().__init__(
+            parent,
+            text=self._normal_text,
+            command=self._on_click_with_anim,
+            **kwargs,
+        )
+
+        # 绑定悬停事件
+        self.bind("<Enter>", self._on_enter, add="+")
+        self.bind("<Leave>", self._on_leave, add="+")
+
+        # 保存原始 command（封装后调用）
+        self._user_command = command
+
+    def _on_click_with_anim(self) -> None:
+        """点击时执行缩放动画后再调用用户回调。"""
+        if self._is_sending:
+            return
+
+        # 快速缩放动画
+        self._target_scale = 0.92
+        self._start_animation()
+
+        # 延迟后调用用户命令并恢复
+        def delayed_command():
+            if self._user_command:
+                self._user_command()
+            # 恢复缩放
+            self._target_scale = 1.0
+            self._start_animation()
+
+        self.after(80, delayed_command)
+
+    def _on_enter(self, event) -> None:
+        """鼠标进入 - 轻微放大。"""
+        if not self._is_sending:
+            self._target_scale = 1.03
+            self._start_animation()
+
+    def _on_leave(self, event) -> None:
+        """鼠标离开 - 恢复正常。"""
+        if not self._is_sending:
+            self._target_scale = 1.0
+            self._start_animation()
+
+    def _start_animation(self) -> None:
+        """开始/继续动画循环。"""
+        anim_key = id(self)
+        if anim_key in self._animating_buttons:
+            return
+
+        self._animating_buttons.add(anim_key)
+        self._animate_step()
+
+    def _animate_step(self) -> None:
+        """动画单步。"""
+        anim_key = id(self)
+
+        # 检查是否需要继续动画
+        if abs(self._current_scale - self._target_scale) < 0.005:
+            self._current_scale = self._target_scale
+            self._apply_scale()
+            self._animating_buttons.discard(anim_key)
+            return
+
+        # 平滑插值（更快的响应）
+        diff = self._target_scale - self._current_scale
+        step = diff * 0.4
+        if abs(step) < 0.005:
+            step = diff
+
+        self._current_scale += step
+        self._apply_scale()
+
+        # 继续动画
+        if self.winfo_exists():
+            self.after(12, self._animate_step)
+
+    def _apply_scale(self) -> None:
+        """应用当前缩放。"""
+        if not self.winfo_exists():
+            return
+
+        scale = self._current_scale
+
+        # 通过字体大小实现缩放效果
+        current_font = self.cget("font")
+        if isinstance(current_font, tuple) and len(current_font) >= 2:
+            base_size = current_font[1]
+            scaled_size = int(base_size * (0.97 + 0.03 * scale))
+            new_font = (current_font[0], scaled_size) + current_font[2:]
+            self.configure(font=new_font)
+
+    def set_sending(self, sending: bool) -> None:
+        """设置发送状态。
+
+        Args:
+            sending: True 显示发送中状态，False 恢复正常
+        """
+        self._is_sending = sending
+
+        if sending:
+            # 发送中状态
+            self._target_scale = 0.98
+            self._start_animation()
+            self._start_loading_icon()
+            self.configure(state="disabled")
+        else:
+            # 恢复正常
+            self._target_scale = 1.0
+            self._start_animation()
+            self._stop_loading_icon()
+            self.configure(state="normal")
+
+    def _start_loading_icon(self) -> None:
+        """开始加载图标动画。"""
+        self._loading_step = 0
+        self._update_loading_icon()
+
+    def _stop_loading_icon(self) -> None:
+        """停止加载图标动画。"""
+        self.configure(text=self._normal_text)
+
+    def _update_loading_icon(self) -> None:
+        """更新加载图标。"""
+        if not self._is_sending or not self.winfo_exists():
+            return
+
+        # 发送中动画图标
+        icons = ["◷", "◶", "◵", "◴"]
+        icon = icons[self._loading_step % len(icons)]
+        self.configure(text=icon)
+        self._loading_step += 1
+
+        # 继续动画
+        self.after(200, self._update_loading_icon)
+
+    def configure(self, **kwargs) -> None:
+        """配置更新（捕获 state 变化）。"""
+        super().configure(**kwargs)
+
+        # 如果 state 被 external 设置为 disabled，不是发送状态
+        if "state" in kwargs and kwargs["state"] == "normal":
+            # 外部启用了按钮，确保不是发送状态
+            if not self._is_sending:
+                self._target_scale = 1.0
+                self._apply_scale()
+
+    def destroy(self) -> None:
+        """清理动画资源。"""
+        anim_key = id(self)
+        self._animating_buttons.discard(anim_key)
+        self._is_sending = False
+        super().destroy()
+
+
+def create_send_button(
+    parent: ctk.CTk,
+    command: Callable[[], Any] | None = None,
+    **kwargs,
+) -> SendButton:
+    """工厂函数：创建发送按钮。
+
+    Args:
+        parent: 父容器
+        command: 发送回调
+        **kwargs: 其他参数
+
+    Returns:
+        SendButton 实例
+    """
+    return SendButton(parent, command=command, **kwargs)
