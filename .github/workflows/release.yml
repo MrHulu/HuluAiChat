@@ -13,7 +13,25 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    outputs:
+      release-id: ${{ steps.create-release.outputs.id }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create Release
+        id: create-release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: HuluChat v${{ github.ref_name }}
+          body: 'See CHANGELOG for details.'
+          draft: true
+          prerelease: false
+
   build-backend:
+    needs: create-release
     strategy:
       fail-fast: false
       matrix:
@@ -68,7 +86,7 @@ jobs:
             huluchat-v3/src-tauri/binaries/huluchat-backend-${{ matrix.target }}*
 
   build-tauri:
-    needs: build-backend
+    needs: [create-release, build-backend]
     strategy:
       fail-fast: false
       matrix:
@@ -133,15 +151,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           projectPath: huluchat-v3
-          tagName: ${{ github.ref_name }}
-          releaseName: 'HuluChat v__VERSION__'
-          releaseBody: 'See CHANGELOG for details.'
-          releaseDraft: false
-          prerelease: false
+          releaseId: ${{ needs.create-release.outputs.release-id }}
           args: ${{ matrix.args }}
 
   update-release:
-    needs: build-tauri
+    needs: [create-release, build-tauri]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -181,7 +195,8 @@ jobs:
           }
           EOF
 
-      - name: Upload latest.json to Release
+      - name: Upload latest.json and publish Release
         uses: softprops/action-gh-release@v2
         with:
           files: latest.json
+          draft: false
