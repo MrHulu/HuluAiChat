@@ -58,25 +58,68 @@ try:
 except ImportError:
     _HAS_SEARCH_RESULTS_PANEL = False
 
+# v2.9.0: 动画效果
+try:
+    from src.ui.animated_button import enhance_sidebar_buttons, SendButton
+    _HAS_ANIMATED_BUTTON = True
+except ImportError:
+    _HAS_ANIMATED_BUTTON = False
+    SendButton = None  # type: ignore[misc, assignment]
+
 SIDEBAR_WIDTH = 220
 SIDEBAR_COLLAPSED = 40  # 折叠后仅图标条，尽量收窄
 POLL_MS = 50
 
 
 class ToastNotification:
-    """v2.0.0: 浮动提示框，用于显示操作反馈。"""
+    """v2.9.0: 浮动提示框，用于显示操作反馈。带阴影和淡入淡出动画。"""
     def __init__(self, parent: ctk.CTk, message: str, duration_ms: int = 1500) -> None:
         self._parent = parent
         self._duration = duration_ms
         self._widget: ctk.CTkFrame | None = None
+        self._shadow_widgets: list[ctk.CTkFrame] = []
+        self._fade_out_steps = 8
+        self._fade_in_steps = 6
 
-        # v2.0.0: 使用设计系统配色
-        bg_color = Colors.TOAST_BG if _HAS_DESIGN_SYSTEM else ("gray80", "gray30")
-        text_color = Colors.TOAST_TEXT if _HAS_DESIGN_SYSTEM else ("gray15", "gray88")
-        border_color = Colors.TOAST_BORDER if _HAS_DESIGN_SYSTEM else ("gray70", "gray40")
-        radius = Radius.MD if _HAS_DESIGN_SYSTEM else 8
+        # v2.9.0: 美化配色 - 更柔和的渐变效果
+        if _HAS_DESIGN_SYSTEM:
+            # 深色半透明背景，更有质感
+            bg_color = ("#2D3748", "#1A202C")
+            text_color = ("#F7FAFC", "#EDF2F7")
+            border_color = ("#4A5568", "#2D3748")
+            shadow_color = ("#1A202C", "#0D1117")
+            radius = Radius.LG  # 更大的圆角 (12px)
+        else:
+            bg_color = ("gray80", "gray25")
+            text_color = ("gray10", "gray95")
+            border_color = ("gray65", "gray35")
+            shadow_color = ("gray50", "gray15")
+            radius = 10
 
-        # 创建半透明背景的提示框
+        # 阴影层级 - 用多层 offset 模拟阴影
+        shadow_layers = [
+            (0, 0), (2, 2), (4, 4), (6, 6), (8, 8)
+        ]
+
+        # 创建阴影层（从外到内）
+        for offset_x, offset_y in reversed(shadow_layers):
+            shadow = ctk.CTkFrame(
+                parent,
+                fg_color=("transparent", "transparent"),
+                corner_radius=radius + 2,
+            )
+            # 阴影效果用深色边框模拟
+            inner_shadow = ctk.CTkFrame(
+                shadow,
+                fg_color=shadow_color,
+                corner_radius=radius,
+            )
+            inner_shadow.pack(fill="both", expand=True, padx=1, pady=1)
+            shadow.place(relx=0.5, rely=0.85, anchor="center",
+                        x=offset_x, y=offset_y)
+            self._shadow_widgets.append(shadow)
+
+        # 主提示框
         self._widget = ctk.CTkFrame(
             parent,
             fg_color=bg_color,
@@ -89,17 +132,60 @@ class ToastNotification:
         label = ctk.CTkLabel(
             self._widget,
             text=message,
-            font=("", FontSize.SM),
+            font=("", FontSize.SM, "bold"),
             text_color=text_color,
-            padx=Spacing.LG,
-            pady=Spacing.SM
+            padx=Spacing.LG + 4,
+            pady=Spacing.SM + 2
         )
         label.pack()
 
+        # 淡入动画
+        self._fade_in(0)
+
         # 自动消失
-        self._widget.after(duration_ms, self._destroy)
+        self._widget.after(duration_ms, self._fade_out_start)
+
+    def _fade_in(self, step: int) -> None:
+        """淡入动画。"""
+        if step >= self._fade_in_steps:
+            return
+
+        # 简单的缩放效果模拟淡入
+        scale = 0.85 + (0.15 * step / self._fade_in_steps)
+        if self._widget and self._widget.winfo_exists():
+            # 当前位置
+            current_x = self._widget.winfo_x()
+            current_y = self._widget.winfo_y()
+            # 重新 place 实现缩放效果（通过调整偏移）
+            self._widget.place(relx=0.5, rely=0.85, anchor="center")
+            self._widget.after(15, lambda: self._fade_in(step + 1))
+
+    def _fade_out_start(self) -> None:
+        """开始淡出。"""
+        self._fade_out(0)
+
+    def _fade_out(self, step: int) -> None:
+        """淡出动画。"""
+        if step >= self._fade_out_steps:
+            self._destroy()
+            return
+
+        # 逐渐缩小阴影偏移模拟淡出
+        for i, shadow in enumerate(self._shadow_widgets):
+            if shadow.winfo_exists():
+                offset = max(0, 8 - step - i)
+                shadow.place(relx=0.5, rely=0.85, anchor="center",
+                            x=offset, y=offset)
+
+        self._widget.after(20, lambda: self._fade_out(step + 1))
 
     def _destroy(self) -> None:
+        # 清理阴影层
+        for shadow in self._shadow_widgets:
+            if shadow.winfo_exists():
+                shadow.place_forget()
+        self._shadow_widgets.clear()
+
         if self._widget and self._widget.winfo_exists():
             self._widget.place_forget()
             self._widget = None
@@ -253,6 +339,14 @@ class QuickSwitcherDialog:
                 command=lambda sid=session.id: self._select_session(sid),
             )
             btn.pack(fill="x", padx=8, pady=4)
+
+            # v2.7.0: 绑定双击事件编辑标题
+            btn.bind("<Double-Button-1>", lambda e, sid=session.id, title=session.title: self._rename_session(sid, title))
+            # v2.7.0: 绑定右键菜单
+            btn.bind("<Button-3>", lambda e, sid=session.id, title=session.title: self._show_session_context_menu(e, sid, title))
+            # macOS 右键支持
+            btn.bind("<Button-2>", lambda e, sid=session.id, title=session.title: self._show_session_context_menu(e, sid, title))
+
             self._session_buttons.append(btn)
 
         # 更新选中状态
@@ -759,6 +853,8 @@ class MainWindow:
         self._search_whole_word: bool = False  # 全词匹配
         self._search_regex: bool = False  # 正则表达式 (v1.4.9)
         self._starred_only: bool = False  # v2.2.0: 仅显示收藏消息
+        self._archived_only: bool = False  # v2.5.0: 仅显示归档会话
+        self._show_archived_only: bool = False  # v2.5.0: 会话列表归档过滤
         # 最近搜索下拉框
         self._search_dropdown: ctk.CTkFrame | None = None  # 下拉框容器
         self._search_dropdown_open: bool = False  # 下拉框是否打开
@@ -766,6 +862,12 @@ class MainWindow:
         # 日期范围过滤
         self._search_start_date: str | None = None  # 起始日期 (ISO 格式)
         self._search_end_date: str | None = None  # 结束日期 (ISO 格式)
+        # v2.8.0: 分页状态
+        self._pagination_enabled: bool = True  # 是否启用分页
+        self._pagination_page_size: int = 50  # 每页消息数
+        self._pagination_current_page: int = 0  # 当前页码（从0开始）
+        self._pagination_total_count: int = 0  # 总消息数
+        self._pagination_controls: ctk.CTkFrame | None = None  # 分页控件容器
         self._quoted_message: tuple[str, str] | None = None  # (message_id, content) 正在引用的消息
         # 消息选择模式 (v1.2.5)
         self._selection_mode: bool = False  # 是否处于选择模式
@@ -876,20 +978,23 @@ class MainWindow:
         # v2.0.0: 搜索框 - 使用设计系统
         self._search_var = ctk.StringVar()
         search_height = Input.HEIGHT if _HAS_DESIGN_SYSTEM else 32
+        # v2.9.0: 焦点状态优化 - 初始边框较细，焦点时加粗并变色
+        initial_border_width = 1 if _HAS_DESIGN_SYSTEM else 0
         self._search_entry = ctk.CTkEntry(
             top,
             placeholder_text="🔍 搜索... (Ctrl+K)",
             width=200,
             textvariable=self._search_var,
             height=search_height,
-            border_width=1 if _HAS_DESIGN_SYSTEM else 0,
+            border_width=initial_border_width,
             border_color=Colors.BORDER_SUBTLE if _HAS_DESIGN_SYSTEM else ("gray70", "gray40"),
             corner_radius=Input.RADIUS if _HAS_DESIGN_SYSTEM else 0,
         )
         self._search_entry.grid(row=0, column=0, sticky="w")
         self._search_entry.bind("<KeyRelease>", self._on_search_input)
         self._search_entry.bind("<Escape>", lambda e: self._clear_search())
-        self._search_entry.bind("<FocusIn>", lambda e: self._show_search_dropdown())
+        # v2.9.0: 焦点状态 - 链式处理焦点效果
+        self._search_entry.bind("<FocusIn>", self._on_search_focus_in)
         self._search_entry.bind("<FocusOut>", self._on_search_focus_out)
         self._search_entry.bind("<Return>", self._on_search_enter)
         # v2.0.0: 全局搜索切换按钮
@@ -933,6 +1038,20 @@ class MainWindow:
         )
         self._starred_filter_btn.grid(row=0, column=3, padx=(4, 0))
 
+        # v2.5.0: 归档过滤按钮
+        self._archived_only_var = ctk.BooleanVar(value=False)
+        self._archived_filter_btn = ctk.CTkButton(
+            top,
+            text="📂",
+            width=36,
+            height=search_height,
+            command=self._toggle_archived_filter,
+            fg_color="transparent",
+            hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray80", "gray28"),
+            text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray60")
+        )
+        self._archived_filter_btn.grid(row=0, column=4, padx=(4, 0))
+
         # v2.4.0: 搜索结果面板按钮
         if _HAS_SEARCH_RESULTS_PANEL:
             self._search_panel_btn = ctk.CTkButton(
@@ -945,11 +1064,11 @@ class MainWindow:
                 hover_color=Colors.HOVER_BG if _HAS_DESIGN_SYSTEM else ("gray80", "gray28"),
                 text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray60")
             )
-            self._search_panel_btn.grid(row=0, column=4, padx=(4, 0))
+            self._search_panel_btn.grid(row=0, column=5, padx=(4, 0))
             # 更新后续按钮的列位置
-            search_options_column = 5
+            search_options_column = 6
         else:
-            search_options_column = 4
+            search_options_column = 5
 
         # v1.4.8: 高级搜索选项容器
         search_options_frame = ctk.CTkFrame(top, fg_color="transparent")
@@ -1198,24 +1317,42 @@ class MainWindow:
         )
         self._selection_mode_btn.pack(side="left")
 
-        self._input = ctk.CTkTextbox(input_frame, height=80, wrap="word")
+        # v2.9.0: 焦点状态优化 - 初始边框较细，焦点时加粗并变色
+        initial_border_width = 1 if _HAS_DESIGN_SYSTEM else 0
+        self._input = ctk.CTkTextbox(
+            input_frame,
+            height=80,
+            wrap="word",
+            border_width=initial_border_width,
+            border_color=Colors.BORDER_SUBTLE if _HAS_DESIGN_SYSTEM else ("gray70", "gray40"),
+        )
         self._input.grid(row=2, column=1, sticky="ew", padx=(0, 8))
         self._input.bind("<Return>", self._on_input_return)
         self._input.bind("<Control-Return>", lambda e: None)  # Ctrl+Enter 换行由默认行为处理
         # v1.3.0: Bind KeyRelease to update character counter
         self._input.bind("<KeyRelease>", self._on_input_key_release)
+        # v2.9.0: 焦点状态 - 获得焦点时边框加粗变为主色
+        self._input.bind("<FocusIn>", self._on_input_focus_in)
+        self._input.bind("<FocusOut>", self._on_input_focus_out)
 
         # v2.0.0: 发送按钮使用品牌色
-        self._send_btn = ctk.CTkButton(
-            input_frame,
-            text="发送",
-            width=80,
-            command=self._on_send,
-            fg_color=Colors.PRIMARY if _HAS_DESIGN_SYSTEM else None,
-            hover_color=Colors.PRIMARY_HOVER if _HAS_DESIGN_SYSTEM else None,
-            text_color=("white", "white") if _HAS_DESIGN_SYSTEM else None,
-            corner_radius=Button.PRIMARY_RADIUS if _HAS_DESIGN_SYSTEM else None,
-        )
+        # v2.10.0: 使用带动画的 SendButton
+        if _HAS_ANIMATED_BUTTON and SendButton is not None:
+            self._send_btn = SendButton(
+                input_frame,
+                command=self._on_send,
+            )
+        else:
+            self._send_btn = ctk.CTkButton(
+                input_frame,
+                text="发送",
+                width=80,
+                command=self._on_send,
+                fg_color=Colors.PRIMARY if _HAS_DESIGN_SYSTEM else None,
+                hover_color=Colors.PRIMARY_HOVER if _HAS_DESIGN_SYSTEM else None,
+                text_color=("white", "white") if _HAS_DESIGN_SYSTEM else None,
+                corner_radius=Button.PRIMARY_RADIUS if _HAS_DESIGN_SYSTEM else None,
+            )
         self._send_btn.grid(row=2, column=2)
 
         # v2.0.0: Enhanced loading indicator with animation support
@@ -1283,6 +1420,8 @@ class MainWindow:
         self._root.bind("<Control-Alt-S>", lambda e: self._on_show_global_statistics())  # 大写 S 兼容
         self._root.bind("<Control-p>", lambda e: self._on_toggle_current_session_pinned())  # Ctrl+P 切换置顶
         self._root.bind("<Control-P>", lambda e: self._on_toggle_current_session_pinned())  # 大写 P 兼容
+        # v2.5.0: Ctrl+Shift+A 切换归档
+        self._root.bind("<Control-A>", lambda e: self._on_toggle_current_session_archived())  # Ctrl+A 切换归档
         self._root.bind("<Control-F>", lambda e: self._on_manage_folders())  # Ctrl+Shift+F 管理文件夹
         self._root.bind("<Control-C>", lambda e: self._on_copy_last_message())  # Ctrl+Shift+C 复制最后一条 AI 回复
         self._root.bind("<Control-Up>", lambda e: self._on_next_session(-1))  # Ctrl+Up 上一个会话
@@ -1417,6 +1556,82 @@ class MainWindow:
         # v2.4.0: 清除搜索结果面板
         if _HAS_SEARCH_RESULTS_PANEL and self._search_results_panel:
             self._search_results_panel.clear()
+
+    # ========== v2.8.0: 分页控件方法 ==========
+
+    def _add_pagination_controls(self) -> None:
+        """添加分页控件到聊天区域底部。"""
+        if self._pagination_controls:
+            return  # 已存在
+
+        # 计算页码信息
+        total_pages = (self._pagination_total_count + self._pagination_page_size - 1) // self._pagination_page_size
+        current_page_num = self._pagination_current_page + 1
+        start_idx = self._pagination_current_page * self._pagination_page_size + 1
+        end_idx = min(start_idx + self._pagination_page_size - 1, self._pagination_total_count)
+
+        # 分页控件容器
+        bg_color = Colors.BG_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray85", "gray22")
+        self._pagination_controls = ctk.CTkFrame(
+            self._chat_scroll,
+            fg_color=bg_color,
+            corner_radius=Radius.MD if _HAS_DESIGN_SYSTEM else 8,
+        )
+        self._pagination_controls.grid(sticky="ew", pady=Spacing.LG if _HAS_DESIGN_SYSTEM else 12,
+                                       padx=Spacing.MD if _HAS_DESIGN_SYSTEM else 0)
+
+        # 信息标签
+        text_color = Colors.TEXT_SECONDARY if _HAS_DESIGN_SYSTEM else ("gray50", "gray60")
+        font_size = FontSize.SM if _HAS_DESIGN_SYSTEM else 12
+        info_label = ctk.CTkLabel(
+            self._pagination_controls,
+            text=f"📄 {start_idx}-{end_idx} / {self._pagination_total_count} 条消息",
+            font=("", font_size),
+            text_color=text_color,
+        )
+        info_label.pack(side="left", padx=Spacing.MD if _HAS_DESIGN_SYSTEM else 12, pady=Spacing.SM)
+
+        # 按钮容器
+        btn_frame = ctk.CTkFrame(self._pagination_controls, fg_color="transparent")
+        btn_frame.pack(side="right", padx=Spacing.MD if _HAS_DESIGN_SYSTEM else 12)
+
+        # 上一页按钮
+        prev_btn = ctk.CTkButton(
+            btn_frame,
+            text="◀ 上一页",
+            width=80,
+            height=28,
+            state="normal" if self._pagination_current_page > 0 else "disabled",
+            command=self._pagination_prev_page,
+        )
+        prev_btn.pack(side="left", padx=Spacing.XS)
+
+        # 下一页按钮
+        next_btn = ctk.CTkButton(
+            btn_frame,
+            text="下一页 ▶",
+            width=80,
+            height=28,
+            state="normal" if self._pagination_current_page < total_pages - 1 else "disabled",
+            command=self._pagination_next_page,
+        )
+        next_btn.pack(side="left", padx=Spacing.XS)
+
+        # 滚动到底部
+        self._chat_scroll.after(100, lambda: self._chat_scroll._scrollbar.set(1.0, 1.0))
+
+    def _pagination_prev_page(self) -> None:
+        """翻到上一页。"""
+        if self._pagination_current_page > 0:
+            self._pagination_current_page -= 1
+            self._refresh_chat_area()
+
+    def _pagination_next_page(self) -> None:
+        """翻到下一页。"""
+        total_pages = (self._pagination_total_count + self._pagination_page_size - 1) // self._pagination_page_size
+        if self._pagination_current_page < total_pages - 1:
+            self._pagination_current_page += 1
+            self._refresh_chat_area()
 
     # ========== v2.4.0: 搜索结果面板方法 ==========
 
@@ -1734,10 +1949,45 @@ class MainWindow:
             self._search_dropdown = None
         self._search_dropdown_open = False
 
+    def _on_search_focus_in(self, event) -> None:
+        """v2.9.0: 搜索框获得焦点时，更新视觉效果并显示下拉框。"""
+        if _HAS_DESIGN_SYSTEM:
+            # 焦点时：边框加粗变为主色，背景更亮
+            self._search_entry.configure(
+                border_width=2,
+                border_color=Colors.FOCUS_BORDER,
+            )
+        # 显示最近搜索下拉框
+        self._show_search_dropdown()
+
     def _on_search_focus_out(self, event) -> None:
-        """搜索框失去焦点时，延迟隐藏下拉框（允许点击下拉项）。"""
+        """v2.9.0: 搜索框失去焦点时，恢复默认样式并延迟隐藏下拉框（允许点击下拉项）。"""
+        if _HAS_DESIGN_SYSTEM:
+            # 恢复默认边框样式
+            self._search_entry.configure(
+                border_width=1,
+                border_color=Colors.BORDER_SUBTLE,
+            )
         # 延迟100ms，给点击事件时间处理
         self._root.after(100, self._hide_search_dropdown)
+
+    def _on_input_focus_in(self, event) -> None:
+        """v2.9.0: 输入框获得焦点时，更新视觉效果。"""
+        if _HAS_DESIGN_SYSTEM:
+            # 焦点时：边框加粗变为主色
+            self._input.configure(
+                border_width=2,
+                border_color=Colors.FOCUS_BORDER,
+            )
+
+    def _on_input_focus_out(self, event) -> None:
+        """v2.9.0: 输入框失去焦点时，恢复默认样式。"""
+        if _HAS_DESIGN_SYSTEM:
+            # 恢复默认边框样式
+            self._input.configure(
+                border_width=1,
+                border_color=Colors.BORDER_SUBTLE,
+            )
 
     def _select_recent_search(self, query: str) -> None:
         """选择一个最近搜索项。"""
@@ -1861,25 +2111,37 @@ class MainWindow:
         self._refresh_chat_area()
 
     def _edit_message(self, message_id: str, current_content: str) -> None:
-        """编辑消息内容。"""
+        """v2.6.0: 编辑消息内容，支持编辑后重新生成 AI 回复。"""
         # 获取消息信息
         sid = self._app.current_session_id()
         if not sid:
             return
         messages = self._app.load_messages(sid)
         target_msg = None
-        for m in messages:
+        target_index = -1
+        for i, m in enumerate(messages):
             if m.id == message_id:
                 target_msg = m
+                target_index = i
                 break
         if not target_msg:
             ToastNotification(self._root, "❌ 消息不存在")
             return
 
+        # 检查是否有后续消息（仅对用户消息）
+        has_following_messages = False
+        next_assistant_msg_id = None
+        if target_msg.role == "user" and target_index < len(messages) - 1:
+            # 检查下一条是否是 assistant 消息
+            next_msg = messages[target_index + 1] if target_index + 1 < len(messages) else None
+            if next_msg and next_msg.role == "assistant":
+                has_following_messages = True
+                next_assistant_msg_id = next_msg.id
+
         # 创建编辑对话框
         dialog = ctk.CTkToplevel(self._root)
         dialog.title("编辑消息")
-        dialog.geometry("600x400")
+        dialog.geometry("600x450")
         dialog.transient(self._root)
         dialog.grab_set()
 
@@ -1895,11 +2157,34 @@ class MainWindow:
         textbox = ctk.CTkTextbox(
             dialog,
             wrap="word",
-            height=250,
+            height=220,
             font=("", 12)
         )
         textbox.pack(padx=16, pady=8, fill="both", expand=True)
         textbox.insert("1.0", current_content)
+
+        # v2.6.0: 重新生成选项（仅用户消息且有后续回复时显示）
+        regenerate_var = ctk.BooleanVar(value=False)
+        if has_following_messages:
+            regenerate_frame = ctk.CTkFrame(dialog, fg_color="transparent")
+            regenerate_frame.pack(pady=(4, 8), padx=16, fill="x")
+
+            regenerate_cb = ctk.CTkCheckBox(
+                regenerate_frame,
+                text="🔄 编辑后重新生成 AI 回复",
+                variable=regenerate_var,
+                onvalue=True,
+                offvalue=False,
+            )
+            regenerate_cb.pack(anchor="w")
+
+            hint_label = ctk.CTkLabel(
+                regenerate_frame,
+                text="   选中后将删除当前 AI 回复并重新生成",
+                font=("", 10),
+                text_color=("gray50", "gray60")
+            )
+            hint_label.pack(anchor="w")
 
         # 按钮容器
         btn_frame = ctk.CTkFrame(dialog, fg_color="transparent")
@@ -1910,12 +2195,36 @@ class MainWindow:
             if not new_content:
                 messagebox.showwarning("警告", "消息内容不能为空")
                 return
-            if self._app.update_message_content(message_id, new_content):
+            if not self._app.update_message_content(message_id, new_content):
+                messagebox.showerror("错误", "更新消息失败")
+                return
+
+            # v2.6.0: 检查是否需要重新生成
+            should_regenerate = regenerate_var.get() if has_following_messages else False
+            if should_regenerate and next_assistant_msg_id:
+                dialog.destroy()
+                # 删除后续的 AI 回复消息
+                self._app.delete_message(next_assistant_msg_id)
+                # 触发重新生成
+                self._refresh_chat_area()
+                # 检查是否正在流式输出
+                if self._streaming_session_id is not None:
+                    ToastNotification(self._root, "⚠️ 请等待当前回复完成")
+                    return
+                self._error_label.configure(text="")
+                self._start_loading_animation()
+                self._set_send_button_sending(True)
+                self._streaming_session_id = sid
+                self._app.regenerate_response(
+                    sid,
+                    self._stream_queue,
+                    on_done=self._on_stream_done,
+                    on_error=self._on_stream_error,
+                )
+            else:
                 ToastNotification(self._root, "✓ 消息已更新")
                 self._refresh_chat_area()
                 dialog.destroy()
-            else:
-                messagebox.showerror("错误", "更新消息失败")
 
         def cancel_and_close():
             dialog.destroy()
@@ -2525,7 +2834,7 @@ class MainWindow:
     # ========== 会话列表刷新 ==========
 
     def _refresh_sessions_list(self) -> None:
-        """刷新会话列表，按文件夹分组显示。"""
+        """v2.5.0: 刷新会话列表，按文件夹分组显示，支持归档会话过滤/分组。"""
         for row in self._session_row_frames:
             row.destroy()
         self._session_row_frames.clear()
@@ -2534,25 +2843,42 @@ class MainWindow:
         folders = self._app.list_folders()
 
         # 按文件夹分组会话
-        root_sessions = []  # 根目录的会话
-        folder_sessions = {}  # {folder_id: [sessions]}
+        root_sessions = []  # 根目录的会话（非归档）
+        folder_sessions = {}  # {folder_id: [sessions]} （非归档）
+        archived_root_sessions = []  # 归档的根目录会话
+        archived_folder_sessions = {}  # {folder_id: [sessions]} 归档的文件夹会话
 
         all_sessions = self._app.load_sessions()
         for s in all_sessions:
-            if s.folder_id is None:
-                root_sessions.append(s)
+            # v2.5.0: 过滤归档会话
+            if self._show_archived_only and not s.is_archived:
+                continue
+            if not self._show_archived_only and s.is_archived:
+                # 如果不是只显示归档模式，跳过归档会话（它们会单独显示）
+                pass  # 稍后处理
+            if s.is_archived:
+                # 归档会话单独分组
+                if s.folder_id is None:
+                    archived_root_sessions.append(s)
+                else:
+                    if s.folder_id not in archived_folder_sessions:
+                        archived_folder_sessions[s.folder_id] = []
+                    archived_folder_sessions[s.folder_id].append(s)
             else:
-                if s.folder_id not in folder_sessions:
-                    folder_sessions[s.folder_id] = []
-                folder_sessions[s.folder_id].append(s)
+                # 非归档会话正常分组
+                if s.folder_id is None:
+                    root_sessions.append(s)
+                else:
+                    if s.folder_id not in folder_sessions:
+                        folder_sessions[s.folder_id] = []
+                    folder_sessions[s.folder_id].append(s)
 
-        # 先显示根目录的会话
+        # 先显示根目录的会话（非归档）
         if root_sessions:
-            # 根目录标题（可选）
             for s in root_sessions:
                 self._add_session_row(s, current)
 
-        # 然后显示每个文件夹的会话
+        # 然后显示每个文件夹的会话（非归档）
         for folder in folders:
             if folder.id not in folder_sessions:
                 continue
@@ -2567,7 +2893,46 @@ class MainWindow:
                 for s in folder_sessions[folder.id]:
                     self._add_session_row(s, current)
 
+        # v2.5.0: 如果不是只显示归档模式，在列表底部显示归档会话分组
+        if not self._show_archived_only and (archived_root_sessions or archived_folder_sessions):
+            # 添加归档分隔线
+            separator = ctk.CTkFrame(
+                self._session_list_frame,
+                height=1,
+                fg_color=Colors.BORDER_SUBTLE if _HAS_DESIGN_SYSTEM else ("gray75", "gray30"),
+            )
+            separator.grid(sticky="ew", pady=(12, 4))
+            self._session_row_frames.append(separator)
+
+            # 归档标题
+            archived_header = ctk.CTkFrame(self._session_list_frame, fg_color="transparent")
+            archived_header.grid(sticky="ew", pady=(0, 4))
+            archived_label = ctk.CTkLabel(
+                archived_header,
+                text="📦 归档会话",
+                font=("", FontSize.SM, "bold"),
+                text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray50", "gray65"),
+                anchor="w",
+            )
+            archived_label.pack(side="left", padx=(0, Spacing.SM))
+            self._session_row_frames.append(archived_header)
+
+            # 显示归档的根目录会话
+            for s in archived_root_sessions:
+                self._add_session_row(s, current)
+
+            # 显示归档的文件夹会话
+            for folder in folders:
+                if folder.id not in archived_folder_sessions:
+                    continue
+                for s in archived_folder_sessions[folder.id]:
+                    self._add_session_row(s, current)
+
         self._session_list_frame.columnconfigure(0, weight=1)
+
+        # v2.9.0: 为会话按钮添加平滑悬停动画
+        if _HAS_ANIMATED_BUTTON:
+            self._root.after(50, lambda: enhance_sidebar_buttons(self._session_list_frame))
 
     def _add_folder_header(self, folder, is_collapsed: bool, session_count: int) -> ctk.CTkFrame:
         """添加文件夹标题行。"""
@@ -2621,7 +2986,7 @@ class MainWindow:
         return row
 
     def _add_session_row(self, s: Session, current: str | None) -> None:
-        """v2.0.0: 添加单个会话行 - 使用设计系统。"""
+        """v2.0.0: 添加单个会话行 - 使用设计系统。v2.5.0: 添加归档按钮。"""
         row = ctk.CTkFrame(self._session_list_frame, fg_color="transparent")
         row.grid(sticky="ew", pady=Spacing.XS if _HAS_DESIGN_SYSTEM else 2)
         row.grid_columnconfigure(0, weight=1)
@@ -2663,14 +3028,24 @@ class MainWindow:
         )
         btn_pin.grid(row=0, column=2, padx=2)
         _bind_pressed_style(btn_pin)
-        # 移动到文件夹按钮
+        # v2.5.0: 归档按钮
+        archive_text = "📦" if s.is_archived else "📂"
+        btn_archive = ctk.CTkButton(
+            row, text=archive_text, width=26, height=26,
+            fg_color="transparent", hover_color=_hover_btn, border_width=0,
+            text_color=_side_text,
+            command=lambda sid=s.id: self._on_toggle_session_archived(sid),
+        )
+        btn_archive.grid(row=0, column=3, padx=2)
+        _bind_pressed_style(btn_archive)
+        # 移动到文件夹按钮 (列号后移)
         btn_folder = ctk.CTkButton(
             row, text="📁", width=26, height=26,
             fg_color="transparent", hover_color=_hover_btn, border_width=0,
             text_color=_side_text,
             command=lambda sid=s.id: self._on_move_session_to_folder(sid),
         )
-        btn_folder.grid(row=0, column=3, padx=2)
+        btn_folder.grid(row=0, column=4, padx=2)
         _bind_pressed_style(btn_folder)
         btn_rename = ctk.CTkButton(
             row, text="✏️", width=26, height=26,
@@ -2678,7 +3053,7 @@ class MainWindow:
             text_color=_side_text,
             command=lambda sid=s.id, tit=s.title: self._on_rename_session(sid, tit),
         )
-        btn_rename.grid(row=0, column=4, padx=2)
+        btn_rename.grid(row=0, column=5, padx=2)
         _bind_pressed_style(btn_rename)
         btn_del = ctk.CTkButton(
             row, text="🗑️", width=26, height=26,
@@ -2686,7 +3061,7 @@ class MainWindow:
             text_color=_side_text,
             command=lambda sid=s.id: self._on_delete_session(sid),
         )
-        btn_del.grid(row=0, column=5, padx=2)
+        btn_del.grid(row=0, column=6, padx=2)
         _bind_pressed_style(btn_del)
         self._session_row_frames.append(row)
 
@@ -2754,6 +3129,11 @@ class MainWindow:
         self._chat_widgets.clear()
         sid = self._app.current_session_id()
 
+        # v2.8.0: 移除旧的分页控件
+        if self._pagination_controls:
+            self._pagination_controls.destroy()
+            self._pagination_controls = None
+
         # 全局搜索模式
         if self._search_global and self._search_query:
             self._refresh_global_search_results()
@@ -2767,38 +3147,56 @@ class MainWindow:
             lbl.grid(sticky="ew", pady=8)
             self._chat_scroll.columnconfigure(0, weight=1)
             return
-        messages = self._app.load_messages(sid)
 
-        # 搜索过滤
-        if self._search_query:
-            self._matched_message_ids = {m.id for m in self._app.search_messages(
-                sid, self._search_query, self._search_start_date, self._search_end_date,
-                self._search_case_sensitive, self._search_whole_word, self._search_regex
-            )}
-            filtered_messages = [m for m in messages if m.id in self._matched_message_ids]
-        else:
-            self._matched_message_ids = set()
+        # v2.8.0: 判断是否使用分页（仅在无过滤、无搜索时启用）
+        use_pagination = (
+            self._pagination_enabled and
+            not self._search_query and
+            not self._starred_only
+        )
+
+        if use_pagination:
+            # 分页模式：只加载当前页
+            offset = self._pagination_current_page * self._pagination_page_size
+            messages, total = self._app.load_messages_paginated(sid, offset, self._pagination_page_size)
+            self._pagination_total_count = total
             filtered_messages = messages
+            self._matched_message_ids = set()
+        else:
+            # 非分页模式：加载全部消息
+            self._pagination_total_count = 0
+            messages = self._app.load_messages(sid)
 
-        # v2.2.0: 星标过滤
-        if self._starred_only:
-            filtered_messages = [m for m in filtered_messages if m.is_starred]
-            # 如果没有收藏消息，显示提示
-            if not filtered_messages and not self._search_query:
-                lbl = ctk.CTkLabel(
-                    self._chat_scroll, text="⭐ 暂无收藏消息", anchor="w", justify="left", text_color=("gray40", "gray60")
-                )
-                lbl.grid(sticky="ew", pady=8)
-                self._chat_scroll.columnconfigure(0, weight=1)
-                return
+            # 搜索过滤
+            if self._search_query:
+                self._matched_message_ids = {m.id for m in self._app.search_messages(
+                    sid, self._search_query, self._search_start_date, self._search_end_date,
+                    self._search_case_sensitive, self._search_whole_word, self._search_regex
+                )}
+                filtered_messages = [m for m in messages if m.id in self._matched_message_ids]
+            else:
+                self._matched_message_ids = set()
+                filtered_messages = messages
+
+            # v2.2.0: 星标过滤
+            if self._starred_only:
+                filtered_messages = [m for m in filtered_messages if m.is_starred]
 
         if not filtered_messages:
-            hint = "没有匹配的消息" if self._search_query else "在下方输入并发送。"
+            if use_pagination:
+                hint = f"第 {self._pagination_current_page + 1} 页为空" if self._pagination_total_count > 0 else "在下方输入并发送。"
+            elif self._starred_only:
+                hint = "⭐ 暂无收藏消息"
+            else:
+                hint = "没有匹配的消息" if self._search_query else "在下方输入并发送。"
             lbl = ctk.CTkLabel(
                 self._chat_scroll, text=hint, anchor="w", justify="left", text_color=("gray40", "gray60")
             )
             lbl.grid(sticky="ew", pady=8)
             self._chat_scroll.columnconfigure(0, weight=1)
+            # 分页模式下即使没消息也显示分页控件
+            if use_pagination and self._pagination_total_count > 0:
+                self._add_pagination_controls()
             return
 
         # 收集所有匹配位置用于导航
@@ -2860,11 +3258,11 @@ class MainWindow:
                 border_color = border_color_user
                 border_width = 1
 
-            # v2.0.0: 消息容器 - 使用设计系统
+            # v2.9.0: 消息容器 - 使用设计系统（更大圆角）
             outer_frame = ctk.CTkFrame(
                 self._chat_scroll,
                 fg_color=Colors.MSG_CONTAINER_BG if _HAS_DESIGN_SYSTEM else "transparent",
-                corner_radius=Radius.XL if _HAS_DESIGN_SYSTEM else 16,
+                corner_radius=Radius.XXL if _HAS_DESIGN_SYSTEM else 16,
             )
             outer_frame.grid(sticky="ew", pady=Spacing.SM if _HAS_DESIGN_SYSTEM else 6)
             outer_frame.grid_columnconfigure(0, weight=1)
@@ -2926,11 +3324,11 @@ class MainWindow:
                 )
                 quote_label.pack(fill="x")
 
-            # v2.0.0: 主消息 frame - 使用设计系统
+            # v2.9.0: 主消息 frame - 使用设计系统（更大圆角）
             frame = ctk.CTkFrame(
                 outer_frame,
                 fg_color=fg,
-                corner_radius=Radius.XL if _HAS_DESIGN_SYSTEM else 16,
+                corner_radius=Radius.XXL if _HAS_DESIGN_SYSTEM else 16,
                 border_color=border_color,
                 border_width=border_width
             )
@@ -3117,6 +3515,10 @@ class MainWindow:
 
             self._chat_widgets.append((m.id, frame))
         self._chat_scroll.columnconfigure(0, weight=1)
+
+        # v2.8.0: 添加分页控件
+        if use_pagination and self._pagination_total_count > self._pagination_page_size:
+            self._add_pagination_controls()
 
     def _refresh_global_search_results(self) -> None:
         """刷新全局搜索结果。v2.0.0 使用设计系统优化样式。"""
@@ -3339,6 +3741,8 @@ class MainWindow:
         self._search_global_btn.configure(text="本会话")
         self._search_var.set("")
         self._search_query = ""
+        # v2.8.0: 重置分页到第一页
+        self._pagination_current_page = 0
         self._refresh_sessions_list()
         self._refresh_chat_area()
 
@@ -3639,7 +4043,7 @@ class MainWindow:
             return
         self._error_label.configure(text="")
         self._start_loading_animation()  # v1.3.0: Start animation
-        self._send_btn.configure(state="disabled")
+        self._set_send_button_sending(True)
         self._streaming_session_id = sid
         self._app.regenerate_response(
             sid,
@@ -3650,6 +4054,8 @@ class MainWindow:
 
     def _on_select_session(self, session_id: str) -> None:
         self._app.switch_session(session_id)
+        # v2.8.0: 重置分页到第一页
+        self._pagination_current_page = 0
         self._refresh_sessions_list()
         self._refresh_chat_area()
 
@@ -3660,6 +4066,46 @@ class MainWindow:
         status = "已置顶" if new_pinned else "已取消置顶"
         ToastNotification(self._root, f"{icon} {status}")
         self._refresh_sessions_list()
+
+    # ========== v2.5.0: 会话归档 ==========
+
+    def _on_toggle_session_archived(self, session_id: str) -> None:
+        """切换会话归档状态。"""
+        new_archived = self._app.toggle_session_archived(session_id)
+        icon = "📦" if new_archived else "📂"
+        status = "已归档" if new_archived else "已取消归档"
+        ToastNotification(self._root, f"{icon} {status}")
+        self._refresh_sessions_list()
+
+    def _on_toggle_current_session_archived(self) -> None:
+        """切换当前会话的归档状态（键盘快捷键 Ctrl+A，仅在选择模式外有效）。"""
+        # 如果在选择模式下，执行全选操作
+        if self._selection_mode:
+            self._select_all_messages()
+            return
+        # 否则切换归档状态
+        current_session_id = self._app.current_session_id()
+        if current_session_id:
+            self._on_toggle_session_archived(current_session_id)
+
+    def _toggle_archived_filter(self) -> None:
+        """v2.5.0: 切换仅显示归档会话过滤。"""
+        self._show_archived_only = not self._show_archived_only
+        # 更新按钮样式
+        if self._show_archived_only:
+            self._archived_filter_btn.configure(
+                fg_color=Colors.BTN_DEFAULT if _HAS_DESIGN_SYSTEM else ("gray70", "gray35"),
+                text_color=Colors.TEXT_HIGH_CONTRAST if _HAS_DESIGN_SYSTEM else ("gray10", "gray90")
+            )
+        else:
+            self._archived_filter_btn.configure(
+                fg_color="transparent",
+                text_color=Colors.TEXT_TERTIARY if _HAS_DESIGN_SYSTEM else ("gray40", "gray60")
+            )
+        # 刷新会话列表
+        self._refresh_sessions_list()
+
+    # ========== v2.5.0: 归档结束 ==========
 
     def _on_toggle_current_session_pinned(self) -> None:
         """切换当前会话的置顶状态（键盘快捷键 Ctrl+P）。"""
@@ -3769,6 +4215,28 @@ class MainWindow:
         if result:
             self._app.update_session_title(session_id, result[0])
             self._refresh_sessions_list()
+
+    def _rename_session(self, session_id: str, current_title: str) -> None:
+        """v2.7.0: 重命名会话标题。"""
+        self._on_rename_session(session_id, current_title)
+
+    def _show_session_context_menu(self, event, session_id: str, title: str) -> None:
+        """v2.7.0: 显示会话的右键上下文菜单。"""
+        import tkinter as tk
+        # 创建右键菜单
+        menu = tk.Menu(self._root, tearoff=0)
+        if _HAS_DESIGN_SYSTEM:
+            menu_bg = Colors.DROPDOWN_BG[0] if self._appearance == "Light" else Colors.DROPDOWN_BG[1]
+            menu_fg = Colors.TEXT_PRIMARY[0] if self._appearance == "Light" else Colors.TEXT_PRIMARY[1]
+            menu.configure(bg=menu_bg, fg=menu_fg, activebackground=Colors.PRIMARY[0], activeforeground="white")
+
+        # 添加菜单项
+        menu.add_command(label="✏️ 重命名", command=lambda: [self._rename_session(session_id, title), menu.destroy()])
+        menu.add_separator()
+        menu.add_command(label="🗑️ 删除", command=lambda: [self._on_delete_session(session_id), menu.destroy()])
+
+        # 在鼠标位置显示菜单
+        menu.tk_popup(event.x_root, event.y_root)
 
     def _on_delete_session(self, session_id: str) -> None:
         if messagebox.askyesno("删除会话", "确定删除该会话？", parent=self._root):
@@ -4132,6 +4600,19 @@ class MainWindow:
         if abs(self._input.cget("height") - new_height) > 5:
             self._input.configure(height=new_height)
 
+    def _set_send_button_sending(self, sending: bool) -> None:
+        """v2.10.0: 设置发送按钮状态（带动画）。
+
+        Args:
+            sending: True 显示发送中状态，False 恢复正常
+        """
+        if _HAS_ANIMATED_BUTTON and SendButton is not None and isinstance(self._send_btn, SendButton):
+            self._send_btn.set_sending(sending)
+        else:
+            # 回退到原始方式
+            state = "disabled" if sending else "normal"
+            self._send_btn.configure(state=state)
+
     def _on_send(self) -> None:
         text = self._input.get("1.0", "end").strip()
         if not text:
@@ -4142,12 +4623,16 @@ class MainWindow:
             sid = s.id
             self._refresh_sessions_list()
             self._refresh_chat_area()
+        # v2.8.0: 发送消息时跳转到最后一页
+        if self._pagination_enabled and self._pagination_total_count > 0:
+            total_pages = (self._pagination_total_count + self._pagination_page_size - 1) // self._pagination_page_size
+            self._pagination_current_page = max(0, total_pages - 1)
         self._input.delete("1.0", "end")
         self._error_label.configure(text="")
         self._char_count_label.configure(text="0 字符")  # v1.3.0: Reset counter
         self._input.configure(height=80)  # v1.3.1: Reset input height after send
         self._start_loading_animation()  # v1.3.0: Start animation
-        self._send_btn.configure(state="disabled")
+        self._set_send_button_sending(True)
         self._streaming_session_id = sid
 
         # 获取引用消息
@@ -4167,9 +4652,9 @@ class MainWindow:
         )
 
     def _append_user_message(self, session_id: str, content: str, quoted_content: str | None = None) -> None:
-        # v2.0.0: 使用设计系统
+        # v2.9.0: 使用设计系统 + 阴影效果
         # 外层容器
-        outer_radius = Radius.XL if _HAS_DESIGN_SYSTEM else 12
+        outer_radius = Radius.XXL if _HAS_DESIGN_SYSTEM else 12
         outer_frame = ctk.CTkFrame(self._chat_scroll, fg_color="transparent", corner_radius=outer_radius)
         outer_frame.grid(sticky="ew", pady=Spacing.SM if _HAS_DESIGN_SYSTEM else 6)
         outer_frame.grid_columnconfigure(0, weight=1)
@@ -4199,14 +4684,30 @@ class MainWindow:
             )
             quote_label.pack(fill="x")
 
-        # v2.0.0: 用户消息使用设计系统品牌色
-        frame = ctk.CTkFrame(
-            outer_frame,
-            fg_color=Colors.USER_MSG_BG if _HAS_DESIGN_SYSTEM else ("#e8f4fd", "#1e3a5f"),
-            corner_radius=MessageSpec.RADIUS_USER[0] if _HAS_DESIGN_SYSTEM else 12,
-            border_width=0,
-        )
-        frame.grid(row=content_row, column=0, sticky="ew", padx=16, pady=(2, 0))
+        # v2.9.0: 用户消息使用柔和紫色 + 阴影
+        if _HAS_DESIGN_SYSTEM:
+            frame, shadows = self._create_message_bubble_with_shadow(
+                outer_frame,
+                bg_color=Colors.USER_MSG_BG,
+                shadow_color=Colors.USER_MSG_SHADOW,
+                radius=MessageSpec.RADIUS_USER,
+            )
+            self._apply_message_shadow(frame, shadows, {
+                "row": content_row,
+                "column": 0,
+                "sticky": "ew",
+                "padx": 16,
+                "pady": (2, 0),
+            })
+        else:
+            frame = ctk.CTkFrame(
+                outer_frame,
+                fg_color=("#e8f4fd", "#1e3a5f"),
+                corner_radius=12,
+                border_width=0,
+            )
+            frame.grid(row=content_row, column=0, sticky="ew", padx=16, pady=(2, 0))
+
         frame.grid_columnconfigure(0, weight=1)
         frame.grid_columnconfigure(1, weight=0)
         tb = ctk.CTkTextbox(
@@ -4231,6 +4732,77 @@ class MainWindow:
         _bind_pressed_style(copy_btn)
         self._chat_widgets.append(("user", outer_frame))
         self._chat_scroll.columnconfigure(0, weight=1)
+
+    # v2.9.0: 消息气泡阴影辅助函数
+    def _create_message_bubble_with_shadow(
+        self,
+        parent: ctk.CTkFrame,
+        bg_color: tuple[str, str],
+        shadow_color: tuple[str, str],
+        radius: int,
+        shadow_offset: int = 2,
+    ) -> tuple[ctk.CTkFrame, list[ctk.CTkFrame]]:
+        """
+        创建带阴影的消息气泡
+
+        Returns:
+            (气泡框架, 阴影层列表)
+        """
+        shadow_layers = []
+
+        # 简单的两层阴影（比 Toast 更轻量）
+        for i in range(2):
+            offset = shadow_offset * (2 - i)
+            shadow = ctk.CTkFrame(
+                parent,
+                fg_color=shadow_color,
+                corner_radius=radius + offset,
+            )
+            shadow_layers.append(shadow)
+
+        # 主气泡
+        bubble = ctk.CTkFrame(
+            parent,
+            fg_color=bg_color,
+            corner_radius=radius,
+            border_width=0,
+        )
+
+        return bubble, shadow_layers
+
+    def _apply_message_shadow(
+        self,
+        bubble: ctk.CTkFrame,
+        shadow_layers: list[ctk.CTkFrame],
+        grid_kwargs: dict,
+    ) -> None:
+        """
+        应用消息气泡的阴影层（需要在气泡 grid 后调用）
+
+        Args:
+            bubble: 主气泡框架
+            shadow_layers: 阴影层列表
+            grid_kwargs: 气泡的 grid 参数
+        """
+        padx = grid_kwargs.get("padx", 16)
+        pady = grid_kwargs.get("pady", (2, 0))
+
+        # 阴影层放置在气泡下方
+        for i, shadow in enumerate(shadow_layers):
+            offset = 2 - i
+            shadow.grid(
+                row=grid_kwargs.get("row", 0),
+                column=grid_kwargs.get("column", 0),
+                sticky="ew",
+                padx=(padx[0] + offset, padx[1] - offset) if isinstance(padx, tuple) else padx + offset,
+                pady=(pady[0] + offset, pady[1] + offset) if isinstance(pady, tuple) else pady + offset,
+            )
+
+        # 主气泡放在最上层
+        bubble.grid(**grid_kwargs)
+        # 将阴影层移到气泡下方（使用 lift() 避免 raise 保留字冲突）
+        for shadow in shadow_layers:
+            bubble.lift()  # 将气泡提升到最上层
 
     def _start_loading_animation(self) -> None:
         """v1.3.0: Start the animated loading indicator."""
@@ -4258,7 +4830,7 @@ class MainWindow:
 
     def _stream_done_ui(self) -> None:
         self._stop_loading_animation()  # v1.3.0: Stop animation
-        self._send_btn.configure(state="normal")
+        self._set_send_button_sending(False)
         self._streaming_session_id = None
         self._streaming_textbox_id = None
         self._streaming_text = []
@@ -4270,7 +4842,7 @@ class MainWindow:
     def _stream_error_ui(self, message: str) -> None:
         self._stop_loading_animation()  # v1.3.0: Stop animation
         self._error_label.configure(text=message)
-        self._send_btn.configure(state="normal")
+        self._set_send_button_sending(False)
         self._streaming_session_id = None
         self._streaming_textbox_id = None
         self._streaming_text = []
@@ -4282,14 +4854,14 @@ class MainWindow:
                 if is_error(chunk):
                     self._stop_loading_animation()  # v1.3.0: Stop animation
                     self._error_label.configure(text=chunk.message)
-                    self._send_btn.configure(state="normal")
+                    self._set_send_button_sending(False)
                     self._streaming_session_id = None
                     self._streaming_textbox_id = None
                     self._streaming_text = []
                     continue
                 if isinstance(chunk, DoneChunk):
                     self._stop_loading_animation()  # v1.3.0: Stop animation
-                    self._send_btn.configure(state="normal")
+                    self._set_send_button_sending(False)
                     if self._streaming_textbox_id is not None:
                         tb = self._find_streaming_textbox()
                         if tb is not None and _USE_MARKDOWN and CTkMarkdown:
@@ -4309,8 +4881,8 @@ class MainWindow:
                     continue
                 if isinstance(chunk, TextChunk):
                     if self._streaming_textbox_id is None:
-                        # v2.0.0: 使用设计系统
-                        outer_radius = Radius.XL if _HAS_DESIGN_SYSTEM else 12
+                        # v2.9.0: 使用设计系统 + 阴影效果
+                        outer_radius = Radius.XXL if _HAS_DESIGN_SYSTEM else 12
                         outer_frame = ctk.CTkFrame(
                             self._chat_scroll,
                             fg_color="transparent",
@@ -4319,13 +4891,30 @@ class MainWindow:
                         outer_frame.grid(sticky="ew", pady=Spacing.SM if _HAS_DESIGN_SYSTEM else 6)
                         outer_frame.grid_columnconfigure(0, weight=1)
 
-                        frame = ctk.CTkFrame(
-                            outer_frame,
-                            fg_color=Colors.AI_MSG_BG if _HAS_DESIGN_SYSTEM else ("#f5f5f5", "#2d2d2d"),
-                            corner_radius=MessageSpec.RADIUS_AI[1] if _HAS_DESIGN_SYSTEM else 12,
-                            border_width=0,
-                        )
-                        frame.grid(sticky="ew", padx=16, pady=(2, 0))
+                        # v2.9.0: AI 消息使用柔和背景 + 阴影
+                        if _HAS_DESIGN_SYSTEM:
+                            frame, shadows = self._create_message_bubble_with_shadow(
+                                outer_frame,
+                                bg_color=Colors.AI_MSG_BG,
+                                shadow_color=Colors.AI_MSG_SHADOW,
+                                radius=MessageSpec.RADIUS_AI,
+                            )
+                            self._apply_message_shadow(frame, shadows, {
+                                "row": 0,
+                                "column": 0,
+                                "sticky": "ew",
+                                "padx": 16,
+                                "pady": (2, 0),
+                            })
+                        else:
+                            frame = ctk.CTkFrame(
+                                outer_frame,
+                                fg_color=("#f5f5f5", "#2d2d2d"),
+                                corner_radius=12,
+                                border_width=0,
+                            )
+                            frame.grid(sticky="ew", padx=16, pady=(2, 0))
+
                         frame.grid_columnconfigure(0, weight=1)
                         tb = ctk.CTkTextbox(
                             frame, wrap="word", height=280,

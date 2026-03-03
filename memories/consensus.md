@@ -1,121 +1,78 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-03 - Cycle #77
+2026-03-03 - Cycle #94
 
 ## Current Phase
-**v2.4.0 已发布** 🚀
+✅ **v2.10.0 发布完成** - 发送按钮动画
 
-## What We Did This Cycle (Cycle #77)
-- ✅ **规划 v2.4.0**: 确定搜索结果面板为优先功能
-- ✅ **创建 SearchResultsPanel 组件**: `src/ui/search_results_panel.py`
-  - 右侧面板显示搜索结果
-  - 按会话分组显示结果
-  - 消息预览（去除 markdown 标记）
-  - 点击跳转到目标会话
-- ✅ **集成到主窗口**:
-  - 新增网格第3列支持
-  - 添加 📋 切换按钮
-  - 快捷键 `Ctrl+Shift+H`
-  - 自动更新搜索结果
-- ✅ **测试通过**: 321 non-GUI tests passing
+## What We Did This Cycle (Cycle #94)
+- ✅ **v2.10.0 发布**: 发送按钮动画版本完成
+  - 新增 `SendButton` 类（200+ 行）
+  - 点击时缩放微交互（1.0 → 0.92 → 1.0）
+  - 悬停时轻微放大（1.0 → 1.03）
+  - 发送中加载动画（旋转图标 ◷◶◵◴）
+  - 统一状态管理方法 `_set_send_button_sending()`
+- ✅ **版本号更新**: src/__init__.py → 2.10.0
+- ✅ **测试通过**: 404 passing
 
 ## Key Decisions Made
-- v2.4.0 功能方向：**搜索结果侧边面板**
-- 目标：改善大量搜索结果时的浏览体验
-- 保持简洁：不实现复杂的搜索语法，专注于结果展示
+- **v2.10.0 完成**: 发送按钮动画实现，UI/UX 视觉完整性达成
+- **平滑过渡**: 12ms 动画帧率，40% 插值步长
+- **兼容设计**: 回退机制支持无动画模块环境
 
 ## Active Projects
-- HuluChat: **v2.5.0** - 等待规划下一个功能
+- HuluChat: **v2.10.0** - ✅ 已发布
+- PR #25: v2.8.0 仍等待合并
 
-## Next Action (Cycle #78)
-### 规划 v2.5.0
-候选功能：
-1. 搜索快捷语法（`role:user keyword`）
-2. 会话归档功能
-3. 会话分组拖拽
-4. 性能优化（分页加载、虚拟化）
+## Next Action (Cycle #95)
+
+### v2.11.0 规划
+
+**已完成版本**:
+- ✅ v2.10.0: 发送按钮动画 (点击 + 悬停 + 发送中)
+- ✅ v2.9.0: UI/UX 优化 (6 项)
+- ✅ v2.8.0: 大会话分页加载
+- ✅ v2.7.0: 会话标题自定义编辑
+
+**下一步可选方向**:
+1. **页面切换过渡** - 会话切换时的淡入效果
+2. **用户调研** - 收集 v2.9.0-v2.10.0 反馈
+3. **性能优化** - 大规模会话性能提升
+4. **新功能** - 根据用户需求
+
+**推荐**: 页面切换过渡（继续 UI/UX 优化路线）
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
-- Latest Release: **v2.4.0** (2026-03-03) ✅
-- Current Development: **v2.5.0** (TBD)
+- Latest Release: **v2.10.0** (2026-03-03) ✅
+- Current Development: **v2.11.0** - 规划中
 - Tech Stack: Python, CustomTkinter, OpenAI API, SQLite, fpdf2, python-docx, CTkMarkdown
-- Tests: **321 passing** (non-GUI)
+- Tests: **404 passing** (11 environment-related errors)
 - Branch: `master`
 
 ## Release History
-| Version | Date | Highlights |
-|---------|------|------------|
-| **v2.4.0** | **2026-03-03** | **📋 搜索结果面板** ✅ |
-| **v2.3.0** | **2026-03-03** | **⚡ 快捷操作栏 - 模板、星标、最近会话** |
-| **v2.2.0** | **2026-03-03** | **⭐ 消息星标/收藏功能** |
-| **v2.1.0** | **2026-03-02** | **➡️ 消息转发功能** |
-| **v2.0.0** | **2026-03-02** | **🎨 UI 彻底改造 - 统一设计系统** |
+| Version | Date | Highlights | 测试状态 |
+|---------|------|------------|----------|
+| **v2.10.0** | 2026-03-03 | 📤 发送按钮动画 (点击 + 悬停 + 发送中) | ✅ 通过 |
+| **v2.9.0** | 2026-03-03 | 🎨 UI/UX 优化 (焦点 + Toast + 按钮 + 气泡 + 侧边栏) | ✅ 通过 |
+| **v2.8.0** | 2026-03-03 | 📄 大会话分页加载 | ✅ 通过 / ⏳ PR 等待合并 |
+| **v2.7.0** | 2026-03-03 | ✏️ 会话标题自定义编辑 | ✅ 通过 |
+| **v2.6.0** | 2026-03-03 | 🔄 编辑后重新生成 AI 回复 | ✅ 通过 |
+| **v2.5.0** | 2026-03-03 | 📦 会话归档功能 | ✅ 通过 |
+| **v2.4.0** | 2026-03-03 | 📋 搜索结果面板 | ✅ 通过 |
+| **v1.5.0** | 2026-03-01 | ➡️ Message Forwarding | ✅ 通过 |
 
-## v2.4.0 新增功能
+## BUG 清单
 
-### 搜索结果面板
-位于右侧，展示所有搜索结果：
+### 已修复
+- [x] `__version__` 不同步 → 已修复 (Cycle #83)
+- [x] `Colors.BTN_SECONDARY` 缺失 → 已修复 (Cycle #83)
 
-#### 功能特性
-- 点击 📋 按钮或按 `Ctrl+Shift+H` 切换面板显示
-- 按会话分组显示结果，显示匹配数量
-- 消息预览（自动去除 markdown 标记）
-- 显示消息角色（用户/AI）和时间
-- 点击结果跳转到目标会话
-
-#### 新增文件
-```
-src/ui/search_results_panel.py  # 搜索结果面板组件 (~270 行)
-```
-
-#### 修改文件
-```
-src/ui/main_window.py           # 集成搜索面板 (+100 行)
-CHANGELOG.md                    # 添加 v2.4.0 release notes
-```
-
-## v2.3.0 功能回顾
-
-### 快捷操作栏
-位于输入框上方，提供常用功能的快速访问：
-
-#### 模板快捷按钮
-- 显示前4个常用模板
-- 一键应用模板内容到输入框
-- 支持变量：`{date}` → 当前日期, `{time}` → 当前时间, `{datetime}` → 完整时间
-
-#### 星标切换
-- 点击切换星标消息视图
-- 按钮状态同步更新
-
-#### 最近会话
-- 下拉显示最近5个活跃会话
-- 快速切换会话
-
-## v2.2.0 新增功能
-
-### 消息星标/收藏
-- **收藏消息**: 右键菜单 → "⭐ 收藏"
-- **取消收藏**: 右键菜单 → "⭐ 取消收藏"
-- **过滤显示**: 工具栏星星按钮切换仅显示收藏消息
-- **Toast 通知**: 收藏状态变更即时反馈
-
-## v2.0.0 设计系统架构
-
-### 设计系统模块 (`src/ui/design_system.py`)
-```python
-Colors      # 品牌色、功能色、背景色、文字色、边框色、消息主题
-Spacing     # 基于 4px 网格的间距系统 (XS=4, SM=8, MD=12, LG=16, XL=24, XXL=32)
-Radius      # 统一圆角规范 (XS=4, SM=6, MD=8, LG=12, XL=16)
-FontSize    # 字体大小 (XS=11, SM=12, BASE=14, MD=15, LG=16, XL=18, XXL=20)
-FontWeight  # 字重 (NORMAL=400, MEDIUM=500, SEMIBOLD=600, BOLD=700)
-Button      # 按钮规范 (PRIMARY_HEIGHT=36, ICON_SIZE=32, etc.)
-Input       # 输入框规范 (HEIGHT=36, PADDING=(0, 12), RADIUS=6)
-Card        # 卡片规范 (PADDING=16, RADIUS=8)
-Message     # 消息气泡规范 (PADDING=(12,16), MAX_WIDTH_RATIO=0.75)
-```
+### 当前无 BUG
+- **严重**: 无
+- **中等**: 无
+- **轻微**: 无
 
 ## Complete Keyboard Shortcuts
 
@@ -151,19 +108,13 @@ Message     # 消息气泡规范 (PADDING=(12,16), MAX_WIDTH_RATIO=0.75)
 | Ctrl + R | Regenerate response |
 | Ctrl + Shift + C | Copy last AI response |
 
-### Search
-| Shortcut | Action |
-|----------|--------|
-| Ctrl + Shift + H | Toggle search results panel (v2.4.0) |
-| F3 | Next search match |
-| Shift + F3 | Previous search match |
-
 ### Other
 | Shortcut | Action |
 |----------|--------|
 | Ctrl + , | Open settings |
 | Ctrl + / | Show help |
-| Right-Click | Context menu (star, forward, pin, etc.) |
+| Double-Click | Rename session (v2.7.0) |
+| Right-Click | Context menu (star, forward, pin, edit, rename, delete) |
 
 ## Coverage Leaders (100% Club) ✅
 | Module | Coverage | Notes |
@@ -192,15 +143,30 @@ Message     # 消息气泡规范 (PADDING=(12,16), MAX_WIDTH_RATIO=0.75)
 | PDF | .pdf | v1.0.6 | Print-ready |
 | DOCX | .docx | v1.0.9 | Word format |
 
-## Open Questions
-- v2.5.0 功能方向待确定
+## v2.9.0 UI/UX 优化清单
 
-## Future Ideas
-- 搜索快捷语法（`role:user keyword`）
-- 搜索结果导出
-- 会话归档功能
-- 会话分组拖拽
-- 大会话分页加载
-- 消息虚拟化渲染
-- UI 单元测试覆盖
-- 多语言支持 (i18n)
+| 功能 | 状态 | 说明 |
+|------|------|------|
+| 搜索框焦点状态 | ✅ | 边框高亮动画 |
+| 输入框焦点状态 | ✅ | 边框高亮动画 |
+| Toast 通知美化 | ✅ | 阴影层 + 淡入淡出动画 |
+| 按钮悬停动画 | ✅ | AnimatedButton 模块 |
+| 消息气泡微调 | ✅ | 18px 圆角 + 柔和阴影 |
+| 侧边栏悬停动画 | ✅ | 会话项平滑过渡 |
+
+## v2.10.0 发送按钮动画清单
+
+| 功能 | 状态 | 说明 |
+|------|------|------|
+| 点击缩放 | ✅ | 1.0 → 0.92 → 1.0 (80ms) |
+| 悬停放大 | ✅ | 1.0 → 1.03 平滑过渡 |
+| 发送中加载 | ✅ | 旋转图标 ◷◶◵◴ (200ms) |
+| 状态管理 | ✅ | `_set_send_button_sending()` 统一接口 |
+
+## v2.11.0 待定清单
+
+| 功能 | 优先级 | 说明 |
+|------|--------|------|
+| 页面切换过渡 | 中 | 会话切换淡入效果 |
+| 用户反馈收集 | 高 | 收集 v2.9.0-v2.10.0 使用反馈 |
+| 性能优化 | 低 | 大规模会话性能提升 |

@@ -2,6 +2,8 @@
 HuluChat v2.4.0 - 搜索结果面板
 
 在右侧显示搜索结果，按会话分组，支持快速跳转。
+
+v2.9.0: 使用 AnimatedButton 实现平滑悬停动画。
 """
 import re
 from typing import Callable
@@ -11,6 +13,13 @@ import customtkinter as ctk
 
 from src.persistence import Message, Session
 from src.app.service import AppService
+
+# v2.9.0: 动画按钮
+try:
+    from src.ui.animated_button import AnimatedIconButton
+    _HAS_ANIMATED_BUTTON = True
+except ImportError:
+    _HAS_ANIMATED_BUTTON = False
 
 
 @dataclass
@@ -119,19 +128,32 @@ class SearchResultsPanel(ctk.CTkFrame):
         )
         self._counter_label.grid(row=0, column=1, sticky="e", padx=(self._Spacing.SM, 0))
 
-        # 关闭按钮
-        close_btn = ctk.CTkButton(
-            header,
-            text="✕",
-            width=32,
-            height=32,
-            fg_color="transparent",
-            hover_color=self._Colors.HOVER_BG if self._has_design_system else ("gray80", "gray28"),
-            border_width=0,
-            text_color=self._Colors.TEXT_SECONDARY if self._has_design_system else ("gray50", "gray60"),
-            font=("", 14),
-            command=self._on_close,
-        )
+        # 关闭按钮 - v2.9.0: 使用动画按钮
+        if _HAS_ANIMATED_BUTTON:
+            close_btn = AnimatedIconButton(
+                header,
+                text="✕",
+                width=32,
+                height=32,
+                fg_color="transparent",
+                hover_color=self._Colors.HOVER_BG if self._has_design_system else ("gray80", "gray28"),
+                text_color=self._Colors.TEXT_SECONDARY if self._has_design_system else ("gray50", "gray60"),
+                font=("", 14),
+                command=self._on_close,
+            )
+        else:
+            close_btn = ctk.CTkButton(
+                header,
+                text="✕",
+                width=32,
+                height=32,
+                fg_color="transparent",
+                hover_color=self._Colors.HOVER_BG if self._has_design_system else ("gray80", "gray28"),
+                border_width=0,
+                text_color=self._Colors.TEXT_SECONDARY if self._has_design_system else ("gray50", "gray60"),
+                font=("", 14),
+                command=self._on_close,
+            )
         close_btn.grid(row=0, column=2, padx=(self._Spacing.SM, 0))
 
         # 分隔线

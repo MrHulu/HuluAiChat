@@ -10,6 +10,7 @@ _MIGRATION_SESSION_PINNED_ADDED = False
 _MIGRATION_QUOTE_ADDED = False
 _MIGRATION_FOLDER_ADDED = False
 _MIGRATION_STARRED_ADDED = False  # v2.2.0
+_MIGRATION_SESSION_ARCHIVED_ADDED = False  # v2.5.0
 
 
 def ensure_migrations() -> None:
@@ -19,6 +20,7 @@ def ensure_migrations() -> None:
     global _MIGRATION_QUOTE_ADDED
     global _MIGRATION_FOLDER_ADDED
     global _MIGRATION_STARRED_ADDED
+    global _MIGRATION_SESSION_ARCHIVED_ADDED
     if not _MIGRATION_PINNED_ADDED:
         migrate_add_pinned_column()
         _MIGRATION_PINNED_ADDED = True
@@ -34,6 +36,9 @@ def ensure_migrations() -> None:
     if not _MIGRATION_STARRED_ADDED:
         migrate_add_starred_column()
         _MIGRATION_STARRED_ADDED = True
+    if not _MIGRATION_SESSION_ARCHIVED_ADDED:
+        migrate_add_session_archived_column()
+        _MIGRATION_SESSION_ARCHIVED_ADDED = True
 
 SESSION_TABLE = """
 CREATE TABLE IF NOT EXISTS session (
@@ -41,7 +46,8 @@ CREATE TABLE IF NOT EXISTS session (
     title TEXT NOT NULL,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL,
-    is_pinned INTEGER NOT NULL DEFAULT 0
+    is_pinned INTEGER NOT NULL DEFAULT 0,
+    is_archived INTEGER NOT NULL DEFAULT 0
 );
 """
 
@@ -137,6 +143,22 @@ def migrate_add_starred_column(db_path: str | None = None) -> None:
         columns = {row[1] for row in cursor.fetchall()}
         if "is_starred" not in columns:
             conn.execute("ALTER TABLE message ADD COLUMN is_starred INTEGER NOT NULL DEFAULT 0")
+            conn.commit()
+    finally:
+        conn.close()
+
+
+def migrate_add_session_archived_column(db_path: str | None = None) -> None:
+    """v2.5.0: 为 session 表添加 is_archived 列（向后兼容）。"""
+    path = db_path or str(Path(get_app_data_dir()) / "chat.db")
+    if not Path(path).exists():
+        return
+    conn = sqlite3.connect(path)
+    try:
+        cursor = conn.execute("PRAGMA table_info(session)")
+        columns = {row[1] for row in cursor.fetchall()}
+        if "is_archived" not in columns:
+            conn.execute("ALTER TABLE session ADD COLUMN is_archived INTEGER NOT NULL DEFAULT 0")
             conn.commit()
     finally:
         conn.close()
