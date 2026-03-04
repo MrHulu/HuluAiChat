@@ -1,29 +1,30 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-05 - Cycle #147
+2026-03-05 - Cycle #148
 
 ## Current Phase
 🧪 **测试基础设施** | Product Hunt 待发布
 
-## What We Did This Cycle (Cycle #147)
-- ✅ **MessageList.tsx 测试扩展** - 3 个新测试用例
-  - estimateSize 回调测试（验证高度计算）
-  - 消息数组边界情况处理
-  - 消息更新时回调重建测试
-- ✅ **测试扩展** - 从 434 tests → **437 tests** passing (+3)
-- ✅ **覆盖率提升** - 86.97% → **87.08%**（+0.11%）
-- ✅ **MessageList.tsx 覆盖率** - 88.88% → **94.44%**（+5.56%）🎉
-- ✅ **Chat 组件覆盖率** - 97.14% → **98.57%**（+1.43%）
+## What We Did This Cycle (Cycle #148)
+- ✅ **useWebSocket.ts 测试扩展** - 5 个新测试用例
+  - 自动重连测试（attempts remaining）
+  - 最大重连次数测试（no reconnect when max reached）
+  - 构造函数异常测试（error status on throw）
+  - disconnect 清除重连定时器测试
+  - 跳过重复连接测试
+- ✅ **测试扩展** - 从 437 tests → **442 tests** passing (+5)
+- ✅ **覆盖率提升** - 87.08% → **87.65%**（+0.57%）
+- ✅ **useWebSocket.ts 覆盖率** - 88.67% → **98.11%**（+9.44%）🎉
 
 ## Active Projects
 - HuluChat v3.8.0: **✅ 已发布**
 - CI: **✅ 正常运行**
 - ESLint: **✅ 已配置**
-- Testing: **✅ Vitest + React Testing Library** (437 tests, 87.08% coverage)
+- Testing: **✅ Vitest + React Testing Library** (442 tests, 87.65% coverage)
 - Product Hunt: **📋 材料已准备**，等待截图和发布
 
-## Next Action (Cycle #148)
+## Next Action (Cycle #149)
 
 ### 🎯 Product Hunt 发布（需要人工操作）
 1. 🔲 创建产品截图（5张：主界面、模型切换、文件夹、深色模式、搜索）
@@ -32,7 +33,7 @@
 4. 🔲 提交 Product Hunt
 
 ### 🚀 可自主开发的功能
-1. 🔲 继续组件测试（useWebSocket.ts 88.67%）
+1. 🔲 继续组件测试（SessionList.tsx 87.87%，SessionItem.tsx 91.66%）
 2. 🔲 App.tsx 组件测试（0% 覆盖）
 3. 🔲 用户体验优化
 4. 🔲 新功能开发
@@ -43,7 +44,7 @@
 - Website: 代码保留在 `website/`，不自动部署
 - CI: **✅ 正常运行**
 - ESLint: **✅ 已配置**（0 errors, 3 warnings）
-- Testing: **✅ Vitest + React Testing Library** (437 tests, 87.08% coverage)
+- Testing: **✅ Vitest + React Testing Library** (442 tests, 87.65% coverage)
 - Tech Stack (v3): Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui, FastAPI, Python 3.14
 - Tech Stack (Website): Next.js 16, Tailwind CSS 4
 - Project Location: `huluchat-v3/`, `website/`
@@ -51,29 +52,29 @@
 ## Test Coverage Summary
 | Category | Coverage |
 |----------|----------|
-| **Overall** | **87.08%** ⬆️ |
+| **Overall** | **87.65%** ⬆️ |
 | **API Client** | **100%** |
 | client.ts | 100% |
-| **Hooks** | **98.21%** |
+| **Hooks** | **99.7%** ⬆️ |
 | useChat.ts | 100% |
 | useFolders.ts | 100% |
 | useKeyboardShortcuts.ts | 100% |
 | useModel.ts | 100% |
 | useSession.ts | 100% |
 | useUpdater.ts | 100% |
-| useWebSocket.ts | 88.67% |
+| useWebSocket.ts | **98.11%** 🎉 |
 | **Utils** | **100%** |
 | utils.ts | 100% |
 | **Components (root)** | **93.75%** |
 | theme-provider.tsx | 90.9% |
 | UpdateNotification.tsx | 100% |
 | theme-toggle.tsx | 100% |
-| **Components (chat)** | **98.57%** ⬆️ |
+| **Components (chat)** | **98.57%** |
 | ChatInput.tsx | 100% |
 | ModelSelector.tsx | 100% |
 | ChatView.tsx | 100% |
-| MessageItem.tsx | **100%** 🎉 |
-| MessageList.tsx | **94.44%** ⬆️ |
+| MessageItem.tsx | **100%** |
+| MessageList.tsx | **94.44%** |
 | **Components (sidebar)** | **88.69%** |
 | SessionItem.tsx | 91.66% |
 | SessionList.tsx | 87.87% |
