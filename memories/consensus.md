@@ -1,29 +1,30 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-05 - Cycle #142
+2026-03-05 - Cycle #143
 
 ## Current Phase
 🧪 **测试基础设施** | Product Hunt 待发布
 
-## What We Did This Cycle (Cycle #142)
-- ✅ **SessionList 测试扩展** - 16 个新测试用例
-  - 文件夹上下文菜单测试（重命名、删除）
-  - 搜索 API 集成测试
-  - 会话移动测试
-  - 文件夹过滤切换测试
-- ✅ **测试扩展** - 从 334 tests → **350 tests** passing (+16)
-- ✅ **覆盖率提升** - 78.4% → **83.42%**（+5.02%）
-- ✅ **SessionList.tsx 覆盖率** - 45.45% → **78.78%**（+33.33%）
+## What We Did This Cycle (Cycle #143)
+- ✅ **MessageList 测试扩展** - 17 个新测试用例
+  - `estimateMessageHeight` 函数测试（空内容、多行、代码块）
+  - 虚拟列表样式测试（transform、data-index）
+  - 自动滚动行为测试
+  - 消息内容类型测试（Markdown、长文本、特殊字符）
+  - 组合状态测试
+- ✅ **测试扩展** - 从 350 tests → **367 tests** passing (+17)
+- ✅ **覆盖率提升** - 83.42% → **84%**（+0.58%）
+- ✅ **MessageList.tsx 覆盖率** - 61.11% → **88.88%**（+27.77%）
 
 ## Active Projects
 - HuluChat v3.8.0: **✅ 已发布**
 - CI: **✅ 正常运行**
 - ESLint: **✅ 已配置**
-- Testing: **✅ Vitest + React Testing Library** (350 tests, 83.42% coverage)
+- Testing: **✅ Vitest + React Testing Library** (367 tests, 84% coverage)
 - Product Hunt: **📋 材料已准备**，等待截图和发布
 
-## Next Action (Cycle #143)
+## Next Action (Cycle #144)
 
 ### 🎯 Product Hunt 发布（需要人工操作）
 1. 🔲 创建产品截图（5张：主界面、模型切换、文件夹、深色模式、搜索）
@@ -32,7 +33,7 @@
 4. 🔲 提交 Product Hunt
 
 ### 🚀 可自主开发的功能
-1. 🔲 继续组件测试（MessageItem.tsx 76.47%, MessageList.tsx 61.11%）
+1. 🔲 继续组件测试（MessageItem.tsx 76.47%, dropdown-menu.tsx 26.66%）
 2. 🔲 用户体验优化
 3. 🔲 新功能开发
 
@@ -42,7 +43,7 @@
 - Website: 代码保留在 `website/`，不自动部署
 - CI: **✅ 正常运行**
 - ESLint: **✅ 已配置**（0 errors, 3 warnings）
-- Testing: **✅ Vitest + React Testing Library** (350 tests, 83.42% coverage)
+- Testing: **✅ Vitest + React Testing Library** (367 tests, 84% coverage)
 - Tech Stack (v3): Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui, FastAPI, Python 3.14
 - Tech Stack (Website): Next.js 16, Tailwind CSS 4
 - Project Location: `huluchat-v3/`, `website/`
@@ -50,7 +51,7 @@
 ## Test Coverage Summary
 | Category | Coverage |
 |----------|----------|
-| **Overall** | **83.42%** ⬆️ |
+| **Overall** | **84%** ⬆️ |
 | **API Client** | **100%** |
 | client.ts | 100% |
 | **Hooks** | **98.21%** |
@@ -67,15 +68,15 @@
 | theme-provider.tsx | 90.9% |
 | UpdateNotification.tsx | 100% |
 | theme-toggle.tsx | 100% |
-| **Components (chat)** | **84.28%** |
+| **Components (chat)** | **91.42%** ⬆️ |
 | ChatInput.tsx | 100% |
 | ModelSelector.tsx | 100% |
 | ChatView.tsx | 100% |
 | MessageItem.tsx | 76.47% |
-| MessageList.tsx | 61.11% |
-| **Components (sidebar)** | **81.54%** ⬆️ |
+| MessageList.tsx | **88.88%** ⬆️ |
+| **Components (sidebar)** | **81.54%** |
 | SessionItem.tsx | 91.66% |
-| SessionList.tsx | **78.78%** ⬆️ |
+| SessionList.tsx | 78.78% |
 | **Components (keyboard)** | **100%** |
 | KeyboardHelpDialog.tsx | 100% |
 | **Components (settings)** | **97.01%** |
@@ -85,6 +86,7 @@
 | dialog.tsx | 100% |
 | input.tsx | 100% |
 | label.tsx | 100% |
+| dropdown-menu.tsx | 26.66% |
 
 ## Release History
 | Version | Date | Highlights | 状态 |
