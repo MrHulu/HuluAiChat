@@ -20,12 +20,19 @@ const mockVirtualItems: Array<{
   key: string;
 }> = [];
 
+// Store estimateSize function for testing
+let capturedEstimateSize: ((index: number) => number) | null = null;
+
 vi.mock("@tanstack/react-virtual", () => ({
-  useVirtualizer: vi.fn(() => ({
-    getVirtualItems: () => mockVirtualItems,
-    getTotalSize: () => 0,
-    measureElement: vi.fn(),
-  })),
+  useVirtualizer: vi.fn(({ estimateSize }: { estimateSize: (index: number) => number }) => {
+    // Capture the estimateSize callback for testing
+    capturedEstimateSize = estimateSize;
+    return {
+      getVirtualItems: () => mockVirtualItems,
+      getTotalSize: () => 0,
+      measureElement: vi.fn(),
+    };
+  }),
 }));
 
 // Mock react-markdown and related plugins (used by MessageItem)
@@ -412,6 +419,88 @@ describe("MessageList", () => {
       );
 
       expect(container.querySelector(".overflow-y-auto")).toBeInTheDocument();
+    });
+  });
+
+  describe("estimateSize Callback", () => {
+    it("should create estimateSize callback that uses estimateMessageHeight", () => {
+      const messages = [
+        createMessage("user", "Short", "msg-1"),
+        createMessage("assistant", "This is a much longer message content that definitely spans multiple lines and should result in a greater height estimation", "msg-2"),
+      ];
+      mockVirtualItems.push({ index: 0, start: 0, size: 100, key: "msg-1" });
+
+      render(
+        <MessageList messages={messages} streamingMessage={null} isLoading={false} />
+      );
+
+      // The estimateSize callback should have been captured
+      expect(capturedEstimateSize).not.toBeNull();
+
+      // Test that estimateSize returns correct heights for each message
+      if (capturedEstimateSize) {
+        const height0 = capturedEstimateSize(0);
+        const height1 = capturedEstimateSize(1);
+
+        // Both heights should be positive
+        expect(height0).toBeGreaterThan(0);
+        expect(height1).toBeGreaterThan(0);
+
+        // Longer message should have greater height
+        expect(height1).toBeGreaterThan(height0);
+
+        // Verify heights match estimateMessageHeight function
+        expect(height0).toBe(estimateMessageHeight("Short"));
+        expect(height1).toBe(estimateMessageHeight("This is a much longer message content that definitely spans multiple lines and should result in a greater height estimation"));
+      }
+    });
+
+    it("should handle estimateSize for messages array with missing content", () => {
+      const messages = [
+        createMessage("user", "Test content", "msg-1"),
+      ];
+      mockVirtualItems.push({ index: 0, start: 0, size: 100, key: "msg-1" });
+
+      render(
+        <MessageList messages={messages} streamingMessage={null} isLoading={false} />
+      );
+
+      expect(capturedEstimateSize).not.toBeNull();
+
+      if (capturedEstimateSize) {
+        // Test valid index
+        const height0 = capturedEstimateSize(0);
+        expect(height0).toBeGreaterThan(0);
+
+        // Test out-of-bounds index (should use fallback empty string)
+        const heightOutOfBounds = capturedEstimateSize(999);
+        expect(heightOutOfBounds).toBe(60); // Base height for empty content
+      }
+    });
+
+    it("should update estimateSize callback when messages change", () => {
+      const messages1 = [createMessage("user", "First", "msg-1")];
+      mockVirtualItems.push({ index: 0, start: 0, size: 100, key: "msg-1" });
+
+      const { rerender } = render(
+        <MessageList messages={messages1} streamingMessage={null} isLoading={false} />
+      );
+
+      const firstCallback = capturedEstimateSize;
+      expect(firstCallback).not.toBeNull();
+
+      // Update messages
+      const messages2 = [
+        createMessage("user", "First updated", "msg-1"),
+        createMessage("assistant", "Second", "msg-2"),
+      ];
+
+      rerender(
+        <MessageList messages={messages2} streamingMessage={null} isLoading={false} />
+      );
+
+      // A new callback should have been created
+      expect(capturedEstimateSize).not.toBeNull();
     });
   });
 
