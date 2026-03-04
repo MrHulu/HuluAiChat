@@ -1,32 +1,29 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-05 - Cycle #140
+2026-03-05 - Cycle #142
 
 ## Current Phase
 🧪 **测试基础设施** | Product Hunt 待发布
 
-## What We Did This Cycle (Cycle #140)
-- ✅ **新组件测试** - 3 个新测试文件
-  - KeyboardHelpDialog.test.tsx - 8 个测试用例，**100% 覆盖率**
-  - SettingsDialog.test.tsx - 22 个测试用例，**97.01% 覆盖率**
-  - ThemeToggle.test.tsx - 9 个测试用例，**100% 覆盖率**
-- ✅ **测试扩展** - 从 262 tests → **299 tests** passing (+37)
-- ✅ **覆盖率提升** - 60.95% → **75.56%**（+14.61%）
-- ✅ **Radix UI Polyfill** - 添加 pointer capture 和 scrollIntoView 支持
-- ✅ **组件覆盖率**：
-  - KeyboardHelpDialog.tsx: **100%** ⬆️
-  - SettingsDialog.tsx: **97.01%** ⬆️
-  - ThemeToggle.tsx: **100%** ⬆️
+## What We Did This Cycle (Cycle #142)
+- ✅ **SessionList 测试扩展** - 16 个新测试用例
+  - 文件夹上下文菜单测试（重命名、删除）
+  - 搜索 API 集成测试
+  - 会话移动测试
+  - 文件夹过滤切换测试
+- ✅ **测试扩展** - 从 334 tests → **350 tests** passing (+16)
+- ✅ **覆盖率提升** - 78.4% → **83.42%**（+5.02%）
+- ✅ **SessionList.tsx 覆盖率** - 45.45% → **78.78%**（+33.33%）
 
 ## Active Projects
 - HuluChat v3.8.0: **✅ 已发布**
 - CI: **✅ 正常运行**
 - ESLint: **✅ 已配置**
-- Testing: **✅ Vitest + React Testing Library** (299 tests, 75.56% coverage)
+- Testing: **✅ Vitest + React Testing Library** (350 tests, 83.42% coverage)
 - Product Hunt: **📋 材料已准备**，等待截图和发布
 
-## Next Action (Cycle #141)
+## Next Action (Cycle #143)
 
 ### 🎯 Product Hunt 发布（需要人工操作）
 1. 🔲 创建产品截图（5张：主界面、模型切换、文件夹、深色模式、搜索）
@@ -35,7 +32,7 @@
 4. 🔲 提交 Product Hunt
 
 ### 🚀 可自主开发的功能
-1. 🔲 继续组件测试（theme-provider, theme-notification, App.tsx）
+1. 🔲 继续组件测试（MessageItem.tsx 76.47%, MessageList.tsx 61.11%）
 2. 🔲 用户体验优化
 3. 🔲 新功能开发
 
@@ -45,7 +42,7 @@
 - Website: 代码保留在 `website/`，不自动部署
 - CI: **✅ 正常运行**
 - ESLint: **✅ 已配置**（0 errors, 3 warnings）
-- Testing: **✅ Vitest + React Testing Library** (299 tests, 75.56% coverage)
+- Testing: **✅ Vitest + React Testing Library** (350 tests, 83.42% coverage)
 - Tech Stack (v3): Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui, FastAPI, Python 3.14
 - Tech Stack (Website): Next.js 16, Tailwind CSS 4
 - Project Location: `huluchat-v3/`, `website/`
@@ -53,7 +50,7 @@
 ## Test Coverage Summary
 | Category | Coverage |
 |----------|----------|
-| **Overall** | **75.56%** ⬆️ |
+| **Overall** | **83.42%** ⬆️ |
 | **API Client** | **100%** |
 | client.ts | 100% |
 | **Hooks** | **98.21%** |
@@ -66,26 +63,28 @@
 | useWebSocket.ts | 88.67% |
 | **Utils** | **100%** |
 | utils.ts | 100% |
+| **Components (root)** | **93.75%** |
+| theme-provider.tsx | 90.9% |
+| UpdateNotification.tsx | 100% |
+| theme-toggle.tsx | 100% |
 | **Components (chat)** | **84.28%** |
 | ChatInput.tsx | 100% |
 | ModelSelector.tsx | 100% |
 | ChatView.tsx | 100% |
 | MessageItem.tsx | 76.47% |
 | MessageList.tsx | 61.11% |
-| **Components (sidebar)** | **55.35%** |
+| **Components (sidebar)** | **81.54%** ⬆️ |
 | SessionItem.tsx | 91.66% |
-| SessionList.tsx | 45.45% |
-| **Components (keyboard)** | **100%** ⬆️ |
-| KeyboardHelpDialog.tsx | 100% ⬆️ |
-| **Components (settings)** | **97.01%** ⬆️ |
-| SettingsDialog.tsx | 97.01% ⬆️ |
-| **Components (theme)** | **100%** ⬆️ |
-| ThemeToggle.tsx | 100% ⬆️ |
-| **Components (ui)** | **81.69%** ⬆️ |
+| SessionList.tsx | **78.78%** ⬆️ |
+| **Components (keyboard)** | **100%** |
+| KeyboardHelpDialog.tsx | 100% |
+| **Components (settings)** | **97.01%** |
+| SettingsDialog.tsx | 97.01% |
+| **Components (ui)** | **81.69%** |
 | button.tsx | 100% |
-| dialog.tsx | 100% ⬆️ |
+| dialog.tsx | 100% |
 | input.tsx | 100% |
-| label.tsx | 100% ⬆️ |
+| label.tsx | 100% |
 
 ## Release History
 | Version | Date | Highlights | 状态 |
