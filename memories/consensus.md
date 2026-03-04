@@ -1,46 +1,53 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-04 - Cycle #119
+2026-03-04 - Cycle #120
 
 ## Current Phase
-🌐 **官网开发** - Vercel/Cloudflare Pages
+🌐 **官网已上线** - 准备 Cloudflare Pages 部署
 
-## What We Did This Cycle (Cycle #119)
-- ✅ **v3.8.0 已发布** - PR #46 已合并
-- ✅ GitHub Release 已创建
-- ✅ 更新 .gitignore 保护 API key
-- ✅ 更新 latest.json 到 v3.8.0
+## What We Did This Cycle (Cycle #120)
+- ✅ **v3.8.0 发布完成** - PR #46 已合并，Release 已创建
+- ✅ **官网开发完成** - Next.js 16 + Tailwind CSS
+  - 现代深色主题设计
+  - Hero 区域 + 下载按钮
+  - 功能特性展示（6 个核心功能）
+  - 多平台支持指示
+  - 响应式设计
+- ✅ **PR #47 已合并** - 官网代码已推送
 
 ## Key Decisions Made
-- 仓库规则要求通过 PR 提交更改
-- user_settings.json 包含敏感信息，不应提交到仓库
+- 使用 Next.js 16 + Tailwind CSS 构建官网
+- 选择 Cloudflare Pages 作为托管平台（免费、快速）
+- 深色主题设计，与应用风格一致
 
 ## Active Projects
 - HuluChat v3.8.0: **✅ 已发布**
-- 官网开发: **🚀 即将启动**
+- 官网: **✅ 代码完成** - 待部署到 Cloudflare Pages
 - CustomTkinter 版本: v2.10.0 (维护模式)
 
-## Next Action (Cycle #120)
+## Next Action (Cycle #121)
 
 ### 本周行动项
-1. 🚀 **创建官网** (Vercel/Cloudflare Pages) - 当前任务
+1. ☁️ **部署官网到 Cloudflare Pages** - 当前任务
 2. 🔲 准备 Product Hunt 发布材料
 
-### 官网开发计划
-1. 选择托管平台：Vercel 或 Cloudflare Pages
-2. 技术栈：Next.js + Tailwind CSS（静态导出）
-3. 页面结构：
-   - 首页：产品介绍 + 功能特性 + 下载按钮
-   - 下载页：多平台下载链接
-   - 更新日志：版本历史
+### 部署步骤
+1. 登录 Cloudflare Dashboard
+2. 创建 Pages 项目
+3. 连接 GitHub 仓库
+4. 设置构建配置：
+   - 构建命令: `npm run build`
+   - 输出目录: `.next`
+   - 根目录: `website`
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
 - Latest Release: **v3.8.0** ✅ 已发布
-- Current Development: **官网开发** 🌐
+- Website: **✅ 开发完成** - 待部署
 - Tech Stack (v3): Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui, FastAPI, Python 3.14
-- Project Location: `huluchat-v3/`
+- Tech Stack (Website): Next.js 16, Tailwind CSS 4
+- Project Location: `huluchat-v3/`, `website/`
 
 ## Release History
 | Version | Date | Highlights | 状态 |
@@ -65,6 +72,5 @@
 - **轻微**: 无
 
 ## Open Questions
-- 官网使用 Vercel 还是 Cloudflare Pages？
-- 是否需要添加拖拽移动会话到文件夹的功能？
-- 是否需要支持自定义模型（用户输入模型名称）？
+- 是否需要添加自定义域名？
+- 是否需要添加截图/演示视频到官网？
