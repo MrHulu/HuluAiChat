@@ -13,14 +13,28 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HuluChat - AI Chat Desktop Application",
-  description: "A modern AI chat desktop application with multi-model support, folder organization, and beautiful UI. Powered by Tauri + React + FastAPI.",
-  keywords: ["AI chat", "desktop app", "ChatGPT", "Claude", "GPT-4", "Tauri"],
+  metadataBase: new URL("https://huluchat-website.pages.dev"),
+  title: "HuluChat - Modern AI Chat Desktop App",
+  description: "A beautiful, fast, and private AI chat desktop application. Support for GPT-4, Claude, and more. Cross-platform (Windows, macOS, Linux). Free & Open Source.",
+  keywords: ["AI chat", "desktop app", "ChatGPT", "Claude", "GPT-4", "Tauri", "LLM", "AI assistant", "open source"],
   authors: [{ name: "HuluChat Team" }],
+  icons: {
+    icon: "/icon.png",
+    shortcut: "/favicon.ico",
+    apple: "/icon.png",
+  },
   openGraph: {
-    title: "HuluChat - AI Chat Desktop Application",
-    description: "A modern AI chat desktop application with multi-model support",
+    title: "HuluChat - Modern AI Chat Desktop App",
+    description: "A beautiful, fast, and private AI chat desktop application. Cross-platform. Free & Open Source.",
     type: "website",
+    images: ["/icon.png"],
+    siteName: "HuluChat",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "HuluChat - Modern AI Chat Desktop App",
+    description: "A beautiful, fast, and private AI chat desktop application.",
+    images: ["/icon.png"],
   },
 };
 

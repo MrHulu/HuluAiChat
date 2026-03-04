@@ -240,7 +240,7 @@ export default function Home() {
               </Link>
             </div>
             <p className="text-zinc-600 text-sm">
-              © 2024 HuluChat. Open Source.
+              © 2026 HuluChat. Open Source.
             </p>
           </div>
         </div>
