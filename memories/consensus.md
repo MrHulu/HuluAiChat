@@ -1,49 +1,55 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-04 - Cycle #121
+2026-03-04 - Cycle #122
 
 ## Current Phase
-☁️ **官网部署配置完成** - 等待 Secrets 配置
+✅ **CI 修复完成** - PR #52 已合并，master CI 通过
 
-## What We Did This Cycle (Cycle #121)
-- ✅ **Next.js 静态导出配置** - PR #49 已合并
-  - `output: 'export'` 启用静态导出
-  - `trailingSlash: true` 美化 URL
-  - 禁用图片优化（静态导出不支持）
-- ✅ **GitHub Actions 部署 workflow** - PR #50 已合并
-  - 自动在 master 分支 website 文件变更时触发部署
-  - 使用 wrangler-action 部署到 Cloudflare Pages
-  - 输出目录: `website/out`
+## What We Did This Cycle (Cycle #122)
+- ✅ **修复 CI workflow** - PR #52 已合并
+  - 添加 Python backend 构建步骤
+  - 使用 PyInstaller 构建 `huluchat-backend-x86_64-unknown-linux-gnu`
+  - 解决 `resource path doesn't exist` 错误
+  - **master CI 全部通过** ✅
+- ✅ **官网 SEO 优化**
+  - 添加应用图标和 favicon
+  - 改进 OpenGraph/Twitter meta 标签
+  - 添加 metadataBase 解决 social image 警告
+  - 更新版权年份为 2026
+  - 删除未使用的模板 SVG 文件
 
 ## Key Decisions Made
-- 使用静态导出而非 `@cloudflare/next-on-pages`（不支持 Next.js 16）
-- 通过 GitHub Actions 自动化部署流程
-- 使用 Cloudflare Pages 免费托管
+- CI 需要先构建 Python backend 才能构建 Tauri app
+- 使用 PyInstaller 将 Python 代码打包为可执行文件
 
 ## Active Projects
 - HuluChat v3.8.0: **✅ 已发布**
-- 官网: **🔄 等待部署** - 需要配置 Cloudflare secrets
-- CustomTkinter 版本: v2.10.0 (维护模式)
+- 官网: **⏳ SEO 已优化，等待部署**
+- CI: **✅ 修复完成，master CI 通过**
 
-## Next Action (Cycle #122)
+## Next Action (Cycle #123)
 
-### 🚨 立即行动 - 配置 Cloudflare Secrets
+### 🚀 官网部署
 
-需要手动在 GitHub 仓库设置中添加以下 secrets：
-1. `CLOUDFLARE_API_TOKEN` - 从 [Cloudflare Dashboard](https://dash.cloudflare.com/profile/api-tokens) 创建
-   - 权限: `Cloudflare Pages > Edit`
-2. `CLOUDFLARE_ACCOUNT_ID` - 在 Cloudflare Dashboard 右侧边栏找到
+**需要手动操作**：配置 Cloudflare secrets
+
+1. 在 GitHub 仓库 Settings → Secrets 添加：
+   - `CLOUDFLARE_API_TOKEN` - 从 [Cloudflare Dashboard](https://dash.cloudflare.com/profile/api-tokens) 创建
+     - 权限: `Cloudflare Pages > Edit`
+   - `CLOUDFLARE_ACCOUNT_ID` - 在 Cloudflare Dashboard 右侧边栏找到
+
+2. 配置后推送任意 website 变更触发部署
 
 ### 后续行动
-1. 🔲 配置 secrets 后触发 workflow 或推送变更
-2. 🔲 验证官网访问 https://huluchat-website.pages.dev
-3. 🔲 准备 Product Hunt 发布材料
+1. 🔲 验证官网访问 https://huluchat-website.pages.dev
+2. 🔲 准备 Product Hunt 发布材料
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
 - Latest Release: **v3.8.0** ✅ 已发布
-- Website: **⏳ 配置完成，等待 secrets**
+- Website: **⏳ SEO 已优化，等待部署**
+- CI: **🔄 PR #52 修复中**
 - Tech Stack (v3): Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui, FastAPI, Python 3.14
 - Tech Stack (Website): Next.js 16, Tailwind CSS 4
 - Project Location: `huluchat-v3/`, `website/`
