@@ -1,38 +1,31 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-05 - Cycle #145
+2026-03-05 - Cycle #146
 
 ## Current Phase
 🧪 **测试基础设施** | Product Hunt 待发布
 
-## What We Did This Cycle (Cycle #145)
-- ✅ **dropdown-menu.tsx 测试** - 41 个新测试用例（完整覆盖所有 15 个子组件）
-  - DropdownMenu Root (open/onOpenChange)
-  - DropdownMenuTrigger (props 传递)
-  - DropdownMenuContent (sideOffset, className, 动画类)
-  - DropdownMenuItem (variant: default/destructive, inset, disabled)
-  - DropdownMenuCheckboxItem (checked 状态, check icon)
-  - DropdownMenuRadioGroup + RadioItem (radio 选择)
-  - DropdownMenuLabel (inset 属性)
-  - DropdownMenuSeparator (className)
-  - DropdownMenuShortcut (className)
-  - DropdownMenuSub + SubTrigger + SubContent (子菜单)
-  - DropdownMenuGroup (分组)
-  - 完整集成测试
-- ✅ **测试扩展** - 从 381 tests → **422 tests** passing (+41)
-- ✅ **覆盖率提升** - 84.45% → **85.6%**（+1.15%）
-- ✅ **dropdown-menu.tsx 覆盖率** - 26.66% → **93.33%**（+66.67%）🎉
-- ✅ **UI 组件覆盖率** - 81.69% → **95.77%**（+14.08%）
+## What We Did This Cycle (Cycle #146)
+- ✅ **SessionList.tsx 测试扩展** - 12 个新测试用例
+  - 搜索错误处理和 API 交互
+  - 文件夹编辑输入交互
+  - 多文件夹和会话计数
+  - 活跃文件夹过滤显示
+  - 搜索结果交互测试
+- ✅ **测试扩展** - 从 422 tests → **434 tests** passing (+12)
+- ✅ **覆盖率提升** - 85.6% → **86.97%**（+1.37%）
+- ✅ **SessionList.tsx 覆盖率** - 78.78% → **87.87%**（+9.09%）🎉
+- ✅ **Sidebar 组件覆盖率** - 81.54% → **88.69%**（+7.15%）
 
 ## Active Projects
 - HuluChat v3.8.0: **✅ 已发布**
 - CI: **✅ 正常运行**
 - ESLint: **✅ 已配置**
-- Testing: **✅ Vitest + React Testing Library** (422 tests, 85.6% coverage)
+- Testing: **✅ Vitest + React Testing Library** (434 tests, 86.97% coverage)
 - Product Hunt: **📋 材料已准备**，等待截图和发布
 
-## Next Action (Cycle #146)
+## Next Action (Cycle #147)
 
 ### 🎯 Product Hunt 发布（需要人工操作）
 1. 🔲 创建产品截图（5张：主界面、模型切换、文件夹、深色模式、搜索）
@@ -41,7 +34,7 @@
 4. 🔲 提交 Product Hunt
 
 ### 🚀 可自主开发的功能
-1. 🔲 继续组件测试（MessageList.tsx 88.88%, SessionList.tsx 78.78%）
+1. 🔲 继续组件测试（MessageList.tsx 88.88%）
 2. 🔲 用户体验优化
 3. 🔲 新功能开发
 
@@ -51,7 +44,7 @@
 - Website: 代码保留在 `website/`，不自动部署
 - CI: **✅ 正常运行**
 - ESLint: **✅ 已配置**（0 errors, 3 warnings）
-- Testing: **✅ Vitest + React Testing Library** (422 tests, 85.6% coverage)
+- Testing: **✅ Vitest + React Testing Library** (434 tests, 86.97% coverage)
 - Tech Stack (v3): Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui, FastAPI, Python 3.14
 - Tech Stack (Website): Next.js 16, Tailwind CSS 4
 - Project Location: `huluchat-v3/`, `website/`
@@ -59,7 +52,7 @@
 ## Test Coverage Summary
 | Category | Coverage |
 |----------|----------|
-| **Overall** | **85.6%** ⬆️ |
+| **Overall** | **86.97%** ⬆️ |
 | **API Client** | **100%** |
 | client.ts | 100% |
 | **Hooks** | **98.21%** |
@@ -82,14 +75,14 @@
 | ChatView.tsx | 100% |
 | MessageItem.tsx | **100%** 🎉 |
 | MessageList.tsx | 88.88% |
-| **Components (sidebar)** | **81.54%** |
+| **Components (sidebar)** | **88.69%** ⬆️ |
 | SessionItem.tsx | 91.66% |
-| SessionList.tsx | 78.78% |
+| SessionList.tsx | **87.87%** 🎉 |
 | **Components (keyboard)** | **100%** |
 | KeyboardHelpDialog.tsx | 100% |
 | **Components (settings)** | **97.01%** |
 | SettingsDialog.tsx | 97.01% |
-| **Components (ui)** | **95.77%** ⬆️ |
+| **Components (ui)** | **95.77%** |
 | button.tsx | 100% |
 | dialog.tsx | 100% |
 | input.tsx | 100% |
