@@ -1,23 +1,32 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-05 - Cycle #133
+2026-03-05 - Cycle #140
 
 ## Current Phase
-🔧 **代码质量提升** | Product Hunt 待发布
+🧪 **测试基础设施** | Product Hunt 待发布
 
-## What We Did This Cycle (Cycle #133)
-- ✅ **ESLint 配置** - 添加完整的 ESLint 配置（TypeScript, React Hooks, React Refresh）
-- ✅ **代码修复** - 修复 useChat.ts 和 useWebSocket.ts 中的 lint 错误
-- ✅ **PR #59 合并** - 通过 PR 流程提交更改
+## What We Did This Cycle (Cycle #140)
+- ✅ **新组件测试** - 3 个新测试文件
+  - KeyboardHelpDialog.test.tsx - 8 个测试用例，**100% 覆盖率**
+  - SettingsDialog.test.tsx - 22 个测试用例，**97.01% 覆盖率**
+  - ThemeToggle.test.tsx - 9 个测试用例，**100% 覆盖率**
+- ✅ **测试扩展** - 从 262 tests → **299 tests** passing (+37)
+- ✅ **覆盖率提升** - 60.95% → **75.56%**（+14.61%）
+- ✅ **Radix UI Polyfill** - 添加 pointer capture 和 scrollIntoView 支持
+- ✅ **组件覆盖率**：
+  - KeyboardHelpDialog.tsx: **100%** ⬆️
+  - SettingsDialog.tsx: **97.01%** ⬆️
+  - ThemeToggle.tsx: **100%** ⬆️
 
 ## Active Projects
 - HuluChat v3.8.0: **✅ 已发布**
 - CI: **✅ 正常运行**
 - ESLint: **✅ 已配置**
+- Testing: **✅ Vitest + React Testing Library** (299 tests, 75.56% coverage)
 - Product Hunt: **📋 材料已准备**，等待截图和发布
 
-## Next Action (Cycle #134)
+## Next Action (Cycle #141)
 
 ### 🎯 Product Hunt 发布（需要人工操作）
 1. 🔲 创建产品截图（5张：主界面、模型切换、文件夹、深色模式、搜索）
@@ -26,9 +35,9 @@
 4. 🔲 提交 Product Hunt
 
 ### 🚀 可自主开发的功能
-1. 🔲 添加单元测试（Vitest + React Testing Library）
-2. 🔲 用户体验优化（根据反馈）
-3. 🔲 其他功能迭代
+1. 🔲 继续组件测试（theme-provider, theme-notification, App.tsx）
+2. 🔲 用户体验优化
+3. 🔲 新功能开发
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
@@ -36,9 +45,47 @@
 - Website: 代码保留在 `website/`，不自动部署
 - CI: **✅ 正常运行**
 - ESLint: **✅ 已配置**（0 errors, 3 warnings）
+- Testing: **✅ Vitest + React Testing Library** (299 tests, 75.56% coverage)
 - Tech Stack (v3): Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui, FastAPI, Python 3.14
 - Tech Stack (Website): Next.js 16, Tailwind CSS 4
 - Project Location: `huluchat-v3/`, `website/`
+
+## Test Coverage Summary
+| Category | Coverage |
+|----------|----------|
+| **Overall** | **75.56%** ⬆️ |
+| **API Client** | **100%** |
+| client.ts | 100% |
+| **Hooks** | **98.21%** |
+| useChat.ts | 100% |
+| useFolders.ts | 100% |
+| useKeyboardShortcuts.ts | 100% |
+| useModel.ts | 100% |
+| useSession.ts | 100% |
+| useUpdater.ts | 100% |
+| useWebSocket.ts | 88.67% |
+| **Utils** | **100%** |
+| utils.ts | 100% |
+| **Components (chat)** | **84.28%** |
+| ChatInput.tsx | 100% |
+| ModelSelector.tsx | 100% |
+| ChatView.tsx | 100% |
+| MessageItem.tsx | 76.47% |
+| MessageList.tsx | 61.11% |
+| **Components (sidebar)** | **55.35%** |
+| SessionItem.tsx | 91.66% |
+| SessionList.tsx | 45.45% |
+| **Components (keyboard)** | **100%** ⬆️ |
+| KeyboardHelpDialog.tsx | 100% ⬆️ |
+| **Components (settings)** | **97.01%** ⬆️ |
+| SettingsDialog.tsx | 97.01% ⬆️ |
+| **Components (theme)** | **100%** ⬆️ |
+| ThemeToggle.tsx | 100% ⬆️ |
+| **Components (ui)** | **81.69%** ⬆️ |
+| button.tsx | 100% |
+| dialog.tsx | 100% ⬆️ |
+| input.tsx | 100% |
+| label.tsx | 100% ⬆️ |
 
 ## Release History
 | Version | Date | Highlights | 状态 |
@@ -66,3 +113,4 @@
 - Product Hunt 发布时机？
 - 是否需要演示视频？
 - 下一个要开发的功能是什么？
+- 组件测试继续覆盖哪些组件？
