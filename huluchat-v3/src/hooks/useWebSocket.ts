@@ -37,6 +37,9 @@ export function useWebSocket({
   const [status, setStatus] = useState<ConnectionStatus>("disconnected");
   const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Use ref to store connect function for use in callbacks
+  const connectRef = useRef<() => void>(() => {});
+
   const connect = useCallback(() => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
       return;
@@ -67,11 +70,11 @@ export function useWebSocket({
         setStatus("disconnected");
         onClose?.();
 
-        // Auto reconnect
+        // Auto reconnect using ref to avoid stale closure
         if (attemptsRef.current < reconnectAttempts) {
           attemptsRef.current++;
           reconnectTimeoutRef.current = setTimeout(() => {
-            connect();
+            connectRef.current();
           }, reconnectInterval);
         }
       };
@@ -84,6 +87,11 @@ export function useWebSocket({
       setStatus("error");
     }
   }, [url, onMessage, onOpen, onClose, onError, reconnectAttempts, reconnectInterval]);
+
+  // Keep connectRef in sync
+  useEffect(() => {
+    connectRef.current = connect;
+  }, [connect]);
 
   const disconnect = useCallback(() => {
     if (reconnectTimeoutRef.current) {
