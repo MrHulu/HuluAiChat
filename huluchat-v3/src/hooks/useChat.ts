@@ -86,7 +86,7 @@ export function useChat(sessionId: string | null): UseChatReturn {
         }
         break;
 
-      case "stream_start":
+      case "stream_start": {
         // 开始流式输出
         setIsLoading(true);
         // 总是创建新的 streamingMessage
@@ -97,6 +97,7 @@ export function useChat(sessionId: string | null): UseChatReturn {
           isStreaming: true,
         });
         break;
+      }
 
       case "stream_chunk":
         // 流式内容块 - 使用 ref 检查当前状态
@@ -107,7 +108,7 @@ export function useChat(sessionId: string | null): UseChatReturn {
         }
         break;
 
-      case "stream_end":
+      case "stream_end": {
         // 流式结束
         setIsLoading(false);
         // 使用 ref 获取最新值
@@ -124,6 +125,7 @@ export function useChat(sessionId: string | null): UseChatReturn {
           setStreamingMessage(null);
         }
         break;
+      }
 
       case "error":
         console.error("WebSocket error:", msg.error);
