@@ -1,64 +1,37 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-04 - Cycle #123
+2026-03-05 - Cycle #125
 
 ## Current Phase
-⏳ **等待 Cloudflare Secrets 配置** - Deploy Website workflow 因缺少 secrets 失败
+✅ **官网部署已清理** - workflow 文件已删除
 
-## What We Did This Cycle (Cycle #123)
-- ✅ **同步 commits 到 master** - PR #54, #55
-- ❌ **Deploy Website 失败** - 缺少 Cloudflare secrets
-  - 错误: `In a non-interactive environment, it's necessary to set a CLOUDFLARE_API_TOKEN environment variable`
-  - 需要用户手动配置 GitHub secrets
-
-## Key Decisions Made
-- Deploy workflow 配置正确，但需要 secrets 才能运行
-- 仓库规则要求所有更改必须通过 PR
+## What We Did This Cycle (Cycle #124)
+- ✅ **官网部署清理完成** - 删除 `.github/workflows/deploy-website.yml`
+- ✅ Boss 指令执行完毕
 
 ## Active Projects
 - HuluChat v3.8.0: **✅ 已发布**
-- 官网: **⏳ 等待 Cloudflare secrets 配置**
 - CI: **✅ 正常运行**
+- 官网部署: **❌ 已移除**（代码保留，不再自动部署）
 
-## Next Action (Cycle #124)
+## Next Action (Cycle #125)
 
-### 🚨 立即行动 - 配置 Cloudflare Secrets（需要用户操作）
+### 🎯 产品推广
+1. 🔲 准备 Product Hunt 发布材料
+   - 产品描述
+   - 截图/演示
+   - 定位语
 
-**步骤 1: 创建 Cloudflare API Token**
-1. 访问 https://dash.cloudflare.com/profile/api-tokens
-2. 点击 "Create Token"
-3. 选择 "Custom token"
-4. 添加权限: `Cloudflare Pages > Edit`
-5. 复制生成的 token
-
-**步骤 2: 获取 Account ID**
-1. 访问 https://dash.cloudflare.com/
-2. 在右侧边栏找到 "Account ID"
-3. 复制该 ID
-
-**步骤 3: 配置 GitHub Secrets**
-1. 访问 https://github.com/MrHulu/HuluAiChat/settings/secrets/actions
-2. 点击 "New repository secret"
-3. 添加:
-   - Name: `CLOUDFLARE_API_TOKEN`
-   - Value: [步骤 1 获取的 token]
-4. 再添加:
-   - Name: `CLOUDFLARE_ACCOUNT_ID`
-   - Value: [步骤 2 获取的 ID]
-
-**步骤 4: 触发部署**
-- 配置完成后，推送任意 website 变更或手动触发 workflow
-
-### 后续行动
-1. 🔲 验证官网访问 https://huluchat-website.pages.dev
-2. 🔲 添加应用截图到官网
-3. 🔲 准备 Product Hunt 发布材料
+### 🚀 新功能开发
+1. 🔲 深色模式
+2. 🔲 AI 模型切换增强
+3. 🔲 其他用户体验优化
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
 - Latest Release: **v3.8.0** ✅ 已发布
-- Website: **⏳ 等待 secrets 配置**
+- Website: 代码保留在 `website/`，不自动部署
 - CI: **✅ 正常运行**
 - Tech Stack (v3): Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui, FastAPI, Python 3.14
 - Tech Stack (Website): Next.js 16, Tailwind CSS 4
@@ -87,5 +60,6 @@
 - **轻微**: 无
 
 ## Open Questions
-- 是否需要添加自定义域名？
-- 是否需要添加截图/演示视频到官网？
+- Product Hunt 发布时机？
+- 是否需要演示视频？
+- 下一个要开发的功能是什么？
