@@ -397,4 +397,174 @@ describe("SessionItem", () => {
 
     expect(screen.getByText("你好世界 🌍 مرحبا")).toBeInTheDocument();
   });
+
+  it("should stop propagation on export dropdown menu content click", async () => {
+    const user = userEvent.setup();
+    const session = createSession();
+    render(
+      <SessionItem
+        session={session}
+        isActive={false}
+        onClick={mockOnClick}
+        onExport={mockOnExport}
+      />
+    );
+
+    // Open export dropdown
+    const exportButton = screen.getByTitle("Export session");
+    await user.click(exportButton);
+
+    // Click on the dropdown content area (not a menu item)
+    const dropdownContent = screen.getByText("Markdown (.md)").closest("[role='menu']");
+    if (dropdownContent) {
+      fireEvent.click(dropdownContent);
+    }
+
+    // onClick should not be called because of stopPropagation
+    expect(mockOnClick).not.toHaveBeenCalled();
+  });
+
+  it("should stop propagation on move to folder dropdown menu content click", async () => {
+    const user = userEvent.setup();
+    const session = createSession();
+    const folders = [createFolder("folder-1", "Work")];
+    render(
+      <SessionItem
+        session={session}
+        folders={folders}
+        isActive={false}
+        onClick={mockOnClick}
+        onMoveToFolder={mockOnMoveToFolder}
+      />
+    );
+
+    // Open move to folder dropdown
+    const moveButton = screen.getByTitle("Move to folder");
+    await user.click(moveButton);
+
+    // Click on the dropdown content area (not a menu item)
+    const dropdownContent = screen.getByText("Uncategorized").closest("[role='menu']");
+    if (dropdownContent) {
+      fireEvent.click(dropdownContent);
+    }
+
+    // onClick should not be called because of stopPropagation
+    expect(mockOnClick).not.toHaveBeenCalled();
+  });
+
+  it("should highlight current folder in move menu", async () => {
+    const user = userEvent.setup();
+    const session = createSession({ folder_id: "folder-1" });
+    const folders = [createFolder("folder-1", "Work")];
+    render(
+      <SessionItem
+        session={session}
+        folders={folders}
+        isActive={false}
+        onClick={mockOnClick}
+        onMoveToFolder={mockOnMoveToFolder}
+      />
+    );
+
+    const moveButton = screen.getByTitle("Move to folder");
+    await user.click(moveButton);
+
+    // The current folder should have bg-muted class (highlighted)
+    const workMenuItem = screen.getByText("Work").closest("[role='menuitem']");
+    expect(workMenuItem).toHaveClass("bg-muted");
+  });
+
+  it("should show checkmark for current folder in move menu", async () => {
+    const user = userEvent.setup();
+    const session = createSession({ folder_id: "folder-1" });
+    const folders = [createFolder("folder-1", "Work")];
+    render(
+      <SessionItem
+        session={session}
+        folders={folders}
+        isActive={false}
+        onClick={mockOnClick}
+        onMoveToFolder={mockOnMoveToFolder}
+      />
+    );
+
+    const moveButton = screen.getByTitle("Move to folder");
+    await user.click(moveButton);
+
+    // Should show checkmark (polyline with points "20 6 9 17 4 12")
+    const menuItems = document.querySelectorAll("[role='menuitem']");
+    const workItem = Array.from(menuItems).find((item) =>
+      item.textContent?.includes("Work")
+    );
+    // Checkmark SVG should be present
+    expect(workItem?.querySelector("svg polyline[points='20 6 9 17 4 12']")).toBeInTheDocument();
+  });
+
+  it("should handle export button click with stopPropagation", async () => {
+    const user = userEvent.setup();
+    const session = createSession();
+    render(
+      <SessionItem
+        session={session}
+        isActive={false}
+        onClick={mockOnClick}
+        onExport={mockOnExport}
+      />
+    );
+
+    // Click the export button itself (not the menu item)
+    const exportButton = screen.getByTitle("Export session");
+    await user.click(exportButton);
+
+    // onClick should not be called because of stopPropagation on button
+    expect(mockOnClick).not.toHaveBeenCalled();
+  });
+
+  it("should handle move button click with stopPropagation", async () => {
+    const user = userEvent.setup();
+    const session = createSession();
+    const folders = [createFolder("folder-1", "Work")];
+    render(
+      <SessionItem
+        session={session}
+        folders={folders}
+        isActive={false}
+        onClick={mockOnClick}
+        onMoveToFolder={mockOnMoveToFolder}
+      />
+    );
+
+    // Click the move button itself
+    const moveButton = screen.getByTitle("Move to folder");
+    await user.click(moveButton);
+
+    // onClick should not be called because of stopPropagation on button
+    expect(mockOnClick).not.toHaveBeenCalled();
+  });
+
+  it("should prevent double export while exporting", async () => {
+    const user = userEvent.setup();
+    const session = createSession();
+    render(
+      <SessionItem
+        session={session}
+        isActive={false}
+        onClick={mockOnClick}
+        onExport={mockOnExport}
+      />
+    );
+
+    // Click export button and then quickly click a format option
+    const exportButton = screen.getByTitle("Export session");
+    await user.click(exportButton);
+    await user.click(screen.getByText("Markdown (.md)"));
+
+    // Should have been called once
+    expect(mockOnExport).toHaveBeenCalledTimes(1);
+
+    // Click again quickly - the button should be disabled during export
+    await user.click(exportButton);
+    // The button should have disabled styling
+    expect(exportButton).toHaveClass("cursor-wait");
+  });
 });
