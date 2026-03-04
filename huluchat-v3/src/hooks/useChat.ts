@@ -16,7 +16,7 @@ export interface UseChatReturn {
   messages: Message[];
   streamingMessage: StreamingMessage | null;
   connectionStatus: ConnectionStatus;
-  sendMessage: (content: string) => void;
+  sendMessage: (content: string, model?: string) => void;
   isLoading: boolean;
   isLoadingHistory: boolean;
 }
@@ -158,7 +158,7 @@ export function useChat(sessionId: string | null): UseChatReturn {
   }, [sessionId, loadHistory]);
 
   const sendMessage = useCallback(
-    (content: string) => {
+    (content: string, model?: string) => {
       if (!content.trim() || connectionStatus !== "connected") {
         return;
       }
@@ -173,10 +173,11 @@ export function useChat(sessionId: string | null): UseChatReturn {
       };
       setMessages((prev) => [...prev, userMessage]);
 
-      // 发送到后端
+      // 发送到后端（包含可选的模型参数）
       send({
         type: "message",
         content: content.trim(),
+        model: model,
       });
 
       setIsLoading(true);
