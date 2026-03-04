@@ -4,3 +4,4 @@ export { useSession, type UseSessionReturn } from "./useSession";
 export { useUpdater, type UpdateInfo, type UpdateState } from "./useUpdater";
 export { useKeyboardShortcuts, KEYBOARD_SHORTCUTS, type UseKeyboardShortcutsOptions } from "./useKeyboardShortcuts";
 export { useFolders, type UseFoldersReturn } from "./useFolders";
+export { useModel, type UseModelReturn } from "./useModel";
