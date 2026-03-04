@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor, act } from "@testing-library/react"
 import App from "./App";
 import type { Session, Folder } from "@/api/client";
 import * as apiClient from "@/api/client";
+import { toast } from "sonner";
 
 // Mock scrollIntoView
 beforeEach(() => {
@@ -272,8 +273,7 @@ describe("App", () => {
 
   describe("Error Handling", () => {
     it("should display error toast when session error occurs", async () => {
-      const { toast } = await import("sonner");
-      mockError = "Test error message";
+            mockError = "Test error message";
 
       render(<App />);
 
@@ -287,8 +287,7 @@ describe("App", () => {
     it("should create folder successfully", async () => {
       const newFolder = createFolder("f1", "New Folder");
       mockCreateFolder.mockResolvedValueOnce(newFolder);
-      const { toast } = await import("sonner");
-
+      
       // Simulate folder creation handler call
       await act(async () => {
         const result = await mockCreateFolder("New Folder");
@@ -302,8 +301,7 @@ describe("App", () => {
 
     it("should not show toast if folder creation fails", async () => {
       mockCreateFolder.mockResolvedValueOnce(null);
-      const { toast } = await import("sonner");
-
+      
       await act(async () => {
         await mockCreateFolder("New Folder");
       });
@@ -632,8 +630,7 @@ describe("App", () => {
         filename: "test-session.md",
       });
 
-      const { toast } = await import("sonner");
-
+      
       render(<App />);
 
       // Trigger export through the handler
@@ -676,8 +673,7 @@ describe("App", () => {
     it("should show success toast when folder is created", async () => {
       const newFolder = createFolder("f1", "New Folder");
       mockCreateFolder.mockResolvedValueOnce(newFolder);
-      const { toast } = await import("sonner");
-
+      
       render(<App />);
 
       await act(async () => {
@@ -692,8 +688,7 @@ describe("App", () => {
 
     it("should not show toast when folder creation fails", async () => {
       mockCreateFolder.mockResolvedValueOnce(null);
-      const { toast } = await import("sonner");
-
+      
       render(<App />);
 
       await act(async () => {
@@ -709,8 +704,7 @@ describe("App", () => {
     it("should show success toast when folder is renamed", async () => {
       const renamedFolder = createFolder("f1", "Renamed");
       mockRenameFolder.mockResolvedValueOnce(renamedFolder);
-      const { toast } = await import("sonner");
-
+      
       render(<App />);
 
       await act(async () => {
@@ -727,8 +721,7 @@ describe("App", () => {
       mockFolders = [createFolder("f1", "Test Folder")];
       mockConfirm.mockReturnValue(true);
       mockRemoveFolder.mockResolvedValueOnce(undefined);
-      const { toast } = await import("sonner");
-
+      
       render(<App />);
 
       await act(async () => {
@@ -774,8 +767,7 @@ describe("App", () => {
     it("should refresh sessions after moving session to folder", async () => {
       vi.mocked(apiClient.moveSessionToFolder).mockResolvedValueOnce(undefined);
       mockFolders = [createFolder("f1", "Work")];
-      const { toast } = await import("sonner");
-
+      
       render(<App />);
 
       await act(async () => {
@@ -789,8 +781,7 @@ describe("App", () => {
     it("should show success toast with folder name after move", async () => {
       vi.mocked(apiClient.moveSessionToFolder).mockResolvedValueOnce(undefined);
       mockFolders = [createFolder("f1", "Work")];
-      const { toast } = await import("sonner");
-
+      
       render(<App />);
 
       await act(async () => {
@@ -804,8 +795,7 @@ describe("App", () => {
 
     it("should show uncategorized when moving to null folder", async () => {
       vi.mocked(apiClient.moveSessionToFolder).mockResolvedValueOnce(undefined);
-      const { toast } = await import("sonner");
-
+      
       render(<App />);
 
       await act(async () => {
@@ -818,8 +808,7 @@ describe("App", () => {
 
     it("should show error toast when move fails", async () => {
       vi.mocked(apiClient.moveSessionToFolder).mockRejectedValueOnce(new Error("Move failed"));
-      const { toast } = await import("sonner");
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+            const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
       render(<App />);
 
@@ -917,6 +906,70 @@ describe("App", () => {
       // Click to expand
       fireEvent.click(screen.getByTitle("Expand sidebar"));
       expect(screen.getByTitle("Collapse sidebar")).toBeInTheDocument();
+    });
+  });
+
+  describe("Folder Creation via UI", () => {
+    it("should trigger onCreateFolder when creating folder through UI", async () => {
+      const newFolder = createFolder("f1", "My Folder");
+      mockCreateFolder.mockResolvedValueOnce(newFolder);
+
+      render(<App />);
+
+      // Click "New folder" button
+      const newFolderButton = screen.getByTitle("New folder");
+      fireEvent.click(newFolderButton);
+
+      // Find the input and type folder name
+      const folderInput = screen.getByPlaceholderText("Folder name...");
+      fireEvent.change(folderInput, { target: { value: "My Folder" } });
+
+      // Submit the form
+      await act(async () => {
+        fireEvent.submit(folderInput.closest("form")!);
+      });
+
+      expect(mockCreateFolder).toHaveBeenCalledWith("My Folder");
+    });
+
+    it("should show success toast after folder creation via UI", async () => {
+      const newFolder = createFolder("f1", "Test Folder");
+      mockCreateFolder.mockResolvedValueOnce(newFolder);
+      
+      render(<App />);
+
+      const newFolderButton = screen.getByTitle("New folder");
+      fireEvent.click(newFolderButton);
+
+      const folderInput = screen.getByPlaceholderText("Folder name...");
+      fireEvent.change(folderInput, { target: { value: "Test Folder" } });
+
+      await act(async () => {
+        fireEvent.submit(folderInput.closest("form")!);
+      });
+
+      await waitFor(() => {
+        expect(toast.success).toHaveBeenCalledWith('Created folder "Test Folder"');
+      });
+    });
+
+    it("should not show toast if folder creation returns null", async () => {
+      mockCreateFolder.mockResolvedValueOnce(null);
+      
+      render(<App />);
+
+      const newFolderButton = screen.getByTitle("New folder");
+      fireEvent.click(newFolderButton);
+
+      const folderInput = screen.getByPlaceholderText("Folder name...");
+      fireEvent.change(folderInput, { target: { value: "Test Folder" } });
+
+      await act(async () => {
+        fireEvent.submit(folderInput.closest("form")!);
+      });
+
+      // toast.success should not be called since folder creation failed
+      expect(toast.success).not.toHaveBeenCalled();
     });
   });
 });
