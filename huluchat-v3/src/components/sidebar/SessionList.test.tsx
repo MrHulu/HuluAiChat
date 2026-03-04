@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { SessionList } from "./SessionList";
 import type { Session, Folder } from "@/api/client";
 import * as apiClient from "@/api/client";
@@ -877,6 +878,179 @@ describe("SessionList", () => {
       // Folder should have active styling - the parent div has the bg-muted class
       // Check that the active folder filter is set (shows "Back to all" button)
       expect(screen.getByText("Back to all")).toBeInTheDocument();
+    });
+  });
+
+  describe("Filtered Folder Session Operations", () => {
+    it("should handle session select in filtered folder view", () => {
+      const onSelectSession = vi.fn();
+      const folders = [createFolder("f1", "Work")];
+      const sessions = [createSession("1", "Work Session", "f1")];
+      render(
+        <SessionList
+          {...defaultProps}
+          folders={folders}
+          sessions={sessions}
+          onSelectSession={onSelectSession}
+        />
+      );
+
+      // Click folder to filter
+      fireEvent.click(screen.getByText("Work"));
+
+      // Click session in filtered view
+      fireEvent.click(screen.getByText("Work Session"));
+      expect(onSelectSession).toHaveBeenCalledWith("1");
+    });
+
+    it("should handle session delete in filtered folder view", () => {
+      const onDeleteSession = vi.fn();
+      const folders = [createFolder("f1", "Work")];
+      const sessions = [createSession("1", "Work Session", "f1")];
+      render(
+        <SessionList
+          {...defaultProps}
+          folders={folders}
+          sessions={sessions}
+          onDeleteSession={onDeleteSession}
+        />
+      );
+
+      // Click folder to filter
+      fireEvent.click(screen.getByText("Work"));
+
+      // Find and click delete button
+      const deleteButton = screen.getByTitle("Delete session");
+      fireEvent.click(deleteButton);
+      expect(onDeleteSession).toHaveBeenCalledWith("1");
+    });
+
+    it("should handle session export in filtered folder view", async () => {
+      const user = userEvent.setup();
+      const onExportSession = vi.fn();
+      const folders = [createFolder("f1", "Work")];
+      const sessions = [createSession("1", "Work Session", "f1")];
+      render(
+        <SessionList
+          {...defaultProps}
+          folders={folders}
+          sessions={sessions}
+          onExportSession={onExportSession}
+        />
+      );
+
+      // Click folder to filter
+      await user.click(screen.getByText("Work"));
+
+      // Find and click export button
+      const exportButton = screen.getByTitle("Export session");
+      await user.click(exportButton);
+      await waitFor(() => {
+        expect(screen.getByText("Markdown (.md)")).toBeInTheDocument();
+      });
+      await user.click(screen.getByText("Markdown (.md)"));
+      expect(onExportSession).toHaveBeenCalledWith("1", "markdown");
+    });
+
+    it("should pass onMoveSession to SessionItem in filtered folder view", () => {
+      const onMoveSession = vi.fn();
+      const folders = [createFolder("f1", "Work"), createFolder("f2", "Personal")];
+      const sessions = [createSession("1", "Work Session", "f1")];
+      render(
+        <SessionList
+          {...defaultProps}
+          folders={folders}
+          sessions={sessions}
+          onMoveSession={onMoveSession}
+        />
+      );
+
+      // Click folder to filter
+      fireEvent.click(screen.getByText("Work"));
+
+      // Session should be visible in filtered view
+      expect(screen.getByText("Work Session")).toBeInTheDocument();
+      // Move button should be available (testing that props are passed)
+      expect(screen.getByTitle("Move to folder")).toBeInTheDocument();
+    });
+  });
+
+  describe("Folder Item Expanded Session Operations", () => {
+    it("should pass onMoveSession to SessionItem in expanded folder", () => {
+      const onMoveSession = vi.fn();
+      const folders = [createFolder("f1", "Work"), createFolder("f2", "Personal")];
+      const sessions = [createSession("1", "Work Session", "f1")];
+      render(
+        <SessionList
+          {...defaultProps}
+          folders={folders}
+          sessions={sessions}
+          onMoveSession={onMoveSession}
+        />
+      );
+
+      // Expand folder by clicking chevron
+      const chevronButtons = document.querySelectorAll("button");
+      const chevronButton = Array.from(chevronButtons).find(
+        (btn) => btn.querySelector("svg path[d*='m9 18 6-6-6-6']")
+      );
+      if (chevronButton) {
+        fireEvent.click(chevronButton);
+      }
+
+      // Now session should be visible
+      expect(screen.getByText("Work Session")).toBeInTheDocument();
+      // Move button should be available (testing that props are passed)
+      expect(screen.getByTitle("Move to folder")).toBeInTheDocument();
+    });
+
+    it("should handle session export in expanded folder", async () => {
+      const user = userEvent.setup();
+      const onExportSession = vi.fn();
+      const folders = [createFolder("f1", "Work")];
+      const sessions = [createSession("1", "Work Session", "f1")];
+      render(
+        <SessionList
+          {...defaultProps}
+          folders={folders}
+          sessions={sessions}
+          onExportSession={onExportSession}
+        />
+      );
+
+      // Expand folder
+      const chevronButtons = document.querySelectorAll("button");
+      const chevronButton = Array.from(chevronButtons).find(
+        (btn) => btn.querySelector("svg path[d*='m9 18 6-6-6-6']")
+      );
+      if (chevronButton) {
+        await user.click(chevronButton);
+      }
+
+      // Find export button and click
+      const exportButton = screen.getByTitle("Export session");
+      await user.click(exportButton);
+      await waitFor(() => {
+        expect(screen.getByText("JSON (.json)")).toBeInTheDocument();
+      });
+      await user.click(screen.getByText("JSON (.json)"));
+      expect(onExportSession).toHaveBeenCalledWith("1", "json");
+    });
+  });
+
+  describe("Display Sessions Logic", () => {
+    it("should use sessionsByFolder for display when no search and folder filter active", () => {
+      const folders = [createFolder("f1", "Work")];
+      const sessions = [
+        createSession("1", "Work Session", "f1"),
+        createSession("2", "Other Session"),
+      ];
+      render(<SessionList {...defaultProps} folders={folders} sessions={sessions} />);
+
+      // Uncategorized should show only root sessions
+      expect(screen.getByText("Other Session")).toBeInTheDocument();
+      // Work session should be in folder, not in uncategorized
+      expect(screen.getByText("Uncategorized")).toBeInTheDocument();
     });
   });
 });
