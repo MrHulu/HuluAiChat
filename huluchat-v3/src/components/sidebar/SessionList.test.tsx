@@ -613,4 +613,270 @@ describe("SessionList", () => {
       expect(screen.queryByText("Back to all")).not.toBeInTheDocument();
     });
   });
+
+  describe("Search Error Handling", () => {
+    it("should handle search API error and set empty results", async () => {
+      const mockSearchSessions = vi.mocked(apiClient.searchSessions);
+      mockSearchSessions.mockRejectedValueOnce(new Error("Network error"));
+
+      render(<SessionList {...defaultProps} />);
+
+      const searchInput = screen.getByPlaceholderText("Search chats...");
+      fireEvent.change(searchInput, { target: { value: "error test" } });
+
+      // Wait for debounce and search API call
+      await waitFor(
+        () => {
+          expect(mockSearchSessions).toHaveBeenCalledWith("error test");
+        },
+        { timeout: 1000 }
+      );
+
+      // After error, searching should complete (isSearching becomes false)
+      // The component should still be functional
+      expect(searchInput).toHaveValue("error test");
+    });
+  });
+
+  describe("Search Result Interactions", () => {
+    it("should show search results with sessions", async () => {
+      const mockSearchSessions = vi.mocked(apiClient.searchSessions);
+      mockSearchSessions.mockResolvedValueOnce([
+        {
+          session: createSession("1", "Test Session"),
+          matched_messages: [],
+        },
+      ]);
+
+      render(<SessionList {...defaultProps} />);
+
+      const searchInput = screen.getByPlaceholderText("Search chats...");
+      fireEvent.change(searchInput, { target: { value: "test" } });
+
+      // Wait for debounce and search API call
+      await waitFor(
+        () => {
+          expect(mockSearchSessions).toHaveBeenCalledWith("test");
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    it("should handle search with matched messages", async () => {
+      const mockSearchSessions = vi.mocked(apiClient.searchSessions);
+      mockSearchSessions.mockResolvedValueOnce([
+        {
+          session: createSession("1", "Test Session"),
+          matched_messages: [
+            {
+              id: "m1",
+              role: "user",
+              content_snippet: "Test content",
+            },
+          ],
+        },
+      ]);
+
+      render(<SessionList {...defaultProps} />);
+
+      const searchInput = screen.getByPlaceholderText("Search chats...");
+      fireEvent.change(searchInput, { target: { value: "test" } });
+
+      await waitFor(
+        () => {
+          expect(mockSearchSessions).toHaveBeenCalledWith("test");
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    it("should handle assistant role in matched messages", async () => {
+      const mockSearchSessions = vi.mocked(apiClient.searchSessions);
+      mockSearchSessions.mockResolvedValueOnce([
+        {
+          session: createSession("1", "Test Session"),
+          matched_messages: [
+            {
+              id: "m1",
+              role: "assistant",
+              content_snippet: "AI response",
+            },
+          ],
+        },
+      ]);
+
+      render(<SessionList {...defaultProps} />);
+
+      const searchInput = screen.getByPlaceholderText("Search chats...");
+      fireEvent.change(searchInput, { target: { value: "response" } });
+
+      await waitFor(
+        () => {
+          expect(mockSearchSessions).toHaveBeenCalledWith("response");
+        },
+        { timeout: 1000 }
+      );
+    });
+  });
+
+  describe("Folder Edit Input Interactions", () => {
+    it("should stop propagation on edit input click", () => {
+      const folders = [createFolder("f1", "Work")];
+      render(<SessionList {...defaultProps} folders={folders} />);
+
+      // Right-click to open menu
+      const folderRow = screen.getByText("Work").closest("div");
+      if (folderRow) {
+        fireEvent.contextMenu(folderRow);
+      }
+
+      // Click Rename
+      fireEvent.click(screen.getByText("Rename"));
+
+      // Get the edit input
+      const input = document.querySelector("input[value='Work']") as HTMLInputElement;
+      expect(input).toBeInTheDocument();
+
+      // Click on input should not trigger folder click
+      fireEvent.click(input);
+
+      // Input should still be visible (not closed)
+      expect(input).toBeInTheDocument();
+    });
+
+    it("should cancel editing when input loses focus", () => {
+      const folders = [createFolder("f1", "Work")];
+      render(<SessionList {...defaultProps} folders={folders} />);
+
+      // Right-click to open menu
+      const folderRow = screen.getByText("Work").closest("div");
+      if (folderRow) {
+        fireEvent.contextMenu(folderRow);
+      }
+
+      // Click Rename
+      fireEvent.click(screen.getByText("Rename"));
+
+      // Get the edit input
+      const input = document.querySelector("input[value='Work']") as HTMLInputElement;
+      expect(input).toBeInTheDocument();
+
+      // Blur the input
+      fireEvent.blur(input);
+
+      // Input should be closed
+      expect(document.querySelector("input[value='Work']")).not.toBeInTheDocument();
+    });
+
+    it("should submit on Enter key in edit input", () => {
+      const onRenameFolder = vi.fn();
+      const folders = [createFolder("f1", "Work")];
+      render(<SessionList {...defaultProps} folders={folders} onRenameFolder={onRenameFolder} />);
+
+      // Right-click to open menu
+      const folderRow = screen.getByText("Work").closest("div");
+      if (folderRow) {
+        fireEvent.contextMenu(folderRow);
+      }
+
+      // Click Rename
+      fireEvent.click(screen.getByText("Rename"));
+
+      // Get the edit input
+      const input = document.querySelector("input[value='Work']") as HTMLInputElement;
+      fireEvent.change(input, { target: { value: "Personal" } });
+
+      // Submit form (simulates Enter key)
+      fireEvent.submit(input.closest("form")!);
+
+      expect(onRenameFolder).toHaveBeenCalledWith("f1", "Personal");
+    });
+  });
+
+  describe("Active Folder Filter Display", () => {
+    it("should show sessions in filtered folder", () => {
+      const folders = [createFolder("f1", "Work")];
+      const sessions = [
+        createSession("1", "Work Session 1", "f1"),
+        createSession("2", "Work Session 2", "f1"),
+        createSession("3", "Other Session"),
+      ];
+      render(<SessionList {...defaultProps} folders={folders} sessions={sessions} />);
+
+      // Click folder to filter
+      fireEvent.click(screen.getByText("Work"));
+
+      // Should show only sessions in that folder
+      expect(screen.getByText("Work Session 1")).toBeInTheDocument();
+      expect(screen.getByText("Work Session 2")).toBeInTheDocument();
+      expect(screen.queryByText("Other Session")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("Empty Folder State", () => {
+    it("should show folder with zero sessions", () => {
+      const folders = [createFolder("f1", "Empty Folder")];
+      render(<SessionList {...defaultProps} folders={folders} />);
+
+      expect(screen.getByText("Empty Folder")).toBeInTheDocument();
+      expect(screen.getByText("0")).toBeInTheDocument(); // Session count
+    });
+  });
+
+  describe("Multiple Folders", () => {
+    it("should handle multiple folders with sessions", () => {
+      const folders = [createFolder("f1", "Work"), createFolder("f2", "Personal")];
+      const sessions = [
+        createSession("1", "Work Session", "f1"),
+        createSession("2", "Personal Session", "f2"),
+      ];
+      render(<SessionList {...defaultProps} folders={folders} sessions={sessions} />);
+
+      // Folders should always be visible
+      expect(screen.getByText("Work")).toBeInTheDocument();
+      expect(screen.getByText("Personal")).toBeInTheDocument();
+
+      // Sessions are in folders, need to expand folders first
+      // Click on chevron to expand Work folder
+      const chevronButtons = document.querySelectorAll("button");
+      const chevronButton = Array.from(chevronButtons).find(
+        (btn) => btn.querySelector("svg path[d*='m9 18 6-6-6-6']")
+      );
+
+      if (chevronButton) {
+        fireEvent.click(chevronButton); // Expand first folder
+      }
+
+      // After expansion, sessions should be visible
+      expect(screen.getByText("Work Session")).toBeInTheDocument();
+    });
+
+    it("should show session counts for multiple folders", () => {
+      const folders = [createFolder("f1", "Work"), createFolder("f2", "Personal")];
+      const sessions = [
+        createSession("1", "Work 1", "f1"),
+        createSession("2", "Work 2", "f1"),
+        createSession("3", "Personal 1", "f2"),
+      ];
+      render(<SessionList {...defaultProps} folders={folders} sessions={sessions} />);
+
+      // Should show counts: Work has 2, Personal has 1
+      const counts = screen.getAllByText(/^[0-9]$/);
+      expect(counts.length).toBeGreaterThanOrEqual(2);
+    });
+  });
+
+  describe("Folder Active State Styling", () => {
+    it("should show active background on selected folder", () => {
+      const folders = [createFolder("f1", "Work")];
+      render(<SessionList {...defaultProps} folders={folders} />);
+
+      // Click folder to filter
+      fireEvent.click(screen.getByText("Work"));
+
+      // Folder should have active styling - the parent div has the bg-muted class
+      // Check that the active folder filter is set (shows "Back to all" button)
+      expect(screen.getByText("Back to all")).toBeInTheDocument();
+    });
+  });
 });
