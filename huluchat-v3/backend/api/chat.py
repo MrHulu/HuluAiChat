@@ -89,6 +89,8 @@ async def chat_websocket(
             # Receive message from client
             data = await websocket.receive_json()
             user_content = data.get("content", "")
+            # Get model from client, or use default
+            request_model = data.get("model")
 
             if not user_content.strip():
                 continue
@@ -128,7 +130,7 @@ async def chat_websocket(
             # Stream AI response
             full_response = ""
             try:
-                async for chunk in openai_service.stream_chat(history):
+                async for chunk in openai_service.stream_chat(history, model=request_model):
                     if chunk.error:
                         await manager.send_json(session_id, {
                             "type": "error",

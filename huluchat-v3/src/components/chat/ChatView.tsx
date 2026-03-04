@@ -4,7 +4,8 @@
  */
 import { MessageList } from "./MessageList";
 import { ChatInput } from "./ChatInput";
-import { useChat } from "@/hooks";
+import { ModelSelector } from "./ModelSelector";
+import { useChat, useModel } from "@/hooks";
 import { ConnectionStatus } from "@/hooks/useWebSocket";
 import { cn } from "@/lib/utils";
 
@@ -33,15 +34,32 @@ function ConnectionIndicator({ status }: { status: ConnectionStatus }) {
 export function ChatView({ sessionId }: ChatViewProps) {
   const { messages, streamingMessage, connectionStatus, sendMessage, isLoading } =
     useChat(sessionId);
+  const { currentModel, models, setModel, isLoading: isLoadingModels } = useModel();
 
   const isDisabled = connectionStatus !== "connected" || isLoading;
+
+  const handleSend = (content: string) => {
+    sendMessage(content, currentModel);
+  };
 
   return (
     <div className="flex flex-col h-full">
       {/* 顶部状态栏 */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-background/50 backdrop-blur-sm">
-        <div className="text-sm font-medium text-foreground">
-          {sessionId ? "Chat" : "Select or create a session"}
+        <div className="flex items-center gap-3">
+          <div className="text-sm font-medium text-foreground">
+            {sessionId ? "Chat" : "Select or create a session"}
+          </div>
+          {/* 模型选择器 */}
+          {sessionId && (
+            <ModelSelector
+              value={currentModel}
+              models={models}
+              onChange={setModel}
+              isLoading={isLoadingModels}
+              disabled={isLoading}
+            />
+          )}
         </div>
         <ConnectionIndicator status={connectionStatus} />
       </div>
@@ -55,7 +73,7 @@ export function ChatView({ sessionId }: ChatViewProps) {
 
       {/* 输入框 */}
       <ChatInput
-        onSend={sendMessage}
+        onSend={handleSend}
         disabled={isDisabled || !sessionId}
         placeholder={
           !sessionId
