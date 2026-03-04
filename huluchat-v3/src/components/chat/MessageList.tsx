@@ -18,7 +18,7 @@ export interface MessageListProps {
  * 估算消息高度（基于内容长度）
  * 用于虚拟列表的初始高度估算
  */
-function estimateMessageHeight(content: string): number {
+export function estimateMessageHeight(content: string): number {
   // 基础高度：头像 + padding + 内容
   const baseHeight = 60;
   // 每行约 24px，假设每行约 60 个字符
