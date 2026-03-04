@@ -1053,4 +1053,175 @@ describe("SessionList", () => {
       expect(screen.getByText("Uncategorized")).toBeInTheDocument();
     });
   });
+
+  describe("Uncategorized Session Click", () => {
+    it("should call onSelectSession when clicking uncategorized session", () => {
+      const onSelectSession = vi.fn();
+      const sessions = [createSession("1", "My Uncategorized Chat")];
+      render(<SessionList {...defaultProps} sessions={sessions} onSelectSession={onSelectSession} />);
+
+      // Click on the uncategorized session
+      fireEvent.click(screen.getByText("My Uncategorized Chat"));
+      expect(onSelectSession).toHaveBeenCalledWith("1");
+    });
+
+    it("should call onDeleteSession when deleting uncategorized session", () => {
+      const onDeleteSession = vi.fn();
+      const sessions = [createSession("1", "Session to Delete")];
+      render(<SessionList {...defaultProps} sessions={sessions} onDeleteSession={onDeleteSession} />);
+
+      // Find and click delete button
+      const deleteButton = screen.getByTitle("Delete session");
+      fireEvent.click(deleteButton);
+      expect(onDeleteSession).toHaveBeenCalledWith("1");
+    });
+  });
+
+  describe("Expanded Folder Session Click/Delete", () => {
+    it("should call onSelectSession when clicking session in expanded folder", () => {
+      const onSelectSession = vi.fn();
+      const folders = [createFolder("f1", "Work")];
+      const sessions = [createSession("1", "Work Session", "f1")];
+      render(
+        <SessionList
+          {...defaultProps}
+          folders={folders}
+          sessions={sessions}
+          onSelectSession={onSelectSession}
+        />
+      );
+
+      // Expand folder by clicking chevron
+      const chevronButtons = document.querySelectorAll("button");
+      const chevronButton = Array.from(chevronButtons).find(
+        (btn) => btn.querySelector("svg path[d*='m9 18 6-6-6-6']")
+      );
+      if (chevronButton) {
+        fireEvent.click(chevronButton);
+      }
+
+      // Click on session in expanded folder
+      fireEvent.click(screen.getByText("Work Session"));
+      expect(onSelectSession).toHaveBeenCalledWith("1");
+    });
+
+    it("should call onDeleteSession when deleting session in expanded folder", () => {
+      const onDeleteSession = vi.fn();
+      const folders = [createFolder("f1", "Work")];
+      const sessions = [createSession("1", "Work Session", "f1")];
+      render(
+        <SessionList
+          {...defaultProps}
+          folders={folders}
+          sessions={sessions}
+          onDeleteSession={onDeleteSession}
+        />
+      );
+
+      // Expand folder by clicking chevron
+      const chevronButtons = document.querySelectorAll("button");
+      const chevronButton = Array.from(chevronButtons).find(
+        (btn) => btn.querySelector("svg path[d*='m9 18 6-6-6-6']")
+      );
+      if (chevronButton) {
+        fireEvent.click(chevronButton);
+      }
+
+      // Find and click delete button
+      const deleteButton = screen.getByTitle("Delete session");
+      fireEvent.click(deleteButton);
+      expect(onDeleteSession).toHaveBeenCalledWith("1");
+    });
+  });
+
+  describe("Folder Edit Cancel via Blur", () => {
+    it("should cancel editing and clear state when input loses focus", () => {
+      const folders = [createFolder("f1", "Work")];
+      render(<SessionList {...defaultProps} folders={folders} />);
+
+      // Right-click to open menu
+      const folderRow = screen.getByText("Work").closest("div");
+      if (folderRow) {
+        fireEvent.contextMenu(folderRow);
+      }
+
+      // Click Rename
+      fireEvent.click(screen.getByText("Rename"));
+
+      // Get the edit input
+      const input = document.querySelector("input[value='Work']") as HTMLInputElement;
+      expect(input).toBeInTheDocument();
+
+      // Change the value first
+      fireEvent.change(input, { target: { value: "Changed" } });
+
+      // Blur the input (triggers onEditCancel which clears editingFolderId)
+      fireEvent.blur(input);
+
+      // Input should be closed
+      expect(document.querySelector("input[value='Changed']")).not.toBeInTheDocument();
+      // Should show original name
+      expect(screen.getByText("Work")).toBeInTheDocument();
+    });
+  });
+
+  describe("Search Result Matched Messages", () => {
+    it("should render matched messages when search returns them", async () => {
+      const mockSearchSessions = vi.mocked(apiClient.searchSessions);
+      mockSearchSessions.mockResolvedValueOnce([
+        {
+          session: createSession("1", "Test Session"),
+          matched_messages: [
+            {
+              id: "m1",
+              role: "user",
+              content_snippet: "Hello world",
+            },
+          ],
+        },
+      ]);
+
+      render(<SessionList {...defaultProps} />);
+
+      const searchInput = screen.getByPlaceholderText("Search chats...");
+      fireEvent.change(searchInput, { target: { value: "hello" } });
+
+      // Wait for search API to be called
+      await waitFor(
+        () => {
+          expect(mockSearchSessions).toHaveBeenCalledWith("hello");
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    it("should render assistant matched messages", async () => {
+      const mockSearchSessions = vi.mocked(apiClient.searchSessions);
+      mockSearchSessions.mockResolvedValueOnce([
+        {
+          session: createSession("1", "Test Session"),
+          matched_messages: [
+            {
+              id: "m1",
+              role: "assistant",
+              content_snippet: "AI response here",
+            },
+          ],
+        },
+      ]);
+
+      render(<SessionList {...defaultProps} />);
+
+      const searchInput = screen.getByPlaceholderText("Search chats...");
+      fireEvent.change(searchInput, { target: { value: "response" } });
+
+      // Wait for search API to be called
+      await waitFor(
+        () => {
+          expect(mockSearchSessions).toHaveBeenCalledWith("response");
+        },
+        { timeout: 1000 }
+      );
+    });
+  });
 });
