@@ -75,11 +75,33 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ubuntu-22.04]
+        target: [x86_64-unknown-linux-gnu]
 
     runs-on: ${{ matrix.platform }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install PyInstaller
+        run: pip install pyinstaller
+
+      - name: Install backend dependencies
+        run: |
+          cd huluchat-v3/backend
+          pip install -r requirements.txt
+
+      - name: Build backend binary
+        run: |
+          cd huluchat-v3/backend
+          pyinstaller --onefile --name huluchat-backend-${{ matrix.target }} main.py
+          mkdir -p ../src-tauri/binaries
+          mv dist/huluchat-backend-${{ matrix.target }} ../src-tauri/binaries/
+          chmod +x ../src-tauri/binaries/huluchat-backend-${{ matrix.target }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
