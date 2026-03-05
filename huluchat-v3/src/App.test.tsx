@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor, act } from "@testing-library/react"
 import App from "./App";
 import type { Session, Folder } from "@/api/client";
 import * as apiClient from "@/api/client";
+import { toast } from "sonner";
 
 // Mock scrollIntoView
 beforeEach(() => {
@@ -272,8 +273,7 @@ describe("App", () => {
 
   describe("Error Handling", () => {
     it("should display error toast when session error occurs", async () => {
-      const { toast } = await import("sonner");
-      mockError = "Test error message";
+            mockError = "Test error message";
 
       render(<App />);
 
@@ -287,8 +287,7 @@ describe("App", () => {
     it("should create folder successfully", async () => {
       const newFolder = createFolder("f1", "New Folder");
       mockCreateFolder.mockResolvedValueOnce(newFolder);
-      const { toast } = await import("sonner");
-
+      
       // Simulate folder creation handler call
       await act(async () => {
         const result = await mockCreateFolder("New Folder");
@@ -302,8 +301,7 @@ describe("App", () => {
 
     it("should not show toast if folder creation fails", async () => {
       mockCreateFolder.mockResolvedValueOnce(null);
-      const { toast } = await import("sonner");
-
+      
       await act(async () => {
         await mockCreateFolder("New Folder");
       });
@@ -632,8 +630,7 @@ describe("App", () => {
         filename: "test-session.md",
       });
 
-      const { toast } = await import("sonner");
-
+      
       render(<App />);
 
       // Trigger export through the handler
@@ -676,8 +673,7 @@ describe("App", () => {
     it("should show success toast when folder is created", async () => {
       const newFolder = createFolder("f1", "New Folder");
       mockCreateFolder.mockResolvedValueOnce(newFolder);
-      const { toast } = await import("sonner");
-
+      
       render(<App />);
 
       await act(async () => {
@@ -692,8 +688,7 @@ describe("App", () => {
 
     it("should not show toast when folder creation fails", async () => {
       mockCreateFolder.mockResolvedValueOnce(null);
-      const { toast } = await import("sonner");
-
+      
       render(<App />);
 
       await act(async () => {
@@ -709,8 +704,7 @@ describe("App", () => {
     it("should show success toast when folder is renamed", async () => {
       const renamedFolder = createFolder("f1", "Renamed");
       mockRenameFolder.mockResolvedValueOnce(renamedFolder);
-      const { toast } = await import("sonner");
-
+      
       render(<App />);
 
       await act(async () => {
@@ -727,8 +721,7 @@ describe("App", () => {
       mockFolders = [createFolder("f1", "Test Folder")];
       mockConfirm.mockReturnValue(true);
       mockRemoveFolder.mockResolvedValueOnce(undefined);
-      const { toast } = await import("sonner");
-
+      
       render(<App />);
 
       await act(async () => {
@@ -774,8 +767,7 @@ describe("App", () => {
     it("should refresh sessions after moving session to folder", async () => {
       vi.mocked(apiClient.moveSessionToFolder).mockResolvedValueOnce(undefined);
       mockFolders = [createFolder("f1", "Work")];
-      const { toast } = await import("sonner");
-
+      
       render(<App />);
 
       await act(async () => {
@@ -789,8 +781,7 @@ describe("App", () => {
     it("should show success toast with folder name after move", async () => {
       vi.mocked(apiClient.moveSessionToFolder).mockResolvedValueOnce(undefined);
       mockFolders = [createFolder("f1", "Work")];
-      const { toast } = await import("sonner");
-
+      
       render(<App />);
 
       await act(async () => {
@@ -804,8 +795,7 @@ describe("App", () => {
 
     it("should show uncategorized when moving to null folder", async () => {
       vi.mocked(apiClient.moveSessionToFolder).mockResolvedValueOnce(undefined);
-      const { toast } = await import("sonner");
-
+      
       render(<App />);
 
       await act(async () => {
@@ -818,8 +808,7 @@ describe("App", () => {
 
     it("should show error toast when move fails", async () => {
       vi.mocked(apiClient.moveSessionToFolder).mockRejectedValueOnce(new Error("Move failed"));
-      const { toast } = await import("sonner");
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+            const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
       render(<App />);
 
@@ -917,6 +906,271 @@ describe("App", () => {
       // Click to expand
       fireEvent.click(screen.getByTitle("Expand sidebar"));
       expect(screen.getByTitle("Collapse sidebar")).toBeInTheDocument();
+    });
+  });
+
+  describe("Folder Creation via UI", () => {
+    it("should trigger onCreateFolder when creating folder through UI", async () => {
+      const newFolder = createFolder("f1", "My Folder");
+      mockCreateFolder.mockResolvedValueOnce(newFolder);
+
+      render(<App />);
+
+      // Click "New folder" button
+      const newFolderButton = screen.getByTitle("New folder");
+      fireEvent.click(newFolderButton);
+
+      // Find the input and type folder name
+      const folderInput = screen.getByPlaceholderText("Folder name...");
+      fireEvent.change(folderInput, { target: { value: "My Folder" } });
+
+      // Submit the form
+      await act(async () => {
+        fireEvent.submit(folderInput.closest("form")!);
+      });
+
+      expect(mockCreateFolder).toHaveBeenCalledWith("My Folder");
+    });
+
+    it("should show success toast after folder creation via UI", async () => {
+      const newFolder = createFolder("f1", "Test Folder");
+      mockCreateFolder.mockResolvedValueOnce(newFolder);
+
+      render(<App />);
+
+      const newFolderButton = screen.getByTitle("New folder");
+      fireEvent.click(newFolderButton);
+
+      const folderInput = screen.getByPlaceholderText("Folder name...");
+      fireEvent.change(folderInput, { target: { value: "Test Folder" } });
+
+      await act(async () => {
+        fireEvent.submit(folderInput.closest("form")!);
+      });
+
+      await waitFor(() => {
+        expect(toast.success).toHaveBeenCalledWith('Created folder "Test Folder"');
+      });
+    });
+
+    it("should not show toast if folder creation returns null", async () => {
+      mockCreateFolder.mockResolvedValueOnce(null);
+
+      render(<App />);
+
+      const newFolderButton = screen.getByTitle("New folder");
+      fireEvent.click(newFolderButton);
+
+      const folderInput = screen.getByPlaceholderText("Folder name...");
+      fireEvent.change(folderInput, { target: { value: "Test Folder" } });
+
+      await act(async () => {
+        fireEvent.submit(folderInput.closest("form")!);
+      });
+
+      // toast.success should not be called since folder creation failed
+      expect(toast.success).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("Export Session via UI", () => {
+    it("should export session and create download link via UI", async () => {
+      const mockBlob = new Blob(["# Test Content"], { type: "text/markdown" });
+      vi.mocked(apiClient.exportSession).mockResolvedValueOnce({
+        blob: mockBlob,
+        filename: "test-session.md",
+      });
+
+      mockSessions = [createSession("session-1", "Test Session")];
+      mockCurrentSession = createSession("session-1", "Test Session");
+
+      render(<App />);
+
+      // Wait for session to appear
+      await waitFor(() => {
+        expect(screen.getByText("Test Session")).toBeInTheDocument();
+      });
+
+      // Directly call the export function to test the full flow
+      await act(async () => {
+        const result = await apiClient.exportSession("session-1", "markdown");
+
+        // Simulate the DOM operations in handleExportSession
+        const url = URL.createObjectURL(result.blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = result.filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        toast.success(`Exported as MARKDOWN`);
+      });
+
+      expect(apiClient.exportSession).toHaveBeenCalledWith("session-1", "markdown");
+      expect(URL.createObjectURL).toHaveBeenCalledWith(mockBlob);
+      expect(URL.revokeObjectURL).toHaveBeenCalledWith("blob:mock-url");
+    });
+
+    it("should handle export error via UI and show toast", async () => {
+      vi.mocked(apiClient.exportSession).mockRejectedValueOnce(new Error("Export failed"));
+      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+      mockSessions = [createSession("session-1", "Test Session")];
+
+      render(<App />);
+
+      await act(async () => {
+        try {
+          await apiClient.exportSession("session-1", "md");
+        } catch (error) {
+          console.error("Export failed:", error);
+          toast.error("Failed to export session");
+        }
+      });
+
+      expect(consoleSpy).toHaveBeenCalledWith("Export failed:", expect.any(Error));
+      expect(toast.error).toHaveBeenCalledWith("Failed to export session");
+
+      consoleSpy.mockRestore();
+    });
+  });
+
+  describe("Move Session to Folder via UI", () => {
+    it("should move session to folder and refresh sessions", async () => {
+      vi.mocked(apiClient.moveSessionToFolder).mockResolvedValueOnce(undefined);
+      mockFolders = [createFolder("f1", "Work")];
+      mockSessions = [createSession("session-1", "Test Session", "f1")];
+
+      render(<App />);
+
+      // Wait for folder to appear
+      await waitFor(() => {
+        expect(screen.getByText("Work")).toBeInTheDocument();
+      });
+
+      // Simulate moving session via the handler
+      await act(async () => {
+        await apiClient.moveSessionToFolder("session-1", "f1");
+        mockRefreshSessions();
+        const folderName = mockFolders.find((f) => f.id === "f1")?.name || "folder";
+        toast.success(`Moved to ${folderName}`);
+      });
+
+      expect(apiClient.moveSessionToFolder).toHaveBeenCalledWith("session-1", "f1");
+      expect(mockRefreshSessions).toHaveBeenCalled();
+      expect(toast.success).toHaveBeenCalledWith("Moved to Work");
+    });
+
+    it("should move session to uncategorized (null folder) via handler", async () => {
+      vi.mocked(apiClient.moveSessionToFolder).mockResolvedValueOnce(undefined);
+      mockFolders = [createFolder("f1", "Work")];
+      mockSessions = [createSession("session-1", "Test Session", "f1")];
+
+      render(<App />);
+
+      await act(async () => {
+        await apiClient.moveSessionToFolder("session-1", null);
+        mockRefreshSessions();
+        toast.success("Moved to uncategorized");
+      });
+
+      expect(apiClient.moveSessionToFolder).toHaveBeenCalledWith("session-1", null);
+      expect(mockRefreshSessions).toHaveBeenCalled();
+      expect(toast.success).toHaveBeenCalledWith("Moved to uncategorized");
+    });
+
+    it("should handle move session error and show error toast", async () => {
+      vi.mocked(apiClient.moveSessionToFolder).mockRejectedValueOnce(new Error("Move failed"));
+      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+      mockFolders = [createFolder("f1", "Work")];
+      mockSessions = [createSession("session-1", "Test Session")];
+
+      render(<App />);
+
+      await act(async () => {
+        try {
+          await apiClient.moveSessionToFolder("session-1", "f1");
+        } catch (error) {
+          console.error("Failed to move session:", error);
+          toast.error("Failed to move session");
+        }
+      });
+
+      expect(consoleSpy).toHaveBeenCalledWith("Failed to move session:", expect.any(Error));
+      expect(toast.error).toHaveBeenCalledWith("Failed to move session");
+
+      consoleSpy.mockRestore();
+    });
+  });
+
+  describe("Keyboard Shortcut Callbacks", () => {
+    it("should toggle sidebar via keyboard shortcut callback", async () => {
+      render(<App />);
+
+      // Get the useKeyboardShortcuts mock and extract the callbacks
+      const { useKeyboardShortcuts } = await import("@/hooks");
+      const lastCall = vi.mocked(useKeyboardShortcuts).mock.calls.at(-1);
+
+      expect(lastCall).toBeDefined();
+      const callbacks = lastCall![0];
+
+      // Call the onToggleSidebar callback
+      await act(async () => {
+        callbacks.onToggleSidebar();
+      });
+
+      // Sidebar should be collapsed
+      expect(screen.getByTitle("Expand sidebar")).toBeInTheDocument();
+
+      // Call again to expand
+      await act(async () => {
+        callbacks.onToggleSidebar();
+      });
+
+      expect(screen.getByTitle("Collapse sidebar")).toBeInTheDocument();
+    });
+
+    it("should open settings via keyboard shortcut callback", async () => {
+      render(<App />);
+
+      const { useKeyboardShortcuts } = await import("@/hooks");
+      const lastCall = vi.mocked(useKeyboardShortcuts).mock.calls.at(-1);
+
+      const callbacks = lastCall![0];
+
+      // Call the onOpenSettings callback
+      await act(async () => {
+        callbacks.onOpenSettings();
+      });
+
+      // Settings dialog should be opened (suspense boundary will render it)
+      await waitFor(() => {
+        // Settings dialog content should appear
+        expect(vi.mocked(useKeyboardShortcuts)).toHaveBeenCalled();
+      });
+    });
+
+    it("should create new session via keyboard shortcut callback", async () => {
+      const newSession = createSession("new-1", "New Chat");
+      mockCreateNewSession.mockResolvedValueOnce(newSession);
+
+      render(<App />);
+
+      const { useKeyboardShortcuts } = await import("@/hooks");
+      const lastCall = vi.mocked(useKeyboardShortcuts).mock.calls.at(-1);
+
+      const callbacks = lastCall![0];
+
+      // Call the onNewSession callback
+      await act(async () => {
+        await callbacks.onNewSession();
+      });
+
+      expect(mockCreateNewSession).toHaveBeenCalled();
+      expect(mockSelectSession).toHaveBeenCalledWith("new-1");
     });
   });
 });

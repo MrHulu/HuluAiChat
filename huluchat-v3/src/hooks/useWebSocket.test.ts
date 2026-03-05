@@ -304,8 +304,9 @@ describe("useWebSocket hook", () => {
     const ws = MockWebSocket.instances[0];
     if (ws?.onclose) {
       ws.readyState = MockWebSocket.CLOSED;
+      const oncloseHandler = ws.onclose;
       act(() => {
-        ws.onclose();
+        oncloseHandler();
       });
     }
 
@@ -343,8 +344,9 @@ describe("useWebSocket hook", () => {
     // Close the connection
     if (ws?.onclose) {
       ws.readyState = MockWebSocket.CLOSED;
+      const oncloseHandler = ws.onclose;
       act(() => {
-        ws.onclose();
+        oncloseHandler();
       });
     }
 
@@ -390,8 +392,9 @@ describe("useWebSocket hook", () => {
     // Trigger a close that would normally cause reconnect
     const ws = MockWebSocket.instances[0];
     if (ws?.onclose) {
+      const oncloseHandler = ws.onclose;
       act(() => {
-        ws.onclose();
+        oncloseHandler();
       });
     }
 

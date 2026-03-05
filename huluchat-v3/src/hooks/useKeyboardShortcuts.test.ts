@@ -6,14 +6,14 @@ import { renderHook } from "@testing-library/react";
 import { useKeyboardShortcuts, KEYBOARD_SHORTCUTS } from "./useKeyboardShortcuts";
 
 describe("useKeyboardShortcuts hook", () => {
-  let onNewSession: ReturnType<typeof vi.fn>;
-  let onToggleSidebar: ReturnType<typeof vi.fn>;
-  let onOpenSettings: ReturnType<typeof vi.fn>;
+  let onNewSession: () => void;
+  let onToggleSidebar: () => void;
+  let onOpenSettings: () => void;
 
   beforeEach(() => {
-    onNewSession = vi.fn();
-    onToggleSidebar = vi.fn();
-    onOpenSettings = vi.fn();
+    onNewSession = vi.fn() as () => void;
+    onToggleSidebar = vi.fn() as () => void;
+    onOpenSettings = vi.fn() as () => void;
     vi.clearAllMocks();
   });
 
