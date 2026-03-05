@@ -39,6 +39,11 @@ export const supportedLanguages = [
   { code: 'ro', name: 'Romanian', nativeName: 'Română' },
   { code: 'uk', name: 'Ukrainian', nativeName: 'Українська' },
   { code: 'he', name: 'Hebrew', nativeName: 'עברית' },
+  { code: 'ms', name: 'Malay', nativeName: 'Bahasa Melayu' },
+  { code: 'bn', name: 'Bengali', nativeName: 'বাংলা' },
+  { code: 'ur', name: 'Urdu', nativeName: 'اردو' },
+  { code: 'fa', name: 'Persian', nativeName: 'فارسی' },
+  { code: 'sw', name: 'Swahili', nativeName: 'Kiswahili' },
 ] as const;
 
 export type LanguageCode = typeof supportedLanguages[number]['code'];

@@ -1,6 +1,6 @@
 [package]
 name = "huluchat-v3"
-version = "3.24.0"
+version = "3.25.0"
 description = "HuluChat - AI Chat Desktop Application"
 authors = ["you"]
 edition = "2021"
