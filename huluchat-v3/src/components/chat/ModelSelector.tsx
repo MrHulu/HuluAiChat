@@ -4,6 +4,7 @@
  * 支持 Cloud (OpenAI) 和 Local (Ollama) 模型分组
  */
 import { Check, Loader2, Server, Cloud } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -52,6 +53,7 @@ export function ModelSelector({
   ollamaAvailable = false,
   ollamaModels: _ollamaModels = [],
 }: ModelSelectorProps) {
+  const { t } = useTranslation();
   // _ollamaModels is kept for API compatibility but not used internally
   void _ollamaModels;
   const currentModel = models.find((m) => m.id === value);
@@ -95,7 +97,7 @@ export function ModelSelector({
             {showGroupHeaders && (
               <DropdownMenuLabel className="flex items-center gap-2 text-xs">
                 <Cloud className="h-3 w-3" />
-                Cloud Models
+                {t("modelSelector.cloudModels")}
               </DropdownMenuLabel>
             )}
             <DropdownMenuGroup>
@@ -130,7 +132,7 @@ export function ModelSelector({
             {showGroupHeaders && (
               <DropdownMenuLabel className="flex items-center gap-2 text-xs">
                 <Server className="h-3 w-3" />
-                Local Models (Ollama)
+                {t("modelSelector.localModels")}
               </DropdownMenuLabel>
             )}
             <DropdownMenuGroup>
@@ -156,8 +158,8 @@ export function ModelSelector({
               ) : (
                 <div className="px-2 py-3 text-sm text-muted-foreground text-center">
                   <Server className="h-4 w-4 mx-auto mb-1 opacity-50" />
-                  <p className="mb-1">Ollama 离线</p>
-                  <p className="text-xs">请确保 Ollama 服务运行中</p>
+                  <p className="mb-1">{t("modelSelector.ollamaOffline")}</p>
+                  <p className="text-xs">{t("modelSelector.ollamaHint")}</p>
                 </div>
               )}
             </DropdownMenuGroup>
