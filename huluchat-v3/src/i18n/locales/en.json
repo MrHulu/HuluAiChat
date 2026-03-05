@@ -155,5 +155,16 @@
       "translation": "Translation",
       "custom": "Custom"
     }
+  },
+  "app": {
+    "deleteConfirm": "Are you sure you want to delete this conversation?",
+    "exportSuccess": "Exported as {{format}}",
+    "exportFailed": "Failed to export session",
+    "folderCreated": "Created folder \"{{name}}\"",
+    "folderRenamed": "Renamed folder to \"{{name}}\"",
+    "deleteFolderConfirm": "Delete folder \"{{name}}\"? Sessions will be moved to uncategorized.",
+    "folderDeleted": "Deleted folder \"{{name}}\"",
+    "movedTo": "Moved to {{name}}",
+    "moveFailed": "Failed to move session"
   }
 }
