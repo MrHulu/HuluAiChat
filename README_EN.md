@@ -1,7 +1,7 @@
 # 🍵 HuluChat
 
 > **Minimal, Cross-Platform AI Chat Desktop App**
-> Quick model switching between GPT-4, Claude, Gemini and organized folder management
+> Quick model switching between GPT-4, Claude, Gemini, organized folder management, and 18 languages
 
 English | [中文](README.md)
 
@@ -26,6 +26,9 @@ Full keyboard shortcut support for faster workflow.
 
 ### 🌙 Dark Mode
 Carefully designed dark theme to protect your eyes.
+
+### 🌐 Multi-Language Support
+18 languages: English, 中文, 日本語, 한국어, Español, Français, Deutsch, Português, Italiano, Русский, العربية, Nederlands, Polski, Türkçe, हिन्दी, Tiếng Việt, ไทย, Bahasa Indonesia
 
 ### ⚡ Auto-Update
 Always stay up to date without manual downloads.
@@ -177,8 +180,10 @@ huluchat-v3/
 
 See full changelog: [docs/changelog.md](docs/changelog.md)
 
-### Latest v3.8.0 (2026-03-04)
+### Latest v3.22.0 (2026-03-06)
 
+- 🌐 18 languages - Covers 65% of global users
+- ⚡ i18n lazy loading - 94% smaller initial load
 - 🤖 Quick model switching - Switch between models in one click
 - 📁 Session folders - Organize chats with folders
 - 🔄 GitHub Actions CI/CD - Multi-platform builds
