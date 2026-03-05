@@ -8,6 +8,8 @@ import { ModelSelector } from "./ModelSelector";
 import { useChat, useModel } from "@/hooks";
 import { ConnectionStatus } from "@/hooks/useWebSocket";
 import { cn } from "@/lib/utils";
+import { updateMessage } from "@/api/client";
+import { toast } from "sonner";
 
 export interface ChatViewProps {
   sessionId: string | null;
@@ -32,7 +34,7 @@ function ConnectionIndicator({ status }: { status: ConnectionStatus }) {
 }
 
 export function ChatView({ sessionId }: ChatViewProps) {
-  const { messages, streamingMessage, connectionStatus, sendMessage, isLoading } =
+  const { messages, streamingMessage, connectionStatus, sendMessage, isLoading, refreshMessages } =
     useChat(sessionId);
   const { currentModel, models, setModel, isLoading: isLoadingModels, parameters } = useModel();
 
@@ -40,6 +42,20 @@ export function ChatView({ sessionId }: ChatViewProps) {
 
   const handleSend = (content: string) => {
     sendMessage(content, currentModel, parameters);
+  };
+
+  // 编辑消息处理
+  const handleEditMessage = async (messageId: string, newContent: string) => {
+    if (!sessionId) return;
+
+    try {
+      await updateMessage(sessionId, messageId, newContent);
+      refreshMessages?.();
+      toast.success("Message updated");
+    } catch (error) {
+      console.error("Failed to update message:", error);
+      toast.error("Failed to update message");
+    }
   };
 
   return (
@@ -69,6 +85,7 @@ export function ChatView({ sessionId }: ChatViewProps) {
         messages={messages}
         streamingMessage={streamingMessage}
         isLoading={isLoading}
+        onEditMessage={handleEditMessage}
       />
 
       {/* 输入框 */}

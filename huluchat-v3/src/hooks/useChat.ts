@@ -26,6 +26,7 @@ export interface UseChatReturn {
   sendMessage: (content: string, model?: string, params?: ChatParameters) => void;
   isLoading: boolean;
   isLoadingHistory: boolean;
+  refreshMessages: () => void;
 }
 
 // WebSocket 消息类型
@@ -204,6 +205,13 @@ export function useChat(sessionId: string | null): UseChatReturn {
     [connectionStatus, send, sessionId]
   );
 
+  // 刷新消息列表
+  const refreshMessages = useCallback(() => {
+    if (sessionId) {
+      loadHistory(sessionId);
+    }
+  }, [sessionId, loadHistory]);
+
   return {
     messages,
     streamingMessage,
@@ -211,5 +219,6 @@ export function useChat(sessionId: string | null): UseChatReturn {
     sendMessage,
     isLoading,
     isLoadingHistory,
+    refreshMessages,
   };
 }
