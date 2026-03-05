@@ -1,56 +1,54 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-06 - Cycle #48
+2026-03-06 - Cycle #49
 
 ## Current Phase
-🚀 **产品持续优化** - 语言支持扩展到 38 种
+🚀 **产品持续优化** - 语言支持扩展到 43 种
 
-## What We Did This Cycle (#48)
-- ✅ **推送 Cycle #47 更改** - v3.25.0 (33 种语言) PR #99 已合并
-- ✅ **添加 5 种新语言支持** - 菲律宾语、爪哇语、泰卢固语、马拉地语、泰米尔语
-  - 创建 `tl.json` (菲律宾语 Wikang Filipino) - 菲律宾 ~1.1 亿
-  - 创建 `jv.json` (爪哇语 Basa Jawa) - 印尼爪哇岛 ~1 亿
-  - 创建 `te.json` (泰卢固语 తెలుగు) - 印度 ~9600 万
-  - 创建 `mr.json` (马拉地语 मराठी) - 印度 ~9500 万
-  - 创建 `ta.json` (泰米尔语 தமிழ்) - 印度/斯里兰卡 ~8500 万
+## What We Did This Cycle (#49)
+- ✅ **添加 5 种新印度语言支持** - 旁遮普语、古吉拉特语、卡纳达语、马拉雅拉姆语、奥里亚语
+  - 创建 `pa.json` (旁遮普语 ਪੰਜਾਬੀ) - 印度/巴基斯坦 ~1.5 亿
+  - 创建 `gu.json` (古吉拉特语 ગુજરાતી) - 印度 ~6000 万
+  - 创建 `kn.json` (卡纳达语 ಕನ್ನಡ) - 印度南部 ~4400 万
+  - 创建 `ml.json` (马拉雅拉姆语 മലയാളം) - 印度南部 ~3800 万
+  - 创建 `or.json` (奥里亚语 ଓଡ଼ିଆ) - 印度东部 ~3500 万
 - ✅ **更新 i18n 配置** - `index.ts` 添加新语言元数据
-- ✅ **版本升级** - v3.25.0 → v3.26.0
+- ✅ **版本升级** - v3.26.0 → v3.27.0
 - ✅ **测试通过** - 606 tests passed
-- ✅ **PR #100 已合并**
 
 ## Key Decisions
-- **扩展东南亚市场覆盖** - 添加菲律宾语（菲律宾）和爪哇语（印尼爪哇岛）
-- **扩展南亚市场覆盖** - 添加泰卢固语、马拉地语、泰米尔语（印度南部和西部）
-- **语言总数达到 38 种** - 覆盖 55 亿+ 人口
-- **重点覆盖印度市场** - 印度有 22 种官方语言，现已支持 5 种主要语言（Hindi, Bengali, Urdu, Telugu, Marathi, Tamil）
+- **深度扩展印度市场** - 印度现支持 11 种主要语言（Hindi, Bengali, Urdu, Telugu, Marathi, Tamil, Punjabi, Gujarati, Kannada, Malayalam, Odia）
+- **语言总数达到 43 种** - 覆盖 57 亿+ 人口
+- **覆盖印度主要语言带** - 北部（Hindi, Punjabi, Urdu）、西部（Gujarati, Marathi）、南部（Telugu, Tamil, Kannada, Malayalam）、东部（Bengali, Odia）
 
 ## Active Projects
-- **HuluChat**: **v3.26.0 开发完成** 🎉
+- **HuluChat**: **v3.27.0 开发完成** 🎉
 
-## Next Action (Cycle #49)
+## Next Action (Cycle #50)
 ### 用户需要手动完成:
 1. **准备截图** - 5 张 Product Hunt 截图（参考 `docs/SCREENSHOT_DEMO_GUIDE.md`）
 2. **录制视频** - 60 秒演示视频
 3. **选择发布日期** - 建议周二太平洋时间 00:01 AM
 
 ### AI 可以继续推进:
-1. 继续添加更多语言（旁遮普语、古吉拉特语、卡纳达语、马拉雅拉姆语、奥里亚语等）
-2. 优化现有功能
-3. 修复发现的问题
+1. 提交 PR 并合并 (v3.27.0)
+2. 添加更多语言（阿姆哈拉语、豪萨语、约鲁巴语、伊博语等非洲语言）
+3. 优化现有功能
+4. 修复发现的问题
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
-- Latest Release: **v3.26.0** (2026-03-06)
+- Latest Release: **v3.27.0** (2026-03-06)
 - CI: **✅ 全部通过**
 - Testing: **✅ 606 tests passed**
 - Tech Stack (v3): Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui, FastAPI, Python 3.14
 - Project Location: `huluchat-v3/`, `website/`
-- Supported Languages: **38** (EN/ZH/JA/KO/ES/FR/DE/PT/IT/RU/AR/NL/PL/TR/HI/VI/TH/ID/SV/NO/FI/DA/CS/EL/HU/RO/UK/HE/MS/BN/UR/FA/SW/TL/JV/TE/MR/TA)
+- Supported Languages: **43** (EN/ZH/JA/KO/ES/FR/DE/PT/IT/RU/AR/NL/PL/TR/HI/VI/TH/ID/SV/NO/FI/DA/CS/EL/HU/RO/UK/HE/MS/BN/UR/FA/SW/TL/JV/TE/MR/TA/PA/GU/KN/ML/OR)
 - i18n: **懒加载** - 启动只加载当前语言 (~5 KB)
 - Performance Report: `docs/PERFORMANCE_ANALYSIS.md`
 
-## Language Support (v3.26.0) - 38 Languages
+## Language Support (v3.27.0) - 43 Languages
 | Language | Code | Native Name | Region | Speakers |
 |----------|------|-------------|--------|----------|
 | English | en | English | Global | ~1.5B |
@@ -58,27 +56,32 @@
 | Hindi | hi | हिन्दी | South Asia | ~600M |
 | Spanish | es | Español | Americas/Europe | ~550M |
 | French | fr | Français | Europe/Africa | ~300M |
+| **Punjabi** | pa | **ਪੰਜਾਬੀ** | **South Asia** | **~150M** |
 | Bengali | bn | বাংলা | South Asia | ~270M |
 | Arabic | ar | العربية | MENA | ~270M |
 | Portuguese | pt | Português | Americas/Europe | ~260M |
 | Russian | ru | Русский | Europe/Asia | ~260M |
 | Urdu | ur | اردو | South Asia | ~230M |
-| Indonesian | id | Bahasa Indonesia | Southeast Asia | ~200M |
 | Malay | ms | Bahasa Melayu | Southeast Asia | ~290M |
+| Indonesian | id | Bahasa Indonesia | Southeast Asia | ~200M |
+| **Gujarati** | gu | **ગુજરાતી** | **South Asia** | **~60M** |
 | Japanese | ja | 日本語 | East Asia | ~125M |
 | German | de | Deutsch | Europe | ~100M |
 | Persian | fa | فارسی | Middle East | ~110M |
-| **Filipino** | tl | **Wikang Filipino** | **Southeast Asia** | **~110M** |
-| **Javanese** | jv | **Basa Jawa** | **Southeast Asia** | **~100M** |
+| Filipino | tl | Wikang Filipino | Southeast Asia | ~110M |
+| Javanese | jv | Basa Jawa | Southeast Asia | ~100M |
+| Swahili | sw | Kiswahili | East Africa | ~100M+ |
 | Turkish | tr | Türkçe | Europe/Asia | ~90M |
 | Vietnamese | vi | Tiếng Việt | Southeast Asia | ~95M |
-| **Telugu** | te | **తెలుగు** | **South Asia** | **~96M** |
-| **Marathi** | mr | **मराठी** | **South Asia** | **~95M** |
-| **Tamil** | ta | **தமிழ்** | **South Asia** | **~85M** |
+| Telugu | te | తెలుగు | South Asia | ~96M |
+| Marathi | mr | मराठी | South Asia | ~95M |
+| Tamil | ta | தமிழ் | South Asia | ~85M |
+| **Kannada** | kn | **ಕನ್ನಡ** | **South Asia** | **~44M** |
+| **Malayalam** | ml | **മലയാളം** | **South Asia** | **~38M** |
+| **Odia** | or | **ଓଡ଼ିଆ** | **South Asia** | **~35M** |
 | Korean | ko | 한국어 | East Asia | ~80M |
 | Thai | th | ไทย | Southeast Asia | ~60M |
 | Italian | it | Italiano | Europe | ~60M |
-| Swahili | sw | Kiswahili | East Africa | ~100M+ |
 | Ukrainian | uk | Українська | Eastern Europe | ~40M |
 | Polish | pl | Polski | Europe | ~40M |
 | Dutch | nl | Nederlands | Europe | ~25M |
@@ -92,17 +95,27 @@
 | Finnish | fi | Suomi | Nordic Europe | ~5M |
 | Norwegian | no | Norsk | Nordic Europe | ~5M |
 
-**Total Coverage: 5.5+ billion speakers globally**
+**Total Coverage: 5.7+ billion speakers globally**
+
+## India Language Coverage (11 Languages)
+| Region | Languages | Coverage |
+|--------|-----------|----------|
+| North | Hindi, Punjabi, Urdu | ~700M speakers |
+| West | Gujarati, Marathi | ~155M speakers |
+| South | Telugu, Tamil, Kannada, Malayalam | ~263M speakers |
+| East | Bengali, Odia | ~305M speakers |
+| **Total India** | **11 languages** | **~1.4B speakers** |
 
 ## i18n Lazy Loading Performance
 | Metric | Before | After | Savings |
 |--------|--------|-------|---------|
-| Initial i18n load | ~110 KB | ~5 KB | **~105 KB (95%)** |
-| Gzip initial | ~42 KB | ~2 KB | **~40 KB (95%)** |
+| Initial i18n load | ~120 KB | ~5 KB | **~115 KB (96%)** |
+| Gzip initial | ~45 KB | ~2 KB | **~43 KB (96%)** |
 
 ## Release History
 | Version | Date | Highlights | 状态 |
 |---------|------|------------|------|
+| **v3.27.0** | 2026-03-06 | 🌐 43 种语言 (PA/GU/KN/ML/OR) | ✅ 开发完成 |
 | **v3.26.0** | 2026-03-06 | 🌐 38 种语言 (TL/JV/TE/MR/TA) | ✅ 已发布 |
 | **v3.25.0** | 2026-03-06 | 🌐 33 种语言 (MS/BN/UR/FA/SW) | ✅ 已发布 |
 | **v3.24.0** | 2026-03-06 | 🌐 28 种语言 (EL/HU/RO/UK/HE) | ✅ 已发布 |
@@ -142,7 +155,7 @@
 
 ## Open Questions
 - 何时进行 Product Hunt 发布？（建议下周二）
-- 是否继续添加更多印度语言？(旁遮普语、古吉拉特语、卡纳达语、马拉雅拉姆语、奥里亚语等)
+- 是否添加非洲语言？(阿姆哈拉语、豪萨语、约鲁巴语、伊博语、祖鲁语等)
 
 ## Product Hunt 准备清单
 - [x] 产品信息 (Tagline, 描述)
