@@ -1,304 +1,227 @@
 # 🍵 HuluChat
 
-> 轻量桌面 AI 聊天应用：多模型切换、流式对话、本地历史、可打包分发。  
-> [English](README_EN.md) | 中文
+> **极简、跨平台 AI 聊天桌面应用**
+> 支持 GPT-4、Claude、Gemini 等多模型快速切换，会话分组管理
+
+[English](README_EN.md) | 中文
 
 ---
 
-## 📑 目录
+## ✨ 功能亮点
 
-- [🍵 HuluChat](#-huluchat)
-  - [📑 目录](#-目录)
-  - [✨ 特性](#-特性)
-  - [📚 文档](#-文档)
-  - [🏗️ 项目结构](#️-项目结构)
-  - [📐 架构与流程](#-架构与流程)
-    - [整体架构](#整体架构)
-    - [发送消息流程（流式）](#发送消息流程流式)
-    - [数据与配置流向](#数据与配置流向)
-  - [🚀 快速开始](#-快速开始)
-    - [环境要求](#环境要求)
-    - [运行开发环境](#运行开发环境)
-  - [📦 打包分发](#-打包分发)
-  - [📂 配置与数据](#-配置与数据)
-  - [🔮 未来计划](#-未来计划)
-  - [📋 更新日志](#-更新日志)
-  - [📄 许可证](#-许可证)
+### 🤖 多模型支持
+一键切换 GPT-4、Claude、Gemini 等 OpenAI 兼容 API，无需切换应用。
 
----
+### 📁 会话分组管理
+用文件夹整理你的对话历史，保持井井有条。
 
-## ✨ 特性
+### 🔍 全局搜索
+快速搜索所有对话内容，支持实时高亮匹配。
 
-- **多模型接入与切换**：支持任意 OpenAI 兼容 API（Base URL + API Key + Model ID），可配置多个 Provider 并随时切换。
-- **流式对话**：回复逐字输出，体验更流畅。
-- **本地持久化**：会话与消息存储在本地 SQLite，隐私可控。
-- **主题与布局**：亮色/暗色主题，侧边栏可折叠。
-- **可分发 exe**：支持 PyInstaller 打包为 Windows 单文件 exe，配置与数据仍存用户目录。
+### 📤 多格式导出
+支持 Markdown、JSON、TXT 三种格式导出，便于备份与分享。
+
+### ⌨️ 高效快捷键
+完整的键盘快捷键支持，让你的操作更高效。
+
+### 🌙 深色模式
+精心设计的深色主题，保护你的眼睛。
+
+### ⚡ 自动更新
+永远保持最新版本，无需手动下载。
 
 ---
 
-## 📚 文档
+## 📸 应用截图
 
-| 文档 | 说明 |
-|------|------|
-| [📖 用户指南](docs/USER_GUIDE.md) | 详细的使用说明，包含功能介绍、快捷键、常见问题 |
-| [🔑 API 配置指南](docs/API_SETUP.md) | 如何获取和配置 OpenAI、DeepSeek、Azure 等 API |
+<!-- 截图占位符 - 需要用户手动添加实际截图 -->
 
----
+| 主界面 | 会话分组 | 模型切换 |
+|:---:|:---:|:---:|
+| ![主界面](docs/screenshots/01-hero-main-interface.png) | ![文件夹](docs/screenshots/02-session-folders.png) | ![模型切换](docs/screenshots/03-model-switching.png) |
 
-## 🏗️ 项目结构
-
-```
-HuluChat/
-├── main.py                 # 🚪 启动入口（供直接运行与 PyInstaller 使用）
-├── requirements.txt        # 📋 Python 依赖
-├── HuluChat.spec           # 📦 PyInstaller 打包配置
-├── LICENSE                 # 📄 许可证
-│
-├── src/                    # 应用源码
-│   ├── main.py             # 应用入口：组装 Config / Persistence / Chat / AppService / UI
-│   ├── app_data.py         # 应用数据目录（跨平台路径：APPDATA / XDG / Library）
-│   ├── logging_config.py   # 日志配置
-│   │
-│   ├── app/                # 应用/用例层
-│   │   └── service.py      # AppService：编排发消息、会话、配置、主题（不依赖 UI）
-│   │
-│   ├── chat/               # 对话层
-│   │   ├── client.py       # ChatClient 抽象、StreamChunk/TextChunk/DoneChunk/ChatError
-│   │   └── openai_client.py # OpenAI 兼容流式实现（OpenHuluChatClient）
-│   │
-│   ├── config/             # 配置层
-│   │   ├── models.py       # AppConfig、Provider、序列化
-│   │   └── store.py        # ConfigStore 抽象与 JsonConfigStore 实现
-│   │
-│   ├── persistence/        # 持久化层
-│   │   ├── db.py           # SQLite 初始化与建表（session / message）
-│   │   ├── models.py       # Session、Message 数据模型
-│   │   ├── session_repo.py # 会话 CRUD
-│   │   └── message_repo.py # 消息追加与按会话查询
-│   │
-│   └── ui/                 # 界面层
-│       ├── main_window.py  # 主窗口：侧边栏、对话区、输入区、模型切换、设置入口
-│       ├── settings.py     # 设置弹窗：Provider 列表、主题、侧边栏状态
-│       ├── settings_validation.py  # 名称/URL/Model/API Key 校验
-│       └── settings_constants.py   # 设置界面常量
-│
-├── .cursor/                # Cursor 编辑器相关（规则、技能等），可忽略
-└── openspec/               # OpenSpec 规范与变更（设计/任务等），可忽略
-```
-
-- **根目录**：`main.py` 为入口；`requirements.txt`、`HuluChat.spec` 用于依赖与打包。
-- **src**：核心逻辑与 UI。`app` 负责用例编排，`chat` 负责流式 API 调用，`config`/`persistence` 负责配置与数据库，`ui` 负责 CustomTkinter 界面。
-
----
-
-## 📐 架构与流程
-
-### 整体架构
-
-```mermaid
-flowchart TB
-    subgraph UI["🖥️ UI 层"]
-        MainWindow["MainWindow\n主窗口"]
-        Settings["Settings\n设置弹窗"]
-    end
-
-    subgraph App["📦 应用层"]
-        AppService["AppService\n会话/发消息/配置/主题"]
-    end
-
-    subgraph Infra["🔧 基础设施"]
-        ConfigStore["ConfigStore\nconfig.json"]
-        SessionRepo["SessionRepository\n会话 CRUD"]
-        MessageRepo["MessageRepository\n消息 CRUD"]
-        ChatClient["ChatClient\n流式 API"]
-    end
-
-    MainWindow --> AppService
-    Settings --> AppService
-    AppService --> ConfigStore
-    AppService --> SessionRepo
-    AppService --> MessageRepo
-    AppService --> ChatClient
-```
-
-### 发送消息流程（流式）
-
-```mermaid
-sequenceDiagram
-    participant U as 用户
-    participant MW as MainWindow
-    participant App as AppService
-    participant Repo as MessageRepo / SessionRepo
-    participant API as OpenHuluChatClient
-
-    U->>MW: 输入并发送
-    MW->>App: send_message(session_id, content, chunk_queue)
-    App->>Repo: 加载会话/历史消息
-    App->>App: 后台线程
-    App->>API: stream_chat(provider, messages, on_chunk)
-    loop 流式
-        API-->>App: on_chunk(TextChunk)
-        App->>App: chunk_queue.put(chunk)
-        MW->>MW: _poll_stream() 取 chunk 更新 UI
-    end
-    API-->>App: on_chunk(DoneChunk)
-    App->>Repo: 写入 user + assistant 消息
-    App->>MW: on_done()
-```
-
-### 数据与配置流向
-
-```mermaid
-flowchart LR
-    subgraph 用户目录
-        config["config.json\nProvider/主题/侧边栏"]
-        db["chat.db\nsession + message"]
-    end
-
-    subgraph 应用
-        JsonConfigStore --> config
-        SqliteSessionRepo --> db
-        SqliteMessageRepo --> db
-    end
-```
+| 搜索功能 | 导出选项 |
+|:---:|:---:|
+| ![搜索](docs/screenshots/04-search-feature.png) | ![导出](docs/screenshots/05-export-feature.png) |
 
 ---
 
 ## 🚀 快速开始
 
+### 下载安装
+
+前往 [Releases](https://github.com/MrHulu/HuluChat/releases) 页面下载最新版本：
+
+| 平台 | 格式 | 说明 |
+|------|------|------|
+| **Windows** | `.msi` / `.exe` | 安装器或便携版 |
+| **macOS** | `.dmg` | Intel 和 Apple Silicon |
+| **Linux** | `.AppImage` / `.deb` | 通用格式 |
+
+### 首次使用
+
+1. 启动应用后，点击**设置**图标
+2. 添加你的 API 配置：
+   - **Base URL**: API 端点（如 `https://api.openai.com/v1`）
+   - **API Key**: 你的密钥
+   - **Model ID**: 模型名称（如 `gpt-4o`）
+3. 开始对话！
+
+### API 配置示例
+
+| Provider | Base URL | Model ID |
+|----------|----------|----------|
+| OpenAI | `https://api.openai.com/v1` | `gpt-4o`, `gpt-4o-mini` |
+| Anthropic | `https://api.anthropic.com/v1` | `claude-sonnet-4-20250514` |
+| DeepSeek | `https://api.deepseek.com/v1` | `deepseek-chat` |
+| Google AI | `https://generativelanguage.googleapis.com/v1beta` | `gemini-2.0-flash` |
+| 本地模型 | `http://localhost:11434/v1` | `llama3` |
+
+---
+
+## ⌨️ 快捷键
+
+| 快捷键 | 功能 |
+|--------|------|
+| `Ctrl/Cmd + N` | 新建会话 |
+| `Ctrl/Cmd + B` | 切换侧边栏 |
+| `Ctrl/Cmd + K` | 打开搜索 |
+| `Ctrl/Cmd + ,` | 打开设置 |
+| `Ctrl/Cmd + /` | 显示快捷键帮助 |
+| `Enter` | 发送消息 |
+| `Shift + Enter` | 换行 |
+
+---
+
+## 🛠️ 技术栈
+
+| 层级 | 技术 |
+|------|------|
+| **桌面框架** | Tauri 2.0 (Rust + 系统 WebView) |
+| **前端** | React 19 + TypeScript |
+| **样式** | Tailwind CSS 4 + shadcn/ui |
+| **后端** | FastAPI (Python) |
+| **数据库** | SQLite |
+| **通信** | HTTP REST + WebSocket |
+| **测试** | Vitest + React Testing Library (94% 覆盖率) |
+
+---
+
+## 🔧 开发指南
+
 ### 环境要求
 
+- Node.js 18+
 - Python 3.10+
-- 依赖：`customtkinter`、`openai`（见 `requirements.txt`）
+- Rust (Tauri CLI)
+- pnpm / npm
 
-### 运行开发环境
-
-1. **安装依赖**
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-2. **启动应用**
-
-   ```bash
-   python main.py
-   ```
-
-   或：
-
-   ```bash
-   python -m src.main
-   ```
-
-3. **首次使用**：未配置任何 Provider 时，请在「设置」中添加模型（Base URL、API Key、Model ID）后再发送消息。
-
----
-
-## 📦 打包分发
-
-### 方式一：使用 NSIS 安装器（推荐）
-
-生成 Windows 安装器（.exe），包含卸载程序和快捷方式：
-
-**要求**：安装 [NSIS](https://nsis.sourceforge.io/Download)
+### 本地开发
 
 ```bash
-# 使用 Make
-make build-installer
+# 克隆仓库
+git clone https://github.com/MrHulu/HuluChat.git
+cd HuluChat/huluchat-v3
 
-# 或使用 PowerShell（Windows）
-.\build.ps1 -Target installer
+# 安装依赖
+npm install
 
-# 或使用批处理脚本（Windows）
-build.bat installer
+# 安装 Python 依赖
+pip install -r ../requirements.txt
+
+# 启动开发环境
+npm run tauri dev
 ```
 
-生成的安装器：`dist/HuluChat-Setup-1.0.1.exe`
-
-### 方式二：单文件 exe
-
-打包为免安装的单文件 exe：
-
-1. 安装 PyInstaller：
-
-   ```bash
-   pip install pyinstaller
-   ```
-
-2. 在项目根目录执行：
-
-   ```bash
-   pyinstaller HuluChat.spec
-
-   # 或使用 Make
-   make build-exe
-
-   # 或使用 PowerShell（Windows）
-   .\build.ps1 -Target exe
-   ```
-
-3. 生成的可执行文件在 `dist/HuluChat.exe`。运行 exe 时，配置与数据库仍使用用户目录，不写入 exe 所在目录。
-
-### 清理构建产物
+### 构建
 
 ```bash
-# 使用 Make
-make clean-build
+# 构建生产版本
+npm run tauri build
+```
 
-# 或使用 PowerShell（Windows）
-.\build.ps1 -Target clean
+### 测试
 
-# 或使用批处理脚本（Windows）
-build.bat clean
+```bash
+# 运行测试
+npm run test:run
+
+# 查看覆盖率
+npm run test:coverage
 ```
 
 ---
 
-## 📂 配置与数据
+## 📁 项目结构
 
-应用使用**应用数据根目录**存放配置与 SQLite 数据库，不依赖进程当前工作目录：
-
-| 系统 | 路径 |
-|------|------|
-| **Windows** | `%APPDATA%/HuluChat` |
-| **Linux** | `$XDG_CONFIG_HOME/HuluChat` 或 `~/.config/HuluChat` |
-| **macOS** | `~/Library/Application Support/HuluChat` |
-
-目录内文件：
-
-- `config.json`：Provider 列表、当前模型、主题、侧边栏展开状态
-- `chat.db`：会话与消息 SQLite 数据库
-
-首次运行时会自动创建该目录。
-
----
-
-## 🔮 未来计划
-
-- **图片上传与多模态**：支持在对话中上传图片，调用视觉模型（如 GPT-4V）进行分析与回复。
-- **更多输入方式**：语音输入、从文件/剪贴板粘贴大段文本等。
-- **导出与备份**：将会话/消息导出为 Markdown 或 JSON，便于备份与迁移。
-- **快捷键与可访问性**：全局快捷键、高对比度与字体大小设置。
-- **插件或扩展**：预留扩展点，便于接入自定义工具或第三方 API。
-
-欢迎提 Issue 或 PR 一起完善。
+```
+huluchat-v3/
+├── src/                    # React 前端源码
+│   ├── components/         # UI 组件
+│   │   ├── chat/          # 聊天相关组件
+│   │   ├── sidebar/       # 侧边栏组件
+│   │   ├── settings/      # 设置对话框
+│   │   ├── keyboard/      # 快捷键帮助
+│   │   └── ui/            # shadcn/ui 基础组件
+│   ├── hooks/             # React Hooks
+│   ├── api/               # API 客户端
+│   └── lib/               # 工具函数
+├── src-tauri/             # Tauri/Rust 后端
+├── backend/               # FastAPI Python 后端
+└── docs/                  # 文档
+```
 
 ---
 
 ## 📋 更新日志
 
-功能变更与修复见 [docs/changlog.md](docs/changlog.md)。
+查看完整更新日志：[docs/changelog.md](docs/changelog.md)
+
+### 最新版本 v3.8.0 (2026-03-04)
+
+- 🤖 AI 模型快速切换 - 一键切换不同模型
+- 📁 会话分组/文件夹 - 用文件夹整理对话
+- 🔄 GitHub Actions CI/CD - 多平台自动构建
+- ⚡ 虚拟列表优化 - 大量消息流畅滚动
+- ⌨️ 快捷键帮助 - 按 `/` 或 `?` 查看
+- 📤 会话导出 - 支持 MD/JSON/TXT
+- 🔍 消息搜索 - 全局搜索 + 高亮
+
+---
+
+## 🤝 贡献
+
+欢迎提交 Issue 和 Pull Request！
+
+1. Fork 本仓库
+2. 创建功能分支 (`git checkout -b feature/amazing-feature`)
+3. 提交更改 (`git commit -m 'Add amazing feature'`)
+4. 推送到分支 (`git push origin feature/amazing-feature`)
+5. 创建 Pull Request
 
 ---
 
 ## 📄 许可证
 
-见 [LICENSE](LICENSE)。
+[MIT License](LICENSE)
+
+---
+
+## 🙏 致谢
+
+- [Tauri](https://tauri.app/) - 现代桌面应用框架
+- [shadcn/ui](https://ui.shadcn.com/) - 精美的 React 组件库
+- [FastAPI](https://fastapi.tiangolo.com/) - 高性能 Python 后端框架
+- [Lucide Icons](https://lucide.dev/) - 美观的图标库
 
 ---
 
 <p align="center">
-  <sub>🍵 HuluChat — 轻量、本地、可打包的桌面 AI 聊天</sub>
+  <sub>🍵 HuluChat — 极简、跨平台、多模型的 AI 聊天桌面应用</sub>
+</p>
+
+<p align="center">
+  <a href="https://github.com/MrHulu/HuluChat/releases">下载</a> ·
+  <a href="https://github.com/MrHulu/HuluChat/issues">反馈</a> ·
+  <a href="https://github.com/MrHulu/HuluChat/stargazers">Star ⭐</a>
 </p>
