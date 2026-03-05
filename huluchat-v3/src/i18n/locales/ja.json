@@ -161,5 +161,28 @@
     "folderDeleted": "フォルダ「{{name}}」を削除しました",
     "movedTo": "{{name}} に移動しました",
     "moveFailed": "セッションの移動に失敗しました"
+  },
+  "sessionItem": {
+    "newChat": "新しい会話",
+    "today": "今日",
+    "yesterday": "昨日",
+    "daysAgo": "{{count}}日前",
+    "exportSession": "セッションをエクスポート",
+    "moveToFolder": "フォルダに移動",
+    "uncategorized": "未分類",
+    "deleteSession": "セッションを削除",
+    "markdown": "Markdown (.md)",
+    "json": "JSON (.json)",
+    "plainText": "プレーンテキスト (.txt)"
+  },
+  "theme": {
+    "toggle": "テーマを切り替え",
+    "light": "ライト",
+    "dark": "ダーク",
+    "system": "システム"
+  },
+  "languageSelector": {
+    "changeLanguage": "言語を変更",
+    "language": "言語"
   }
 }

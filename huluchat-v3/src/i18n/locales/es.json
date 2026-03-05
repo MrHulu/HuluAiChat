@@ -161,5 +161,28 @@
     "folderDeleted": "Carpeta \"{{name}}\" eliminada",
     "movedTo": "Movido a {{name}}",
     "moveFailed": "Error al mover sesión"
+  },
+  "sessionItem": {
+    "newChat": "Nueva conversación",
+    "today": "Hoy",
+    "yesterday": "Ayer",
+    "daysAgo": "Hace {{count}} días",
+    "exportSession": "Exportar sesión",
+    "moveToFolder": "Mover a carpeta",
+    "uncategorized": "Sin categorizar",
+    "deleteSession": "Eliminar sesión",
+    "markdown": "Markdown (.md)",
+    "json": "JSON (.json)",
+    "plainText": "Texto plano (.txt)"
+  },
+  "theme": {
+    "toggle": "Cambiar tema",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Sistema"
+  },
+  "languageSelector": {
+    "changeLanguage": "Cambiar idioma",
+    "language": "Idioma"
   }
 }
