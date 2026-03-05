@@ -377,3 +377,80 @@ export async function testOllamaConnection(): Promise<{ status: string; message:
     return { status: "error", message: "Failed to connect to Ollama" };
   }
 }
+
+// ============== Prompt Templates APIs ==============
+
+/**
+ * Template category type
+ */
+export type TemplateCategory = "writing" | "coding" | "analysis" | "translation" | "custom";
+
+/**
+ * Prompt template interface
+ */
+export interface PromptTemplate {
+  id: string;
+  name: string;
+  content: string;
+  category: TemplateCategory;
+  is_builtin: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * List all templates, optionally filtered by category
+ */
+export async function listTemplates(category?: TemplateCategory): Promise<PromptTemplate[]> {
+  const url = category
+    ? `${API_BASE}/templates/?category=${category}`
+    : `${API_BASE}/templates/`;
+  const response = await fetch(url);
+  return response.json();
+}
+
+/**
+ * Create a new custom template
+ */
+export async function createTemplate(
+  name: string,
+  content: string,
+  category: TemplateCategory = "custom"
+): Promise<PromptTemplate> {
+  const response = await fetch(`${API_BASE}/templates/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, content, category }),
+  });
+  return response.json();
+}
+
+/**
+ * Get a template by ID
+ */
+export async function getTemplate(id: string): Promise<PromptTemplate> {
+  const response = await fetch(`${API_BASE}/templates/${id}`);
+  return response.json();
+}
+
+/**
+ * Update a custom template
+ */
+export async function updateTemplate(
+  id: string,
+  updates: { name?: string; content?: string; category?: TemplateCategory }
+): Promise<PromptTemplate> {
+  const response = await fetch(`${API_BASE}/templates/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(updates),
+  });
+  return response.json();
+}
+
+/**
+ * Delete a custom template
+ */
+export async function deleteTemplate(id: string): Promise<void> {
+  await fetch(`${API_BASE}/templates/${id}`, { method: "DELETE" });
+}
