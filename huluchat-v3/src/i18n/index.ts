@@ -22,6 +22,9 @@ export const supportedLanguages = [
   { code: 'it', name: 'Italian', nativeName: 'Italiano' },
   { code: 'ru', name: 'Russian', nativeName: 'Русский' },
   { code: 'ar', name: 'Arabic', nativeName: 'العربية' },
+  { code: 'nl', name: 'Dutch', nativeName: 'Nederlands' },
+  { code: 'pl', name: 'Polish', nativeName: 'Polski' },
+  { code: 'tr', name: 'Turkish', nativeName: 'Türkçe' },
 ] as const;
 
 export type LanguageCode = typeof supportedLanguages[number]['code'];
