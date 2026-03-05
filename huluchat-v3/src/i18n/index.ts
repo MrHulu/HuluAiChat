@@ -70,6 +70,9 @@ export const supportedLanguages = [
   { code: 'ff', name: 'Fula', nativeName: 'Fulfulde' },
   { code: 'wo', name: 'Wolof', nativeName: 'Wolof' },
   { code: 'kg', name: 'Kikongo', nativeName: 'Kikongo' },
+  { code: 'tn', name: 'Tswana', nativeName: 'Setswana' },
+  { code: 'xh', name: 'Xhosa', nativeName: 'isiXhosa' },
+  { code: 'bm', name: 'Bambara', nativeName: 'Bamanankan' },
 ] as const;
 
 export type LanguageCode = typeof supportedLanguages[number]['code'];

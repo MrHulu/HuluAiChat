@@ -1,0 +1,185 @@
+{
+  "common": {
+    "save": "Lakura",
+    "cancel": "Kɛsi",
+    "delete": "Jɛgɛ",
+    "rename": "Tɔgɔ sɛgɛsɛgɛ",
+    "test": "Sɔrɔdasi",
+    "loading": "Ka dona...",
+    "error": "Nisɔndiya",
+    "success": "Baara ɲɛna"
+  },
+  "sidebar": {
+    "chats": "Kumaw",
+    "newChat": "Kuma Kura",
+    "searchChats": "Kumaw ɲini...",
+    "noResults": "Aw ye fɛn si sɔrɔ",
+    "tryDifferent": "Aw ye kuma wɛrɛw ɲini",
+    "folders": "Foldɛriw",
+    "uncategorized": "Minnu ma ɲɛgɛn",
+    "backToAll": "Ka segin bɛɛ la",
+    "newFolder": "Foldɛri kura",
+    "folderName": "Foldɛri tɔgɔ...",
+    "expandSidebar": "Sidebar baara",
+    "collapseSidebar": "Sidebar dɔgɔya",
+    "deleteFolder": "Foldɛri jɛgɛ",
+    "deleteFolderConfirm": "Aw b'a fɛ ka foldɛri nin jɛgɛ wa? Sɛsɔnw bɛ tɛmɛ ka taa Minnu ma ɲɛgɛn."
+  },
+  "chat": {
+    "you": "Aw yɛrɛ",
+    "ai": "AI",
+    "typeMessage": "Kuma sɛbɛn...",
+    "send": "Ci",
+    "regenerate": "Segi ka kɛ",
+    "copy": "Lakɔpi",
+    "copied": "A lakopira!",
+    "edit": "Yɛlɛma",
+    "saveEdit": "Lakura",
+    "cancelEdit": "Kɛsi",
+    "newChat": "Kuma Kura",
+    "selectTemplate": "Templeti ye",
+    "templates": "Templetiw",
+    "enterToSend": "Enter digi ka ci, Shift+Enter ka sɛbɛn sɔrɔdasi",
+    "editMessage": "Kuma yɛlɛma",
+    "saving": "A bɛ lakura...",
+    "ctrlEnterToSave": "Ctrl+Enter ka lakura, Esc ka kɛsi",
+    "title": "Kuma",
+    "selectSession": "Sɛsɔn ye walima ka dabɔ",
+    "selectSessionToChat": "Sɛsɔn ye ka kuma daminɛ...",
+    "startConversation": "Kumalasɛbɛn daminɛ",
+    "startConversationHint": "Kuma ci ka kuma daminɛ ni AI ye",
+    "thinking": "A bɛ miiri...",
+    "messageUpdated": "Kuma yɛlɛmara",
+    "messageUpdateFailed": "Kuma yɛlɛmali",
+    "connecting": "Ka kuntigilɛ...",
+    "connected": "Kuntigilɛra",
+    "disconnected": "Kuntigilɛbaliya",
+    "connectionError": "Kuntigilɛ Nisɔndiya"
+  },
+  "settings": {
+    "title": "Sɛgɛsɛgɛliw",
+    "description": "API sɛgɛsɛgɛliw ni sugandiliw cilen.",
+    "apiKey": "API Key",
+    "apiKeyPlaceholder": "sk-...",
+    "apiKeySet": "API key sigira. Key kura sɛbɛn ka kura.",
+    "baseUrl": "Base URL (Sugandili)",
+    "baseUrlPlaceholder": "https://api.openai.com/v1",
+    "baseUrlHint": "Bila nɛgɛn na ka API OpenAI default."
+    "model": "Modele",
+    "selectModel": "Modele ye",
+    "modelParameters": "Modele Parametɛriw",
+    "temperature": "Temperati",
+    "temperatureHint": "Dɔgɔ = a kɔrɔ, Ɓɛ = miiri kura",
+    "topP": "Top P",
+    "topPHint": "Nucleus sampling threshold",
+    "maxTokens": "Max Tokens",
+    "maxTokensHint": "AI jaabi bɛɛ yɛrɛ",
+    "connectionSuccessful": "Kuntigilɛ ɲɛra",
+    "connectionFailed": "Kuntigilɛ nana",
+    "settingsSaved": "Sɛgɛsɛgɛliw lakurara",
+    "settingsSaveFailed": "Sɛgɛsɛgɛliw lakuratɛ"
+  },
+  "ollama": {
+    "title": "Ollama (Modelew Lekan)",
+    "download": "Ollama ta",
+    "online": "Ollama Bɛ",
+    "offline": "Ollama Tɛ",
+    "models": "{{count}} modelew lekan",
+    "installedModels": "Modelew minnu sigira:",
+    "testConnection": "Ollama Kuntigilɛ Sɔrɔdasi",
+    "connectionSuccessful": "Ollama kuntigilɛ ɲɛra",
+    "connectionFailed": "Ollama kuntigilɛ nana",
+    "statusRefreshed": "Ollama segi sɛgɛra",
+    "refreshStatus": "Segi sɛgɛ"
+  },
+  "update": {
+    "available": "Yɛlɛma Bɛ",
+    "newVersion": "Version kura ({{version}}) bɛ!",
+    "download": "Ta",
+    "later": "Kɔfɛ",
+    "installing": "Yɛlɛma sigira...",
+    "installed": "Yɛlɛma sigira! Ka daminɛ kura..."
+  },
+  "keyboard": {
+    "title": "Keyboard Shortcutw",
+    "newChat": "Kuma kura",
+    "search": "Kumaw ɲini",
+    "settings": "Sɛgɛsɛgɛliw fila",
+    "toggleSidebar": "Sidebar yɛlɛma",
+    "send": "Kuma ci",
+    "newLine": "Sɛbɛn sɔrɔdasi kuma kɔnɔ",
+    "close": "Takisi da",
+    "showHelp": "Keyboard shortcutw jira",
+    "pressToOpen": "{{key1}} walima {{key2}} digi ka dɛmɛ nin fila waati bɛɛ"
+  },
+  "export": {
+    "title": "Kuma Ci",
+    "markdown": "Markdown (.md)",
+    "json": "JSON (.json)",
+    "text": "Plain Text (.txt)"
+  },
+  "language": {
+    "title": "Kan",
+    "en": "English",
+    "zh": "中文",
+    "ja": "日本語",
+    "ko": "한국어",
+    "es": "Español"
+  },
+  "modelSelector": {
+    "cloudModels": "Cloud Modelew",
+    "localModels": "Lekan Modelew (Ollama)",
+    "ollamaOffline": "Ollama Tɛ",
+    "ollamaHint": "Ollama nafa bɛ baara kɛ wa afi"
+  },
+  "templates": {
+    "title": "Prompt Templetinw",
+    "newTemplate": "+ Templeti Kura",
+    "all": "Bɛɛ",
+    "name": "Tɔgɔ",
+    "namePlaceholder": "Templeti tɔgɔ",
+    "content": "Kɔnɔkow",
+    "contentPlaceholder": "Templeti kɔnɔkow. {variable} baara ka placeholderw kɛ.",
+    "categories": {
+      "writing": "Sɛbɛnni",
+      "coding": "Kodu",
+      "analysis": "Ladilikan",
+      "translation": "Fasɔlɔ",
+      "custom": "A yɛrɛ"
+    }
+  },
+  "app": {
+    "deleteConfirm": "Aw b'a fɛ ka kumalasɛbɛn nin jɛgɛ wa?",
+    "exportSuccess": "A cira i n'a fɔ {{format}}",
+    "exportFailed": "Sɛsɔn citɛ",
+    "folderCreated": "Foldɛri dabɔra \"{{name}}\"",
+    "folderRenamed": "Foldɛri tɔgɔ yɛlɛmara \"{{name}}\"",
+    "deleteFolderConfirm": "Foldɛri \"{{name}}\" jɛgɛ wa? Sɛsɔnw bɛ taa minnu ma ɲɛgɛn.",
+    "folderDeleted": "Foldɛri jɛgɛra \"{{name}}\"",
+    "movedTo": "A tɔɔra {{name}}",
+    "moveFailed": "Sɛsɔn tɔɔtɛ"
+  },
+  "sessionItem": {
+    "newChat": "Kuma Kura",
+    "today": "Bi",
+    "yesterday": "Kunu",
+    "daysAgo": "{{count}} dɔw yɛrɛ",
+    "exportSession": "Sɛsɔn ci",
+    "moveToFolder": "Foldɛri taa",
+    "uncategorized": "Minnu ma ɲɛgɛn",
+    "deleteSession": "Sɛsɔn jɛgɛ",
+    "markdown": "Markdown (.md)",
+    "json": "JSON (.json)",
+    "plainText": "Plain Text (.txt)"
+  },
+  "theme": {
+    "toggle": "Theme yɛlɛma",
+    "light": "Jɛ",
+    "dark": "Suma",
+    "system": "Sistemu"
+  },
+  "languageSelector": {
+    "changeLanguage": "Kan yɛlɛma",
+    "language": "Kan"
+  }
+}

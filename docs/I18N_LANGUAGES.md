@@ -2,7 +2,7 @@
 
 ## Overview
 
-HuluChat supports **59 languages** with lazy loading for optimal performance.
+HuluChat supports **62 languages** with lazy loading for optimal performance.
 
 | Metric | Before | After | Savings |
 |--------|--------|-------|---------|
@@ -79,7 +79,7 @@ HuluChat supports **59 languages** with lazy loading for optimal performance.
 | 5 | Malay | `ms` | Bahasa Melayu | 80M |
 | 6 | Javanese | `jv` | Basa Jawa | 82M |
 
-### Africa (17)
+### Africa (20)
 
 | # | Language | Code | Native Name | Region | Speakers |
 |---|----------|------|-------------|--------|----------|
@@ -100,8 +100,11 @@ HuluChat supports **59 languages** with lazy loading for optimal performance.
 | 15 | Fula | `ff` | Fulfulde | West Africa | 25M |
 | 16 | Wolof | `wo` | Wolof | West Africa | 12M |
 | 17 | Kikongo | `kg` | Kikongo | Central Africa | 7M |
+| 18 | Tswana | `tn` | Setswana | Southern Africa | 8M |
+| 19 | Xhosa | `xh` | isiXhosa | Southern Africa | 19M |
+| 20 | Bambara | `bm` | Bamanankan | West Africa | 15M |
 
-**Total Africa Coverage**: ~600M+ speakers
+**Total Africa Coverage**: ~680M+ speakers
 
 ---
 
@@ -109,14 +112,14 @@ HuluChat supports **59 languages** with lazy loading for optimal performance.
 
 ## Regional Coverage
 
-### 🌍 Africa (17 Languages)
+### 🌍 Africa (20 Languages)
 
 | Region | Languages | Coverage |
 |--------|-----------|----------|
-| West Africa | Hausa, Yoruba, Igbo, Fula, Wolof | ~162M speakers |
+| West Africa | Hausa, Yoruba, Igbo, Fula, Wolof, Bambara | ~177M speakers |
 | East Africa | Swahili, Amharic, Somali, Kinyarwanda, Oromo, Tigrinya | ~348M+ speakers |
 | Central Africa | Lingala, Kikongo | ~47M speakers |
-| Southern Africa | Zulu, Afrikaans, Chichewa, Shona | ~46M speakers |
+| Southern Africa | Zulu, Afrikaans, Chichewa, Shona, Tswana, Xhosa | ~73M speakers |
 
 ### 🌏 Asia (19 Languages)
 
@@ -205,7 +208,10 @@ huluchat-v3/src/i18n/
     ├── ti.json           # Tigrinya
     ├── ff.json           # Fula
     ├── wo.json           # Wolof
-    └── kg.json           # Kikongo
+    ├── kg.json           # Kikongo
+    ├── tn.json           # Tswana
+    ├── xh.json           # Xhosa
+    └── bm.json           # Bambara
 ```
 
 ### Lazy Loading
@@ -279,6 +285,7 @@ export const supportedLanguages = [
 
 | Version | Date | Languages Added | Total |
 |---------|------|-----------------|-------|
+| v3.32.0 | 2026-03-06 | Tswana, Xhosa, Bambara (+3) | 62 |
 | v3.31.0 | 2026-03-06 | Oromo, Tigrinya, Fula, Wolof, Kikongo (+5) | 59 |
 | v3.30.0 | 2026-03-06 | Kinyarwanda, Chichewa, Shona (+3) | 54 |
 | v3.29.0 | 2026-03-06 | Somali, Afrikaans, Lingala (+3) | 51 |
@@ -303,4 +310,4 @@ Arabic (`ar`), Hebrew (`he`), and Persian (`fa`) use Right-to-Left text directio
 
 ---
 
-*Last updated: 2026-03-06 (v3.31.0)*
+*Last updated: 2026-03-06 (v3.32.0)*
