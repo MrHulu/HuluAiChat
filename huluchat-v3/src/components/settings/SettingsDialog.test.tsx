@@ -457,7 +457,6 @@ describe("SettingsDialog", () => {
     });
 
     it("should display Ollama connection status", async () => {
-      const user = userEvent.setup();
       mockGetOllamaStatus.mockResolvedValue(defaultOllamaStatus);
 
       render(<SettingsDialog open={true} onOpenChange={vi.fn()} />);

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ChatInput } from "./ChatInput";
 
@@ -148,7 +148,6 @@ describe("ChatInput", () => {
   });
 
   it("should not call onSend when disabled", async () => {
-    const user = userEvent.setup();
     render(<ChatInput onSend={mockOnSend} disabled={true} />);
 
     // Can't type when disabled, but let's test clicking the button
