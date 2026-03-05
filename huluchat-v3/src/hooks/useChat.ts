@@ -13,11 +13,17 @@ export interface StreamingMessage {
   isStreaming: boolean;
 }
 
+export interface ChatParameters {
+  temperature?: number;
+  top_p?: number;
+  max_tokens?: number;
+}
+
 export interface UseChatReturn {
   messages: Message[];
   streamingMessage: StreamingMessage | null;
   connectionStatus: ConnectionStatus;
-  sendMessage: (content: string, model?: string) => void;
+  sendMessage: (content: string, model?: string, params?: ChatParameters) => void;
   isLoading: boolean;
   isLoadingHistory: boolean;
 }
@@ -168,7 +174,7 @@ export function useChat(sessionId: string | null): UseChatReturn {
   }, [sessionId, loadHistory]);
 
   const sendMessage = useCallback(
-    (content: string, model?: string) => {
+    (content: string, model?: string, params?: ChatParameters) => {
       if (!content.trim() || connectionStatus !== "connected") {
         return;
       }
@@ -188,6 +194,9 @@ export function useChat(sessionId: string | null): UseChatReturn {
         type: "message",
         content: content.trim(),
         model: model,
+        temperature: params?.temperature,
+        top_p: params?.top_p,
+        max_tokens: params?.max_tokens,
       });
 
       setIsLoading(true);
