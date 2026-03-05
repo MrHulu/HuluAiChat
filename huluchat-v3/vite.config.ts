@@ -19,21 +19,53 @@ export default defineConfig(async () => ({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
+        // 使用函数形式的 manualChunks 以支持动态导入
+        manualChunks(id) {
+          // i18n 语言文件单独分割，支持懒加载
+          if (id.includes("/i18n/locales/") && id.endsWith(".json")) {
+            const match = id.match(/\/locales\/(\w+)\.json/);
+            if (match) {
+              return `i18n-${match[1]}`;
+            }
+          }
           // React 核心
-          "vendor-react": ["react", "react-dom"],
+          if (id.includes("node_modules/react/") || id.includes("node_modules/react-dom/")) {
+            return "vendor-react";
+          }
           // Markdown 渲染（体积大，单独分割）
-          "vendor-markdown": ["react-markdown", "remark-gfm", "rehype-highlight", "highlight.js"],
+          if (
+            id.includes("node_modules/react-markdown/") ||
+            id.includes("node_modules/remark-gfm/") ||
+            id.includes("node_modules/rehype-highlight/") ||
+            id.includes("node_modules/highlight.js/")
+          ) {
+            return "vendor-markdown";
+          }
           // Radix UI 组件
-          "vendor-radix": [
-            "@radix-ui/react-dialog",
-            "@radix-ui/react-label",
-            "@radix-ui/react-select",
-          ],
+          if (id.includes("node_modules/@radix-ui/")) {
+            return "vendor-radix";
+          }
           // 图标库
-          "vendor-icons": ["lucide-react"],
+          if (id.includes("node_modules/lucide-react/")) {
+            return "vendor-icons";
+          }
+          // i18next 相关
+          if (
+            id.includes("node_modules/i18next/") ||
+            id.includes("node_modules/react-i18next/") ||
+            id.includes("node_modules/i18next-browser-languagedetector/")
+          ) {
+            return "vendor-i18n";
+          }
           // 工具库
-          "vendor-utils": ["clsx", "tailwind-merge", "class-variance-authority"],
+          if (
+            id.includes("node_modules/clsx/") ||
+            id.includes("node_modules/tailwind-merge/") ||
+            id.includes("node_modules/class-variance-authority/")
+          ) {
+            return "vendor-utils";
+          }
+          return undefined;
         },
       },
     },
