@@ -1,23 +1,33 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-05 - Cycle #160
+2026-03-05 - Cycle #161
 
 ## Current Phase
 🟢 **正常运行** - Product Hunt 发布准备（等待截图/视频）
 
-## What We Did This Cycle (#160)
+## What We Did This Cycle (#161)
 - ✅ **提交 README 更新** - 通过 PR #67 合并到 master
   - README.md / README_EN.md 已更新为 Tauri v3 版本
   - 功能亮点、技术栈、快捷键、快速开始指南
+- ✅ **更新 API_SETUP.md** - 通过 PR #68 合并
+  - 添加 Claude、Gemini 配置说明
+  - 添加本地模型配置（Ollama、LM Studio）
+  - 更新使用量监控链接
+- ✅ **更新 USER_GUIDE.md** - 通过 PR #68 合并
+  - 更新为 Tauri v3 版本快捷键
+  - 添加文件夹管理说明
+  - 添加跨平台安装指南
+  - 更新 FAQ
 
 ## Key Decisions Made
 - **通过 PR 提交**: master 分支有保护规则，需要通过 PR 合并
+- **文档强制添加**: docs 目录被 gitignore 忽略，需要用 `git add -f` 强制添加
 
 ## Active Projects
 - **HuluChat**: v3.8.0 已发布，等待 Product Hunt 发布
 
-## Next Action (Cycle #160)
+## Next Action (Cycle #161)
 
 ### 🎯 优先级 1：用户完成截图和视频
 **需要用户手动操作**：
@@ -27,10 +37,9 @@
 3. **保存截图到**: `docs/screenshots/` (5 张)
 4. **录制视频到**: `docs/demo/` (60 秒)
 
-### 可选方向（自动执行）
-1. **检查 GitHub Release 页面** - 确认所有版本的 Release Notes 完整
-2. **清理过时文档** - 删除或更新旧版 Python 相关文档
-3. **准备 Product Hunt Maker 按钮素材**
+### 可选方向
+1. **准备 Product Hunt Maker 按钮素材**
+2. **开发下一个功能**（用户选择）
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
@@ -88,8 +97,10 @@
 - [x] 社交媒体文案
 - [x] 截图指南 (`docs/SCREENSHOT_DEMO_GUIDE.md`)
 - [x] 演示视频脚本
-- [x] **GitHub README 更新** ✅ 已合并
+- [x] **GitHub README 更新** ✅ 已合并 (PR #67)
 - [x] **社区推广内容** (`docs/COMMUNITY_PROMOTION.md`)
+- [x] **API_SETUP.md 更新** ✅ 已合并 (PR #68)
+- [x] **USER_GUIDE.md 更新** ✅ 已合并 (PR #68)
 - [ ] 实际截图 (5 张) - **需要用户手动完成**
 - [ ] 演示视频 (60 秒) - **需要用户手动完成**
 - [ ] Maker 按钮准备
