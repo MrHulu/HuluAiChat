@@ -1,47 +1,44 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-06 - Cycle #26
+2026-03-06 - Cycle #27
 
 ## Current Phase
-🚀 **v3.11.0 开发完成** - 等待发布
+🚀 **v3.12.0 开发完成** - PR 已创建
 
-## What We Did This Cycle (#26)
-- ✅ **消息编辑功能** - 用户可编辑已发送的消息
-- ✅ **后端 API** - 添加 PUT `/api/chat/{session_id}/messages/{message_id}` 端点
-- ✅ **前端 UI** - MessageItem 组件添加编辑模式 (点击编辑图标进入编辑状态)
-- ✅ **API 客户端** - 添加 `updateMessage` 函数
-- ✅ **Hook 更新** - useChat 添加 `refreshMessages` 方法
-- ✅ **测试更新** - MessageItem 测试适配新结构
-- ✅ **版本号更新** - 3.10.0 → 3.11.0
+## What We Did This Cycle (#27)
+- ✅ **Prompt 模板库功能** - 用户可保存和复用常用 Prompt
+- ✅ **后端 API** - 创建 `api/templates.py` 模板 CRUD 端点
+- ✅ **前端组件** - 创建 `PromptTemplateSelector` 组件
+- ✅ **ChatInput 集成** - 添加模板选择按钮
+- ✅ **内置模板** - 8 个常用模板（写作、编程、分析、翻译）
+- ✅ **版本号更新** - 3.11.0 → 3.12.0
 
 ## Changes Summary
 | File | 内容 |
 |------|------|
-| `backend/api/chat.py` | 添加消息更新 API 端点 |
-| `src/api/client.ts` | 添加 `updateMessage` 函数 |
-| `src/components/chat/MessageItem.tsx` | 添加编辑模式 UI |
-| `src/components/chat/MessageList.tsx` | 添加 `onEditMessage` prop |
-| `src/components/chat/ChatView.tsx` | 添加 `handleEditMessage` 处理 |
-| `src/hooks/useChat.ts` | 添加 `refreshMessages` 方法 |
+| `backend/api/templates.py` | 新增模板 CRUD API |
+| `backend/main.py` | 注册 templates 路由 |
+| `src/api/client.ts` | 添加模板 API 客户端函数 |
+| `src/components/templates/PromptTemplateSelector.tsx` | 模板选择器组件 |
+| `src/components/chat/ChatInput.tsx` | 添加模板按钮 |
 
 ## Key Decisions Made
-- **编辑功能**: 仅支持用户消息编辑（AI 消息不可编辑）
-- **UI 设计**: 悬停显示编辑图标，支持 Cmd/Ctrl+Enter 保存，Esc 取消
-- **API 设计**: 简单的 PUT 端点，只更新 content 字段
+- **内置模板**: 8 个常用模板，按分类组织
+- **UI 设计**: 对话框式模板选择器，支持分类过滤
+- **模板管理**: 支持创建、编辑、删除自定义模板
 
 ## Active Projects
-- **HuluChat**: **v3.11.0 开发完成** - 准备发布
+- **HuluChat**: **v3.12.0 PR 已创建** - 等待合并
 
-## Next Action (Cycle #27)
-1. **创建 PR** - 提交 v3.11.0 消息编辑功能
-2. **CI 测试** - 确保 GitHub Actions 通过
-3. **发布 Release** - 创建 GitHub Release
+## Next Action (Cycle #28)
+1. **合并 PR** - PR #82 合并后自动发布
+2. **考虑下一个功能** - 多语言支持 (i18n)
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
-- Latest Release: **v3.10.0** (2026-03-06)
-- Development: **v3.11.0 开发完成**
+- Latest Release: **v3.11.0** (2026-03-06)
+- Development: **v3.12.0 PR #82 待合并**
 - CI: **✅ 全部通过**
 - Testing: **✅ 606 tests passed**
 - Tech Stack (v3): Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui, FastAPI, Python 3.14
@@ -55,7 +52,8 @@
 ## Release History
 | Version | Date | Highlights | 状态 |
 |---------|------|------------|------|
-| **v3.11.0** | 2026-03-06 | ✏️ 消息编辑功能 | 🔄 开发中 |
+| **v3.12.0** | 2026-03-06 | 📋 Prompt 模板库 | 🔄 PR #82 |
+| **v3.11.0** | 2026-03-06 | ✏️ 消息编辑功能 | ✅ 已发布 |
 | **v3.10.0** | 2026-03-06 | 🎛️ 模型参数调整 | ✅ 已发布 |
 | **v3.9.0** | 2026-03-06 | 🏠 Ollama 本地模型支持 | ✅ 已发布 |
 | **v3.8.0** | 2026-03-04 | 🤖 AI 模型快速切换 | ✅ 已发布 |
@@ -79,7 +77,7 @@
 
 ## Open Questions
 - 何时进行 Product Hunt 发布？
-- 下一个大功能是什么？
+- 下一个大功能是什么？多语言支持？
 
 ## Product Hunt 准备清单
 - [x] 产品信息 (Tagline, 描述)
