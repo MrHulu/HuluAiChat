@@ -14,6 +14,11 @@ class Settings(BaseSettings):
     openai_base_url: Optional[str] = None
     openai_model: str = "gpt-4o-mini"
 
+    # Ollama
+    ollama_enabled: bool = True
+    ollama_base_url: str = "http://localhost:11434"
+    ollama_timeout: int = 120
+
     # Server
     host: str = "127.0.0.1"
     port: int = 8765

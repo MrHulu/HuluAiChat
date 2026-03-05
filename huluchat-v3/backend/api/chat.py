@@ -12,9 +12,27 @@ from sqlalchemy import select
 from core.database import get_session as get_db_session
 from models.schemas import MessageModel
 from services.openai_service import openai_service
+from services.ollama_service import ollama_service
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+
+def get_service_for_model(model: Optional[str]):
+    """Get the appropriate service based on model name.
+
+    Args:
+        model: Model identifier (e.g., "gpt-4o", "ollama:llama2", "claude-3-5-sonnet")
+
+    Returns:
+        Service instance (OpenAIService or OllamaService) and cleaned model name
+    """
+    if model and model.startswith("ollama:"):
+        # Use Ollama for models with "ollama:" prefix
+        return ollama_service, model.replace("ollama:", "", 1)
+    else:
+        # Use OpenAI for everything else (including claude-* models)
+        return openai_service, model
 
 
 class ConnectionManager:
@@ -107,30 +125,48 @@ async def chat_websocket(
             # Get conversation history for context
             history = await get_session_messages(db, session_id, limit=20)
 
-            # Check if OpenAI is configured
-            if not openai_service.is_configured():
-                # Fallback: echo mode when not configured
-                await manager.send_json(session_id, {
-                    "type": "stream_chunk",
-                    "content": "⚠️ OpenAI API Key not configured. Please set OPENAI_API_KEY environment variable.\n\n",
-                })
-                await manager.send_json(session_id, {
-                    "type": "stream_chunk",
-                    "content": f"You said: {user_content}",
-                })
-                # Save assistant message
-                await save_message(db, session_id, "assistant",
-                    f"⚠️ OpenAI API Key not configured.\n\nYou said: {user_content}")
-                await manager.send_json(session_id, {
-                    "type": "stream_end",
-                    "session_id": session_id,
-                })
-                continue
+            # Determine which service to use based on model
+            service, model_name = get_service_for_model(request_model)
+            is_ollama = service is ollama_service
+
+            # Check service availability
+            if is_ollama:
+                # Ollama service check
+                if not await ollama_service.is_available():
+                    await manager.send_json(session_id, {
+                        "type": "stream_chunk",
+                        "content": "⚠️ Ollama 服务不可用。请确认 Ollama 正在运行，或切换到 OpenAI 模型。\n\n",
+                    })
+                    await manager.send_json(session_id, {
+                        "type": "stream_end",
+                        "session_id": session_id,
+                    })
+                    continue
+            else:
+                # OpenAI service check
+                if not openai_service.is_configured():
+                    # Fallback: echo mode when not configured
+                    await manager.send_json(session_id, {
+                        "type": "stream_chunk",
+                        "content": "⚠️ OpenAI API Key not configured. Please set OPENAI_API_KEY environment variable.\n\n",
+                    })
+                    await manager.send_json(session_id, {
+                        "type": "stream_chunk",
+                        "content": f"You said: {user_content}",
+                    })
+                    # Save assistant message
+                    await save_message(db, session_id, "assistant",
+                        f"⚠️ OpenAI API Key not configured.\n\nYou said: {user_content}")
+                    await manager.send_json(session_id, {
+                        "type": "stream_end",
+                        "session_id": session_id,
+                    })
+                    continue
 
             # Stream AI response
             full_response = ""
             try:
-                async for chunk in openai_service.stream_chat(history, model=request_model):
+                async for chunk in service.stream_chat(history, model=model_name):
                     if chunk.error:
                         await manager.send_json(session_id, {
                             "type": "error",
