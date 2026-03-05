@@ -74,6 +74,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
   const [ollamaVersion, setOllamaVersion] = useState<string>("");
   const [testingOllama, setTestingOllama] = useState(false);
   const [ollamaTestResult, setOllamaTestResult] = useState<{ success: boolean; message: string } | null>(null);
+  const [refreshingOllama, setRefreshingOllama] = useState(false);
 
   // Load settings on open
   useEffect(() => {
@@ -210,8 +211,13 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
   };
 
   const handleRefreshOllama = async () => {
-    await loadOllamaStatus();
-    toast.success("Ollama 状态已刷新");
+    setRefreshingOllama(true);
+    try {
+      await loadOllamaStatus();
+      toast.success("Ollama 状态已刷新");
+    } finally {
+      setRefreshingOllama(false);
+    }
   };
 
   return (
@@ -420,7 +426,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                   className="h-8 w-8"
                 >
                   <Loader2
-                    className={`h-4 w-4 ${false ? "animate-spin" : ""}`}
+                    className={`h-4 w-4 ${refreshingOllama ? "animate-spin" : ""}`}
                   />
                   <span className="sr-only">刷新状态</span>
                 </Button>
