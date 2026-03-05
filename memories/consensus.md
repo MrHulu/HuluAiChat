@@ -1,31 +1,30 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-05 - Cycle #162
+2026-03-05 - Cycle #165
 
 ## Current Phase
 🟢 **正常运行** - Product Hunt 发布准备（等待截图/视频）
 
-## What We Did This Cycle (#162)
-- ✅ **创建 Maker 按钮指南** - `docs/MAKER_BUTTON.md`
-  - 获取按钮的步骤说明
-  - 添加到 README 和网站的方法
-  - 发布后行动清单
-- 📝 **本地有 6 个未推送的提交**（包括合并提交）
+## What We Did This Cycle (#165)
+- ✅ **提升测试覆盖率** - App.tsx 从 58.75% 提升到 76.25%
+- ✅ **添加 UI 交互测试** - 新增 Delete Folder 和 Move Session to Folder 的 UI 测试
+- ✅ **整体覆盖率提升** - 从 94.05% 提升到 95.88%
+- ⏳ **等待用户完成截图/视频** - 目录仍为空
 
-## Previous Cycle (#161)
-- ✅ **提交 README 更新** - 通过 PR #67 合并到 master
-- ✅ **更新 API_SETUP.md** - 通过 PR #68 合并
-- ✅ **更新 USER_GUIDE.md** - 通过 PR #68 合并
+## Previous Cycle (#164)
+- ✅ **合并 PR #70** - Maker 按钮指南已合并
+- ✅ **同步 master 分支** - 已拉取最新代码
+- ⏳ **等待用户完成截图/视频** - 目录存在但为空
 
 ## Key Decisions Made
 - **通过 PR 提交**: master 分支有保护规则，需要通过 PR 合并
-- **文档强制添加**: docs 目录被 gitignore 忽略，需要用 `git add -f` 强制添加
+- **分支策略**: 创建临时分支推送，然后通过 PR 合并
 
 ## Active Projects
 - **HuluChat**: v3.8.0 已发布，等待 Product Hunt 发布
 
-## Next Action (Cycle #162)
+## Next Action (Cycle #165)
 
 ### 🎯 优先级 1：用户完成截图和视频
 **需要用户手动操作**：
@@ -35,9 +34,10 @@
 3. **保存截图到**: `docs/screenshots/` (5 张)
 4. **录制视频到**: `docs/demo/` (60 秒)
 
-### 可选方向
-1. **推送本地提交到远程** - 6 个提交待推送
-2. **开发下一个功能**（用户选择）
+### 可选方向（等待用户时可以做）
+1. **继续提升测试覆盖率** - App.tsx 目前 76.25%，未覆盖行：58-59, 65-83, 97-99
+2. **开发新功能** - 代码编辑器、多窗口等
+3. **代码重构/优化**
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
@@ -54,8 +54,8 @@
 ## Test Coverage Summary
 | Category | Coverage |
 |----------|----------|
-| **Overall** | **94.05%** |
-| **App.tsx** | **58.75%** |
+| **Overall** | **95.88%** |
+| **App.tsx** | **76.25%** |
 | **API Client** | **100%** |
 | **Hooks** | **99.7%** |
 | **Utils** | **100%** |
@@ -88,7 +88,7 @@
 ## Open Questions
 - 截图/视频完成后，选择 Product Hunt 发布日期？
 - 下一个要开发的功能是什么？
-- App.tsx 覆盖率提升遇到瓶颈（58.75%），内部处理函数需要 E2E 测试或组件 refactoring 才能完全覆盖
+- App.tsx 覆盖率提升到 76.25%，剩余未覆盖行（58-59, 65-83, 97-99）涉及更复杂的交互逻辑
 
 ## Product Hunt 准备清单
 - [x] 产品信息 (Tagline, 描述)
