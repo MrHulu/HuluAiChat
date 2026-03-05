@@ -1,32 +1,50 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-05 - Cycle #156
+2026-03-05 - Cycle #159
 
 ## Current Phase
-🟢 **正常运行** - CI 已修复，项目健康
+🟢 **正常运行** - Product Hunt 发布准备（等待截图/视频）
 
-## What We Did This Cycle (#155-156)
-- ✅ 修复 ESLint 依赖冲突（@eslint/js@9.39.3 匹配 eslint@9）
-- ✅ 修复 TypeScript 类型错误（排除测试文件严格检查）
-- ✅ CI 全部通过（test-frontend, test-backend, build-tauri）
+## What We Did This Cycle (#159)
+- ✅ **重写 GitHub README** - 更新为 Tauri v3 版本，包含：
+  - 功能亮点（多模型、文件夹、搜索、导出等）
+  - 截图展示区（占位符，等待实际截图）
+  - 技术栈说明（Tauri 2.0 + React 19 + FastAPI）
+  - 快速开始指南
+  - 快捷键列表
+  - 开发指南
+- ✅ **重写 README_EN.md** - 英文版同步更新
+- ✅ **创建社区推广内容** (`docs/COMMUNITY_PROMOTION.md`)
+  - Twitter/X 发布内容（4 个版本）
+  - Reddit 发布内容
+  - Hacker News 发布内容
+  - Indie Hackers 发布内容
+  - 发布时机和检查清单
+  - 社区互动指南
 
 ## Key Decisions Made
-- **ESLint 版本**：保持 eslint@9 + @eslint/js@9，而非升级到 eslint@10（避免插件兼容性问题）
-- **TypeScript 策略**：排除 `*.test.ts` 和 `*.test.tsx` 文件的严格类型检查（测试文件使用大量 mock，类型复杂）
+- **README 重写**: 完全替换旧版 Python README，展示 Tauri v3 新架构
+- **截图占位符**: README 中预留截图位置，用户截图后自动显示
+- **多平台推广策略**: 覆盖 Twitter、Reddit (4 个 sub)、HN、Indie Hackers
 
-## Next Action (Cycle #156)
+## Active Projects
+- **HuluChat**: v3.8.0 已发布，等待 Product Hunt 发布
 
-### 🎯 优先级 1：恢复开发工作
-CI 阻塞已解除，可以恢复：
-- Product Hunt 发布材料准备
-- 测试覆盖率提升（当前 94.05%）
-- 新功能开发
+## Next Action (Cycle #159)
+
+### 🎯 优先级 1：用户完成截图和视频
+**需要用户手动操作**：
+
+1. **运行应用**: `cd huluchat-v3 && npm run tauri dev`
+2. **按照指南截图**: 参考 `docs/SCREENSHOT_DEMO_GUIDE.md`
+3. **保存截图到**: `docs/screenshots/` (5 张)
+4. **录制视频到**: `docs/demo/` (60 秒)
 
 ### 可选方向
-1. **Product Hunt 发布**：准备截图、描述、演示视频
-2. **功能开发**：根据用户反馈确定下一个功能
-3. **技术债务**：修复剩余的 lint warnings（21 个）
+1. **提交 README 更新**: `git add . && git commit -m "docs: update README for Tauri v3"`
+2. **创建截图后自动显示**: README 已预留位置
+3. **Product Hunt 发布**: 截图/视频完成后即可发布
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
@@ -75,7 +93,18 @@ CI 阻塞已解除，可以恢复：
 - **轻微**: 无
 
 ## Open Questions
-- Product Hunt 发布时机？
-- 是否需要演示视频？
+- 截图/视频完成后，选择 Product Hunt 发布日期？
 - 下一个要开发的功能是什么？
 - App.tsx 覆盖率提升遇到瓶颈（58.75%），内部处理函数需要 E2E 测试或组件 refactoring 才能完全覆盖
+
+## Product Hunt 准备清单
+- [x] 产品信息 (Tagline, 描述)
+- [x] 社交媒体文案
+- [x] 截图指南 (`docs/SCREENSHOT_DEMO_GUIDE.md`)
+- [x] 演示视频脚本
+- [x] **GitHub README 更新** (本次完成)
+- [x] **社区推广内容** (`docs/COMMUNITY_PROMOTION.md`)
+- [ ] 实际截图 (5 张) - **需要用户手动完成**
+- [ ] 演示视频 (60 秒) - **需要用户手动完成**
+- [ ] Maker 按钮准备
+- [ ] 发布日社区推广
