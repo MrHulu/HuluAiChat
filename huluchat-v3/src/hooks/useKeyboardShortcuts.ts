@@ -107,31 +107,31 @@ export function useKeyboardShortcuts(options: UseKeyboardShortcutsOptions): void
 export const KEYBOARD_SHORTCUTS = [
   {
     key: "Ctrl/Cmd + N",
-    description: "新建会话",
+    descriptionKey: "keyboard.newChat",
     mac: "⌘N",
     windows: "Ctrl+N",
   },
   {
     key: "Ctrl/Cmd + B",
-    description: "切换侧边栏",
+    descriptionKey: "keyboard.toggleSidebar",
     mac: "⌘B",
     windows: "Ctrl+B",
   },
   {
     key: "Ctrl/Cmd + ,",
-    description: "打开设置",
+    descriptionKey: "keyboard.settings",
     mac: "⌘,",
     windows: "Ctrl+,",
   },
   {
     key: "? / F1",
-    description: "显示快捷键帮助",
+    descriptionKey: "keyboard.showHelp",
     mac: "? / F1",
     windows: "? / F1",
   },
   {
     key: "Escape",
-    description: "关闭对话框",
+    descriptionKey: "keyboard.close",
     mac: "Esc",
     windows: "Esc",
   },

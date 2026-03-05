@@ -1,0 +1,118 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "rename": "Rename",
+    "test": "Test",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "sidebar": {
+    "chats": "Chats",
+    "newChat": "New Chat",
+    "searchChats": "Search chats...",
+    "noResults": "No results found",
+    "tryDifferent": "Try a different search term",
+    "folders": "Folders",
+    "uncategorized": "Uncategorized",
+    "backToAll": "Back to all",
+    "newFolder": "New folder",
+    "folderName": "Folder name...",
+    "expandSidebar": "Expand sidebar",
+    "collapseSidebar": "Collapse sidebar",
+    "deleteFolder": "Delete folder",
+    "deleteFolderConfirm": "Are you sure you want to delete this folder? Sessions will be moved to Uncategorized."
+  },
+  "chat": {
+    "you": "You",
+    "ai": "AI",
+    "typeMessage": "Type a message...",
+    "send": "Send",
+    "regenerate": "Regenerate",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "edit": "Edit",
+    "saveEdit": "Save",
+    "cancelEdit": "Cancel",
+    "newChat": "New Chat",
+    "selectTemplate": "Select Template",
+    "templates": "Templates"
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "Configure your API settings and preferences.",
+    "apiKey": "API Key",
+    "apiKeyPlaceholder": "sk-...",
+    "apiKeySet": "API key is set. Enter a new key to update.",
+    "baseUrl": "Base URL (Optional)",
+    "baseUrlPlaceholder": "https://api.openai.com/v1",
+    "baseUrlHint": "Leave empty for default OpenAI API.",
+    "model": "Model",
+    "selectModel": "Select a model",
+    "modelParameters": "Model Parameters",
+    "temperature": "Temperature",
+    "temperatureHint": "Lower = more focused, Higher = more creative",
+    "topP": "Top P",
+    "topPHint": "Nucleus sampling threshold",
+    "maxTokens": "Max Tokens",
+    "maxTokensHint": "Maximum length of AI response",
+    "connectionSuccessful": "Connection successful",
+    "connectionFailed": "Connection failed",
+    "settingsSaved": "Settings saved successfully",
+    "settingsSaveFailed": "Failed to save settings"
+  },
+  "ollama": {
+    "title": "Ollama (Local Models)",
+    "download": "Download Ollama",
+    "online": "Ollama Online",
+    "offline": "Ollama Offline",
+    "models": "{{count}} local models",
+    "installedModels": "Installed models:",
+    "testConnection": "Test Ollama Connection",
+    "connectionSuccessful": "Ollama connection successful",
+    "connectionFailed": "Ollama connection failed",
+    "statusRefreshed": "Ollama status refreshed",
+    "refreshStatus": "Refresh status"
+  },
+  "update": {
+    "available": "Update Available",
+    "newVersion": "A new version ({{version}}) is available!",
+    "download": "Download",
+    "later": "Later",
+    "installing": "Installing update...",
+    "installed": "Update installed! Restarting..."
+  },
+  "keyboard": {
+    "title": "Keyboard Shortcuts",
+    "newChat": "New chat",
+    "search": "Search chats",
+    "settings": "Open settings",
+    "toggleSidebar": "Toggle sidebar",
+    "send": "Send message",
+    "newLine": "New line in message",
+    "close": "Close dialog",
+    "showHelp": "Show keyboard shortcuts",
+    "pressToOpen": "Press {{key1}} or {{key2}} to open this help anytime"
+  },
+  "update": {
+    "checking": "Checking for updates...",
+    "downloading": "Downloading update...",
+    "newVersion": "New version available",
+    "available": "v{{version}} available",
+    "updateNow": "Update Now",
+    "later": "Later"
+  },
+  "export": {
+    "title": "Export Chat",
+    "markdown": "Markdown (.md)",
+    "json": "JSON (.json)",
+    "text": "Plain Text (.txt)"
+  },
+  "language": {
+    "title": "Language",
+    "en": "English",
+    "zh": "中文"
+  }
+}

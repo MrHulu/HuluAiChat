@@ -65,14 +65,14 @@ describe("SessionList", () => {
     it("should show new chat button in collapsed state", () => {
       render(<SessionList {...defaultProps} isCollapsed={true} />);
 
-      expect(screen.getByTitle("New chat")).toBeInTheDocument();
+      expect(screen.getByTitle("New Chat")).toBeInTheDocument();
     });
 
     it("should call onCreateSession when new chat clicked in collapsed state", () => {
       const onCreateSession = vi.fn();
       render(<SessionList {...defaultProps} isCollapsed={true} onCreateSession={onCreateSession} />);
 
-      fireEvent.click(screen.getByTitle("New chat"));
+      fireEvent.click(screen.getByTitle("New Chat"));
       expect(onCreateSession).toHaveBeenCalled();
     });
   });
