@@ -76,6 +76,9 @@ export const supportedLanguages = [
   { code: 'lg', name: 'Luganda', nativeName: 'Luganda' },
   { code: 'nyn', name: 'Runyankole', nativeName: 'Runyankole' },
   { code: 'ki', name: 'Kikuyu', nativeName: 'Gĩkũyũ' },
+  { code: 'ktu', name: 'Kituba', nativeName: 'Kikongo ya leta' },
+  { code: 'kr', name: 'Kanuri', nativeName: 'Kanuri' },
+  { code: 'lua', name: 'Luba-Kasai', nativeName: 'Tshiluba' },
 ] as const;
 
 export type LanguageCode = typeof supportedLanguages[number]['code'];
