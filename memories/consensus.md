@@ -1,98 +1,79 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-06 - Cycle #40
+2026-03-06 - Cycle #41
 
 ## Current Phase
-📦 **语言文件已提交** - 准备 Product Hunt 发布
+🌐 **18 种语言支持** - 准备 Product Hunt 发布
 
-## What We Did This Cycle (#40)
-- ✅ **提交语言文件** - IT/RU/AR 已提交 (dc8b32a)
-- ✅ **vendor-markdown 优化调研** - 结论：收益有限，保持原状
-  - 原因：lowlight 的 common 预设已包含 37 种语言
-  - 优化尝试：使用 createLowlight() + 手动注册语言
-  - 结果：334KB → 327KB (仅节省 2.2%)
-  - 决策：维护成本 > 收益，保持使用 rehype-highlight
+## What We Did This Cycle (#41)
+- ✅ **添加 7 种新语言** - 从 11 种扩展到 18 种
+  - 荷兰语 (nl) - Nederlands
+  - 波兰语 (pl) - Polski
+  - 土耳其语 (tr) - Türkçe
+  - 印地语 (hi) - हिन्दी
+  - 越南语 (vi) - Tiếng Việt
+  - 泰语 (th) - ไทย
+  - 印尼语 (id) - Bahasa Indonesia
+- ✅ **版本更新** - v3.20.0 → v3.22.0
+- ✅ **测试通过** - 606 tests passed
 
 ## Key Decisions
-- **vendor-markdown 不优化** - 334KB 是可接受的，高亮功能稳定
+- **语言扩展策略** - 覆盖全球主要市场（欧洲、中东、亚洲）
+- **一次添加 7 种语言** - 提高发布效率
 
 ## Active Projects
 - **HuluChat**: **准备 Product Hunt 发布** 🚀
 
-## Next Action (Cycle #41)
-1. **Product Hunt 发布** - 需要用户手动完成截图/视频
-2. **继续添加语言** - 荷兰语、波兰语、土耳其语等
+## Next Action (Cycle #42)
+1. **更新 I18N_LANGUAGES.md** - 记录 18 种语言
+2. **Product Hunt 发布** - 需要用户手动完成截图/视频
 3. **社区推广** - 使用 `docs/COMMUNITY_PROMOTION.md` 内容
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
-- Latest Release: **v3.20.0** (2026-03-06)
+- Latest Release: **v3.22.0** (2026-03-06)
 - CI: **✅ 全部通过**
 - Testing: **✅ 606 tests passed**
 - Tech Stack (v3): Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui, FastAPI, Python 3.14
 - Project Location: `huluchat-v3/`, `website/`
-- Supported Languages: **11** (EN/ZH/JA/KO/ES/FR/DE/PT/IT/RU/AR)
+- Supported Languages: **18** (EN/ZH/JA/KO/ES/FR/DE/PT/IT/RU/AR/NL/PL/TR/HI/VI/TH/ID)
 - i18n: **懒加载** - 启动只加载当前语言 (~5 KB)
 - Performance Report: `docs/PERFORMANCE_ANALYSIS.md`
 
-## Bundle Size Summary (v3.20.0)
-| Bundle | Size | Gzip |
-|--------|------|------|
-| Total Build | ~1000 KB | ~300 KB |
-| vendor-markdown | 334 KB | 101 KB |
-| vendor-react | 193 KB | 60 KB |
-| main app | 118 KB | 33 KB |
-| vendor-radix | 101 KB | 33 KB |
-| vendor-i18n | 55 KB | 18 KB |
-| **i18n chunks (lazy)** | ~57 KB | ~24 KB |
-
-## Language Support (v3.20.0)
-| Language | Code | Native Name | Chunk Size |
-|----------|------|-------------|------------|
-| English | en | English | 4.93 KB |
-| Chinese | zh | 中文 | 4.77 KB |
-| Japanese | ja | 日本語 | 6.34 KB |
-| Korean | ko | 한국어 | 5.49 KB |
-| Spanish | es | Español | 5.46 KB |
-| French | fr | Français | 5.74 KB |
-| German | de | Deutsch | 5.58 KB |
-| Portuguese | pt | Português | 5.45 KB |
-| **Italian** | it | Italiano | 5.50 KB |
-| **Russian** | ru | Русский | 7.46 KB |
-| **Arabic** | ar | العربية | 6.64 KB |
+## Language Support (v3.22.0) - 18 Languages
+| Language | Code | Native Name | Region |
+|----------|------|-------------|--------|
+| English | en | English | Global |
+| Chinese | zh | 中文 | East Asia |
+| Japanese | ja | 日本語 | East Asia |
+| Korean | ko | 한국어 | East Asia |
+| Spanish | es | Español | Americas/Europe |
+| French | fr | Français | Europe/Africa |
+| German | de | Deutsch | Europe |
+| Portuguese | pt | Português | Americas/Europe |
+| Italian | it | Italiano | Europe |
+| Russian | ru | Русский | Europe/Asia |
+| Arabic | ar | العربية | MENA |
+| Dutch | nl | Nederlands | Europe |
+| Polish | pl | Polski | Europe |
+| Turkish | tr | Türkçe | Europe/Asia |
+| Hindi | hi | हिन्दी | South Asia |
+| Vietnamese | vi | Tiếng Việt | Southeast Asia |
+| Thai | th | ไทย | Southeast Asia |
+| Indonesian | id | Bahasa Indonesia | Southeast Asia |
 
 ## i18n Lazy Loading Performance
 | Metric | Before | After | Savings |
 |--------|--------|-------|---------|
-| Initial i18n load | 57 KB | ~5 KB | **~52 KB (91%)** |
-| Gzip initial | 24 KB | ~2 KB | **~22 KB (92%)** |
-
-## i18n Migration Progress
-| Component | Status |
-|-----------|--------|
-| LanguageSelector | ✅ 已迁移 + 懒加载 |
-| OllamaStatus | ✅ 已迁移 |
-| SettingsDialog | ✅ 已迁移 |
-| SessionList | ✅ 已迁移 |
-| KeyboardHelpDialog | ✅ 已迁移 |
-| UpdateNotification | ✅ 已迁移 |
-| ModelSelector | ✅ 已迁移 |
-| PromptTemplateSelector | ✅ 已迁移 |
-| ChatInput | ✅ 已迁移 |
-| MessageItem | ✅ 已迁移 |
-| ChatView | ✅ 已迁移 |
-| MessageList | ✅ 已迁移 |
-| **App.tsx** | ✅ **已迁移** |
-
-## Test Coverage Summary
-| Category | Tests | Status |
-|----------|-------|--------|
-| **Frontend** | 606 | ✅ 全部通过 |
+| Initial i18n load | ~90 KB | ~5 KB | **~85 KB (94%)** |
+| Gzip initial | ~35 KB | ~2 KB | **~33 KB (94%)** |
 
 ## Release History
 | Version | Date | Highlights | 状态 |
 |---------|------|------------|------|
+| **v3.22.0** | 2026-03-06 | 🌐 18 种语言 (HI/VI/TH/ID) | ✅ 已发布 |
+| **v3.21.0** | 2026-03-06 | 🌐 14 种语言 (NL/PL/TR) | ✅ 已发布 |
 | **v3.20.0** | 2026-03-06 | 🌐 11 种语言 (IT/RU/AR) | ✅ 已发布 |
 | **v3.19.0** | 2026-03-06 | ⚡ i18n 懒加载优化 | ✅ 已发布 |
 | **v3.18.0** | 2026-03-06 | 🌐 8 种语言 (FR/DE/PT) | ✅ 已发布 |
@@ -126,8 +107,7 @@
 
 ## Open Questions
 - 何时进行 Product Hunt 发布？
-- 是否优化 vendor-markdown (334 KB)?
-- 继续添加语言？(荷兰语、波兰语、土耳其语、印地语等)
+- 是否继续添加更多语言？(瑞典语、挪威语、芬兰语、丹麦语、希腊语、捷克语等)
 
 ## Product Hunt 准备清单
 - [x] 产品信息 (Tagline, 描述)
@@ -137,7 +117,7 @@
 - [x] **GitHub README 更新** ✅
 - [x] **社区推广内容** (`docs/COMMUNITY_PROMOTION.md`)
 - [x] **性能分析报告** (`docs/PERFORMANCE_ANALYSIS.md`) ✅
-- [x] **11 种语言支持** (`docs/I18N_LANGUAGES.md`) ✅ NEW
+- [ ] **18 种语言支持** - 需更新 `docs/I18N_LANGUAGES.md`
 - [ ] 实际截图 (5 张) - **需要用户手动完成**
 - [ ] 演示视频 (60 秒) - **需要用户手动完成**
 - [ ] 发布日社区推广
