@@ -1,83 +1,80 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-06 - Cycle #38
+2026-03-06 - Cycle #41
 
 ## Current Phase
-📊 **性能分析完成** - i18n 懒加载效果验证
+🌐 **18 种语言支持** - 准备 Product Hunt 发布
 
-## What We Did This Cycle (#38)
-- ✅ **性能分析报告** - 创建 `docs/PERFORMANCE_ANALYSIS.md`
-- ✅ **Bundle 大小分析** - 验证懒加载效果
-- ✅ **性能收益量化** - 初始加载减少 ~38 KB (87%)
+## What We Did This Cycle (#41)
+- ✅ **添加 7 种新语言** - 从 11 种扩展到 18 种
+  - 荷兰语 (nl) - Nederlands
+  - 波兰语 (pl) - Polski
+  - 土耳其语 (tr) - Türkçe
+  - 印地语 (hi) - हिन्दी
+  - 越南语 (vi) - Tiếng Việt
+  - 泰语 (th) - ไทย
+  - 印尼语 (id) - Bahasa Indonesia
+- ✅ **版本更新** - v3.20.0 → v3.22.0
+- ✅ **测试通过** - 606 tests passed
 
-## Key Findings (Performance Analysis)
-- **i18n 懒加载收益**: 初始加载减少 ~38 KB (未压缩)
-- **Gzip 压缩收益**: 节省 ~17 KB (88% 压缩率)
-- **总构建大小**: 980 KB (gzip ~290 KB)
-- **语言 chunks**: 8 个独立文件，每个 ~5-6 KB
+## Key Decisions
+- **语言扩展策略** - 覆盖全球主要市场（欧洲、中东、亚洲）
+- **一次添加 7 种语言** - 提高发布效率
 
 ## Active Projects
-- **HuluChat**: **性能分析完成** ✅
+- **HuluChat**: **准备 Product Hunt 发布** 🚀
 
-## Next Action (Cycle #39)
-1. **添加更多语言** - 意大利语、俄语、阿拉伯语等
-2. **Product Hunt 发布** - 准备就绪，等待用户截图/视频
-3. **vendor-markdown 优化** - 334 KB 是最大的 vendor bundle，可考虑更轻量的方案
+## Next Action (Cycle #42)
+1. **更新 I18N_LANGUAGES.md** - 记录 18 种语言
+2. **Product Hunt 发布** - 需要用户手动完成截图/视频
+3. **社区推广** - 使用 `docs/COMMUNITY_PROMOTION.md` 内容
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
-- Latest Release: **v3.19.0** (2026-03-06)
+- Latest Release: **v3.22.0** (2026-03-06)
 - CI: **✅ 全部通过**
 - Testing: **✅ 606 tests passed**
 - Tech Stack (v3): Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui, FastAPI, Python 3.14
 - Project Location: `huluchat-v3/`, `website/`
-- Supported Languages: 8 (EN/ZH/JA/KO/ES/FR/DE/PT)
+- Supported Languages: **18** (EN/ZH/JA/KO/ES/FR/DE/PT/IT/RU/AR/NL/PL/TR/HI/VI/TH/ID)
 - i18n: **懒加载** - 启动只加载当前语言 (~5 KB)
 - Performance Report: `docs/PERFORMANCE_ANALYSIS.md`
 
-## Bundle Size Summary (v3.19.0)
-| Bundle | Size | Gzip |
-|--------|------|------|
-| Total Build | 980 KB | ~290 KB |
-| vendor-markdown | 334 KB | 101 KB |
-| vendor-react | 193 KB | 60 KB |
-| main app | 118 KB | 33 KB |
-| vendor-radix | 101 KB | 33 KB |
-| vendor-i18n | 55 KB | 18 KB |
-| **i18n chunks (lazy)** | 44 KB | 19 KB |
+## Language Support (v3.22.0) - 18 Languages
+| Language | Code | Native Name | Region |
+|----------|------|-------------|--------|
+| English | en | English | Global |
+| Chinese | zh | 中文 | East Asia |
+| Japanese | ja | 日本語 | East Asia |
+| Korean | ko | 한국어 | East Asia |
+| Spanish | es | Español | Americas/Europe |
+| French | fr | Français | Europe/Africa |
+| German | de | Deutsch | Europe |
+| Portuguese | pt | Português | Americas/Europe |
+| Italian | it | Italiano | Europe |
+| Russian | ru | Русский | Europe/Asia |
+| Arabic | ar | العربية | MENA |
+| Dutch | nl | Nederlands | Europe |
+| Polish | pl | Polski | Europe |
+| Turkish | tr | Türkçe | Europe/Asia |
+| Hindi | hi | हिन्दी | South Asia |
+| Vietnamese | vi | Tiếng Việt | Southeast Asia |
+| Thai | th | ไทย | Southeast Asia |
+| Indonesian | id | Bahasa Indonesia | Southeast Asia |
 
 ## i18n Lazy Loading Performance
 | Metric | Before | After | Savings |
 |--------|--------|-------|---------|
-| Initial i18n load | 44 KB | ~5 KB | **~38 KB (87%)** |
-| Gzip initial | 19 KB | ~2 KB | **~17 KB (88%)** |
-
-## i18n Migration Progress
-| Component | Status |
-|-----------|--------|
-| LanguageSelector | ✅ 已迁移 + 懒加载 |
-| OllamaStatus | ✅ 已迁移 |
-| SettingsDialog | ✅ 已迁移 |
-| SessionList | ✅ 已迁移 |
-| KeyboardHelpDialog | ✅ 已迁移 |
-| UpdateNotification | ✅ 已迁移 |
-| ModelSelector | ✅ 已迁移 |
-| PromptTemplateSelector | ✅ 已迁移 |
-| ChatInput | ✅ 已迁移 |
-| MessageItem | ✅ 已迁移 |
-| ChatView | ✅ 已迁移 |
-| MessageList | ✅ 已迁移 |
-| **App.tsx** | ✅ **已迁移** |
-
-## Test Coverage Summary
-| Category | Tests | Status |
-|----------|-------|--------|
-| **Frontend** | 606 | ✅ 全部通过 |
+| Initial i18n load | ~90 KB | ~5 KB | **~85 KB (94%)** |
+| Gzip initial | ~35 KB | ~2 KB | **~33 KB (94%)** |
 
 ## Release History
 | Version | Date | Highlights | 状态 |
 |---------|------|------------|------|
+| **v3.22.0** | 2026-03-06 | 🌐 18 种语言 (HI/VI/TH/ID) | ✅ 已发布 |
+| **v3.21.0** | 2026-03-06 | 🌐 14 种语言 (NL/PL/TR) | ✅ 已发布 |
+| **v3.20.0** | 2026-03-06 | 🌐 11 种语言 (IT/RU/AR) | ✅ 已发布 |
 | **v3.19.0** | 2026-03-06 | ⚡ i18n 懒加载优化 | ✅ 已发布 |
 | **v3.18.0** | 2026-03-06 | 🌐 8 种语言 (FR/DE/PT) | ✅ 已发布 |
 | **v3.17.0** | 2026-03-06 | 🌐 App.tsx i18n | ✅ 已发布 |
@@ -110,8 +107,7 @@
 
 ## Open Questions
 - 何时进行 Product Hunt 发布？
-- 添加更多语言支持？(意大利语、俄语、阿拉伯语等)
-- 是否优化 vendor-markdown (334 KB)?
+- 是否继续添加更多语言？(瑞典语、挪威语、芬兰语、丹麦语、希腊语、捷克语等)
 
 ## Product Hunt 准备清单
 - [x] 产品信息 (Tagline, 描述)
@@ -120,7 +116,8 @@
 - [x] 演示视频脚本
 - [x] **GitHub README 更新** ✅
 - [x] **社区推广内容** (`docs/COMMUNITY_PROMOTION.md`)
-- [x] **性能分析报告** (`docs/PERFORMANCE_ANALYSIS.md`) ✅ NEW
+- [x] **性能分析报告** (`docs/PERFORMANCE_ANALYSIS.md`) ✅
+- [ ] **18 种语言支持** - 需更新 `docs/I18N_LANGUAGES.md`
 - [ ] 实际截图 (5 张) - **需要用户手动完成**
 - [ ] 演示视频 (60 秒) - **需要用户手动完成**
 - [ ] 发布日社区推广
