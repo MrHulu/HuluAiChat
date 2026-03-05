@@ -1,15 +1,19 @@
 /**
  * ChatInput Component
- * 聊天输入框，支持多行输入和快捷键
+ * 聊天输入框，支持多行输入、快捷键和模板选择器
  */
 import { useState, useRef, useEffect, KeyboardEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import {
+  PromptTemplateSelector,
+} from "@/components/templates/PromptTemplateSelector";
 
 export interface ChatInputProps {
   onSend: (message: string) => void;
   disabled?: boolean;
   placeholder?: string;
+  onTemplateSelect?: (content: string) => void;
 }
 
 export function ChatInput({
@@ -18,6 +22,7 @@ export function ChatInput({
   placeholder = "Type a message...",
 }: ChatInputProps) {
   const [value, setValue] = useState("");
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // 自动调整高度
@@ -48,9 +53,44 @@ export function ChatInput({
     }
   };
 
+  const handleTemplateSelect = (content: string) => {
+    setValue(content);
+    setShowTemplateSelector(false);
+    // Focus textarea after selection
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  };
+
   return (
     <div className="border-t border-border bg-background p-4">
       <div className="flex items-end gap-3 max-w-4xl mx-auto">
+        {/* Template Button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setShowTemplateSelector(true)}
+          disabled={disabled}
+          className="rounded-xl px-3 h-12"
+          title="Select template"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+            <path d="M3 9h18h18" />
+            <path d="M12 3v18" />
+          </svg>
+        </Button>
+
         <div className="flex-1 relative">
           <textarea
             ref={textareaRef}
@@ -95,6 +135,13 @@ export function ChatInput({
       <div className="text-xs text-muted-foreground mt-2 text-center">
         Press Enter to send, Shift+Enter for new line
       </div>
+
+      {/* Template Selector Dialog */}
+      <PromptTemplateSelector
+        open={showTemplateSelector}
+        onOpenChange={setShowTemplateSelector}
+        onSelect={handleTemplateSelect}
+      />
     </div>
   );
 }
