@@ -3,6 +3,7 @@
  * 单个会话项
  */
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Session, Folder, ExportFormat } from "@/api/client";
 import { cn } from "@/lib/utils";
 import {
@@ -31,6 +32,7 @@ export function SessionItem({
   onExport,
   onMoveToFolder,
 }: SessionItemProps) {
+  const { t } = useTranslation();
   const [isExporting, setIsExporting] = useState(false);
 
   const formatDate = (dateStr: string) => {
@@ -40,11 +42,11 @@ export function SessionItem({
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
     if (days === 0) {
-      return "Today";
+      return t("sessionItem.today");
     } else if (days === 1) {
-      return "Yesterday";
+      return t("sessionItem.yesterday");
     } else if (days < 7) {
-      return `${days} days ago`;
+      return t("sessionItem.daysAgo", { count: days });
     } else {
       return date.toLocaleDateString();
     }
@@ -85,7 +87,7 @@ export function SessionItem({
     >
       <div className="flex-1 min-w-0">
         <div className="font-medium text-sm truncate">
-          {session.title || "New Chat"}
+          {session.title || t("sessionItem.newChat")}
         </div>
         <div className="text-xs text-muted-foreground truncate">
           {formatDate(session.updated_at)}
@@ -105,7 +107,7 @@ export function SessionItem({
                 "p-1 rounded hover:bg-primary/20 text-muted-foreground hover:text-primary",
                 isExporting && "opacity-50 cursor-wait"
               )}
-              title="Export session"
+              title={t("sessionItem.exportSession")}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -141,7 +143,7 @@ export function SessionItem({
                   <path d="M14 3v4a1 1 0 0 0 1 1h4" />
                   <path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z" />
                 </svg>
-                Markdown (.md)
+                {t("sessionItem.markdown")}
               </span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleExport("json")}>
@@ -160,7 +162,7 @@ export function SessionItem({
                   <path d="M14 3v4a1 1 0 0 0 1 1h4" />
                   <path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z" />
                 </svg>
-                JSON (.json)
+                {t("sessionItem.json")}
               </span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleExport("txt")}>
@@ -179,7 +181,7 @@ export function SessionItem({
                   <path d="M14 3v4a1 1 0 0 0 1 1h4" />
                   <path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z" />
                 </svg>
-                Plain Text (.txt)
+                {t("sessionItem.plainText")}
               </span>
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -195,7 +197,7 @@ export function SessionItem({
                   "opacity-0 group-hover:opacity-100 transition-opacity",
                   "p-1 rounded hover:bg-primary/20 text-muted-foreground hover:text-primary"
                 )}
-                title="Move to folder"
+                title={t("sessionItem.moveToFolder")}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -228,7 +230,7 @@ export function SessionItem({
                   >
                     <path d="m15 18-6-6 6-6" />
                   </svg>
-                  Uncategorized
+                  {t("sessionItem.uncategorized")}
                 </span>
               </DropdownMenuItem>
               {folders.map((folder) => (
@@ -282,7 +284,7 @@ export function SessionItem({
             "opacity-0 group-hover:opacity-100 transition-opacity",
             "p-1 rounded hover:bg-destructive/20 text-muted-foreground hover:text-destructive"
           )}
-          title="Delete session"
+          title={t("sessionItem.deleteSession")}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

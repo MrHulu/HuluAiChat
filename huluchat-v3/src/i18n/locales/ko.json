@@ -161,5 +161,28 @@
     "folderDeleted": "\"{{name}}\" 폴더 삭제됨",
     "movedTo": "{{name}}(으)로 이동됨",
     "moveFailed": "세션 이동 실패"
+  },
+  "sessionItem": {
+    "newChat": "새 대화",
+    "today": "오늘",
+    "yesterday": "어제",
+    "daysAgo": "{{count}}일 전",
+    "exportSession": "세션 내보내기",
+    "moveToFolder": "폴더로 이동",
+    "uncategorized": "미분류",
+    "deleteSession": "세션 삭제",
+    "markdown": "Markdown (.md)",
+    "json": "JSON (.json)",
+    "plainText": "일반 텍스트 (.txt)"
+  },
+  "theme": {
+    "toggle": "테마 전환",
+    "light": "라이트",
+    "dark": "다크",
+    "system": "시스템"
+  },
+  "languageSelector": {
+    "changeLanguage": "언어 변경",
+    "language": "언어"
   }
 }
