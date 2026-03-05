@@ -2,14 +2,14 @@
 
 ## Overview
 
-HuluChat supports **68 languages** with lazy loading for optimal performance.
+HuluChat supports **73 languages** with lazy loading for optimal performance.
 
 | Metric | Before | After | Savings |
 |--------|--------|-------|---------|
 | Initial i18n load | ~120 KB | ~5 KB | **~115 KB (96%)** |
 | Gzip initial | ~45 KB | ~2 KB | **~43 KB (96%)** |
 
-## Supported Languages (v3.34.0)
+## Supported Languages (v3.35.0)
 
 ### Global / Americas / Europe (20)
 
@@ -109,8 +109,13 @@ HuluChat supports **68 languages** with lazy loading for optimal performance.
 | 24 | Kituba | `ktu` | Kikongo ya leta | Central Africa | 5M |
 | 25 | Kanuri | `kr` | Kanuri | West Africa | 4M |
 | 26 | Luba-Kasai | `lua` | Tshiluba | Central Africa | 6M |
+| 27 | Nuer | `nus` | Thok Nath | East Africa | 2M |
+| 28 | Dinka | `din` | Thuɔŋjäŋ | East Africa | 4.5M |
+| 29 | Luo | `luo` | Dholuo | East Africa | 5M |
+| 30 | Kamba | `kam` | Kikamba | East Africa | 4M |
+| 31 | Maasai | `mas` | ɔl-Maa | East Africa | 1.5M |
 
-**Total Africa Coverage**: ~715M+ speakers
+**Total Africa Coverage**: ~732M+ speakers
 
 ---
 
@@ -118,14 +123,13 @@ HuluChat supports **68 languages** with lazy loading for optimal performance.
 
 ## Regional Coverage
 
-### 🌍 Africa (23 Languages)
+### 🌍 Africa (31 Languages)
 
 | Region | Languages | Coverage |
 |--------|-----------|----------|
-| West Africa | Hausa, Yoruba, Igbo, Fula, Wolof, Bambara | ~177M speakers |
-| East Africa | Swahili, Amharic, Somali, Kinyarwanda, Oromo, Tigrinya, Luganda, Runyankole, Kikuyu | ~368M+ speakers |
-| Central Africa | Lingala, Kikongo, Kituba, Luba-Kasai | ~58M speakers |
 | West Africa | Hausa, Yoruba, Igbo, Fula, Wolof, Bambara, Kanuri | ~181M speakers |
+| East Africa | Swahili, Amharic, Somali, Kinyarwanda, Oromo, Tigrinya, Luganda, Runyankole, Kikuyu, Nuer, Dinka, Luo, Kamba, Maasai | ~380M+ speakers |
+| Central Africa | Lingala, Kikongo, Kituba, Luba-Kasai | ~58M speakers |
 | Southern Africa | Zulu, Afrikaans, Chichewa, Shona, Tswana, Xhosa | ~73M speakers |
 
 ### 🌏 Asia (19 Languages)
@@ -292,6 +296,7 @@ export const supportedLanguages = [
 
 | Version | Date | Languages Added | Total |
 |---------|------|-----------------|-------|
+| v3.35.0 | 2026-03-06 | Nuer, Dinka, Luo, Kamba, Maasai (+5) | 73 |
 | v3.34.0 | 2026-03-06 | Kituba, Kanuri, Luba-Kasai (+3) | 68 |
 | v3.33.0 | 2026-03-06 | Luganda, Runyankole, Kikuyu (+3) | 65 |
 | v3.32.0 | 2026-03-06 | Tswana, Xhosa, Bambara (+3) | 62 |
@@ -319,4 +324,4 @@ Arabic (`ar`), Hebrew (`he`), and Persian (`fa`) use Right-to-Left text directio
 
 ---
 
-*Last updated: 2026-03-06 (v3.34.0)*
+*Last updated: 2026-03-06 (v3.35.0)*
