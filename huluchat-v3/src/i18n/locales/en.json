@@ -38,7 +38,11 @@
     "cancelEdit": "Cancel",
     "newChat": "New Chat",
     "selectTemplate": "Select Template",
-    "templates": "Templates"
+    "templates": "Templates",
+    "enterToSend": "Press Enter to send, Shift+Enter for new line",
+    "editMessage": "Edit message",
+    "saving": "Saving...",
+    "ctrlEnterToSave": "Ctrl+Enter to save, Esc to cancel"
   },
   "settings": {
     "title": "Settings",
@@ -114,5 +118,27 @@
     "title": "Language",
     "en": "English",
     "zh": "中文"
+  },
+  "modelSelector": {
+    "cloudModels": "Cloud Models",
+    "localModels": "Local Models (Ollama)",
+    "ollamaOffline": "Ollama Offline",
+    "ollamaHint": "Make sure Ollama service is running"
+  },
+  "templates": {
+    "title": "Prompt Templates",
+    "newTemplate": "+ New Template",
+    "all": "All",
+    "name": "Name",
+    "namePlaceholder": "Template name",
+    "content": "Content",
+    "contentPlaceholder": "Template content. Use {variable} for placeholders.",
+    "categories": {
+      "writing": "Writing",
+      "coding": "Coding",
+      "analysis": "Analysis",
+      "translation": "Translation",
+      "custom": "Custom"
+    }
   }
 }

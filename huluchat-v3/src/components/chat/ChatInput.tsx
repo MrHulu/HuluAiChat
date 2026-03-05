@@ -3,6 +3,7 @@
  * 聊天输入框，支持多行输入、快捷键和模板选择器
  */
 import { useState, useRef, useEffect, KeyboardEvent } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
@@ -19,11 +20,14 @@ export interface ChatInputProps {
 export function ChatInput({
   onSend,
   disabled = false,
-  placeholder = "Type a message...",
+  placeholder,
 }: ChatInputProps) {
+  const { t } = useTranslation();
   const [value, setValue] = useState("");
   const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const actualPlaceholder = placeholder || t("chat.typeMessage");
 
   // 自动调整高度
   useEffect(() => {
@@ -72,7 +76,7 @@ export function ChatInput({
           onClick={() => setShowTemplateSelector(true)}
           disabled={disabled}
           className="rounded-xl px-3 h-12"
-          title="Select template"
+          title={t("chat.selectTemplate")}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -97,7 +101,7 @@ export function ChatInput({
             value={value}
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={placeholder}
+            placeholder={actualPlaceholder}
             disabled={disabled}
             rows={1}
             className={cn(
@@ -115,7 +119,7 @@ export function ChatInput({
           disabled={disabled || !value.trim()}
           className="rounded-xl px-6 h-12"
         >
-          <span className="mr-2">Send</span>
+          <span className="mr-2">{t("chat.send")}</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
@@ -133,7 +137,7 @@ export function ChatInput({
         </Button>
       </div>
       <div className="text-xs text-muted-foreground mt-2 text-center">
-        Press Enter to send, Shift+Enter for new line
+        {t("chat.enterToSend")}
       </div>
 
       {/* Template Selector Dialog */}
