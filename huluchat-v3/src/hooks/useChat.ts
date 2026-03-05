@@ -3,6 +3,7 @@
  * 聊天逻辑管理，包括消息状态和 WebSocket 通信
  */
 import { useState, useCallback, useEffect, useRef } from "react";
+import { toast } from "sonner";
 import { useWebSocket, ConnectionStatus } from "./useWebSocket";
 import { Message, getSessionMessages } from "@/api/client";
 
@@ -56,6 +57,9 @@ export function useChat(sessionId: string | null): UseChatReturn {
     } catch (error) {
       console.error("Failed to load history:", error);
       setMessages([]);
+      toast.error("Failed to load chat history", {
+        description: "Please check your connection and try again",
+      });
     } finally {
       setIsLoadingHistory(false);
     }
@@ -131,6 +135,10 @@ export function useChat(sessionId: string | null): UseChatReturn {
         console.error("WebSocket error:", msg.error);
         setIsLoading(false);
         setStreamingMessage(null);
+        // 显示错误通知
+        toast.error("AI Response Error", {
+          description: msg.error || "An error occurred while processing your message",
+        });
         break;
     }
   }, [sessionId]); // 移除 streamingMessage 依赖，使用 ref 替代
