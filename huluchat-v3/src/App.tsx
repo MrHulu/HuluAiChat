@@ -9,6 +9,7 @@ import { ChatView } from "@/components/chat";
 import { SessionList } from "@/components/sidebar";
 import { UpdateNotification } from "@/components/UpdateNotification";
 import { KeyboardHelpDialog } from "@/components/keyboard/KeyboardHelpDialog";
+import { LanguageSelector } from "@/components/LanguageSelector";
 import { useSession, useKeyboardShortcuts, useFolders } from "@/hooks";
 import { exportSession, moveSessionToFolder, ExportFormat } from "@/api/client";
 
@@ -195,13 +196,14 @@ function App() {
           <div className="flex items-center gap-3">
             <h1 className="text-lg font-bold">HuluChat</h1>
             <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-              v3.12.0
+              v3.13.0
             </span>
           </div>
           <div className="flex items-center gap-2">
             <Suspense fallback={null}>
               <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
             </Suspense>
+            <LanguageSelector />
             <ThemeToggle />
           </div>
         </header>

@@ -49,7 +49,7 @@ describe("UpdateNotification", () => {
 
       render(<UpdateNotification />)
 
-      expect(screen.getByText("发现新版本")).toBeInTheDocument()
+      expect(screen.getByText("New version available")).toBeInTheDocument()
     })
 
     it("should render when checking for updates", () => {
@@ -60,7 +60,7 @@ describe("UpdateNotification", () => {
 
       render(<UpdateNotification />)
 
-      expect(screen.getByText("检查更新中...")).toBeInTheDocument()
+      expect(screen.getByText("Checking for updates...")).toBeInTheDocument()
     })
   })
 
@@ -90,7 +90,7 @@ describe("UpdateNotification", () => {
 
       render(<UpdateNotification />)
 
-      expect(screen.getByText("下载更新中...")).toBeInTheDocument()
+      expect(screen.getByText("Downloading update...")).toBeInTheDocument()
       expect(screen.getByText(/v1.0.0 - 50%/)).toBeInTheDocument()
     })
 
@@ -137,7 +137,7 @@ describe("UpdateNotification", () => {
     it("should display update version", () => {
       render(<UpdateNotification />)
 
-      expect(screen.getByText(/v2.0.0 可用/)).toBeInTheDocument()
+      expect(screen.getByText(/v2.0.0 available/)).toBeInTheDocument()
     })
 
     it("should display update body if available", () => {
@@ -186,7 +186,7 @@ describe("UpdateNotification", () => {
     it("should have download and install button", () => {
       render(<UpdateNotification />)
 
-      expect(screen.getByText("立即更新")).toBeInTheDocument()
+      expect(screen.getByText("Update Now")).toBeInTheDocument()
     })
 
     it("should call downloadAndInstall when update button clicked", () => {
@@ -200,7 +200,7 @@ describe("UpdateNotification", () => {
 
       render(<UpdateNotification />)
 
-      fireEvent.click(screen.getByText("立即更新"))
+      fireEvent.click(screen.getByText("Update Now"))
 
       expect(downloadAndInstall).toHaveBeenCalled()
     })
@@ -208,7 +208,7 @@ describe("UpdateNotification", () => {
     it("should have later button", () => {
       render(<UpdateNotification />)
 
-      expect(screen.getByText("稍后")).toBeInTheDocument()
+      expect(screen.getByText("Later")).toBeInTheDocument()
     })
 
     it("should call checkForUpdates with false when later button clicked", () => {
@@ -222,7 +222,7 @@ describe("UpdateNotification", () => {
 
       render(<UpdateNotification />)
 
-      fireEvent.click(screen.getByText("稍后"))
+      fireEvent.click(screen.getByText("Later"))
 
       expect(checkForUpdates).toHaveBeenCalledWith(false)
     })

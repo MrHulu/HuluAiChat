@@ -170,7 +170,7 @@ describe("App", () => {
     it("should render version badge", () => {
       render(<App />);
 
-      expect(screen.getByText("v3.12.0")).toBeInTheDocument();
+      expect(screen.getByText("v3.13.0")).toBeInTheDocument();
     });
 
     it("should render Toaster component", () => {
@@ -453,7 +453,7 @@ describe("App", () => {
       });
 
       // KeyboardHelpDialog should be visible (title is in Chinese)
-      expect(screen.getByText("键盘快捷键")).toBeInTheDocument();
+      expect(screen.getByText("Keyboard Shortcuts")).toBeInTheDocument();
     });
 
     it("should toggle keyboard help dialog on ? key (outside input)", async () => {
@@ -468,7 +468,7 @@ describe("App", () => {
       });
 
       // KeyboardHelpDialog should be visible
-      expect(screen.getByText("键盘快捷键")).toBeInTheDocument();
+      expect(screen.getByText("Keyboard Shortcuts")).toBeInTheDocument();
     });
 
     it("should not open keyboard help on ? key when input focused", async () => {
@@ -491,7 +491,7 @@ describe("App", () => {
       });
 
       // KeyboardHelpDialog should not be visible
-      expect(screen.queryByText("键盘快捷键")).not.toBeInTheDocument();
+      expect(screen.queryByText("Keyboard Shortcuts")).not.toBeInTheDocument();
     });
 
     it("should close keyboard help dialog when F1 pressed again", async () => {
@@ -505,7 +505,7 @@ describe("App", () => {
         });
         window.dispatchEvent(openEvent);
       });
-      expect(screen.getByText("键盘快捷键")).toBeInTheDocument();
+      expect(screen.getByText("Keyboard Shortcuts")).toBeInTheDocument();
 
       // Close dialog
       await act(async () => {
@@ -515,7 +515,7 @@ describe("App", () => {
         });
         window.dispatchEvent(closeEvent);
       });
-      expect(screen.queryByText("键盘快捷键")).not.toBeInTheDocument();
+      expect(screen.queryByText("Keyboard Shortcuts")).not.toBeInTheDocument();
     });
   });
 

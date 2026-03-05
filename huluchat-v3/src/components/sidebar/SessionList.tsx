@@ -3,6 +3,7 @@
  * 会话列表侧边栏，支持文件夹分组
  */
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Session,
   Folder,
@@ -49,6 +50,7 @@ export function SessionList({
   isCollapsed = false,
   onToggleCollapse,
 }: SessionListProps) {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SessionSearchResult[] | null>(null);
   const [isSearching, setIsSearching] = useState(false);
@@ -178,7 +180,7 @@ export function SessionList({
         <button
           onClick={onToggleCollapse}
           className="p-2 rounded-lg hover:bg-muted transition-colors"
-          title="Expand sidebar"
+          title={t("sidebar.expandSidebar")}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -200,7 +202,7 @@ export function SessionList({
         <button
           onClick={onCreateSession}
           className="mt-4 p-2 rounded-lg hover:bg-muted transition-colors"
-          title="New chat"
+          title={t("sidebar.newChat")}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -230,12 +232,12 @@ export function SessionList({
     >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border">
-        <h2 className="font-semibold text-foreground">Chats</h2>
+        <h2 className="font-semibold text-foreground">{t("sidebar.chats")}</h2>
         <div className="flex items-center gap-1">
           <button
             onClick={onToggleCollapse}
             className="p-1.5 rounded-lg hover:bg-muted transition-colors"
-            title="Collapse sidebar"
+            title={t("sidebar.collapseSidebar")}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -277,7 +279,7 @@ export function SessionList({
             <path d="M12 5v14" />
             <path d="M5 12h14" />
           </svg>
-          New Chat
+          {t("sidebar.newChat")}
         </Button>
       </div>
 
@@ -301,7 +303,7 @@ export function SessionList({
           </svg>
           <Input
             type="text"
-            placeholder="Search chats..."
+            placeholder={t("sidebar.searchChats")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9 h-8 text-sm bg-background"
@@ -340,8 +342,8 @@ export function SessionList({
           // Search Results
           displaySessions.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              <p className="text-sm">No results found</p>
-              <p className="text-xs mt-1">Try a different search term</p>
+              <p className="text-sm">{t("sidebar.noResults")}</p>
+              <p className="text-xs mt-1">{t("sidebar.tryDifferent")}</p>
             </div>
           ) : (
             <div className="space-y-1">
@@ -374,7 +376,7 @@ export function SessionList({
                                 msg.role === "user" ? "text-blue-500" : "text-green-500"
                               )}
                             >
-                              {msg.role === "user" ? "You" : "AI"}:
+                              {msg.role === "user" ? t("chat.you") : t("chat.ai")}:
                             </span>
                             <span className="ml-1 text-muted-foreground line-clamp-2">
                               <HighlightText text={msg.content_snippet} query={searchQuery} />
@@ -396,12 +398,12 @@ export function SessionList({
               {/* Folders Header */}
               <div className="flex items-center justify-between px-2 py-1.5">
                 <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Folders
+                  {t("sidebar.folders")}
                 </span>
                 <button
                   onClick={() => setShowNewFolderInput(true)}
                   className="p-1 rounded hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
-                  title="New folder"
+                  title={t("sidebar.newFolder")}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -438,7 +440,7 @@ export function SessionList({
                           setShowNewFolderInput(false);
                         }
                       }}
-                      placeholder="Folder name..."
+                      placeholder={t("sidebar.folderName")}
                       className="h-7 text-sm"
                     />
                   </form>
@@ -485,7 +487,7 @@ export function SessionList({
               <div className="mt-2">
                 <div className="px-2 py-1.5">
                   <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Uncategorized
+                    {t("sidebar.uncategorized")}
                   </span>
                 </div>
                 <div className="space-y-1">
@@ -525,7 +527,7 @@ export function SessionList({
                   >
                     <path d="m15 18-6-6 6-6" />
                   </svg>
-                  Back to all
+                  {t("sidebar.backToAll")}
                 </button>
                 <div className="space-y-1 mt-1">
                   {(sessionsByFolder[activeFolderFilter] || []).map((session) => (
@@ -596,6 +598,7 @@ function FolderItem({
   onMoveSession,
   folders,
 }: FolderItemProps) {
+  const { t } = useTranslation();
   const [showMenu, setShowMenu] = useState(false);
 
   return (
@@ -716,7 +719,7 @@ function FolderItem({
                 }}
                 className="w-full px-3 py-1.5 text-sm text-left hover:bg-muted transition-colors"
               >
-                Rename
+                {t("common.rename")}
               </button>
               <button
                 onClick={(e) => {
@@ -726,7 +729,7 @@ function FolderItem({
                 }}
                 className="w-full px-3 py-1.5 text-sm text-left hover:bg-muted text-destructive transition-colors"
               >
-                Delete
+                {t("common.delete")}
               </button>
             </div>
           )}

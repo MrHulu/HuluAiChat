@@ -20,8 +20,8 @@ describe("OllamaStatus", () => {
         />
       );
 
-      expect(screen.getByText("Ollama 在线")).toBeInTheDocument();
-      expect(screen.getByText("3 个本地模型")).toBeInTheDocument();
+      expect(screen.getByText("Ollama Online")).toBeInTheDocument();
+      expect(screen.getByText("3 local models")).toBeInTheDocument();
     });
 
     it("should render offline status when available is false", () => {
@@ -33,7 +33,7 @@ describe("OllamaStatus", () => {
         />
       );
 
-      expect(screen.getByText("Ollama 离线")).toBeInTheDocument();
+      expect(screen.getByText("Ollama Offline")).toBeInTheDocument();
     });
 
     it("should display base URL when offline", () => {
@@ -72,7 +72,7 @@ describe("OllamaStatus", () => {
         />
       );
 
-      const refreshButton = screen.getByRole("button", { name: /刷新状态/ });
+      const refreshButton = screen.getByRole("button", { name: /refresh/i });
       await user.click(refreshButton);
 
       expect(mockOnRefresh).toHaveBeenCalledTimes(1);
@@ -88,7 +88,7 @@ describe("OllamaStatus", () => {
         />
       );
 
-      const refreshButton = screen.getByRole("button", { name: /刷新状态/ });
+      const refreshButton = screen.getByRole("button", { name: /refresh/i });
       expect(refreshButton).toBeDisabled();
     });
 
@@ -115,7 +115,7 @@ describe("OllamaStatus", () => {
         />
       );
 
-      expect(screen.getByText("0 个本地模型")).toBeInTheDocument();
+      expect(screen.getByText("0 local models")).toBeInTheDocument();
     });
 
     it("should render singular form correctly", () => {
@@ -127,7 +127,7 @@ describe("OllamaStatus", () => {
         />
       );
 
-      expect(screen.getByText("1 个本地模型")).toBeInTheDocument();
+      expect(screen.getByText("1 local models")).toBeInTheDocument();
     });
 
     it("should render many models correctly", () => {
@@ -139,7 +139,7 @@ describe("OllamaStatus", () => {
         />
       );
 
-      expect(screen.getByText("10 个本地模型")).toBeInTheDocument();
+      expect(screen.getByText("10 local models")).toBeInTheDocument();
     });
   });
 
@@ -154,7 +154,7 @@ describe("OllamaStatus", () => {
 
       const dot = container.querySelector(".bg-green-500");
       expect(dot).toBeInTheDocument();
-      expect(screen.getByText("3 本地")).toBeInTheDocument();
+      expect(screen.getByText(/3.*Online/)).toBeInTheDocument();
     });
 
     it("should render gray indicator when not available", () => {
@@ -167,7 +167,7 @@ describe("OllamaStatus", () => {
 
       const dot = container.querySelector(".bg-gray-400");
       expect(dot).toBeInTheDocument();
-      expect(screen.getByText("离线")).toBeInTheDocument();
+      expect(screen.getByText(/Offline/)).toBeInTheDocument();
     });
 
     it("should hide text when showText is false", () => {
@@ -179,7 +179,7 @@ describe("OllamaStatus", () => {
         />
       );
 
-      expect(screen.queryByText("3 本地")).not.toBeInTheDocument();
+      expect(screen.queryByText(/3.*Online/)).not.toBeInTheDocument();
     });
 
     it("should display 'offline' text when not available", () => {
@@ -191,7 +191,7 @@ describe("OllamaStatus", () => {
         />
       );
 
-      expect(screen.getByText("离线")).toBeInTheDocument();
+      expect(screen.getByText(/Offline/)).toBeInTheDocument();
     });
 
     it("should have pulse animation when available", () => {
