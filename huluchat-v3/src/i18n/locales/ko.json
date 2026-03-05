@@ -1,0 +1,142 @@
+{
+  "common": {
+    "save": "저장",
+    "cancel": "취소",
+    "delete": "삭제",
+    "rename": "이름 변경",
+    "test": "테스트",
+    "loading": "로딩 중...",
+    "error": "오류",
+    "success": "성공"
+  },
+  "sidebar": {
+    "chats": "채팅",
+    "newChat": "새 채팅",
+    "searchChats": "채팅 검색...",
+    "noResults": "결과 없음",
+    "tryDifferent": "다른 검색어를 시도해 보세요",
+    "folders": "폴더",
+    "uncategorized": "미분류",
+    "backToAll": "전체로 돌아가기",
+    "newFolder": "새 폴더",
+    "folderName": "폴더 이름...",
+    "expandSidebar": "사이드바 펼치기",
+    "collapseSidebar": "사이드바 접기",
+    "deleteFolder": "폴더 삭제",
+    "deleteFolderConfirm": "이 폴더를 삭제하시겠습니까? 채팅이 미분류로 이동됩니다."
+  },
+  "chat": {
+    "you": "나",
+    "ai": "AI",
+    "typeMessage": "메시지를 입력하세요...",
+    "send": "전송",
+    "regenerate": "재생성",
+    "copy": "복사",
+    "copied": "복사됨!",
+    "edit": "편집",
+    "saveEdit": "저장",
+    "cancelEdit": "취소",
+    "newChat": "새 대화",
+    "selectTemplate": "템플릿 선택",
+    "templates": "템플릿",
+    "enterToSend": "Enter로 전송, Shift+Enter로 줄바꿈",
+    "editMessage": "메시지 편집",
+    "saving": "저장 중...",
+    "ctrlEnterToSave": "Ctrl+Enter로 저장, Esc로 취소"
+  },
+  "settings": {
+    "title": "설정",
+    "description": "API 설정 및 환경설정을 구성합니다.",
+    "apiKey": "API 키",
+    "apiKeyPlaceholder": "sk-...",
+    "apiKeySet": "API 키가 설정되었습니다. 새 키를 입력하여 업데이트하세요.",
+    "baseUrl": "기본 URL (선택사항)",
+    "baseUrlPlaceholder": "https://api.openai.com/v1",
+    "baseUrlHint": "기본 OpenAI API를 사용하려면 비워두세요.",
+    "model": "모델",
+    "selectModel": "모델 선택",
+    "modelParameters": "모델 매개변수",
+    "temperature": "온도",
+    "temperatureHint": "낮음=더 집중적, 높음=더 창의적",
+    "topP": "Top P",
+    "topPHint": "핵 샘플링 임계값",
+    "maxTokens": "최대 토큰 수",
+    "maxTokensHint": "AI 응답의 최대 길이",
+    "connectionSuccessful": "연결 성공",
+    "connectionFailed": "연결 실패",
+    "settingsSaved": "설정이 저장되었습니다",
+    "settingsSaveFailed": "설정 저장 실패"
+  },
+  "ollama": {
+    "title": "Ollama (로컬 모델)",
+    "download": "Ollama 다운로드",
+    "online": "Ollama 온라인",
+    "offline": "Ollama 오프라인",
+    "models": "{{count}}개의 로컬 모델",
+    "installedModels": "설치된 모델:",
+    "testConnection": "Ollama 연결 테스트",
+    "connectionSuccessful": "Ollama 연결 성공",
+    "connectionFailed": "Ollama 연결 실패",
+    "statusRefreshed": "Ollama 상태 새로고침",
+    "refreshStatus": "상태 새로고침"
+  },
+  "update": {
+    "available": "업데이트 가능",
+    "newVersion": "새 버전 ({{version}})을 사용할 수 있습니다!",
+    "download": "다운로드",
+    "later": "나중에",
+    "installing": "업데이트 설치 중...",
+    "installed": "업데이트 완료! 재시작 중...",
+    "checking": "업데이트 확인 중...",
+    "downloading": "업데이트 다운로드 중...",
+    "updateNow": "지금 업데이트"
+  },
+  "keyboard": {
+    "title": "키보드 단축키",
+    "newChat": "새 채팅",
+    "search": "채팅 검색",
+    "settings": "설정 열기",
+    "toggleSidebar": "사이드바 전환",
+    "send": "메시지 전송",
+    "newLine": "메시지 줄바꿈",
+    "close": "대화상자 닫기",
+    "showHelp": "단축키 도움말 표시",
+    "pressToOpen": "{{key1}} 또는 {{key2}}를 눌러 언제든 이 도움말 열기"
+  },
+  "export": {
+    "title": "채팅 내보내기",
+    "markdown": "Markdown (.md)",
+    "json": "JSON (.json)",
+    "text": "일반 텍스트 (.txt)"
+  },
+  "language": {
+    "title": "언어",
+    "en": "English",
+    "zh": "中文",
+    "ja": "日本語",
+    "ko": "한국어",
+    "es": "Español"
+  },
+  "modelSelector": {
+    "cloudModels": "클라우드 모델",
+    "localModels": "로컬 모델 (Ollama)",
+    "ollamaOffline": "Ollama 오프라인",
+    "ollamaHint": "Ollama 서비스가 실행 중인지 확인하세요"
+  },
+  "templates": {
+    "title": "프롬프트 템플릿",
+    "newTemplate": "+ 새 템플릿",
+    "all": "전체",
+    "name": "이름",
+    "namePlaceholder": "템플릿 이름",
+    "content": "내용",
+    "contentPlaceholder": "템플릿 내용. {변수명}을 플레이스홀더로 사용.",
+    "categories": {
+      "writing": "글쓰기",
+      "coding": "프로그래밍",
+      "analysis": "분석",
+      "translation": "번역",
+      "custom": "사용자 정의"
+    }
+  }
+}
