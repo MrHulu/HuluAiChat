@@ -3,6 +3,7 @@
  * 显示 Ollama 服务状态和本地模型信息
  */
 import { Server, Loader2, RefreshCw } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +30,8 @@ export function OllamaStatus({
   baseUrl,
   version,
 }: OllamaStatusProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex items-center justify-between p-3 rounded-lg border bg-card">
       <div className="flex items-center gap-3">
@@ -47,11 +50,11 @@ export function OllamaStatus({
         {/* 状态信息 */}
         <div className="flex flex-col">
           <span className="text-sm font-medium">
-            {available ? "Ollama 在线" : "Ollama 离线"}
+            {available ? t("ollama.online") : t("ollama.offline")}
           </span>
           {available && (
             <span className="text-xs text-muted-foreground">
-              {modelCount} 个本地模型
+              {t("ollama.models", { count: modelCount })}
               {version && ` · ${version}`}
             </span>
           )}
@@ -74,7 +77,7 @@ export function OllamaStatus({
         ) : (
           <RefreshCw className="h-4 w-4" />
         )}
-        <span className="sr-only">刷新状态</span>
+        <span className="sr-only">{t("ollama.refreshStatus")}</span>
       </Button>
     </div>
   );
@@ -95,6 +98,8 @@ export function OllamaStatusIndicator({
   modelCount,
   showText = true,
 }: OllamaStatusIndicatorProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex items-center gap-1.5">
       <div
@@ -107,7 +112,7 @@ export function OllamaStatusIndicator({
       />
       {showText && (
         <span className="text-xs text-muted-foreground">
-          {available ? `${modelCount} 本地` : "离线"}
+          {available ? `${modelCount} ${t("ollama.online")}` : t("ollama.offline")}
         </span>
       )}
     </div>

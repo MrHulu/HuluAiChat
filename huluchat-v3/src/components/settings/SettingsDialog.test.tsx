@@ -321,10 +321,12 @@ describe("SettingsDialog", () => {
       await user.click(button);
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /test/i })).toBeInTheDocument();
+        // Find the API Test button (not Ollama test button)
+        const testButtons = screen.getAllByRole("button", { name: /^Test$/ });
+        expect(testButtons.length).toBeGreaterThan(0);
       });
 
-      const testButton = screen.getByRole("button", { name: /test/i });
+      const testButton = screen.getAllByRole("button", { name: /^Test$/ })[0];
       await user.click(testButton);
 
       await waitFor(() => {
@@ -340,10 +342,11 @@ describe("SettingsDialog", () => {
       await user.click(button);
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /test/i })).toBeInTheDocument();
+        const testButtons = screen.getAllByRole("button", { name: /^Test$/ });
+        expect(testButtons.length).toBeGreaterThan(0);
       });
 
-      const testButton = screen.getByRole("button", { name: /test/i });
+      const testButton = screen.getAllByRole("button", { name: /^Test$/ })[0];
       await user.click(testButton);
 
       await waitFor(() => {
@@ -361,10 +364,11 @@ describe("SettingsDialog", () => {
       await user.click(button);
 
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /test/i })).toBeInTheDocument();
+        const testButtons = screen.getAllByRole("button", { name: /^Test$/ });
+        expect(testButtons.length).toBeGreaterThan(0);
       });
 
-      const testButton = screen.getByRole("button", { name: /test/i });
+      const testButton = screen.getAllByRole("button", { name: /^Test$/ })[0];
       await user.click(testButton);
 
       await waitFor(() => {
@@ -385,8 +389,8 @@ describe("SettingsDialog", () => {
       await user.click(button);
 
       await waitFor(() => {
-        const testButton = screen.getByRole("button", { name: /test/i });
-        expect(testButton).toBeDisabled();
+        const testButtons = screen.getAllByRole("button", { name: /^Test$/ });
+        expect(testButtons[0]).toBeDisabled();
       });
     });
   });
@@ -451,8 +455,8 @@ describe("SettingsDialog", () => {
       await user.click(button);
 
       await waitFor(() => {
-        // 实际文本是 "Ollama (本地模型)"
-        expect(screen.getByText(/ollama.*本地模型|本地模型.*ollama/i)).toBeInTheDocument();
+        // Ollama section with Local Models text
+        expect(screen.getByText(/ollama.*local|local.*ollama/i)).toBeInTheDocument();
       });
     });
 
@@ -462,8 +466,8 @@ describe("SettingsDialog", () => {
       render(<SettingsDialog open={true} onOpenChange={vi.fn()} />);
 
       await waitFor(() => {
-        // 实际文本是 "Ollama 在线" 或显示 URL
-        expect(screen.getByText(/在线|localhost/i)).toBeInTheDocument();
+        // Online or URL
+        expect(screen.getByText(/online|localhost/i)).toBeInTheDocument();
       });
     });
 
@@ -486,8 +490,8 @@ describe("SettingsDialog", () => {
       render(<SettingsDialog open={true} onOpenChange={vi.fn()} />);
 
       await waitFor(() => {
-        // 实际文本是 "Ollama 离线"
-        expect(screen.getByText(/离线/i)).toBeInTheDocument();
+        // Offline text
+        expect(screen.getByText(/offline/i)).toBeInTheDocument();
       });
     });
 
@@ -500,7 +504,7 @@ describe("SettingsDialog", () => {
 
       // 当前实现没有 URL 输入框，跳过此测试
       await waitFor(() => {
-        expect(screen.getByText(/ollama.*本地模型|本地模型.*ollama/i)).toBeInTheDocument();
+        expect(screen.getByText(/ollama.*local|local.*ollama/i)).toBeInTheDocument();
       });
     });
 
@@ -513,7 +517,7 @@ describe("SettingsDialog", () => {
 
       // 当前实现没有 URL 输入框，只验证 Ollama 区域存在
       await waitFor(() => {
-        expect(screen.getByText(/ollama.*本地模型|本地模型.*ollama/i)).toBeInTheDocument();
+        expect(screen.getByText(/ollama.*local|local.*ollama/i)).toBeInTheDocument();
       });
     });
 
@@ -526,12 +530,12 @@ describe("SettingsDialog", () => {
         await user.click(button);
 
         await waitFor(() => {
-          // 实际按钮文本是 "测试 Ollama 连接"
-          const ollamaTestButton = screen.getByRole("button", { name: /测试.*ollama|ollama.*测试/i });
+          // Test Ollama Connection button
+          const ollamaTestButton = screen.getByRole("button", { name: /test.*ollama|ollama.*connection/i });
           expect(ollamaTestButton).toBeInTheDocument();
         });
 
-        const ollamaTestButton = screen.getByRole("button", { name: /测试.*ollama|ollama.*测试/i });
+        const ollamaTestButton = screen.getByRole("button", { name: /test.*ollama|ollama.*connection/i });
         await user.click(ollamaTestButton);
 
         await waitFor(() => {
@@ -543,13 +547,13 @@ describe("SettingsDialog", () => {
         const user = userEvent.setup();
         mockTestOllamaConnection.mockResolvedValue({
           status: "ok",
-          message: "Ollama 连接成功"
+          message: "Ollama connection successful"
         });
 
         render(<SettingsDialog open={true} onOpenChange={vi.fn()} />);
 
         await waitFor(async () => {
-          const ollamaTestButton = screen.getByRole("button", { name: /测试.*ollama|ollama.*测试/i });
+          const ollamaTestButton = screen.getByRole("button", { name: /test.*ollama|ollama.*connection/i });
           await user.click(ollamaTestButton);
         });
 
@@ -561,12 +565,12 @@ describe("SettingsDialog", () => {
 
       it("should show error message on failed Ollama connection test", async () => {
         const user = userEvent.setup();
-        mockTestOllamaConnection.mockRejectedValue(new Error("无法连接到 Ollama"));
+        mockTestOllamaConnection.mockRejectedValue(new Error("Cannot connect to Ollama"));
 
         render(<SettingsDialog open={true} onOpenChange={vi.fn()} />);
 
         await waitFor(async () => {
-          const ollamaTestButton = screen.getByRole("button", { name: /测试.*ollama|ollama.*测试/i });
+          const ollamaTestButton = screen.getByRole("button", { name: /test.*ollama|ollama.*connection/i });
           await user.click(ollamaTestButton);
         });
 
@@ -588,7 +592,7 @@ describe("SettingsDialog", () => {
         render(<SettingsDialog open={true} onOpenChange={vi.fn()} />);
 
         await waitFor(async () => {
-          const ollamaTestButton = screen.getByRole("button", { name: /测试.*ollama|ollama.*测试/i });
+          const ollamaTestButton = screen.getByRole("button", { name: /test.*ollama|ollama.*connection/i });
           await user.click(ollamaTestButton);
         });
 
@@ -626,7 +630,7 @@ describe("SettingsDialog", () => {
 
         // 当没有模型时，不显示模型列表，但显示 Ollama 区域
         await waitFor(() => {
-          expect(screen.getByText(/ollama.*本地模型|本地模型.*ollama/i)).toBeInTheDocument();
+          expect(screen.getByText(/ollama.*local|local.*ollama/i)).toBeInTheDocument();
         });
       });
 
@@ -637,7 +641,7 @@ describe("SettingsDialog", () => {
 
         // 应该不崩溃，显示 Ollama 区域（即使出错）
         await waitFor(() => {
-          expect(screen.getByText(/ollama.*本地模型|本地模型.*ollama/i)).toBeInTheDocument();
+          expect(screen.getByText(/ollama.*local|local.*ollama/i)).toBeInTheDocument();
         });
       });
 
@@ -669,7 +673,7 @@ describe("SettingsDialog", () => {
         render(<SettingsDialog open={true} onOpenChange={vi.fn()} />);
 
         await waitFor(() => {
-          expect(screen.getByText(/ollama.*本地模型|本地模型.*ollama/i)).toBeInTheDocument();
+          expect(screen.getByText(/ollama.*local|local.*ollama/i)).toBeInTheDocument();
         });
       });
 
@@ -689,7 +693,7 @@ describe("SettingsDialog", () => {
 
         await waitFor(() => {
           // 验证 Ollama 区域存在
-          expect(screen.getByText(/ollama.*本地模型|本地模型.*ollama/i)).toBeInTheDocument();
+          expect(screen.getByText(/ollama.*local|local.*ollama/i)).toBeInTheDocument();
         });
       });
     });

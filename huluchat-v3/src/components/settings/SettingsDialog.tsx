@@ -3,6 +3,7 @@
  * API Key configuration, model selection, Ollama settings, and other settings
  */
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Settings, Check, AlertCircle, Loader2, Server, ExternalLink, Sliders } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -43,6 +44,7 @@ interface SettingsDialogProps {
 }
 
 export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenChange }: SettingsDialogProps) {
+  const { t } = useTranslation();
   const [internalOpen, setInternalOpen] = useState(false);
 
   // Support both controlled and uncontrolled modes
@@ -159,11 +161,11 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
       await updateSettings(updateData);
       setHasApiKey(true);
       setApiKey(""); // Clear the input after save
-      toast.success("Settings saved successfully");
+      toast.success(t("settings.settingsSaved"));
       onSettingsChange?.();
     } catch (error) {
       console.error("Failed to save settings:", error);
-      toast.error("Failed to save settings");
+      toast.error(t("settings.settingsSaveFailed"));
     } finally {
       setSaving(false);
     }
@@ -175,9 +177,9 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
     try {
       const result = await testConnection();
       setTestResult({ success: true, message: result.message });
-      toast.success("Connection successful");
+      toast.success(t("settings.connectionSuccessful"));
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Connection failed";
+      const message = error instanceof Error ? error.message : t("settings.connectionFailed");
       setTestResult({
         success: false,
         message,
@@ -195,16 +197,16 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
       const result = await testOllamaConnection();
       setOllamaTestResult({ success: result.status === "ok", message: result.message });
       if (result.status === "ok") {
-        toast.success("Ollama 连接成功");
+        toast.success(t("ollama.connectionSuccessful"));
         // 刷新状态
         await loadOllamaStatus();
       } else {
         toast.error(result.message);
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : "连接失败";
+      const message = error instanceof Error ? error.message : t("settings.connectionFailed");
       setOllamaTestResult({ success: false, message });
-      toast.error("Ollama 连接失败");
+      toast.error(t("ollama.connectionFailed"));
     } finally {
       setTestingOllama(false);
     }
@@ -214,7 +216,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
     setRefreshingOllama(true);
     try {
       await loadOllamaStatus();
-      toast.success("Ollama 状态已刷新");
+      toast.success(t("ollama.statusRefreshed"));
     } finally {
       setRefreshingOllama(false);
     }
@@ -225,14 +227,14 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
       <DialogTrigger asChild>
         <Button variant="ghost" size="icon">
           <Settings className="h-5 w-5" />
-          <span className="sr-only">Settings</span>
+          <span className="sr-only">{t("settings.title")}</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Settings</DialogTitle>
+          <DialogTitle>{t("settings.title")}</DialogTitle>
           <DialogDescription>
-            Configure your API settings and preferences.
+            {t("settings.description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -244,12 +246,12 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
           <div className="grid gap-4 py-4">
             {/* API Key */}
             <div className="grid gap-2">
-              <Label htmlFor="apiKey">API Key</Label>
+              <Label htmlFor="apiKey">{t("settings.apiKey")}</Label>
               <div className="flex gap-2">
                 <Input
                   id="apiKey"
                   type="password"
-                  placeholder={hasApiKey ? "••••••••••••••••" : "sk-..."}
+                  placeholder={hasApiKey ? "••••••••••••••••" : t("settings.apiKeyPlaceholder")}
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
                   className="flex-1"
@@ -257,32 +259,32 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
               </div>
               {hasApiKey && !apiKey && (
                 <p className="text-xs text-muted-foreground">
-                  API key is set. Enter a new key to update.
+                  {t("settings.apiKeySet")}
                 </p>
               )}
             </div>
 
             {/* Base URL */}
             <div className="grid gap-2">
-              <Label htmlFor="baseUrl">Base URL (Optional)</Label>
+              <Label htmlFor="baseUrl">{t("settings.baseUrl")}</Label>
               <Input
                 id="baseUrl"
                 type="url"
-                placeholder="https://api.openai.com/v1"
+                placeholder={t("settings.baseUrlPlaceholder")}
                 value={baseUrl}
                 onChange={(e) => setBaseUrl(e.target.value)}
               />
               <p className="text-xs text-muted-foreground">
-                Leave empty for default OpenAI API.
+                {t("settings.baseUrlHint")}
               </p>
             </div>
 
             {/* Model Selection */}
             <div className="grid gap-2">
-              <Label htmlFor="model">Model</Label>
+              <Label htmlFor="model">{t("settings.model")}</Label>
               <Select value={model} onValueChange={setModel}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a model" />
+                  <SelectValue placeholder={t("settings.selectModel")} />
                 </SelectTrigger>
                 <SelectContent>
                   {models.map((m) => (
@@ -305,13 +307,13 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
             <div className="border-t pt-4 mt-2">
               <Label className="flex items-center gap-2 mb-3">
                 <Sliders className="h-4 w-4" />
-                Model Parameters
+                {t("settings.modelParameters")}
               </Label>
 
               {/* Temperature */}
               <div className="grid gap-2 mb-4">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="temperature" className="text-sm">Temperature</Label>
+                  <Label htmlFor="temperature" className="text-sm">{t("settings.temperature")}</Label>
                   <span className="text-xs text-muted-foreground">{temperature.toFixed(2)}</span>
                 </div>
                 <Input
@@ -325,14 +327,14 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                   className="h-2 w-full cursor-pointer"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Lower = more focused, Higher = more creative
+                  {t("settings.temperatureHint")}
                 </p>
               </div>
 
               {/* Top P */}
               <div className="grid gap-2 mb-4">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="topP" className="text-sm">Top P</Label>
+                  <Label htmlFor="topP" className="text-sm">{t("settings.topP")}</Label>
                   <span className="text-xs text-muted-foreground">{topP.toFixed(2)}</span>
                 </div>
                 <Input
@@ -346,13 +348,13 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                   className="h-2 w-full cursor-pointer"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Nucleus sampling threshold
+                  {t("settings.topPHint")}
                 </p>
               </div>
 
               {/* Max Tokens */}
               <div className="grid gap-2">
-                <Label htmlFor="maxTokens" className="text-sm">Max Tokens</Label>
+                <Label htmlFor="maxTokens" className="text-sm">{t("settings.maxTokens")}</Label>
                 <Input
                   id="maxTokens"
                   type="number"
@@ -363,7 +365,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                   onChange={(e) => setMaxTokens(parseInt(e.target.value) || 4096)}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Maximum length of AI response
+                  {t("settings.maxTokensHint")}
                 </p>
               </div>
             </div>
@@ -373,7 +375,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
               <div className="flex items-center justify-between mb-3">
                 <Label className="flex items-center gap-2">
                   <Server className="h-4 w-4" />
-                  Ollama (本地模型)
+                  {t("ollama.title")}
                 </Label>
                 <a
                   href="https://ollama.com"
@@ -381,7 +383,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                   rel="noopener noreferrer"
                   className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1"
                 >
-                  下载 Ollama
+                  {t("ollama.download")}
                   <ExternalLink className="h-3 w-3" />
                 </a>
               </div>
@@ -406,11 +408,11 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                   </div>
                   <div className="flex flex-col">
                     <span className="text-sm font-medium">
-                      {ollamaAvailable ? "Ollama 在线" : "Ollama 离线"}
+                      {ollamaAvailable ? t("ollama.online") : t("ollama.offline")}
                     </span>
                     {ollamaAvailable && (
                       <span className="text-xs text-muted-foreground">
-                        {ollamaModels.length} 个本地模型
+                        {t("ollama.models", { count: ollamaModels.length })}
                         {ollamaVersion && ` · ${ollamaVersion}`}
                       </span>
                     )}
@@ -428,14 +430,14 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                   <Loader2
                     className={`h-4 w-4 ${refreshingOllama ? "animate-spin" : ""}`}
                   />
-                  <span className="sr-only">刷新状态</span>
+                  <span className="sr-only">{t("ollama.refreshStatus")}</span>
                 </Button>
               </div>
 
               {/* Ollama Models List */}
               {ollamaAvailable && ollamaModels.length > 0 && (
                 <div className="mb-3">
-                  <p className="text-xs text-muted-foreground mb-2">已安装的模型:</p>
+                  <p className="text-xs text-muted-foreground mb-2">{t("ollama.installedModels")}</p>
                   <div className="flex flex-wrap gap-1.5">
                     {ollamaModels.map((m) => (
                       <span
@@ -478,7 +480,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                 {testingOllama ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
                 ) : null}
-                测试 Ollama 连接
+                {t("ollama.testConnection")}
               </Button>
             </div>
 
@@ -507,13 +509,13 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
             {testing ? (
               <Loader2 className="h-4 w-4 animate-spin mr-2" />
             ) : null}
-            Test
+            {t("common.test")}
           </Button>
           <Button onClick={handleSave} disabled={saving}>
             {saving ? (
               <Loader2 className="h-4 w-4 animate-spin mr-2" />
             ) : null}
-            Save
+            {t("common.save")}
           </Button>
         </DialogFooter>
       </DialogContent>
