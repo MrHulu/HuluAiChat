@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, cleanup } from "@testing-library/react";
+import { describe, it, expect, vi } from "vitest";
+import { render, screen } from "@testing-library/react";
 import { MessageItem } from "./MessageItem";
 import type { Message } from "@/api/client";
 
@@ -242,7 +242,7 @@ describe("MessageItem", () => {
   // Label style tests
   it("should apply correct label classes for user messages", () => {
     const message = createMessage("user", "User message");
-    const { container } = render(<MessageItem message={message} />);
+    render(<MessageItem message={message} />);
 
     const label = screen.getByText("You");
     expect(label).toHaveClass("text-primary-foreground/70");
@@ -250,7 +250,7 @@ describe("MessageItem", () => {
 
   it("should apply correct label classes for assistant messages", () => {
     const message = createMessage("assistant", "AI message");
-    const { container } = render(<MessageItem message={message} />);
+    render(<MessageItem message={message} />);
 
     const label = screen.getByText("AI");
     expect(label).toHaveClass("text-muted-foreground");

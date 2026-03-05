@@ -50,6 +50,7 @@ export function MessageList({ messages, streamingMessage, isLoading }: MessageLi
       // 使用 scrollIntoView 确保滚动到底部
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages.length, streamingMessage?.content]);
 
   // 空状态

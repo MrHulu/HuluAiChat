@@ -345,7 +345,7 @@ describe("App", () => {
       render(<App />);
 
       await act(async () => {
-        const result = await apiClient.exportSession("session-1", "md");
+        await apiClient.exportSession("session-1", "md");
         expect(apiClient.exportSession).toHaveBeenCalledWith("session-1", "md");
       });
     });
@@ -370,7 +370,7 @@ describe("App", () => {
       await act(async () => {
         try {
           await apiClient.exportSession("session-1", "md");
-        } catch (e) {
+        } catch {
           // Expected
         }
       });
@@ -407,7 +407,7 @@ describe("App", () => {
       await act(async () => {
         try {
           await apiClient.moveSessionToFolder("session-1", "f1");
-        } catch (e) {
+        } catch {
           // Expected
         }
       });

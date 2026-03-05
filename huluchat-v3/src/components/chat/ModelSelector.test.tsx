@@ -206,7 +206,7 @@ describe("ModelSelector", () => {
 
   it("should truncate long model names", () => {
     const longNameModel = [createModel("long-id", "A".repeat(50))];
-    const { container } = render(
+    render(
       <ModelSelector
         value="long-id"
         models={longNameModel}
@@ -279,7 +279,7 @@ describe("ModelSelector", () => {
 
   it("should align dropdown to end", async () => {
     const user = userEvent.setup();
-    const { container } = render(
+    render(
       <ModelSelector
         value="gpt-4"
         models={mockModels}
@@ -289,8 +289,6 @@ describe("ModelSelector", () => {
 
     await user.click(screen.getByRole("button"));
 
-    // The dropdown content should have align="end"
-    const dropdownContent = container.querySelector("[data-side]");
     // Just verify dropdown opened
     expect(screen.getByText("GPT-3.5 Turbo")).toBeInTheDocument();
   });
