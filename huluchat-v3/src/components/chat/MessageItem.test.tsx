@@ -242,18 +242,22 @@ describe("MessageItem", () => {
   // Label style tests
   it("should apply correct label classes for user messages", () => {
     const message = createMessage("user", "User message");
-    render(<MessageItem message={message} />);
+    const { container } = render(<MessageItem message={message} />);
 
-    const label = screen.getByText("You");
-    expect(label).toHaveClass("text-primary-foreground/70");
+    // Find the label container which has the text color class
+    const labelContainer = container.querySelector(".text-primary-foreground\\/70");
+    expect(labelContainer).toBeInTheDocument();
+    expect(labelContainer).toHaveTextContent("You");
   });
 
   it("should apply correct label classes for assistant messages", () => {
     const message = createMessage("assistant", "AI message");
-    render(<MessageItem message={message} />);
+    const { container } = render(<MessageItem message={message} />);
 
-    const label = screen.getByText("AI");
-    expect(label).toHaveClass("text-muted-foreground");
+    // Find the label container which has the text color class
+    const labelContainer = container.querySelector(".text-muted-foreground");
+    expect(labelContainer).toBeInTheDocument();
+    expect(labelContainer).toHaveTextContent("AI");
   });
 
   // Max width constraint test
