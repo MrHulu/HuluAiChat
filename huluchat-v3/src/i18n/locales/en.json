@@ -42,7 +42,19 @@
     "enterToSend": "Press Enter to send, Shift+Enter for new line",
     "editMessage": "Edit message",
     "saving": "Saving...",
-    "ctrlEnterToSave": "Ctrl+Enter to save, Esc to cancel"
+    "ctrlEnterToSave": "Ctrl+Enter to save, Esc to cancel",
+    "title": "Chat",
+    "selectSession": "Select or create a session",
+    "selectSessionToChat": "Select a session to start chatting...",
+    "startConversation": "Start a conversation",
+    "startConversationHint": "Send a message to begin chatting with AI",
+    "thinking": "Thinking...",
+    "messageUpdated": "Message updated",
+    "messageUpdateFailed": "Failed to update message",
+    "connecting": "Connecting...",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "connectionError": "Connection Error"
   },
   "settings": {
     "title": "Settings",
