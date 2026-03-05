@@ -10,17 +10,20 @@ import { ConnectionStatus } from "@/hooks/useWebSocket";
 import { cn } from "@/lib/utils";
 import { updateMessage } from "@/api/client";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export interface ChatViewProps {
   sessionId: string | null;
 }
 
 function ConnectionIndicator({ status }: { status: ConnectionStatus }) {
+  const { t } = useTranslation();
+
   const statusConfig = {
-    connecting: { color: "bg-yellow-500", text: "Connecting..." },
-    connected: { color: "bg-green-500", text: "Connected" },
-    disconnected: { color: "bg-red-500", text: "Disconnected" },
-    error: { color: "bg-red-500", text: "Connection Error" },
+    connecting: { color: "bg-yellow-500", text: t("chat.connecting") },
+    connected: { color: "bg-green-500", text: t("chat.connected") },
+    disconnected: { color: "bg-red-500", text: t("chat.disconnected") },
+    error: { color: "bg-red-500", text: t("chat.connectionError") },
   };
 
   const config = statusConfig[status];
@@ -34,6 +37,7 @@ function ConnectionIndicator({ status }: { status: ConnectionStatus }) {
 }
 
 export function ChatView({ sessionId }: ChatViewProps) {
+  const { t } = useTranslation();
   const { messages, streamingMessage, connectionStatus, sendMessage, isLoading, refreshMessages } =
     useChat(sessionId);
   const { currentModel, models, setModel, isLoading: isLoadingModels, parameters } = useModel();
@@ -51,10 +55,10 @@ export function ChatView({ sessionId }: ChatViewProps) {
     try {
       await updateMessage(sessionId, messageId, newContent);
       refreshMessages?.();
-      toast.success("Message updated");
+      toast.success(t("chat.messageUpdated"));
     } catch (error) {
       console.error("Failed to update message:", error);
-      toast.error("Failed to update message");
+      toast.error(t("chat.messageUpdateFailed"));
     }
   };
 
@@ -64,7 +68,7 @@ export function ChatView({ sessionId }: ChatViewProps) {
       <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-background/50 backdrop-blur-sm">
         <div className="flex items-center gap-3">
           <div className="text-sm font-medium text-foreground">
-            {sessionId ? "Chat" : "Select or create a session"}
+            {sessionId ? t("chat.title") : t("chat.selectSession")}
           </div>
           {/* 模型选择器 */}
           {sessionId && (
@@ -94,8 +98,8 @@ export function ChatView({ sessionId }: ChatViewProps) {
         disabled={isDisabled || !sessionId}
         placeholder={
           !sessionId
-            ? "Select a session to start chatting..."
-            : "Type a message..."
+            ? t("chat.selectSessionToChat")
+            : t("chat.typeMessage")
         }
       />
     </div>
