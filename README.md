@@ -1,7 +1,7 @@
 # 🍵 HuluChat
 
 > **极简、跨平台 AI 聊天桌面应用**
-> 支持 GPT-4、Claude、Gemini 等多模型快速切换，会话分组管理
+> 支持 GPT-4、Claude、Gemini 等多模型快速切换，会话分组管理，18 种语言界面
 
 [English](README_EN.md) | 中文
 
@@ -26,6 +26,9 @@
 
 ### 🌙 深色模式
 精心设计的深色主题，保护你的眼睛。
+
+### 🌐 多语言支持
+支持 18 种语言界面：English、中文、日本語、한국어、Español、Français、Deutsch、Português、Italiano、Русский、العربية、Nederlands、Polski、Türkçe、हिन्दी、Tiếng Việt、ไทย、Bahasa Indonesia
 
 ### ⚡ 自动更新
 永远保持最新版本，无需手动下载。
@@ -177,8 +180,10 @@ huluchat-v3/
 
 查看完整更新日志：[docs/changelog.md](docs/changelog.md)
 
-### 最新版本 v3.8.0 (2026-03-04)
+### 最新版本 v3.22.0 (2026-03-06)
 
+- 🌐 18 种语言支持 - 覆盖全球 65% 用户
+- ⚡ i18n 懒加载 - 初始加载减少 94%
 - 🤖 AI 模型快速切换 - 一键切换不同模型
 - 📁 会话分组/文件夹 - 用文件夹整理对话
 - 🔄 GitHub Actions CI/CD - 多平台自动构建
