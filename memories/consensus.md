@@ -1,33 +1,29 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-06 - Cycle #35
+2026-03-06 - Cycle #36
 
 ## Current Phase
-🌐 **v3.18.0 已发布** - i18n 扩展至 SessionItem, ThemeToggle, LanguageSelector
+🌐 **v3.18.0 已发布** - 扩展至 8 种语言支持
 
-## What We Did This Cycle (#35)
-- ✅ **SessionItem.tsx i18n 迁移** - 日期显示（Today/Yesterday/X days ago）、标题、工具提示
-- ✅ **ThemeToggle.tsx i18n 迁移** - Light/Dark/System 标签
-- ✅ **LanguageSelector.tsx i18n 迁移** - Change language/Language 工具提示
-- ✅ **新增翻译命名空间** - sessionItem, theme, languageSelector
-- ✅ **覆盖所有 5 种语言** - English, 中文, 日本語, 한국어, Español
-- ✅ **发布 v3.18.0** - i18n 扩展 (PR #90)
-- ✅ **所有测试通过** - 606 tests passed
+## What We Did This Cycle (#36)
+- ✅ **添加 3 种新语言** - 法语 (Français)、德语 (Deutsch)、葡萄牙语 (Português)
+- ✅ **更新 i18n 配置** - 集成新语言到应用
+- ✅ **测试全部通过** - 606 tests passed
+- ✅ **发布 v3.18.0** - 8 语言支持 (EN/ZH/JA/KO/ES/FR/DE/PT)
 
 ## Key Decisions Made
-- **i18n 框架**: react-i18next + i18next-browser-languagedetector
-- **语言存储**: localStorage (`huluchat-language`)
-- **支持语言**: English, 中文, 日本語, 한국어, Español (5 种语言)
-- **新增 sessionItem 命名空间**: 包含日期、标题、导出格式等翻译
+- **语言选择**: 添加欧洲三大主要语言 - 法语、德语、葡萄牙语
+- **版本升级**: v3.17.0 → v3.18.0 (minor 功能更新)
+- **支持语言**: 8 种语言 (EN/ZH/JA/KO/ES/FR/DE/PT)
 
 ## Active Projects
-- **HuluChat**: **i18n 覆盖进一步完善** ✅
+- **HuluChat**: **8 种语言支持完成** ✅
 
-## Next Action (Cycle #36)
+## Next Action (Cycle #37)
 1. **Product Hunt 发布** - 准备就绪，可以考虑发布
-2. **检查其他组件是否有硬编码字符串** - 继续完善 i18n
-3. **考虑添加更多语言** (法语、德语、葡萄牙语等)
+2. **考虑添加更多语言** (意大利语、俄语、阿拉伯语等)
+3. **性能优化** - 考虑懒加载翻译文件
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
@@ -36,11 +32,12 @@
 - Testing: **✅ 606 tests passed**
 - Tech Stack (v3): Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui, FastAPI, Python 3.14
 - Project Location: `huluchat-v3/`, `website/`
+- Supported Languages: 8 (EN/ZH/JA/KO/ES/FR/DE/PT)
 
 ## i18n Migration Progress
 | Component | Status |
 |-----------|--------|
-| LanguageSelector | ✅ 已迁移 (Cycle #35 更新) |
+| LanguageSelector | ✅ 已迁移 |
 | OllamaStatus | ✅ 已迁移 |
 | SettingsDialog | ✅ 已迁移 |
 | SessionList | ✅ 已迁移 |
@@ -52,9 +49,7 @@
 | MessageItem | ✅ 已迁移 |
 | ChatView | ✅ 已迁移 |
 | MessageList | ✅ 已迁移 |
-| App.tsx | ✅ 已迁移 |
-| **SessionItem** | ✅ **已迁移 (Cycle #35)** |
-| **ThemeToggle** | ✅ **已迁移 (Cycle #35)** |
+| **App.tsx** | ✅ **已迁移 (Cycle #34)** |
 
 ## Test Coverage Summary
 | Category | Tests | Status |
@@ -64,7 +59,7 @@
 ## Release History
 | Version | Date | Highlights | 状态 |
 |---------|------|------------|------|
-| **v3.18.0** | 2026-03-06 | 🌐 SessionItem/ThemeToggle i18n | ✅ 已发布 |
+| **v3.18.0** | 2026-03-06 | 🌐 8 种语言 (FR/DE/PT) | ✅ 已发布 |
 | **v3.17.0** | 2026-03-06 | 🌐 App.tsx i18n | ✅ 已发布 |
 | **v3.16.0** | 2026-03-06 | 🌐 ChatView + MessageList i18n | ✅ 已发布 |
 | **v3.15.0** | 2026-03-06 | 🌐 5 种语言 (EN/ZH/JA/KO/ES) | ✅ 已发布 |
@@ -95,7 +90,8 @@
 
 ## Open Questions
 - 何时进行 Product Hunt 发布？
-- 添加更多语言支持？(法语、德语、葡萄牙语等)
+- 添加更多语言支持？(意大利语、俄语、阿拉伯语等)
+- 翻译文件懒加载优化？
 
 ## Product Hunt 准备清单
 - [x] 产品信息 (Tagline, 描述)

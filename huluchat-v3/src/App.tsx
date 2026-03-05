@@ -198,7 +198,7 @@ function App() {
           <div className="flex items-center gap-3">
             <h1 className="text-lg font-bold">HuluChat</h1>
             <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-              v3.17.0
+              v3.18.0
             </span>
           </div>
           <div className="flex items-center gap-2">
