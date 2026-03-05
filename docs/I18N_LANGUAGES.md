@@ -2,14 +2,14 @@
 
 ## Overview
 
-HuluChat supports **54 languages** with lazy loading for optimal performance.
+HuluChat supports **59 languages** with lazy loading for optimal performance.
 
 | Metric | Before | After | Savings |
 |--------|--------|-------|---------|
 | Initial i18n load | ~120 KB | ~5 KB | **~115 KB (96%)** |
 | Gzip initial | ~45 KB | ~2 KB | **~43 KB (96%)** |
 
-## Supported Languages (v3.30.0)
+## Supported Languages (v3.31.0)
 
 ### Global / Americas / Europe (20)
 
@@ -79,7 +79,7 @@ HuluChat supports **54 languages** with lazy loading for optimal performance.
 | 5 | Malay | `ms` | Bahasa Melayu | 80M |
 | 6 | Javanese | `jv` | Basa Jawa | 82M |
 
-### Africa (12)
+### Africa (17)
 
 | # | Language | Code | Native Name | Region | Speakers |
 |---|----------|------|-------------|--------|----------|
@@ -95,8 +95,13 @@ HuluChat supports **54 languages** with lazy loading for optimal performance.
 | 10 | Kinyarwanda | `rw` | Ikinyarwanda | East Africa | 12M |
 | 11 | Chichewa | `ny` | Chichewa | Southern Africa | 12M |
 | 12 | Shona | `sn` | ChiShona | Southern Africa | 15M |
+| 13 | Oromo | `om` | Afaan Oromoo | East Africa | 35M |
+| 14 | Tigrinya | `ti` | ትግርኛ | East Africa | 9M |
+| 15 | Fula | `ff` | Fulfulde | West Africa | 25M |
+| 16 | Wolof | `wo` | Wolof | West Africa | 12M |
+| 17 | Kikongo | `kg` | Kikongo | Central Africa | 7M |
 
-**Total Africa Coverage**: ~512M+ speakers
+**Total Africa Coverage**: ~600M+ speakers
 
 ---
 
@@ -104,13 +109,13 @@ HuluChat supports **54 languages** with lazy loading for optimal performance.
 
 ## Regional Coverage
 
-### 🌍 Africa (12 Languages)
+### 🌍 Africa (17 Languages)
 
 | Region | Languages | Coverage |
 |--------|-----------|----------|
-| West Africa | Hausa, Yoruba, Igbo | ~125M speakers |
-| East Africa | Swahili, Amharic, Somali, Kinyarwanda | ~304M+ speakers |
-| Central Africa | Lingala | ~40M speakers |
+| West Africa | Hausa, Yoruba, Igbo, Fula, Wolof | ~162M speakers |
+| East Africa | Swahili, Amharic, Somali, Kinyarwanda, Oromo, Tigrinya | ~348M+ speakers |
+| Central Africa | Lingala, Kikongo | ~47M speakers |
 | Southern Africa | Zulu, Afrikaans, Chichewa, Shona | ~46M speakers |
 
 ### 🌏 Asia (19 Languages)
@@ -195,7 +200,12 @@ huluchat-v3/src/i18n/
     ├── ln.json           # Lingala
     ├── rw.json           # Kinyarwanda
     ├── ny.json           # Chichewa
-    └── sn.json           # Shona
+    ├── sn.json           # Shona
+    ├── om.json           # Oromo
+    ├── ti.json           # Tigrinya
+    ├── ff.json           # Fula
+    ├── wo.json           # Wolof
+    └── kg.json           # Kikongo
 ```
 
 ### Lazy Loading
@@ -269,6 +279,7 @@ export const supportedLanguages = [
 
 | Version | Date | Languages Added | Total |
 |---------|------|-----------------|-------|
+| v3.31.0 | 2026-03-06 | Oromo, Tigrinya, Fula, Wolof, Kikongo (+5) | 59 |
 | v3.30.0 | 2026-03-06 | Kinyarwanda, Chichewa, Shona (+3) | 54 |
 | v3.29.0 | 2026-03-06 | Somali, Afrikaans, Lingala (+3) | 51 |
 | v3.28.0 | 2026-03-06 | Amharic, Hausa, Yoruba, Igbo, Zulu (+5) | 48 |
@@ -292,4 +303,4 @@ Arabic (`ar`), Hebrew (`he`), and Persian (`fa`) use Right-to-Left text directio
 
 ---
 
-*Last updated: 2026-03-06 (v3.30.0)*
+*Last updated: 2026-03-06 (v3.31.0)*

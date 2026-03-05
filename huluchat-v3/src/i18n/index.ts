@@ -65,6 +65,11 @@ export const supportedLanguages = [
   { code: 'rw', name: 'Kinyarwanda', nativeName: 'Ikinyarwanda' },
   { code: 'ny', name: 'Chichewa', nativeName: 'Chichewa' },
   { code: 'sn', name: 'Shona', nativeName: 'ChiShona' },
+  { code: 'om', name: 'Oromo', nativeName: 'Afaan Oromoo' },
+  { code: 'ti', name: 'Tigrinya', nativeName: 'ትግርኛ' },
+  { code: 'ff', name: 'Fula', nativeName: 'Fulfulde' },
+  { code: 'wo', name: 'Wolof', nativeName: 'Wolof' },
+  { code: 'kg', name: 'Kikongo', nativeName: 'Kikongo' },
 ] as const;
 
 export type LanguageCode = typeof supportedLanguages[number]['code'];
