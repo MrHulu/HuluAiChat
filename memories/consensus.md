@@ -1,48 +1,45 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-06 - Cycle #176
+2026-03-06 - Cycle #24
 
 ## Current Phase
-🚀 **v3.10.0 已合并** - CI 验证中
+🚀 **v3.10.0 CI 已通过** - 准备发布
 
-## What We Did This Cycle (#176)
-- ✅ **PR #75 创建并合并** - 模型参数调整功能
-- ✅ **PR #76 创建并合并** - 修复 TypeScript 类型检查错误
-- ✅ **PR #77 创建并合并** - 修复 ESLint 常量条件错误
+## What We Did This Cycle (#24)
+- ✅ **PR #77 合并后 CI 通过** - ESLint constant condition 修复有效
+- ✅ **PR #78 创建并合并** - ESLint warnings 修复 + workflow_dispatch 触发器
 - ✅ **本地测试通过** - 606 tests, typecheck, lint (0 errors)
 
 ## Changes Summary
 | PR | 内容 |
 |----|------|
-| **#75** | 模型参数功能 (Temperature, Top P, Max Tokens) |
-| **#76** | 修复 `ollamaModels` 未使用参数警告 |
 | **#77** | 修复 `refreshingOllama` 状态和常量条件错误 |
+| **#78** | ESLint warnings 修复 (25→3), CI workflow_dispatch |
 
 ## Key Decisions Made
-- **参数范围**: Temperature (0-2), Top P (0-1), Max Tokens (256-128000)
-- **UI 设计**: 使用滑块 + 数字显示，直观易用
-- **发布流程**: 通过 PR 合并（仓库规则要求）
+- **CI 改进**: 添加 workflow_dispatch 允许手动触发 CI
+- **代码清理**: 移除测试文件中未使用的导入和变量
+- **ESLint 配置**: 忽略 coverage 目录
 
 ## Active Projects
-- **HuluChat**: **v3.9.0 已发布** | v3.10.0 已合并 (等待 CI 验证)
+- **HuluChat**: **v3.9.0 已发布** | v3.10.0 CI 通过 (准备发布)
 
-## Next Action (Cycle #177)
+## Next Action (Cycle #25)
 
 ### 🚀 可推进的工作
-1. **检查 CI 状态** - 确认 v3.10.0 构建成功
-2. **发布 v3.10.0** - 如果 CI 通过，准备正式发布
-3. **下一个功能** - Ollama 模型下载 UI
+1. **发布 v3.10.0** - 创建 Release PR
+2. **下一个功能** - Ollama 模型下载 UI
+3. **Product Hunt 发布** - 需要截图/视频素材
 
 ### ⏸️ 等待用户
-- PR 审核和合并
 - 截图/视频素材制作（Product Hunt 发布需要）
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
 - Latest Release: **v3.9.0** ✅ 已发布 (2026-03-06)
-- Development: **v3.10.0** (PR #75 等待合并)
-- CI: **✅ 正常运行**
+- Development: **v3.10.0** (CI 通过，准备发布)
+- CI: **✅ 全部通过** (PR #77, #78)
 - Testing: **✅ 606 tests passed**
 - Tech Stack (v3): Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui, FastAPI, Python 3.14
 - Project Location: `huluchat-v3/`, `website/`
@@ -55,7 +52,7 @@
 ## Release History
 | Version | Date | Highlights | 状态 |
 |---------|------|------------|------|
-| **v3.10.0** | TBD | 🎛️ 模型参数调整 | ✅ 已合并 (PR #75, #76, #77) |
+| **v3.10.0** | TBD | 🎛️ 模型参数调整 | ✅ CI 通过 (PR #75, #76, #77, #78) |
 | **v3.9.0** | 2026-03-06 | 🏠 Ollama 本地模型支持 | ✅ 已发布 |
 | **v3.8.0** | 2026-03-04 | 🤖 AI 模型快速切换 | ✅ 已发布 |
 | **v3.7.0** | 2026-03-04 | 📁 会话分组/文件夹 | ✅ 已发布 |
