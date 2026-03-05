@@ -150,5 +150,16 @@
       "translation": "翻訳",
       "custom": "カスタム"
     }
+  },
+  "app": {
+    "deleteConfirm": "この会話を削除しますか？",
+    "exportSuccess": "{{format}} としてエクスポートしました",
+    "exportFailed": "セッションのエクスポートに失敗しました",
+    "folderCreated": "フォルダ「{{name}}」を作成しました",
+    "folderRenamed": "フォルダ名を「{{name}}」に変更しました",
+    "deleteFolderConfirm": "フォルダ「{{name}}」を削除しますか？セッションは未分類に移動されます。",
+    "folderDeleted": "フォルダ「{{name}}」を削除しました",
+    "movedTo": "{{name}} に移動しました",
+    "moveFailed": "セッションの移動に失敗しました"
   }
 }
