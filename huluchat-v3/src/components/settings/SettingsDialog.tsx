@@ -4,7 +4,7 @@
  */
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { Settings, Check, AlertCircle, Loader2, Server, ExternalLink } from "lucide-react";
+import { Settings, Check, AlertCircle, Loader2, Server, ExternalLink, Sliders } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -59,6 +59,11 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
   const [model, setModel] = useState("");
   const [hasApiKey, setHasApiKey] = useState(false);
 
+  // Model parameters state
+  const [temperature, setTemperature] = useState(0.7);
+  const [topP, setTopP] = useState(1.0);
+  const [maxTokens, setMaxTokens] = useState(4096);
+
   // Models
   const [models, setModels] = useState<ModelInfo[]>([]);
 
@@ -103,6 +108,10 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
       setBaseUrl(settings.openai_base_url || "");
       setModel(settings.openai_model);
       setHasApiKey(settings.has_api_key);
+      // Load model parameters
+      setTemperature(settings.temperature ?? 0.7);
+      setTopP(settings.top_p ?? 1.0);
+      setMaxTokens(settings.max_tokens ?? 4096);
       if (settings.has_api_key) {
         setApiKey(""); // Don't show the actual key
       }
@@ -126,7 +135,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
     setSaving(true);
     setTestResult(null);
     try {
-      const updateData: Record<string, string> = {};
+      const updateData: Record<string, string | number> = {};
 
       // Only send API key if changed (not empty)
       if (apiKey.trim()) {
@@ -140,6 +149,11 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
       if (model) {
         updateData.openai_model = model;
       }
+
+      // Model parameters
+      updateData.temperature = temperature;
+      updateData.top_p = topP;
+      updateData.max_tokens = maxTokens;
 
       await updateSettings(updateData);
       setHasApiKey(true);
@@ -279,6 +293,73 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                   {models.find((m) => m.id === model)?.description}
                 </p>
               )}
+            </div>
+
+            {/* Model Parameters */}
+            <div className="border-t pt-4 mt-2">
+              <Label className="flex items-center gap-2 mb-3">
+                <Sliders className="h-4 w-4" />
+                Model Parameters
+              </Label>
+
+              {/* Temperature */}
+              <div className="grid gap-2 mb-4">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="temperature" className="text-sm">Temperature</Label>
+                  <span className="text-xs text-muted-foreground">{temperature.toFixed(2)}</span>
+                </div>
+                <Input
+                  id="temperature"
+                  type="range"
+                  min="0"
+                  max="2"
+                  step="0.1"
+                  value={temperature}
+                  onChange={(e) => setTemperature(parseFloat(e.target.value))}
+                  className="h-2 w-full cursor-pointer"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Lower = more focused, Higher = more creative
+                </p>
+              </div>
+
+              {/* Top P */}
+              <div className="grid gap-2 mb-4">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="topP" className="text-sm">Top P</Label>
+                  <span className="text-xs text-muted-foreground">{topP.toFixed(2)}</span>
+                </div>
+                <Input
+                  id="topP"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={topP}
+                  onChange={(e) => setTopP(parseFloat(e.target.value))}
+                  className="h-2 w-full cursor-pointer"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Nucleus sampling threshold
+                </p>
+              </div>
+
+              {/* Max Tokens */}
+              <div className="grid gap-2">
+                <Label htmlFor="maxTokens" className="text-sm">Max Tokens</Label>
+                <Input
+                  id="maxTokens"
+                  type="number"
+                  min="256"
+                  max="128000"
+                  step="256"
+                  value={maxTokens}
+                  onChange={(e) => setMaxTokens(parseInt(e.target.value) || 4096)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Maximum length of AI response
+                </p>
+              </div>
             </div>
 
             {/* Ollama Section */}

@@ -58,24 +58,35 @@ class OllamaService:
         self,
         messages: list[dict[str, str]],
         model: str = "llama2",
+        temperature: Optional[float] = None,
+        top_p: Optional[float] = None,
     ) -> AsyncIterator[StreamChunk]:
         """Stream chat completion from Ollama.
 
         Args:
             messages: List of message dicts with 'role' and 'content'
             model: Model name to use (without ollama: prefix)
+            temperature: Sampling temperature (0-2), defaults to settings.temperature
+            top_p: Nucleus sampling (0-1), defaults to settings.top_p
 
         Yields:
             StreamChunk objects containing content or error
         """
+        temperature = temperature if temperature is not None else settings.temperature
+        top_p = top_p if top_p is not None else settings.top_p
+
         payload = {
             "model": model,
             "messages": messages,
             "stream": True,
+            "options": {
+                "temperature": temperature,
+                "top_p": top_p,
+            },
         }
 
         try:
-            logger.info(f"Ollama stream_chat: model={model}, messages_count={len(messages)}")
+            logger.info(f"Ollama stream_chat: model={model}, messages_count={len(messages)}, temp={temperature}, top_p={top_p}")
 
             async with self.client.stream(
                 "POST",

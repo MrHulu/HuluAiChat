@@ -143,6 +143,10 @@ export interface AppSettings {
   openai_base_url: string | null;
   openai_model: string;
   has_api_key: boolean;
+  // Model parameters
+  temperature: number;
+  top_p: number;
+  max_tokens: number;
 }
 
 export interface ModelInfo {
@@ -167,6 +171,9 @@ export async function updateSettings(settings: Partial<{
   openai_api_key: string;
   openai_base_url: string;
   openai_model: string;
+  temperature: number;
+  top_p: number;
+  max_tokens: number;
 }>): Promise<AppSettings> {
   const response = await fetch(`${API_BASE}/settings/`, {
     method: "POST",
