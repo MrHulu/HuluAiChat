@@ -2,7 +2,7 @@
 
 ## Overview
 
-HuluChat supports **62 languages** with lazy loading for optimal performance.
+HuluChat supports **65 languages** with lazy loading for optimal performance.
 
 | Metric | Before | After | Savings |
 |--------|--------|-------|---------|
@@ -103,8 +103,11 @@ HuluChat supports **62 languages** with lazy loading for optimal performance.
 | 18 | Tswana | `tn` | Setswana | Southern Africa | 8M |
 | 19 | Xhosa | `xh` | isiXhosa | Southern Africa | 19M |
 | 20 | Bambara | `bm` | Bamanankan | West Africa | 15M |
+| 21 | Luganda | `lg` | Luganda | East Africa | 10M |
+| 22 | Runyankole | `nyn` | Runyankole | East Africa | 2.5M |
+| 23 | Kikuyu | `ki` | Gĩkũyũ | East Africa | 8M |
 
-**Total Africa Coverage**: ~680M+ speakers
+**Total Africa Coverage**: ~700M+ speakers
 
 ---
 
@@ -112,12 +115,12 @@ HuluChat supports **62 languages** with lazy loading for optimal performance.
 
 ## Regional Coverage
 
-### 🌍 Africa (20 Languages)
+### 🌍 Africa (23 Languages)
 
 | Region | Languages | Coverage |
 |--------|-----------|----------|
 | West Africa | Hausa, Yoruba, Igbo, Fula, Wolof, Bambara | ~177M speakers |
-| East Africa | Swahili, Amharic, Somali, Kinyarwanda, Oromo, Tigrinya | ~348M+ speakers |
+| East Africa | Swahili, Amharic, Somali, Kinyarwanda, Oromo, Tigrinya, Luganda, Runyankole, Kikuyu | ~368M+ speakers |
 | Central Africa | Lingala, Kikongo | ~47M speakers |
 | Southern Africa | Zulu, Afrikaans, Chichewa, Shona, Tswana, Xhosa | ~73M speakers |
 
@@ -285,6 +288,7 @@ export const supportedLanguages = [
 
 | Version | Date | Languages Added | Total |
 |---------|------|-----------------|-------|
+| v3.33.0 | 2026-03-06 | Luganda, Runyankole, Kikuyu (+3) | 65 |
 | v3.32.0 | 2026-03-06 | Tswana, Xhosa, Bambara (+3) | 62 |
 | v3.31.0 | 2026-03-06 | Oromo, Tigrinya, Fula, Wolof, Kikongo (+5) | 59 |
 | v3.30.0 | 2026-03-06 | Kinyarwanda, Chichewa, Shona (+3) | 54 |
@@ -310,4 +314,4 @@ Arabic (`ar`), Hebrew (`he`), and Persian (`fa`) use Right-to-Left text directio
 
 ---
 
-*Last updated: 2026-03-06 (v3.32.0)*
+*Last updated: 2026-03-06 (v3.33.0)*
