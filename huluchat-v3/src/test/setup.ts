@@ -2,11 +2,15 @@ import "@testing-library/jest-dom/vitest";
 
 // Polyfill for Radix UI components
 // https://github.com/radix-ui/primitives/issues/1822
+interface MockPointerEventInit extends PointerEventInit {
+  currentTarget?: EventTarget | null;
+}
+
 class MockPointerEvent extends MouseEvent {
   currentTarget: EventTarget | null;
   pointerId: number;
 
-  constructor(type: string, props: PointerEventInit = {}) {
+  constructor(type: string, props: MockPointerEventInit = {}) {
     super(type, props);
     this.currentTarget = props.currentTarget || null;
     this.pointerId = props.pointerId || 0;
