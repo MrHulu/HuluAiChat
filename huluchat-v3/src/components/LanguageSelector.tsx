@@ -16,9 +16,6 @@ import { supportedLanguages } from "@/i18n";
 export function LanguageSelector() {
   const { i18n } = useTranslation();
 
-  const currentLang = supportedLanguages.find((l) => l.code === i18n.language);
-  const displayLabel = currentLang?.nativeName || "EN";
-
   const handleLanguageChange = (langCode: string) => {
     i18n.changeLanguage(langCode);
   };
