@@ -145,3 +145,57 @@ async def test_connection():
         return {"status": "success", "message": "Connection successful"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Connection failed: {str(e)}")
+
+
+# Ollama endpoints
+
+
+class OllamaStatusResponse(BaseModel):
+    """Ollama status response"""
+    available: bool
+    base_url: str
+
+
+class OllamaModelInfo(BaseModel):
+    """Ollama model information"""
+    name: str
+    size: int
+    modified_at: Optional[str] = None
+
+
+class OllamaModelsResponse(BaseModel):
+    """Ollama models list response"""
+    models: List[OllamaModelInfo]
+
+
+@router.get("/ollama/status", response_model=OllamaStatusResponse)
+async def get_ollama_status():
+    """Check if Ollama service is available."""
+    from services.ollama_service import ollama_service
+
+    available = await ollama_service.is_available()
+    return OllamaStatusResponse(
+        available=available,
+        base_url=settings.ollama_base_url,
+    )
+
+
+@router.get("/ollama/models", response_model=OllamaModelsResponse)
+async def get_ollama_models():
+    """Get list of installed Ollama models."""
+    from services.ollama_service import ollama_service
+
+    if not settings.ollama_enabled:
+        return OllamaModelsResponse(models=[])
+
+    models = await ollama_service.list_models()
+    return OllamaModelsResponse(
+        models=[
+            OllamaModelInfo(
+                name=m.get("name", ""),
+                size=m.get("size", 0),
+                modified_at=m.get("modified_at"),
+            )
+            for m in models
+        ]
+    )

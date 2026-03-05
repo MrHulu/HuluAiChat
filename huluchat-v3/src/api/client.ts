@@ -4,6 +4,31 @@
 
 const API_BASE = "http://127.0.0.1:8765/api";
 
+// ============== Ollama Types ==============
+
+/**
+ * 模型提供者类型
+ */
+export type ModelProvider = "openai" | "ollama";
+
+/**
+ * Ollama 模型信息
+ */
+export interface OllamaModel {
+  name: string;
+  size: number;
+  modified_at: string;
+}
+
+/**
+ * Ollama 服务状态
+ */
+export interface OllamaStatus {
+  available: boolean;
+  base_url: string;
+  version?: string;
+}
+
 export interface Session {
   id: string;
   title: string;
@@ -124,6 +149,7 @@ export interface ModelInfo {
   id: string;
   name: string;
   description: string;
+  provider?: ModelProvider;
 }
 
 /**
@@ -263,4 +289,65 @@ export async function listSessionsByFolder(folderId: string | null): Promise<Ses
     : `${API_BASE}/sessions/`;
   const response = await fetch(url);
   return response.json();
+}
+
+// ============== Ollama APIs ==============
+
+/**
+ * 检测 Ollama 服务状态
+ */
+export async function getOllamaStatus(): Promise<OllamaStatus> {
+  try {
+    const response = await fetch(`${API_BASE}/ollama/status`);
+    if (!response.ok) {
+      return { available: false, base_url: "http://localhost:11434" };
+    }
+    return response.json();
+  } catch {
+    return { available: false, base_url: "http://localhost:11434" };
+  }
+}
+
+/**
+ * 获取本地 Ollama 模型列表
+ */
+export async function getOllamaModels(): Promise<OllamaModel[]> {
+  try {
+    const response = await fetch(`${API_BASE}/ollama/models`);
+    if (!response.ok) {
+      return [];
+    }
+    const data = await response.json();
+    return data.models || [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * 拉取新的 Ollama 模型
+ */
+export async function pullOllamaModel(name: string): Promise<{ status: string; digest?: string }> {
+  try {
+    const response = await fetch(`${API_BASE}/ollama/pull`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name }),
+    });
+    return response.json();
+  } catch {
+    return { status: "error" };
+  }
+}
+
+/**
+ * 测试 Ollama 连接
+ */
+export async function testOllamaConnection(): Promise<{ status: string; message: string }> {
+  try {
+    const response = await fetch(`${API_BASE}/ollama/test`, { method: "POST" });
+    return response.json();
+  } catch {
+    return { status: "error", message: "Failed to connect to Ollama" };
+  }
 }

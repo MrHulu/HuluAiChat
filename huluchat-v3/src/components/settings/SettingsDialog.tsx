@@ -1,10 +1,10 @@
 /**
  * Settings Dialog Component
- * API Key configuration, model selection, and other settings
+ * API Key configuration, model selection, Ollama settings, and other settings
  */
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { Settings, Check, AlertCircle, Loader2 } from "lucide-react";
+import { Settings, Check, AlertCircle, Loader2, Server, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -24,7 +24,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getSettings, updateSettings, getModels, testConnection, type ModelInfo } from "@/api/client";
+import {
+  getSettings,
+  updateSettings,
+  getModels,
+  testConnection,
+  getOllamaStatus,
+  getOllamaModels,
+  testOllamaConnection,
+  type ModelInfo,
+  type OllamaModel,
+} from "@/api/client";
 
 interface SettingsDialogProps {
   onSettingsChange?: () => void;
@@ -52,13 +62,39 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
   // Models
   const [models, setModels] = useState<ModelInfo[]>([]);
 
+  // Ollama state
+  const [ollamaAvailable, setOllamaAvailable] = useState(false);
+  const [ollamaModels, setOllamaModels] = useState<OllamaModel[]>([]);
+  const [ollamaBaseUrl, setOllamaBaseUrl] = useState("http://localhost:11434");
+  const [ollamaVersion, setOllamaVersion] = useState<string>("");
+  const [testingOllama, setTestingOllama] = useState(false);
+  const [ollamaTestResult, setOllamaTestResult] = useState<{ success: boolean; message: string } | null>(null);
+
   // Load settings on open
   useEffect(() => {
     if (open) {
       loadSettings();
       loadModels();
+      loadOllamaStatus();
     }
   }, [open]);
+
+  const loadOllamaStatus = async () => {
+    try {
+      const [status, models] = await Promise.all([
+        getOllamaStatus(),
+        getOllamaModels(),
+      ]);
+      setOllamaAvailable(status.available);
+      setOllamaBaseUrl(status.base_url);
+      setOllamaVersion(status.version || "");
+      setOllamaModels(models);
+      setOllamaTestResult(null);
+    } catch (error) {
+      console.error("Failed to load Ollama status:", error);
+      setOllamaAvailable(false);
+    }
+  };
 
   const loadSettings = async () => {
     setLoading(true);
@@ -135,6 +171,33 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
     } finally {
       setTesting(false);
     }
+  };
+
+  const handleTestOllama = async () => {
+    setTestingOllama(true);
+    setOllamaTestResult(null);
+    try {
+      const result = await testOllamaConnection();
+      setOllamaTestResult({ success: result.status === "ok", message: result.message });
+      if (result.status === "ok") {
+        toast.success("Ollama 连接成功");
+        // 刷新状态
+        await loadOllamaStatus();
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "连接失败";
+      setOllamaTestResult({ success: false, message });
+      toast.error("Ollama 连接失败");
+    } finally {
+      setTestingOllama(false);
+    }
+  };
+
+  const handleRefreshOllama = async () => {
+    await loadOllamaStatus();
+    toast.success("Ollama 状态已刷新");
   };
 
   return (
@@ -216,6 +279,120 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                   {models.find((m) => m.id === model)?.description}
                 </p>
               )}
+            </div>
+
+            {/* Ollama Section */}
+            <div className="border-t pt-4 mt-2">
+              <div className="flex items-center justify-between mb-3">
+                <Label className="flex items-center gap-2">
+                  <Server className="h-4 w-4" />
+                  Ollama (本地模型)
+                </Label>
+                <a
+                  href="https://ollama.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1"
+                >
+                  下载 Ollama
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              </div>
+
+              {/* Ollama Status Card */}
+              <div
+                className={`flex items-center justify-between p-3 rounded-lg border mb-3 ${
+                  ollamaAvailable
+                    ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800"
+                    : "bg-gray-50 dark:bg-gray-900/20"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`flex items-center justify-center w-8 h-8 rounded-full ${
+                      ollamaAvailable
+                        ? "bg-green-100 text-green-600 dark:bg-green-900/50 dark:text-green-400"
+                        : "bg-gray-200 text-gray-400 dark:bg-gray-800 dark:text-gray-500"
+                    }`}
+                  >
+                    <Server className="h-4 w-4" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium">
+                      {ollamaAvailable ? "Ollama 在线" : "Ollama 离线"}
+                    </span>
+                    {ollamaAvailable && (
+                      <span className="text-xs text-muted-foreground">
+                        {ollamaModels.length} 个本地模型
+                        {ollamaVersion && ` · ${ollamaVersion}`}
+                      </span>
+                    )}
+                    {!ollamaAvailable && (
+                      <span className="text-xs text-muted-foreground">{ollamaBaseUrl}</span>
+                    )}
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleRefreshOllama}
+                  className="h-8 w-8"
+                >
+                  <Loader2
+                    className={`h-4 w-4 ${false ? "animate-spin" : ""}`}
+                  />
+                  <span className="sr-only">刷新状态</span>
+                </Button>
+              </div>
+
+              {/* Ollama Models List */}
+              {ollamaAvailable && ollamaModels.length > 0 && (
+                <div className="mb-3">
+                  <p className="text-xs text-muted-foreground mb-2">已安装的模型:</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {ollamaModels.map((m) => (
+                      <span
+                        key={m.name}
+                        className="inline-flex items-center px-2 py-1 rounded-md bg-muted text-xs"
+                      >
+                        {m.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Ollama Test Result */}
+              {ollamaTestResult && (
+                <div
+                  className={`flex items-center gap-2 p-3 rounded-md mb-3 ${
+                    ollamaTestResult.success
+                      ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                      : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                  }`}
+                >
+                  {ollamaTestResult.success ? (
+                    <Check className="h-4 w-4" />
+                  ) : (
+                    <AlertCircle className="h-4 w-4" />
+                  )}
+                  <span className="text-sm">{ollamaTestResult.message}</span>
+                </div>
+              )}
+
+              {/* Ollama Test Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleTestOllama}
+                disabled={testingOllama}
+                className="w-full"
+              >
+                {testingOllama ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : null}
+                测试 Ollama 连接
+              </Button>
             </div>
 
             {/* Test Result */}
