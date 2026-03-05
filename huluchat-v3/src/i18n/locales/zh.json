@@ -42,7 +42,19 @@
     "enterToSend": "按 Enter 发送，Shift+Enter 换行",
     "editMessage": "编辑消息",
     "saving": "保存中...",
-    "ctrlEnterToSave": "Ctrl+Enter 保存，Esc 取消"
+    "ctrlEnterToSave": "Ctrl+Enter 保存，Esc 取消",
+    "title": "聊天",
+    "selectSession": "选择或创建会话",
+    "selectSessionToChat": "选择一个会话开始聊天...",
+    "startConversation": "开始对话",
+    "startConversationHint": "发送消息开始与 AI 聊天",
+    "thinking": "思考中...",
+    "messageUpdated": "消息已更新",
+    "messageUpdateFailed": "更新消息失败",
+    "connecting": "连接中...",
+    "connected": "已连接",
+    "disconnected": "已断开",
+    "connectionError": "连接错误"
   },
   "settings": {
     "title": "设置",
