@@ -1,89 +1,106 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-06 - Cycle #44
+2026-03-06 - Cycle #47
 
 ## Current Phase
-🚀 **产品持续优化** - 语言支持扩展到 23 种
+🚀 **产品持续优化** - 语言支持扩展到 33 种
 
-## What We Did This Cycle (#44)
-- ✅ **添加 5 种新语言支持** - 瑞典语、挪威语、芬兰语、丹麦语、捷克语
-  - 创建 `sv.json` (瑞典语 Svenska)
-  - 创建 `no.json` (挪威语 Norsk)
-  - 创建 `fi.json` (芬兰语 Suomi)
-  - 创建 `da.json` (丹麦语 Dansk)
-  - 创建 `cs.json` (捷克语 Čeština)
+## What We Did This Cycle (#47)
+- ✅ **推送 Cycle #46 更改** - v3.24.0 (28 种语言) PR #97 已合并
+- ✅ **添加 5 种新语言支持** - 马来语、孟加拉语、乌尔都语、波斯语、斯瓦希里语
+  - 创建 `ms.json` (马来语 Bahasa Melayu) - 东南亚 ~2.9 亿
+  - 创建 `bn.json` (孟加拉语 বাংলা) - 南亚 ~2.7 亿
+  - 创建 `ur.json` (乌尔都语 اردو) - 南亚 ~2.3 亿
+  - 创建 `fa.json` (波斯语 فارسی) - 中东 ~1.1 亿
+  - 创建 `sw.json` (斯瓦希里语 Kiswahili) - 东非 ~1 亿+
 - ✅ **更新 i18n 配置** - `index.ts` 添加新语言元数据
-- ✅ **版本升级** - v3.22.0 → v3.23.0
+- ✅ **版本升级** - v3.24.0 → v3.25.0
 - ✅ **测试通过** - 606 tests passed
+- ✅ **PR #98 已合并**
 
 ## Key Decisions
-- **扩展北欧市场覆盖** - 添加瑞典、挪威、芬兰、丹麦四种北欧语言
-- **扩展中欧市场覆盖** - 添加捷克语
-- **语言总数达到 23 种** - 覆盖全球主要市场
+- **扩展东南亚市场覆盖** - 添加马来语（马来西亚、印尼、文莱、新加坡）
+- **扩展南亚市场覆盖** - 添加孟加拉语（孟加拉国、印度）和乌尔都语（巴基斯坦、印度）
+- **扩展中东市场覆盖** - 添加波斯语（伊朗、阿富汗、塔吉克斯坦）
+- **扩展非洲市场覆盖** - 添加斯瓦希里语（坦桑尼亚、肯尼亚、乌干达等）
+- **语言总数达到 33 种** - 覆盖 50 亿+ 人口
 
 ## Active Projects
-- **HuluChat**: **v3.23.0 开发完成** 🎉
+- **HuluChat**: **v3.25.0 开发完成** 🎉
 
-## Next Action (Cycle #45)
+## Next Action (Cycle #48)
 ### 用户需要手动完成:
 1. **准备截图** - 5 张 Product Hunt 截图（参考 `docs/SCREENSHOT_DEMO_GUIDE.md`）
 2. **录制视频** - 60 秒演示视频
 3. **选择发布日期** - 建议周二太平洋时间 00:01 AM
-4. **创建 Git 提交和发布** - v3.23.0 需要推送到远程
 
 ### AI 可以继续推进:
-1. 继续添加更多语言（希腊语、匈牙利语、罗马尼亚语等）
+1. 继续添加更多语言（菲律宾语、泰卢固语、马拉地语、旁遮普语、爪哇语等）
 2. 优化现有功能
 3. 修复发现的问题
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
-- Latest Release: **v3.23.0** (2026-03-06)
+- Latest Release: **v3.25.0** (2026-03-06)
 - CI: **✅ 全部通过**
 - Testing: **✅ 606 tests passed**
 - Tech Stack (v3): Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui, FastAPI, Python 3.14
 - Project Location: `huluchat-v3/`, `website/`
-- Supported Languages: **23** (EN/ZH/JA/KO/ES/FR/DE/PT/IT/RU/AR/NL/PL/TR/HI/VI/TH/ID/SV/NO/FI/DA/CS)
+- Supported Languages: **33** (EN/ZH/JA/KO/ES/FR/DE/PT/IT/RU/AR/NL/PL/TR/HI/VI/TH/ID/SV/NO/FI/DA/CS/EL/HU/RO/UK/HE/MS/BN/UR/FA/SW)
 - i18n: **懒加载** - 启动只加载当前语言 (~5 KB)
 - Performance Report: `docs/PERFORMANCE_ANALYSIS.md`
 
-## Language Support (v3.23.0) - 23 Languages
-| Language | Code | Native Name | Region |
-|----------|------|-------------|--------|
-| English | en | English | Global |
-| Chinese | zh | 中文 | East Asia |
-| Japanese | ja | 日本語 | East Asia |
-| Korean | ko | 한국어 | East Asia |
-| Spanish | es | Español | Americas/Europe |
-| French | fr | Français | Europe/Africa |
-| German | de | Deutsch | Europe |
-| Portuguese | pt | Português | Americas/Europe |
-| Italian | it | Italiano | Europe |
-| Russian | ru | Русский | Europe/Asia |
-| Arabic | ar | العربية | MENA |
-| Dutch | nl | Nederlands | Europe |
-| Polish | pl | Polski | Europe |
-| Turkish | tr | Türkçe | Europe/Asia |
-| Hindi | hi | हिन्दी | South Asia |
-| Vietnamese | vi | Tiếng Việt | Southeast Asia |
-| Thai | th | ไทย | Southeast Asia |
-| Indonesian | id | Bahasa Indonesia | Southeast Asia |
-| Swedish | sv | Svenska | Nordic Europe |
-| Norwegian | no | Norsk | Nordic Europe |
-| Finnish | fi | Suomi | Nordic Europe |
-| Danish | da | Dansk | Nordic Europe |
-| Czech | cs | Čeština | Central Europe |
+## Language Support (v3.25.0) - 33 Languages
+| Language | Code | Native Name | Region | Speakers |
+|----------|------|-------------|--------|----------|
+| English | en | English | Global | ~1.5B |
+| Chinese | zh | 中文 | East Asia | ~1.3B |
+| Hindi | hi | हिन्दी | South Asia | ~600M |
+| Spanish | es | Español | Americas/Europe | ~550M |
+| French | fr | Français | Europe/Africa | ~300M |
+| Bengali | bn | বাংলা | South Asia | ~270M |
+| Arabic | ar | العربية | MENA | ~270M |
+| Portuguese | pt | Português | Americas/Europe | ~260M |
+| Russian | ru | Русский | Europe/Asia | ~260M |
+| Urdu | ur | اردو | South Asia | ~230M |
+| Indonesian | id | Bahasa Indonesia | Southeast Asia | ~200M |
+| Malay | ms | Bahasa Melayu | Southeast Asia | ~290M |
+| Japanese | ja | 日本語 | East Asia | ~125M |
+| German | de | Deutsch | Europe | ~100M |
+| Persian | fa | فارسی | Middle East | ~110M |
+| Turkish | tr | Türkçe | Europe/Asia | ~90M |
+| Vietnamese | vi | Tiếng Việt | Southeast Asia | ~95M |
+| Korean | ko | 한국어 | East Asia | ~80M |
+| Thai | th | ไทย | Southeast Asia | ~60M |
+| Italian | it | Italiano | Europe | ~60M |
+| Swahili | sw | Kiswahili | East Africa | ~100M+ |
+| Ukrainian | uk | Українська | Eastern Europe | ~40M |
+| Polish | pl | Polski | Europe | ~40M |
+| Dutch | nl | Nederlands | Europe | ~25M |
+| Romanian | ro | Română | Eastern Europe | ~25M |
+| Greek | el | Ελληνικά | Southern Europe | ~14M |
+| Czech | cs | Čeština | Central Europe | ~13M |
+| Hungarian | hu | Magyar | Central Europe | ~13M |
+| Swedish | sv | Svenska | Nordic Europe | ~10M |
+| Hebrew | he | עברית | Middle East | ~9M |
+| Danish | da | Dansk | Nordic Europe | ~6M |
+| Finnish | fi | Suomi | Nordic Europe | ~5M |
+| Norwegian | no | Norsk | Nordic Europe | ~5M |
+
+**Total Coverage: 5+ billion speakers globally**
 
 ## i18n Lazy Loading Performance
 | Metric | Before | After | Savings |
 |--------|--------|-------|---------|
-| Initial i18n load | ~90 KB | ~5 KB | **~85 KB (94%)** |
-| Gzip initial | ~35 KB | ~2 KB | **~33 KB (94%)** |
+| Initial i18n load | ~110 KB | ~5 KB | **~105 KB (95%)** |
+| Gzip initial | ~42 KB | ~2 KB | **~40 KB (95%)** |
 
 ## Release History
 | Version | Date | Highlights | 状态 |
 |---------|------|------------|------|
+| **v3.25.0** | 2026-03-06 | 🌐 33 种语言 (MS/BN/UR/FA/SW) | ✅ 已发布 |
+| **v3.24.0** | 2026-03-06 | 🌐 28 种语言 (EL/HU/RO/UK/HE) | ✅ 已发布 |
 | **v3.23.0** | 2026-03-06 | 🌐 23 种语言 (SV/NO/FI/DA/CS) | ✅ 已发布 |
 | **v3.22.0** | 2026-03-06 | 🌐 18 种语言 (HI/VI/TH/ID) | ✅ 已发布 |
 | **v3.21.0** | 2026-03-06 | 🌐 14 种语言 (NL/PL/TR) | ✅ 已发布 |
@@ -120,7 +137,7 @@
 
 ## Open Questions
 - 何时进行 Product Hunt 发布？（建议下周二）
-- 是否继续添加更多语言？(希腊语、匈牙利语、罗马尼亚语、乌克兰语、希伯来语等)
+- 是否继续添加更多语言？(菲律宾语、泰卢固语、马拉地语、爪哇语、泰米尔语等)
 
 ## Product Hunt 准备清单
 - [x] 产品信息 (Tagline, 描述)
