@@ -12,6 +12,7 @@ export interface MessageListProps {
   messages: Message[];
   streamingMessage: StreamingMessage | null;
   isLoading: boolean;
+  onEditMessage?: (messageId: string, newContent: string) => Promise<void>;
 }
 
 /**
@@ -30,7 +31,7 @@ export function estimateMessageHeight(content: string): number {
   return baseHeight + lines * 24 + codeHeight;
 }
 
-export function MessageList({ messages, streamingMessage, isLoading }: MessageListProps) {
+export function MessageList({ messages, streamingMessage, isLoading, onEditMessage }: MessageListProps) {
   const parentRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -91,7 +92,7 @@ export function MessageList({ messages, streamingMessage, isLoading }: MessageLi
                 transform: `translateY(${virtualItem.start}px)`,
               }}
             >
-              <MessageItem message={message} />
+              <MessageItem message={message} onEdit={onEditMessage} />
             </div>
           );
         })}

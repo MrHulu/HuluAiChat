@@ -131,6 +131,25 @@ export async function getSessionMessages(
 }
 
 /**
+ * Update a message's content
+ */
+export async function updateMessage(
+  sessionId: string,
+  messageId: string,
+  content: string
+): Promise<Message> {
+  const response = await fetch(
+    `${API_BASE}/chat/${sessionId}/messages/${messageId}`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(content),
+    }
+  );
+  return response.json();
+}
+
+/**
  * Create WebSocket connection for chat
  */
 export function createChatWebSocket(sessionId: string): WebSocket {

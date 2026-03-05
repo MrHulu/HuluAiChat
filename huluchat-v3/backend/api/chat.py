@@ -247,3 +247,34 @@ async def get_messages(
             for m in messages
         ]
     }
+
+
+@router.put("/{session_id}/messages/{message_id}")
+async def update_message(
+    session_id: str,
+    message_id: str,
+    content: str,
+    db: AsyncSession = Depends(get_db_session),
+):
+    """Update a message's content."""
+    result = await db.execute(
+        select(MessageModel)
+        .where(MessageModel.id == message_id)
+        .where(MessageModel.session_id == session_id)
+    )
+    message = result.scalar_one_or_none()
+
+    if not message:
+        return {"error": "Message not found"}
+
+    message.content = content
+    await db.commit()
+    await db.refresh(message)
+
+    return {
+        "id": message.id,
+        "session_id": message.session_id,
+        "role": message.role,
+        "content": message.content,
+        "created_at": message.created_at.isoformat(),
+    }
