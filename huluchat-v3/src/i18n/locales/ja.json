@@ -1,0 +1,142 @@
+{
+  "common": {
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "rename": "名前変更",
+    "test": "テスト",
+    "loading": "読み込み中...",
+    "error": "エラー",
+    "success": "成功"
+  },
+  "sidebar": {
+    "chats": "チャット",
+    "newChat": "新しいチャット",
+    "searchChats": "チャットを検索...",
+    "noResults": "結果が見つかりません",
+    "tryDifferent": "別の検索語をお試しください",
+    "folders": "フォルダ",
+    "uncategorized": "未分類",
+    "backToAll": "すべてに戻る",
+    "newFolder": "新しいフォルダ",
+    "folderName": "フォルダ名...",
+    "expandSidebar": "サイドバーを展開",
+    "collapseSidebar": "サイドバーを折りたたむ",
+    "deleteFolder": "フォルダを削除",
+    "deleteFolderConfirm": "このフォルダを削除しますか？チャットは未分類に移動されます。"
+  },
+  "chat": {
+    "you": "あなた",
+    "ai": "AI",
+    "typeMessage": "メッセージを入力...",
+    "send": "送信",
+    "regenerate": "再生成",
+    "copy": "コピー",
+    "copied": "コピーしました！",
+    "edit": "編集",
+    "saveEdit": "保存",
+    "cancelEdit": "キャンセル",
+    "newChat": "新しい会話",
+    "selectTemplate": "テンプレートを選択",
+    "templates": "テンプレート",
+    "enterToSend": "Enter で送信、Shift+Enter で改行",
+    "editMessage": "メッセージを編集",
+    "saving": "保存中...",
+    "ctrlEnterToSave": "Ctrl+Enter で保存、Esc でキャンセル"
+  },
+  "settings": {
+    "title": "設定",
+    "description": "API設定とプリファレンスを構成します。",
+    "apiKey": "APIキー",
+    "apiKeyPlaceholder": "sk-...",
+    "apiKeySet": "APIキーが設定されています。新しいキーを入力して更新してください。",
+    "baseUrl": "ベースURL（オプション）",
+    "baseUrlPlaceholder": "https://api.openai.com/v1",
+    "baseUrlHint": "デフォルトのOpenAI APIを使用する場合は空のままにしてください。",
+    "model": "モデル",
+    "selectModel": "モデルを選択",
+    "modelParameters": "モデルパラメータ",
+    "temperature": "温度",
+    "temperatureHint": "低い=より集中的、高い=より創造的",
+    "topP": "Top P",
+    "topPHint": "核サンプリング閾値",
+    "maxTokens": "最大トークン数",
+    "maxTokensHint": "AI応答の最大長",
+    "connectionSuccessful": "接続成功",
+    "connectionFailed": "接続失敗",
+    "settingsSaved": "設定を保存しました",
+    "settingsSaveFailed": "設定の保存に失敗しました"
+  },
+  "ollama": {
+    "title": "Ollama（ローカルモデル）",
+    "download": "Ollamaをダウンロード",
+    "online": "Ollama オンライン",
+    "offline": "Ollama オフライン",
+    "models": "{{count}} 個のローカルモデル",
+    "installedModels": "インストール済みモデル：",
+    "testConnection": "Ollama接続をテスト",
+    "connectionSuccessful": "Ollama接続成功",
+    "connectionFailed": "Ollama接続失敗",
+    "statusRefreshed": "Ollamaステータスを更新しました",
+    "refreshStatus": "ステータスを更新"
+  },
+  "update": {
+    "available": "アップデートがあります",
+    "newVersion": "新しいバージョン（{{version}}）が利用可能です！",
+    "download": "ダウンロード",
+    "later": "後で",
+    "installing": "アップデートをインストール中...",
+    "installed": "アップデート完了！再起動中...",
+    "checking": "アップデートを確認中...",
+    "downloading": "アップデートをダウンロード中...",
+    "updateNow": "今すぐ更新"
+  },
+  "keyboard": {
+    "title": "キーボードショートカット",
+    "newChat": "新しいチャット",
+    "search": "チャットを検索",
+    "settings": "設定を開く",
+    "toggleSidebar": "サイドバーの切り替え",
+    "send": "メッセージを送信",
+    "newLine": "メッセージに改行",
+    "close": "ダイアログを閉じる",
+    "showHelp": "ショートカットヘルプを表示",
+    "pressToOpen": "{{key1}} または {{key2}} を押していつでもこのヘルプを開く"
+  },
+  "export": {
+    "title": "チャットをエクスポート",
+    "markdown": "Markdown (.md)",
+    "json": "JSON (.json)",
+    "text": "プレーンテキスト (.txt)"
+  },
+  "language": {
+    "title": "言語",
+    "en": "English",
+    "zh": "中文",
+    "ja": "日本語",
+    "ko": "한국어",
+    "es": "Español"
+  },
+  "modelSelector": {
+    "cloudModels": "クラウドモデル",
+    "localModels": "ローカルモデル（Ollama）",
+    "ollamaOffline": "Ollama オフライン",
+    "ollamaHint": "Ollamaサービスが実行中であることを確認してください"
+  },
+  "templates": {
+    "title": "プロンプトテンプレート",
+    "newTemplate": "+ 新規テンプレート",
+    "all": "すべて",
+    "name": "名前",
+    "namePlaceholder": "テンプレート名",
+    "content": "内容",
+    "contentPlaceholder": "テンプレート内容。{変数名} をプレースホルダーとして使用。",
+    "categories": {
+      "writing": "執筆",
+      "coding": "プログラミング",
+      "analysis": "分析",
+      "translation": "翻訳",
+      "custom": "カスタム"
+    }
+  }
+}

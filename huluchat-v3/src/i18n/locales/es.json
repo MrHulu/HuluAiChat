@@ -1,0 +1,142 @@
+{
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "rename": "Renombrar",
+    "test": "Probar",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito"
+  },
+  "sidebar": {
+    "chats": "Chats",
+    "newChat": "Nuevo chat",
+    "searchChats": "Buscar chats...",
+    "noResults": "Sin resultados",
+    "tryDifferent": "Intenta con otros términos",
+    "folders": "Carpetas",
+    "uncategorized": "Sin categorizar",
+    "backToAll": "Volver a todo",
+    "newFolder": "Nueva carpeta",
+    "folderName": "Nombre de carpeta...",
+    "expandSidebar": "Expandir barra lateral",
+    "collapseSidebar": "Colapsar barra lateral",
+    "deleteFolder": "Eliminar carpeta",
+    "deleteFolderConfirm": "¿Eliminar esta carpeta? Los chats se moverán a Sin categorizar."
+  },
+  "chat": {
+    "you": "Tú",
+    "ai": "IA",
+    "typeMessage": "Escribe un mensaje...",
+    "send": "Enviar",
+    "regenerate": "Regenerar",
+    "copy": "Copiar",
+    "copied": "¡Copiado!",
+    "edit": "Editar",
+    "saveEdit": "Guardar",
+    "cancelEdit": "Cancelar",
+    "newChat": "Nueva conversación",
+    "selectTemplate": "Seleccionar plantilla",
+    "templates": "Plantillas",
+    "enterToSend": "Enter para enviar, Shift+Enter para nueva línea",
+    "editMessage": "Editar mensaje",
+    "saving": "Guardando...",
+    "ctrlEnterToSave": "Ctrl+Enter para guardar, Esc para cancelar"
+  },
+  "settings": {
+    "title": "Configuración",
+    "description": "Configura tus ajustes de API y preferencias.",
+    "apiKey": "Clave API",
+    "apiKeyPlaceholder": "sk-...",
+    "apiKeySet": "Clave API configurada. Ingresa una nueva para actualizar.",
+    "baseUrl": "URL base (opcional)",
+    "baseUrlPlaceholder": "https://api.openai.com/v1",
+    "baseUrlHint": "Deja vacío para usar la API de OpenAI por defecto.",
+    "model": "Modelo",
+    "selectModel": "Seleccionar modelo",
+    "modelParameters": "Parámetros del modelo",
+    "temperature": "Temperatura",
+    "temperatureHint": "Bajo=más enfocado, Alto=más creativo",
+    "topP": "Top P",
+    "topPHint": "Umbral de muestreo nuclear",
+    "maxTokens": "Máximo de tokens",
+    "maxTokensHint": "Longitud máxima de respuesta de IA",
+    "connectionSuccessful": "Conexión exitosa",
+    "connectionFailed": "Conexión fallida",
+    "settingsSaved": "Configuración guardada",
+    "settingsSaveFailed": "Error al guardar configuración"
+  },
+  "ollama": {
+    "title": "Ollama (modelos locales)",
+    "download": "Descargar Ollama",
+    "online": "Ollama en línea",
+    "offline": "Ollama fuera de línea",
+    "models": "{{count}} modelos locales",
+    "installedModels": "Modelos instalados:",
+    "testConnection": "Probar conexión Ollama",
+    "connectionSuccessful": "Conexión Ollama exitosa",
+    "connectionFailed": "Conexión Ollama fallida",
+    "statusRefreshed": "Estado de Ollama actualizado",
+    "refreshStatus": "Actualizar estado"
+  },
+  "update": {
+    "available": "Actualización disponible",
+    "newVersion": "¡Nueva versión ({{version}}) disponible!",
+    "download": "Descargar",
+    "later": "Más tarde",
+    "installing": "Instalando actualización...",
+    "installed": "¡Actualización instalada! Reiniciando...",
+    "checking": "Buscando actualizaciones...",
+    "downloading": "Descargando actualización...",
+    "updateNow": "Actualizar ahora"
+  },
+  "keyboard": {
+    "title": "Atajos de teclado",
+    "newChat": "Nuevo chat",
+    "search": "Buscar chats",
+    "settings": "Abrir configuración",
+    "toggleSidebar": "Alternar barra lateral",
+    "send": "Enviar mensaje",
+    "newLine": "Nueva línea en mensaje",
+    "close": "Cerrar diálogo",
+    "showHelp": "Mostrar ayuda de atajos",
+    "pressToOpen": "Presiona {{key1}} o {{key2}} para abrir esta ayuda en cualquier momento"
+  },
+  "export": {
+    "title": "Exportar chat",
+    "markdown": "Markdown (.md)",
+    "json": "JSON (.json)",
+    "text": "Texto plano (.txt)"
+  },
+  "language": {
+    "title": "Idioma",
+    "en": "English",
+    "zh": "中文",
+    "ja": "日本語",
+    "ko": "한국어",
+    "es": "Español"
+  },
+  "modelSelector": {
+    "cloudModels": "Modelos en la nube",
+    "localModels": "Modelos locales (Ollama)",
+    "ollamaOffline": "Ollama fuera de línea",
+    "ollamaHint": "Asegúrate de que el servicio Ollama esté ejecutándose"
+  },
+  "templates": {
+    "title": "Plantillas de prompts",
+    "newTemplate": "+ Nueva plantilla",
+    "all": "Todo",
+    "name": "Nombre",
+    "namePlaceholder": "Nombre de plantilla",
+    "content": "Contenido",
+    "contentPlaceholder": "Contenido de plantilla. Usa {nombre_var} como placeholder.",
+    "categories": {
+      "writing": "Escritura",
+      "coding": "Programación",
+      "analysis": "Análisis",
+      "translation": "Traducción",
+      "custom": "Personalizado"
+    }
+  }
+}
