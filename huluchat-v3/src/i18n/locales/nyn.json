@@ -1,0 +1,193 @@
+{
+  "common": {
+    "save": "Biika",
+    "cancel": "Shazaho",
+    "delete": "Sangura",
+    "rename": "Hindura eiziina",
+    "test": "Gezaho",
+    "loading": "Nitwineire...",
+    "error": "Erine",
+    "success": "Kyakwiragana"
+  },
+  "sidebar": {
+    "chats": "Bigambo",
+    "newChat": "Bigambo bipya",
+    "searchChats": "Ronda bigambo...",
+    "noResults": "Tihariho kyona",
+    "tryDifferent": "Gezaaho n'eirindi ryakuri",
+    "folders": "Bitabo",
+    "uncategorized": "Ebiti tibirimu",
+    "backToAll": "Garuka aha byona",
+    "newFolder": "Kitabo kipya",
+    "folderName": "Eiziina ry'ekitabo...",
+    "expandSidebar": "Gyeragyeranisa akanyabwengye",
+    "collapseSidebar": "Kishusha akanyabwengye",
+    "deleteFolder": "Sangura ekitabo",
+    "deleteFolderConfirm": "Ni we wishemereire kusangura eki kitabo? Emitwarize izagarukwaho ahabwengye."
+  },
+  "chat": {
+    "you": "Iwe",
+    "ai": "AI",
+    "typeMessage": "Andika omutwe...",
+    "send": "Ohereza",
+    "regenerate": "Garukamu",
+    "copy": "Koppa",
+    "copied": "Koppwire!",
+    "edit": "Hindura",
+    "saveEdit": "Biika",
+    "cancelEdit": "Shazaho",
+    "newChat": "Bigambo bipya",
+    "selectTemplate": "Londa ekishushani",
+    "templates": "Bishushani",
+    "enterToSend": "Nyiga Enter kuwohereza, Shift+Enter kuhandika omurongo gumwe",
+    "editMessage": "Hindura omutwe",
+    "saving": "Nikubiika...",
+    "ctrlEnterToSave": "Ctrl+Enter kubiika, Esc kushazaho",
+    "title": "Bigambo",
+    "selectSession": "Londa oba ohiighe emitwarize",
+    "selectSessionToChat": "Londa emitwarize utandike bigambo...",
+    "startConversation": "Tandika bigambo",
+    "startConversationHint": "Ohereza omutwe utandike kweshengyera na AI",
+    "thinking": "Nikwetegereza...",
+    "messageUpdated": "Omutwe guhindwirwe",
+    "messageUpdateFailed": "Omutwe tiguhindwirwe",
+    "connecting": "Nikukwatanisa...",
+    "connected": "Nikwatanisibwe",
+    "disconnected": "Tikwikwatanisibwe",
+    "connectionError": "Erine y'okukwatanisa"
+  },
+  "settings": {
+    "title": "Enteekateeka",
+    "description": "Teekateeka API hamwe n'ebiruku.",
+    "apiKey": "API Key",
+    "apiKeyPlaceholder": "sk-...",
+    "apiKeySet": "API key eteekwire. Tasyamu key mpya kuhindura.",
+    "baseUrl": "Base URL (Si byona)",
+    "baseUrlPlaceholder": "https://api.openai.com/v1",
+    "baseUrlHint": "Leeka ahabufunbe ku API ya OpenAI.",
+    "model": "Model",
+    "selectModel": "Londa model",
+    "modelParameters": "Model Parameters",
+    "temperature": "Temperature",
+    "temperatureHint": "Kicwe = kushemererwa, Kikuru = kweshengyerwa",
+    "topP": "Top P",
+    "topPHint": "Nucleus sampling threshold",
+    "maxTokens": "Max Tokens",
+    "maxTokensHint": "Obureingwa bwa AI response",
+    "connectionSuccessful": "Connection yakwirana",
+    "connectionFailed": "Connection yanzire",
+    "settingsSaved": "Enteekateeka zabiikirwe",
+    "settingsSaveFailed": "Enteekateeka tizabiikirwe"
+  },
+  "ollama": {
+    "title": "Ollama (Model ez'omu kitabo)",
+    "download": "Kura Ollama",
+    "online": "Ollama iri aha y'omutwe",
+    "offline": "Ollama tiiri aha y'omutwe",
+    "models": "{{count}} model ez'omu kitabo",
+    "installedModels": "Model eziwerezekireho:",
+    "testConnection": "Gezaho Ollama Connection",
+    "connectionSuccessful": "Ollama connection yakwirana",
+    "connectionFailed": "Ollama connection yanzire",
+    "statusRefreshed": "Ollama status yongyeresebwaho",
+    "refreshStatus": "Ongyeresa status"
+  },
+  "update": {
+    "available": "Update iriwo",
+    "newVersion": "Vershini mpya ({{version}}) iriwo!",
+    "download": "Kura",
+    "later": "Banyezibye",
+    "installing": "Nikuteeka update...",
+    "installed": "Update eteekwire! Nikugaruka..."
+  },
+  "keyboard": {
+    "title": "Obwanyabwengye bw'akanyabwengye",
+    "newChat": "Bigambo bipya",
+    "search": "Ronda bigambo",
+    "settings": "Bika enteekateeka",
+    "toggleSidebar": "Shusha akanyabwengye",
+    "send": "Ohereza omutwe",
+    "newLine": "Omurongo gumwe aha mutwe",
+    "close": "Kinga dialog",
+    "showHelp": "Laga obwanyabwengye bw'akanyabwengye",
+    "pressToOpen": "Nyiga {{key1}} oba {{key2}} kugira obone obuyambi"
+  },
+  "update": {
+    "checking": "Nikyebera update...",
+    "downloading": "Nikukura update...",
+    "newVersion": "Vershini mpya iriwo",
+    "available": "v{{version}} iriwo",
+    "updateNow": "Update hati",
+    "later": "Banyezibye"
+  },
+  "export": {
+    "title": "Yayo bigambo",
+    "markdown": "Markdown (.md)",
+    "json": "JSON (.json)",
+    "text": "Emitwe (.txt)"
+  },
+  "language": {
+    "title": "Orurimi",
+    "en": "English",
+    "zh": "中文",
+    "ja": "日本語",
+    "ko": "한국어",
+    "es": "Español"
+  },
+  "modelSelector": {
+    "cloudModels": "Model ez'omukiju",
+    "localModels": "Model ez'omu kitabo (Ollama)",
+    "ollamaOffline": "Ollama tiiri aha y'omutwe",
+    "ollamaHint": "Beera Ollama service nikuzeera"
+  },
+  "templates": {
+    "title": "Template za Prompt",
+    "newTemplate": "+ Template mpya",
+    "all": "Byona",
+    "name": "Eiziina",
+    "namePlaceholder": "Eiziina rya template",
+    "content": "Omutwe",
+    "contentPlaceholder": "Omutwe wa template. Kozesa {variable} aha bigambo.",
+    "categories": {
+      "writing": "Kuhandika",
+      "coding": "Kuhandika code",
+      "analysis": "Kwetegereza",
+      "translation": "Kuvunura",
+      "custom": "Kikozesebwa"
+    }
+  },
+  "app": {
+    "deleteConfirm": "Ni we wishemereire kusangura eki bigambo?",
+    "exportSuccess": "Yayiwe nk'{{format}}",
+    "exportFailed": "Twayiro emitwarize",
+    "folderCreated": "Kakwire ekitabo \"{{name}}\"",
+    "folderRenamed": "Eiziina ry'ekitabo ryahindwirwe \"{{name}}\"",
+    "deleteFolderConfirm": "Sangura ekitabo \"{{name}}\"? Emitwarize izagarukwaho ahabwengye.",
+    "folderDeleted": "Ekitabo \"{{name}}\" kisangwire",
+    "movedTo": "Kimumwire aha {{name}}",
+    "moveFailed": "Timukwasa emitwarize"
+  },
+  "sessionItem": {
+    "newChat": "Bigambo bipya",
+    "today": "Eriro",
+    "yesterday": "Nimweizo",
+    "daysAgo": "{{count}} nsi ezitare",
+    "exportSession": "Yayo emitwarize",
+    "moveToFolder": "Kura aha kitabo",
+    "uncategorized": "Ebiti tibirimu",
+    "deleteSession": "Sangura emitwarize",
+    "markdown": "Markdown (.md)",
+    "json": "JSON (.json)",
+    "plainText": "Emitwe (.txt)"
+  },
+  "theme": {
+    "toggle": "Shusha theme",
+    "light": "Orumuri",
+    "dark": "Ekicweka",
+    "system": "Sisitemu"
+  },
+  "languageSelector": {
+    "changeLanguage": "Hindura orurimi",
+    "language": "Orurimi"
+  }
+}

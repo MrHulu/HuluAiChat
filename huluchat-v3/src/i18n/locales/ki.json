@@ -1,0 +1,193 @@
+{
+  "common": {
+    "save": "Rigithania",
+    "cancel": "Hutura",
+    "delete": "Thinithia",
+    "rename": "Hindura ritwa",
+    "test": "Geenderia",
+    "loading": "Gwetereire...",
+    "error": "Muhera",
+    "success": "Ng'enderio"
+  },
+  "sidebar": {
+    "chats": "Marua",
+    "newChat": "Marua ma ngeri",
+    "searchChats": "Rorera marua...",
+    "noResults": "Ndiro igakorwo",
+    "tryDifferent": "Geenderia na kingi",
+    "folders": "Mabataru",
+    "uncategorized": "Mataragurirwo",
+    "backToAll": "Coka igakuru",
+    "newFolder": "Bataru ngeri",
+    "folderName": "Ritwa rya bataru...",
+    "expandSidebar": "Anjia therere",
+    "collapseSidebar": "Guthinithia therere",
+    "deleteFolder": "Thinithia bataru",
+    "deleteFolderConfirm": "Ni we mwagarathire guthinithia bataru uyu? Marua ni makarutagira mataragurirwo."
+  },
+  "chat": {
+    "you": "We",
+    "ai": "AI",
+    "typeMessage": "Andikira ubare...",
+    "send": "Ruma",
+    "regenerate": "Ruta ringi",
+    "copy": "Gwariria",
+    "copied": "Wagwariria!",
+    "edit": "Hindura",
+    "saveEdit": "Rigithania",
+    "cancelEdit": "Hutura",
+    "newChat": "Marua ma ngeri",
+    "selectTemplate": "Huthira kiongera",
+    "templates": "Magera",
+    "enterToSend": "Inyua Enter kuruma, Shift+Enter kuhandika mutaratara",
+    "editMessage": "Hindura ubare",
+    "saving": "Kweretherereria...",
+    "ctrlEnterToSave": "Ctrl+Enter kurigithania, Esc guhutura",
+    "title": "Marua",
+    "selectSession": "Huthira kana utungata marua",
+    "selectSessionToChat": "Huthira marua utungate korathania...",
+    "startConversation": "Tungata korathania",
+    "startConversationHint": "Ruma ubare utungate korathania na AI",
+    "thinking": "Gwetereire...",
+    "messageUpdated": "Ubare wahindurwo",
+    "messageUpdateFailed": "Ubare ndurahindurwo",
+    "connecting": "Gukurithania...",
+    "connected": "Wakurithanirio",
+    "disconnected": "Ndiwakurithanirio",
+    "connectionError": "Muhera wa gukurithania"
+  },
+  "settings": {
+    "title": "Magetha ma thondeko",
+    "description": "Thondeka API yawe na magetha mangi.",
+    "apiKey": "API Key",
+    "apiKeyPlaceholder": "sk-...",
+    "apiKeySet": "API key yathondekwo. Ikia key ngeri guhindura.",
+    "baseUrl": "Base URL (Ndigiri)",
+    "baseUrlPlaceholder": "https://api.openai.com/v1",
+    "baseUrlHint": "Reka kwa mbere kwa API ya OpenAI.",
+    "model": "Model",
+    "selectModel": "Huthira model",
+    "modelParameters": "Model Parameters",
+    "temperature": "Temperature",
+    "temperatureHint": "Hasi = gwetereri, Iguru = geretha",
+    "topP": "Top P",
+    "topPHint": "Nucleus sampling threshold",
+    "maxTokens": "Max Tokens",
+    "maxTokensHint": "Urahi wa marua wa AI",
+    "connectionSuccessful": "Gukurithania gukoretwo",
+    "connectionFailed": "Gukurithania gutinakora",
+    "settingsSaved": "Magetha marigithanirio",
+    "settingsSaveFailed": "Magetha matinarigithanirio"
+  },
+  "ollama": {
+    "title": "Ollama (Model cia thini)",
+    "download": "Ruta Ollama",
+    "online": "Ollama iriyo",
+    "offline": "Ollama ndiriyo",
+    "models": "{{count}} model cia thini",
+    "installedModels": "Model cithondekwo:",
+    "testConnection": "Geenderia Ollama Connection",
+    "connectionSuccessful": "Ollama connection ikoretwo",
+    "connectionFailed": "Ollama connection ndiakora",
+    "statusRefreshed": "Ollama status yongerwo",
+    "refreshStatus": "Ongerera status"
+  },
+  "update": {
+    "available": "Update iriyo",
+    "newVersion": "Rutere rwa ngeri ({{version}}) iriyo!",
+    "download": "Ruta",
+    "later": "Thutha",
+    "installing": "Kuthondeka update...",
+    "installed": "Update ithondekwo! Ngarutira..."
+  },
+  "keyboard": {
+    "title": "Mabataru ma kibarari",
+    "newChat": "Marua ma ngeri",
+    "search": "Rorera marua",
+    "settings": "Bika magetha",
+    "toggleSidebar": "Hindura therere",
+    "send": "Ruma ubare",
+    "newLine": "Mutaratara mu ubare",
+    "close": "Gura dialog",
+    "showHelp": "Onyithia mabataru ma kibarari",
+    "pressToOpen": "Inyua {{key1}} kana {{key2}} kuona ubariri"
+  },
+  "update": {
+    "checking": "Gurorera update...",
+    "downloading": "Guruta update...",
+    "newVersion": "Rutere rwa ngeri iriyo",
+    "available": "v{{version}} iriyo",
+    "updateNow": "Update hati",
+    "later": "Thutha"
+  },
+  "export": {
+    "title": "Buna marua",
+    "markdown": "Markdown (.md)",
+    "json": "JSON (.json)",
+    "text": "Ubari (.txt)"
+  },
+  "language": {
+    "title": "Rurimi",
+    "en": "English",
+    "zh": "中文",
+    "ja": "日本語",
+    "ko": "한국어",
+    "es": "Español"
+  },
+  "modelSelector": {
+    "cloudModels": "Model cia iguru",
+    "localModels": "Model cia thini (Ollama)",
+    "ollamaOffline": "Ollama ndiriyo",
+    "ollamaHint": "Thiira Ollama service iri guthiira"
+  },
+  "templates": {
+    "title": "Magera ma Prompt",
+    "newTemplate": "+ Kiongera kya ngeri",
+    "all": "Irathiro",
+    "name": "Ritwa",
+    "namePlaceholder": "Ritwa rya kiongera",
+    "content": "Ubari",
+    "contentPlaceholder": "Ubari wa kiongera. Huthira {variable} kwa maundu.",
+    "categories": {
+      "writing": "Kuandika",
+      "coding": "Kuandika code",
+      "analysis": "Gwetereera",
+      "translation": "Guvuriria",
+      "custom": "Gukorerwo"
+    }
+  },
+  "app": {
+    "deleteConfirm": "Ni we mwagarathire guthinithia marua ma?",
+    "exportSuccess": "Wabuna ta {{format}}",
+    "exportFailed": "Marua matinabunika",
+    "folderCreated": "Wakora bataru \"{{name}}\"",
+    "folderRenamed": "Ritwa rya bataru riahindurwo \"{{name}}\"",
+    "deleteFolderConfirm": "Thinithia bataru \"{{name}}\"? Marua ni makarutagira mataragurirwo.",
+    "folderDeleted": "Bataru \"{{name}}\" wathinithio",
+    "movedTo": "Wahuthirwo {{name}}",
+    "moveFailed": "Marua matinahuthirwo"
+  },
+  "sessionItem": {
+    "newChat": "Marua ma ngeri",
+    "today": "Narua",
+    "yesterday": "Ngo",
+    "daysAgo": "{{count}} matuku ago",
+    "exportSession": "Buna marua",
+    "moveToFolder": "Huthira bataru",
+    "uncategorized": "Mataragurirwo",
+    "deleteSession": "Thinithia marua",
+    "markdown": "Markdown (.md)",
+    "json": "JSON (.json)",
+    "plainText": "Ubari (.txt)"
+  },
+  "theme": {
+    "toggle": "Hindura theme",
+    "light": "Muetheru",
+    "dark": "Muiku",
+    "system": "System"
+  },
+  "languageSelector": {
+    "changeLanguage": "Hindura rurimi",
+    "language": "Rurimi"
+  }
+}
