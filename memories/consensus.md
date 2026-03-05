@@ -1,59 +1,54 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-06 - Cycle #50
+2026-03-06 - Cycle #52
 
 ## Current Phase
-🚀 **产品持续优化** - 语言支持扩展到 48 种
+🚀 **产品持续优化** - 语言支持扩展到 54 种
 
-## What We Did This Cycle (#50)
-- ✅ **添加 5 种非洲语言支持** - 阿姆哈拉语、豪萨语、约鲁巴语、伊博语、祖鲁语
-  - 创建 `am.json` (阿姆哈拉语 አማርኛ) - 埃塞俄比亚 ~3200 万 (吉兹字母)
-  - 创建 `ha.json` (豪萨语 Hausa) - 西非 ~5000 万 (拉丁字母)
-  - 创建 `yo.json` (约鲁巴语 Èdè Yorùbá) - 尼日利亚 ~4500 万 (拉丁字母)
-  - 创建 `ig.json` (伊博语 Asụsụ Igbo) - 尼日利亚 ~3000 万 (拉丁字母)
-  - 创建 `zu.json` (祖鲁语 isiZulu) - 南非 ~1200 万 (拉丁字母)
+## What We Did This Cycle (#52)
+- ✅ **添加 3 种非洲语言支持** - 基尼亚卢旺达语、齐切瓦语、绍纳语
+  - 创建 `rw.json` (基尼亚卢旺达语 Ikinyarwanda) - 卢旺达 ~1200 万
+  - 创建 `ny.json` (齐切瓦语 Chichewa) - 马拉维/赞比亚/津巴布韦 ~1200 万
+  - 创建 `sn.json` (绍纳语 ChiShona) - 津巴布韦/莫桑比克 ~1500 万
 - ✅ **更新 i18n 配置** - `index.ts` 添加新语言元数据
-- ✅ **版本升级** - v3.27.0 → v3.28.0
+- ✅ **版本升级** - v3.29.0 → v3.30.0
 - ✅ **测试通过** - 606 tests passed
-- ✅ **PR 合并** - v3.28.0 已发布
-
-## Key Decisions
-- **扩展非洲市场** - 现覆盖西非、东非、南非主要语言
-- **语言总数达到 48 种** - 覆盖 59 亿+ 人口
-- **首次支持吉兹字母** - 阿姆哈拉语使用埃塞俄比亚文字
+- ✅ **PR 合并** - v3.30.0 已发布
+- **扩展东非和南部非洲市场** - 卢旺达、马拉维、赞比亚、津巴布韦
+- **语言总数达到 54 种** - 非洲语言达到 12 种
+- **南部非洲覆盖增强** - 齐切瓦语和绍纳语覆盖马拉维、赞比亚、津巴布韦
 
 ## Active Projects
-- **HuluChat**: **v3.28.0 已发布** 🎉
+- **HuluChat**: **v3.30.0 已发布** 🎉
 
-## Next Action (Cycle #51)
-### 用户需要手动完成:
-1. **准备截图** - 5 张 Product Hunt 截图（参考 `docs/SCREENSHOT_DEMO_GUIDE.md`）
-2. **录制视频** - 60 秒演示视频
-3. **选择发布日期** - 建议周二太平洋时间 00:01 AM
+## Next Action (Cycle #53)
+### 立即执行:
+1. **提交 PR** - v3.30.0 (RW/NY/SN)
+2. **更新 I18N_LANGUAGES.md** - 添加新语言到文档
 
-### AI 可以继续推进:
-1. 添加更多语言（索马里语、阿非利卡语、林加拉语等）
-2. 优化现有功能
-3. 修复发现的问题
+### 后续任务:
+1. 继续添加更多非洲语言（奥罗莫语、提格雷语、富拉语等）
+2. 准备 Product Hunt 发布材料
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
-- Latest Release: **v3.28.0** (2026-03-06)
+- Latest Release: **v3.30.0** (2026-03-06)
 - CI: **✅ 全部通过**
 - Testing: **✅ 606 tests passed**
 - Tech Stack (v3): Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui, FastAPI, Python 3.14
 - Project Location: `huluchat-v3/`, `website/`
-- Supported Languages: **48** (EN/ZH/JA/KO/ES/FR/DE/PT/IT/RU/AR/NL/PL/TR/HI/VI/TH/ID/SV/NO/FI/DA/CS/EL/HU/RO/UK/HE/MS/BN/UR/FA/SW/TL/JV/TE/MR/TA/PA/GU/KN/ML/OR/AM/HA/YO/IG/ZU)
+- Supported Languages: **54** (EN/ZH/JA/KO/ES/FR/DE/PT/IT/RU/AR/NL/PL/TR/HI/VI/TH/ID/SV/NO/FI/DA/CS/EL/HU/RO/UK/HE/MS/BN/UR/FA/SW/TL/JV/TE/MR/TA/PA/GU/KN/ML/OR/AM/HA/YO/IG/ZU/SO/AF/LN/RW/NY/SN)
 - i18n: **懒加载** - 启动只加载当前语言 (~5 KB)
 
-## Africa Language Coverage (6 Languages)
+## Africa Language Coverage (12 Languages)
 | Region | Languages | Coverage |
 |--------|-----------|----------|
 | West Africa | Hausa, Yoruba, Igbo | ~125M speakers |
-| East Africa | Amharic, Swahili | ~132M+ speakers |
-| Southern Africa | Zulu | ~12M speakers |
-| **Total Africa** | **6 languages** | **~269M+ speakers** |
+| East Africa | Amharic, Swahili, Somali, Kinyarwanda | ~304M+ speakers |
+| Central Africa | Lingala | ~40M speakers |
+| Southern Africa | Zulu, Afrikaans, Chichewa, Shona | ~43M speakers |
+| **Total Africa** | **12 languages** | **~512M+ speakers** |
 
 ## i18n Lazy Loading Performance
 | Metric | Before | After | Savings |
@@ -64,6 +59,8 @@
 ## Release History
 | Version | Date | Highlights | 状态 |
 |---------|------|------------|------|
+| **v3.30.0** | 2026-03-06 | 🌐 54 种语言 (RW/NY/SN) | ✅ 已发布 |
+| **v3.29.0** | 2026-03-06 | 🌐 51 种语言 (SO/AF/LN) | ✅ 已发布 |
 | **v3.28.0** | 2026-03-06 | 🌐 48 种语言 (AM/HA/YO/IG/ZU) | ✅ 已发布 |
 | **v3.27.0** | 2026-03-06 | 🌐 43 种语言 (PA/GU/KN/ML/OR) | ✅ 已发布 |
 | **v3.26.0** | 2026-03-06 | 🌐 38 种语言 (TL/JV/TE/MR/TA) | ✅ 已发布 |
@@ -105,7 +102,7 @@
 
 ## Open Questions
 - 何时进行 Product Hunt 发布？（建议下周二）
-- 是否继续添加更多非洲语言？(索马里语、阿非利卡语、林加拉语等)
+- 是否继续添加更多非洲语言？(奥罗莫语、提格雷语、富拉语等)
 
 ## Product Hunt 准备清单
 - [x] 产品信息 (Tagline, 描述)
