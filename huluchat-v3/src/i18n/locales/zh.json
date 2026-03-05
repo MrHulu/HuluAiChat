@@ -155,5 +155,16 @@
       "translation": "翻译",
       "custom": "自定义"
     }
+  },
+  "app": {
+    "deleteConfirm": "确定要删除此对话吗？",
+    "exportSuccess": "已导出为 {{format}}",
+    "exportFailed": "导出会话失败",
+    "folderCreated": "已创建文件夹「{{name}}」",
+    "folderRenamed": "已将文件夹重命名为「{{name}}」",
+    "deleteFolderConfirm": "删除文件夹「{{name}}」？会话将移至未分类。",
+    "folderDeleted": "已删除文件夹「{{name}}」",
+    "movedTo": "已移至 {{name}}",
+    "moveFailed": "移动会话失败"
   }
 }

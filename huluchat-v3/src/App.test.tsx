@@ -170,7 +170,7 @@ describe("App", () => {
     it("should render version badge", () => {
       render(<App />);
 
-      expect(screen.getByText("v3.13.0")).toBeInTheDocument();
+      expect(screen.getByText("v3.17.0")).toBeInTheDocument();
     });
 
     it("should render Toaster component", () => {
@@ -801,10 +801,10 @@ describe("App", () => {
 
       await act(async () => {
         await apiClient.moveSessionToFolder("session-1", null);
-        toast.success("Moved to uncategorized");
+        toast.success("Moved to Uncategorized");
       });
 
-      expect(toast.success).toHaveBeenCalledWith("Moved to uncategorized");
+      expect(toast.success).toHaveBeenCalledWith("Moved to Uncategorized");
     });
 
     it("should show error toast when move fails", async () => {
@@ -1074,12 +1074,12 @@ describe("App", () => {
       await act(async () => {
         await apiClient.moveSessionToFolder("session-1", null);
         mockRefreshSessions();
-        toast.success("Moved to uncategorized");
+        toast.success("Moved to Uncategorized");
       });
 
       expect(apiClient.moveSessionToFolder).toHaveBeenCalledWith("session-1", null);
       expect(mockRefreshSessions).toHaveBeenCalled();
-      expect(toast.success).toHaveBeenCalledWith("Moved to uncategorized");
+      expect(toast.success).toHaveBeenCalledWith("Moved to Uncategorized");
     });
 
     it("should handle move session error and show error toast", async () => {
@@ -1649,7 +1649,7 @@ describe("App", () => {
         expect(apiClient.moveSessionToFolder).toHaveBeenCalledWith("session-1", null);
       });
       await waitFor(() => {
-        expect(toast.success).toHaveBeenCalledWith("Moved to uncategorized");
+        expect(toast.success).toHaveBeenCalledWith("Moved to Uncategorized");
       });
     });
 

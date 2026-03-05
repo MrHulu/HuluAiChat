@@ -4,6 +4,7 @@
  */
 import { useState, useEffect, useCallback, lazy, Suspense } from "react";
 import { Toaster, toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ChatView } from "@/components/chat";
 import { SessionList } from "@/components/sidebar";
@@ -19,6 +20,7 @@ const SettingsDialog = lazy(() =>
 );
 
 function App() {
+  const { t } = useTranslation();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [keyboardHelpOpen, setKeyboardHelpOpen] = useState(false);
@@ -56,7 +58,7 @@ function App() {
   };
 
   const handleDeleteSession = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this conversation?")) {
+    if (window.confirm(t("app.deleteConfirm"))) {
       await removeSession(id);
     }
   };
@@ -78,10 +80,10 @@ function App() {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      toast.success(`Exported as ${format.toUpperCase()}`);
+      toast.success(t("app.exportSuccess", { format: format.toUpperCase() }));
     } catch (error) {
       console.error("Export failed:", error);
-      toast.error("Failed to export session");
+      toast.error(t("app.exportFailed"));
     }
   };
 
@@ -89,7 +91,7 @@ function App() {
   const handleCreateFolder = async (name: string) => {
     const folder = await createFolder(name);
     if (folder) {
-      toast.success(`Created folder "${name}"`);
+      toast.success(t("app.folderCreated", { name }));
     }
   };
 
@@ -97,7 +99,7 @@ function App() {
   const handleRenameFolder = async (id: string, name: string) => {
     const folder = await renameFolder(id, name);
     if (folder) {
-      toast.success(`Renamed folder to "${name}"`);
+      toast.success(t("app.folderRenamed", { name }));
     }
   };
 
@@ -106,9 +108,9 @@ function App() {
     const folder = folders.find((f) => f.id === id);
     if (!folder) return;
 
-    if (window.confirm(`Delete folder "${folder.name}"? Sessions will be moved to uncategorized.`)) {
+    if (window.confirm(t("app.deleteFolderConfirm", { name: folder.name }))) {
       await removeFolder(id);
-      toast.success(`Deleted folder "${folder.name}"`);
+      toast.success(t("app.folderDeleted", { name: folder.name }));
     }
   };
 
@@ -119,11 +121,11 @@ function App() {
       refreshSessions(); // 刷新会话列表
       const folderName = folderId
         ? folders.find((f) => f.id === folderId)?.name || "folder"
-        : "uncategorized";
-      toast.success(`Moved to ${folderName}`);
+        : t("sidebar.uncategorized");
+      toast.success(t("app.movedTo", { name: folderName }));
     } catch (error) {
       console.error("Failed to move session:", error);
-      toast.error("Failed to move session");
+      toast.error(t("app.moveFailed"));
     }
   };
 
@@ -196,7 +198,7 @@ function App() {
           <div className="flex items-center gap-3">
             <h1 className="text-lg font-bold">HuluChat</h1>
             <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-              v3.13.0
+              v3.17.0
             </span>
           </div>
           <div className="flex items-center gap-2">

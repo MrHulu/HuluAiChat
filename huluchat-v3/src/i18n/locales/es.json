@@ -150,5 +150,16 @@
       "translation": "Traducción",
       "custom": "Personalizado"
     }
+  },
+  "app": {
+    "deleteConfirm": "¿Estás seguro de que quieres eliminar esta conversación?",
+    "exportSuccess": "Exportado como {{format}}",
+    "exportFailed": "Error al exportar sesión",
+    "folderCreated": "Carpeta \"{{name}}\" creada",
+    "folderRenamed": "Carpeta renombrada a \"{{name}}\"",
+    "deleteFolderConfirm": "¿Eliminar carpeta \"{{name}}\"? Los chats se moverán a Sin categorizar.",
+    "folderDeleted": "Carpeta \"{{name}}\" eliminada",
+    "movedTo": "Movido a {{name}}",
+    "moveFailed": "Error al mover sesión"
   }
 }

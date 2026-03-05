@@ -150,5 +150,16 @@
       "translation": "번역",
       "custom": "사용자 정의"
     }
+  },
+  "app": {
+    "deleteConfirm": "이 대화를 삭제하시겠습니까?",
+    "exportSuccess": "{{format}}(으)로 내보내기 완료",
+    "exportFailed": "세션 내보내기 실패",
+    "folderCreated": "\"{{name}}\" 폴더 생성됨",
+    "folderRenamed": "폴더 이름을 \"{{name}}\"(으)로 변경함",
+    "deleteFolderConfirm": "\"{{name}}\" 폴더를 삭제하시겠습니까? 채팅이 미분류로 이동됩니다.",
+    "folderDeleted": "\"{{name}}\" 폴더 삭제됨",
+    "movedTo": "{{name}}(으)로 이동됨",
+    "moveFailed": "세션 이동 실패"
   }
 }
