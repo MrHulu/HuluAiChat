@@ -25,6 +25,10 @@ export const supportedLanguages = [
   { code: 'nl', name: 'Dutch', nativeName: 'Nederlands' },
   { code: 'pl', name: 'Polish', nativeName: 'Polski' },
   { code: 'tr', name: 'Turkish', nativeName: 'Türkçe' },
+  { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी' },
+  { code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt' },
+  { code: 'th', name: 'Thai', nativeName: 'ไทย' },
+  { code: 'id', name: 'Indonesian', nativeName: 'Bahasa Indonesia' },
 ] as const;
 
 export type LanguageCode = typeof supportedLanguages[number]['code'];
