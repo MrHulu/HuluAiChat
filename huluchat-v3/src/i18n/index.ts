@@ -79,6 +79,11 @@ export const supportedLanguages = [
   { code: 'ktu', name: 'Kituba', nativeName: 'Kikongo ya leta' },
   { code: 'kr', name: 'Kanuri', nativeName: 'Kanuri' },
   { code: 'lua', name: 'Luba-Kasai', nativeName: 'Tshiluba' },
+  { code: 'nus', name: 'Nuer', nativeName: 'Thok Nath' },
+  { code: 'din', name: 'Dinka', nativeName: 'Thuɔŋjäŋ' },
+  { code: 'luo', name: 'Luo', nativeName: 'Dholuo' },
+  { code: 'kam', name: 'Kamba', nativeName: 'Kikamba' },
+  { code: 'mas', name: 'Maasai', nativeName: 'ɔl-Maa' },
 ] as const;
 
 export type LanguageCode = typeof supportedLanguages[number]['code'];
