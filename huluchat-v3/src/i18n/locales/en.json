@@ -166,5 +166,28 @@
     "folderDeleted": "Deleted folder \"{{name}}\"",
     "movedTo": "Moved to {{name}}",
     "moveFailed": "Failed to move session"
+  },
+  "sessionItem": {
+    "newChat": "New Chat",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "daysAgo": "{{count}} days ago",
+    "exportSession": "Export session",
+    "moveToFolder": "Move to folder",
+    "uncategorized": "Uncategorized",
+    "deleteSession": "Delete session",
+    "markdown": "Markdown (.md)",
+    "json": "JSON (.json)",
+    "plainText": "Plain Text (.txt)"
+  },
+  "theme": {
+    "toggle": "Toggle theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "languageSelector": {
+    "changeLanguage": "Change language",
+    "language": "Language"
   }
 }

@@ -14,7 +14,7 @@ import {
 import { supportedLanguages } from "@/i18n";
 
 export function LanguageSelector() {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const handleLanguageChange = (langCode: string) => {
     i18n.changeLanguage(langCode);
@@ -23,9 +23,9 @@ export function LanguageSelector() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" title="Change language">
+        <Button variant="ghost" size="icon" title={t("languageSelector.changeLanguage")}>
           <Globe className="h-5 w-5" />
-          <span className="sr-only">Language</span>
+          <span className="sr-only">{t("languageSelector.language")}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
