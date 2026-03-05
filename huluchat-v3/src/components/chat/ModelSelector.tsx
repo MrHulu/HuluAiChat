@@ -50,8 +50,10 @@ export function ModelSelector({
   isLoading = false,
   disabled = false,
   ollamaAvailable = false,
-  ollamaModels = [],
+  ollamaModels: _ollamaModels = [],
 }: ModelSelectorProps) {
+  // _ollamaModels is kept for API compatibility but not used internally
+  void _ollamaModels;
   const currentModel = models.find((m) => m.id === value);
 
   // 按提供商分组模型
