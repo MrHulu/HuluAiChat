@@ -490,7 +490,7 @@ describe("SessionList", () => {
       // Direct test of the API call
       await act(async () => {
         mockMoveSessionToFolder.mockResolvedValueOnce(undefined);
-        const result = await apiClient.moveSessionToFolder("1", "f1");
+        await apiClient.moveSessionToFolder("1", "f1");
         expect(mockMoveSessionToFolder).toHaveBeenCalledWith("1", "f1");
       });
     });
