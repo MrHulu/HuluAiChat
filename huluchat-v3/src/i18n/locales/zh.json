@@ -38,7 +38,11 @@
     "cancelEdit": "取消",
     "newChat": "新对话",
     "selectTemplate": "选择模板",
-    "templates": "模板"
+    "templates": "模板",
+    "enterToSend": "按 Enter 发送，Shift+Enter 换行",
+    "editMessage": "编辑消息",
+    "saving": "保存中...",
+    "ctrlEnterToSave": "Ctrl+Enter 保存，Esc 取消"
   },
   "settings": {
     "title": "设置",
@@ -114,5 +118,27 @@
     "title": "语言",
     "en": "English",
     "zh": "中文"
+  },
+  "modelSelector": {
+    "cloudModels": "云端模型",
+    "localModels": "本地模型（Ollama）",
+    "ollamaOffline": "Ollama 离线",
+    "ollamaHint": "请确保 Ollama 服务正在运行"
+  },
+  "templates": {
+    "title": "提示词模板",
+    "newTemplate": "+ 新建模板",
+    "all": "全部",
+    "name": "名称",
+    "namePlaceholder": "模板名称",
+    "content": "内容",
+    "contentPlaceholder": "模板内容。使用 {变量名} 作为占位符。",
+    "categories": {
+      "writing": "写作",
+      "coding": "编程",
+      "analysis": "分析",
+      "translation": "翻译",
+      "custom": "自定义"
+    }
   }
 }
