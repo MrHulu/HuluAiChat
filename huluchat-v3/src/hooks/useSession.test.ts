@@ -88,7 +88,7 @@ describe("useSession hook", () => {
     const newSession = {
       id: "session-3",
       title: "New Chat",
-      folder_id: null,
+      folder_id: null as string | null,
       created_at: "2024-01-03T00:00:00Z",
       updated_at: "2024-01-03T00:00:00Z",
     };
