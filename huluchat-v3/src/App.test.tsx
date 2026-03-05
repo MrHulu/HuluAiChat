@@ -170,7 +170,7 @@ describe("App", () => {
     it("should render version badge", () => {
       render(<App />);
 
-      expect(screen.getByText("v3.19.0")).toBeInTheDocument();
+      expect(screen.getByText("v3.20.0")).toBeInTheDocument();
     });
 
     it("should render Toaster component", () => {
