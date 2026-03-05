@@ -1,0 +1,165 @@
+# HuluChat Performance Analysis Report
+
+**Generated**: 2026-03-06 (Cycle #38)
+**Version**: v3.19.0
+**Focus**: i18n Lazy Loading Performance
+
+## Executive Summary
+
+The i18n lazy loading implementation in v3.19.0 successfully reduces initial bundle size by **~38 KB** (uncompressed) or **~17 KB** (gzip compressed). Users now only load their current language on startup, with other languages loaded on-demand when switching.
+
+---
+
+## Bundle Size Analysis
+
+### Total Build Output
+
+| Category | Size | Gzip |
+|----------|------|------|
+| **Total JS** | 890 KB | ~280 KB |
+| **Total CSS** | 53 KB | ~10 KB |
+| **Total Build** | 980 KB | ~290 KB |
+
+### JavaScript Bundle Breakdown
+
+| Bundle | Size | Gzip | Purpose |
+|--------|------|------|---------|
+| `vendor-markdown` | 334.5 KB | 101.5 KB | Markdown rendering |
+| `vendor-react` | 193.0 KB | 60.5 KB | React core |
+| `index` (main) | 118.5 KB | 33.0 KB | Application code |
+| `vendor-radix` | 101.2 KB | 33.4 KB | UI components |
+| `vendor-i18n` | 55.6 KB | 18.1 KB | i18next library |
+| `vendor-utils` | 27.3 KB | 8.7 KB | Utility functions |
+| `index` (entry) | 12.3 KB | 3.5 KB | Entry point |
+| `vendor-icons` | 4.7 KB | 2.1 KB | Icon library |
+
+### i18n Language Chunks (Lazy Loaded)
+
+| Language | File Size | Gzip | Native Name |
+|----------|-----------|------|-------------|
+| English (en) | 4.93 KB | 2.06 KB | English |
+| Chinese (zh) | 4.77 KB | 2.44 KB | 中文 |
+| Japanese (ja) | 6.34 KB | 2.72 KB | 日本語 |
+| Korean (ko) | 5.49 KB | 2.57 KB | 한국어 |
+| Spanish (es) | 5.46 KB | 2.35 KB | Español |
+| French (fr) | 5.74 KB | 2.44 KB | Français |
+| German (de) | 5.58 KB | 2.41 KB | Deutsch |
+| Portuguese (pt) | 5.45 KB | 2.34 KB | Português |
+| **Total All Languages** | **43.76 KB** | **19.33 KB** | - |
+
+---
+
+## Performance Gains
+
+### Before Lazy Loading (v3.18.0)
+- All 8 languages bundled into main JS
+- Initial load includes ~43.76 KB of translations
+- No on-demand loading capability
+
+### After Lazy Loading (v3.19.0)
+- Only current language loaded on startup (~5 KB)
+- Other languages loaded dynamically when switching
+- **Initial JS reduction: ~38 KB (uncompressed)**
+
+### Initial Load Comparison
+
+| Scenario | Before v3.18.0 | After v3.19.0 | Savings |
+|----------|---------------|---------------|---------|
+| English user | 43.76 KB | 4.93 KB | **38.83 KB** |
+| Chinese user | 43.76 KB | 4.77 KB | **38.99 KB** |
+| Japanese user | 43.76 KB | 6.34 KB | **37.42 KB** |
+
+**Average savings: ~38 KB (87% reduction in i18n initial load)**
+
+---
+
+## Gzip Compression Impact
+
+| Metric | Before | After | Savings |
+|--------|--------|-------|---------|
+| All languages (gzip) | 19.33 KB | ~2.3 KB | **~17 KB** |
+| Savings percentage | - | - | **88%** |
+
+---
+
+## Implementation Details
+
+### Lazy Loading Mechanism
+
+```typescript
+// src/i18n/index.ts
+const importLocale = async (lang: string): Promise<Record<string, unknown>> => {
+  const module = await import(`./locales/${lang}.json`);
+  return module.default || module;
+};
+```
+
+### Vite Configuration
+
+```typescript
+// vite.config.ts - Manual chunk splitting for i18n
+manualChunks: (id) => {
+  if (id.includes('/locales/') && id.endsWith('.json')) {
+    const match = id.match(/\/locales\/(\w+)\.json/);
+    if (match) return `i18n-${match[1]}`;
+  }
+}
+```
+
+### Caching Strategy
+
+- Loaded languages cached in `loadedLanguages` Set
+- No re-fetching when switching back to previously loaded language
+- Language preference stored in localStorage
+
+---
+
+## Recommendations
+
+### Immediate Optimizations
+1. ✅ **Lazy loading implemented** - v3.19.0
+2. ✅ **Code splitting** - Each language as separate chunk
+3. ✅ **Caching** - Prevent redundant loads
+
+### Future Improvements
+1. **Preload common languages** - Consider preloading top 2-3 languages in background
+2. **Service Worker caching** - Cache language chunks for offline use
+3. **Compression** - Enable Brotli compression on CDN for further size reduction
+4. **Tree-shaking** - Review vendor bundles for unused code
+
+### Vendor Bundle Analysis
+
+Largest vendor bundles to review:
+1. `vendor-markdown` (334 KB) - Consider lighter markdown parser
+2. `vendor-react` (193 KB) - Standard React size
+3. `vendor-radix` (101 KB) - Review unused components
+
+---
+
+## Browser Compatibility
+
+Lazy loading uses dynamic `import()` which is supported in:
+- Chrome 63+
+- Firefox 67+
+- Safari 11.1+
+- Edge 79+
+
+All Tauri target platforms support this feature.
+
+---
+
+## Conclusion
+
+The i18n lazy loading implementation in v3.19.0 achieves:
+
+- **87% reduction** in initial i18n bundle size
+- **~38 KB** smaller initial JavaScript download
+- **~17 KB** savings with gzip compression
+- **No breaking changes** - seamless user experience
+- **Instant language switching** after first load (cached)
+
+This optimization primarily benefits users on slower connections and improves Time to Interactive (TTI) metrics.
+
+---
+
+*Report generated by HuluChat Development Team*

@@ -1,52 +1,15 @@
 /**
- * i18n Configuration
+ * i18n Configuration with Lazy Loading
  * Multi-language support for HuluChat
+ *
+ * Only loads the current language on startup.
+ * Other languages are loaded on-demand when switching.
  */
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-import en from './locales/en.json';
-import zh from './locales/zh.json';
-import ja from './locales/ja.json';
-import ko from './locales/ko.json';
-import es from './locales/es.json';
-import fr from './locales/fr.json';
-import de from './locales/de.json';
-import pt from './locales/pt.json';
-
-// Language resources
-const resources = {
-  en: { translation: en },
-  zh: { translation: zh },
-  ja: { translation: ja },
-  ko: { translation: ko },
-  es: { translation: es },
-  fr: { translation: fr },
-  de: { translation: de },
-  pt: { translation: pt },
-};
-
-i18n
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    resources,
-    fallbackLng: 'en',
-    debug: false,
-    interpolation: {
-      escapeValue: false, // React already escapes values
-    },
-    detection: {
-      order: ['localStorage', 'navigator'],
-      caches: ['localStorage'],
-      lookupLocalStorage: 'huluchat-language',
-    },
-  });
-
-export default i18n;
-
-// Supported languages
+// Supported languages metadata
 export const supportedLanguages = [
   { code: 'en', name: 'English', nativeName: 'English' },
   { code: 'zh', name: 'Chinese', nativeName: '中文' },
@@ -59,3 +22,104 @@ export const supportedLanguages = [
 ] as const;
 
 export type LanguageCode = typeof supportedLanguages[number]['code'];
+
+// Cache for loaded languages
+const loadedLanguages = new Set<string>();
+
+// Dynamic import function for locale files
+const importLocale = async (lang: string): Promise<Record<string, unknown>> => {
+  const module = await import(`./locales/${lang}.json`);
+  return module.default || module;
+};
+
+// Load a language on demand
+export const loadLanguage = async (lang: string): Promise<boolean> => {
+  // Skip if already loaded
+  if (loadedLanguages.has(lang)) {
+    return true;
+  }
+
+  // Validate language code
+  const isValidLang = supportedLanguages.some(l => l.code === lang);
+  if (!isValidLang) {
+    console.warn(`[i18n] Unsupported language: ${lang}`);
+    return false;
+  }
+
+  try {
+    const translations = await importLocale(lang);
+    i18n.addResourceBundle(lang, 'translation', translations, true, true);
+    loadedLanguages.add(lang);
+    console.log(`[i18n] Loaded language: ${lang}`);
+    return true;
+  } catch (error) {
+    console.error(`[i18n] Failed to load language ${lang}:`, error);
+    return false;
+  }
+};
+
+// Get initial language from localStorage or browser
+const getInitialLanguage = (): string => {
+  // Check localStorage first
+  const stored = localStorage.getItem('huluchat-language');
+  if (stored && supportedLanguages.some(l => l.code === stored)) {
+    return stored;
+  }
+
+  // Detect from browser
+  const browserLang = navigator.language.split('-')[0];
+  if (supportedLanguages.some(l => l.code === browserLang)) {
+    return browserLang;
+  }
+
+  // Default fallback
+  return 'en';
+};
+
+// Initialize i18n with lazy loading
+const initI18n = async (): Promise<void> => {
+  const initialLang = getInitialLanguage();
+
+  // Load only the initial language before init
+  const initialTranslations = await importLocale(initialLang);
+  loadedLanguages.add(initialLang);
+
+  await i18n
+    .use(LanguageDetector)
+    .use(initReactI18next)
+    .init({
+      resources: {
+        [initialLang]: { translation: initialTranslations },
+      },
+      lng: initialLang,
+      fallbackLng: 'en',
+      debug: false,
+      interpolation: {
+        escapeValue: false, // React already escapes values
+      },
+      detection: {
+        order: ['localStorage', 'navigator'],
+        caches: ['localStorage'],
+        lookupLocalStorage: 'huluchat-language',
+      },
+    });
+
+  console.log(`[i18n] Initialized with language: ${initialLang}`);
+};
+
+// Change language with lazy loading
+export const changeLanguage = async (lang: LanguageCode): Promise<boolean> => {
+  const success = await loadLanguage(lang);
+  if (success) {
+    await i18n.changeLanguage(lang);
+    localStorage.setItem('huluchat-language', lang);
+    console.log(`[i18n] Changed language to: ${lang}`);
+    return true;
+  }
+  return false;
+};
+
+// Export init function
+export const initI18nLazy = initI18n;
+
+export default i18n;
