@@ -1,0 +1,193 @@
+{
+  "common": {
+    "save": "Weereza",
+    "cancel": "Sazaamu",
+    "delete": "Sangulula",
+    "rename": "Kyusa erinnya",
+    "test": "Yagezza",
+    "loading": "Yitabye...",
+    "error": "Ensobi",
+    "success": "Yadda"
+  },
+  "sidebar": {
+    "chats": "Byogero",
+    "newChat": "Byogero bipya",
+    "searchChats": "Noonya byogero...",
+    "noResults": "Tewali kikyalabiddwawo",
+    "tryDifferent": "Yagezza n'ekirala",
+    "folders": "Bbokisi",
+    "uncategorized": "Zitaliimu bbokisi",
+    "backToAll": "Dda ku byonna",
+    "newFolder": "Bbokisi empya",
+    "folderName": "Erinnya lya bbokisi...",
+    "expandSidebar": "Zimbulukusa akawungeezi",
+    "collapseSidebar": "Kendera akawungeezi",
+    "deleteFolder": "Sangulula bbokisi",
+    "deleteFolderConfirm": "Oli omusaanidde okusangulula bbokisi eno? Byogero bijja kudda ku zitaliimu bbokisi."
+  },
+  "chat": {
+    "you": "Ggwe",
+    "ai": "AI",
+    "typeMessage": "Wandiika obubaka...",
+    "send": "Sindika",
+    "regenerate": "Ddamu osalawo",
+    "copy": "Koppa",
+    "copied": "Wakoppa!",
+    "edit": "Kyusa",
+    "saveEdit": "Weereza",
+    "cancelEdit": "Sazaamu",
+    "newChat": "Byogero bipya",
+    "selectTemplate": "Londa tempula",
+    "templates": "Tempula",
+    "enterToSend": "Nyiga Enter ku sindika, Shift+Enter ku layini empya",
+    "editMessage": "Kyusa obubaka",
+    "saving": "Yitabye kuweereza...",
+    "ctrlEnterToSave": "Ctrl+Enter kuweereza, Esc okuzaamu",
+    "title": "Byogero",
+    "selectSession": "Londa oba tandika byogero",
+    "selectSessionToChat": "Londa byogero utandike okwogera...",
+    "startConversation": "Tandika byogero",
+    "startConversationHint": "Sindika obubaka utandike okwogera ne AI",
+    "thinking": "Yitabye okulowooza...",
+    "messageUpdated": "Obubaka bukyusiddwa",
+    "messageUpdateFailed": "Obubaka tebwakyusiddwa",
+    "connecting": "Yitabye ku kuyungibwa...",
+    "connected": "Oyungidwa",
+    "disconnected": "Toli muyungidwa",
+    "connectionError": "Ensobi mu kuyungibwa"
+  },
+  "settings": {
+    "title": "Enteekateeka",
+    "description": "Tegeka API yo n'ebirala.",
+    "apiKey": "API Key",
+    "apiKeyPlaceholder": "sk-...",
+    "apiKeySet": "API key etegekeddwa. Yingiza key mpya okukyusa.",
+    "baseUrl": "Base URL (Ssi bya buvunanyizibwa)",
+    "baseUrlPlaceholder": "https://api.openai.com/v1",
+    "baseUrlHint": "Leka kyenkanyi ku API ya OpenAI.",
+    "model": "Model",
+    "selectModel": "Londa model",
+    "modelParameters": "Model Parameters",
+    "temperature": "Temperature",
+    "temperatureHint": "Wansi = okutunuulidwa, Waggulu = okukakasa",
+    "topP": "Top P",
+    "topPHint": "Nucleus sampling threshold",
+    "maxTokens": "Max Tokens",
+    "maxTokensHint": "Obuwanvu bw'eddiba lya AI",
+    "connectionSuccessful": "Okuyungibwa kwadda",
+    "connectionFailed": "Okuyungibwa kwa lemereddwa",
+    "settingsSaved": "Enteekateeka zaweereziddwa",
+    "settingsSaveFailed": "Enteekateeka tezaweereziddwa"
+  },
+  "ollama": {
+    "title": "Ollama (Model ez'omu kitundu)",
+    "download": "Wannya Ollama",
+    "online": "Ollama waliwo",
+    "offline": "Ollama taliwo",
+    "models": "{{count}} model ez'omu kitundu",
+    "installedModels": "Model ezitegekeddwa:",
+    "testConnection": "Yagezza Ollama Connection",
+    "connectionSuccessful": "Ollama connection yadda",
+    "connectionFailed": "Ollama connection ya lemereddwa",
+    "statusRefreshed": "Ollama status yongeddwamu",
+    "refreshStatus": "Zza omutindo"
+  },
+  "update": {
+    "available": "Update eriwo",
+    "newVersion": "Vasomyo mpya ({{version}}) eriwo!",
+    "download": "Wannya",
+    "later": "Oluvannyuma",
+    "installing": "Yitabye kuuteekateeka update...",
+    "installed": "Update eteekeddwa! Owanjiitiridde..."
+  },
+  "keyboard": {
+    "title": "Mapeesa ga kibalo",
+    "newChat": "Byogero bipya",
+    "search": "Noonya byogero",
+    "settings": "Bika enteekateeka",
+    "toggleSidebar": "Kyusa akawungeezi",
+    "send": "Sindika obubaka",
+    "newLine": "Layini empya mu bubaka",
+    "close": "Ggalawo dialog",
+    "showHelp": "Laga mapeesa ga kibalo",
+    "pressToOpen": "Nyiga {{key1}} oba {{key2}} okulaba obuyambi"
+  },
+  "update": {
+    "checking": "Noonya update...",
+    "downloading": "Wannyira update...",
+    "newVersion": "Vasomyo mpya eriwo",
+    "available": "v{{version}} eriwo",
+    "updateNow": "Update hati",
+    "later": "Oluvannyuma"
+  },
+  "export": {
+    "title": "Yitta byogero",
+    "markdown": "Markdown (.md)",
+    "json": "JSON (.json)",
+    "text": "Ebitundu (.txt)"
+  },
+  "language": {
+    "title": "Olungereza",
+    "en": "English",
+    "zh": "中文",
+    "ja": "日本語",
+    "ko": "한국어",
+    "es": "Español"
+  },
+  "modelSelector": {
+    "cloudModels": "Model ez'omu wuggulu",
+    "localModels": "Model ez'omu kitundu (Ollama)",
+    "ollamaOffline": "Ollama taliwo",
+    "ollamaHint": "Beera nti Ollama service enyirira"
+  },
+  "templates": {
+    "title": "Tempula za Prompt",
+    "newTemplate": "+ Tempula empya",
+    "all": "Byonna",
+    "name": "Erinnya",
+    "namePlaceholder": "Erinnya lya tempula",
+    "content": "Ebiri mu",
+    "contentPlaceholder": "Ebiri mu tempula. Kozesa {variable} ku bifo.",
+    "categories": {
+      "writing": "Okuwandiika",
+      "coding": "Okuwandiika code",
+      "analysis": "Okwetegereza",
+      "translation": "Okuvvuunula",
+      "custom": "Kikozesebwa"
+    }
+  },
+  "app": {
+    "deleteConfirm": "Oli omusaanidde okusangulula byogero bino?",
+    "exportSuccess": "Bya Yitiddwa ng'ebya {{format}}",
+    "exportFailed": "Byogero tebya yitiddwa",
+    "folderCreated": "Wakola bbokisi \"{{name}}\"",
+    "folderRenamed": "Erinnya lya bbokisi lyakyusiddwa \"{{name}}\"",
+    "deleteFolderConfirm": "Sangulula bbokisi \"{{name}}\"? Byogero bijja kudda ku zitaliimu bbokisi.",
+    "folderDeleted": "Bbokisi \"{{name}}\" esanguluddwa",
+    "movedTo": "Yamuddwa mu {{name}}",
+    "moveFailed": "Byogero tebyamuddwa"
+  },
+  "sessionItem": {
+    "newChat": "Byogero bipya",
+    "today": "Leero",
+    "yesterday": "Egga",
+    "daysAgo": "{{count}} naku eziyise",
+    "exportSession": "Yitta byogero",
+    "moveToFolder": "Yiisa mu bbokisi",
+    "uncategorized": "Zitaliimu bbokisi",
+    "deleteSession": "Sangulula byogero",
+    "markdown": "Markdown (.md)",
+    "json": "JSON (.json)",
+    "plainText": "Ebitundu (.txt)"
+  },
+  "theme": {
+    "toggle": "Kyusa theme",
+    "light": "Ekungubye",
+    "dark": "Ekizigo",
+    "system": "Sisitemu"
+  },
+  "languageSelector": {
+    "changeLanguage": "Kyusa olulimi",
+    "language": "Olulimi"
+  }
+}
