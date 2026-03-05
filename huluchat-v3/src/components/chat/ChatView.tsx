@@ -34,12 +34,12 @@ function ConnectionIndicator({ status }: { status: ConnectionStatus }) {
 export function ChatView({ sessionId }: ChatViewProps) {
   const { messages, streamingMessage, connectionStatus, sendMessage, isLoading } =
     useChat(sessionId);
-  const { currentModel, models, setModel, isLoading: isLoadingModels } = useModel();
+  const { currentModel, models, setModel, isLoading: isLoadingModels, parameters } = useModel();
 
   const isDisabled = connectionStatus !== "connected" || isLoading;
 
   const handleSend = (content: string) => {
-    sendMessage(content, currentModel);
+    sendMessage(content, currentModel, parameters);
   };
 
   return (

@@ -109,6 +109,10 @@ async def chat_websocket(
             user_content = data.get("content", "")
             # Get model from client, or use default
             request_model = data.get("model")
+            # Get optional parameters from client
+            temperature = data.get("temperature")  # None means use default
+            top_p = data.get("top_p")  # None means use default
+            max_tokens = data.get("max_tokens")  # None means use default
 
             if not user_content.strip():
                 continue
@@ -166,7 +170,18 @@ async def chat_websocket(
             # Stream AI response
             full_response = ""
             try:
-                async for chunk in service.stream_chat(history, model=model_name):
+                # Build kwargs for service call based on service type
+                service_kwargs = {
+                    "messages": history,
+                    "model": model_name,
+                    "temperature": float(temperature) if temperature is not None else None,
+                    "top_p": float(top_p) if top_p is not None else None,
+                }
+                # Ollama doesn't support max_tokens in the same way
+                if not is_ollama and max_tokens is not None:
+                    service_kwargs["max_tokens"] = int(max_tokens)
+
+                async for chunk in service.stream_chat(**service_kwargs):
                     if chunk.error:
                         await manager.send_json(session_id, {
                             "type": "error",

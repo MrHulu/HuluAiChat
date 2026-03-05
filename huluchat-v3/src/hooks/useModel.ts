@@ -12,6 +12,12 @@ import {
   type OllamaModel,
 } from "@/api/client";
 
+export interface ChatParameters {
+  temperature: number;
+  top_p: number;
+  max_tokens: number;
+}
+
 export interface UseModelReturn {
   /** 当前选择的模型 ID */
   currentModel: string;
@@ -29,6 +35,8 @@ export interface UseModelReturn {
   ollamaModels: OllamaModel[];
   /** 刷新 Ollama 模型列表 */
   refreshOllamaModels: () => Promise<void>;
+  /** 聊天参数 */
+  parameters: ChatParameters;
 }
 
 const STORAGE_KEY = "huluchat-selected-model";
@@ -39,6 +47,11 @@ export function useModel(): UseModelReturn {
   const [isLoading, setIsLoading] = useState(true);
   const [ollamaAvailable, setOllamaAvailable] = useState(false);
   const [ollamaModels, setOllamaModels] = useState<OllamaModel[]>([]);
+  const [parameters, setParameters] = useState<ChatParameters>({
+    temperature: 0.7,
+    top_p: 1.0,
+    max_tokens: 4096,
+  });
 
   // 检查 Ollama 状态
   useEffect(() => {
@@ -79,6 +92,13 @@ export function useModel(): UseModelReturn {
         } else if (modelList.length > 0) {
           setCurrentModel(modelList[0].id);
         }
+
+        // 加载模型参数
+        setParameters({
+          temperature: settings.temperature ?? 0.7,
+          top_p: settings.top_p ?? 1.0,
+          max_tokens: settings.max_tokens ?? 4096,
+        });
       } catch (error) {
         console.error("Failed to load model data:", error);
       } finally {
@@ -133,5 +153,6 @@ export function useModel(): UseModelReturn {
     ollamaAvailable,
     ollamaModels,
     refreshOllamaModels,
+    parameters,
   };
 }

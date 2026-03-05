@@ -41,24 +41,36 @@ class OpenAIService:
         self,
         messages: list[dict[str, str]],
         model: Optional[str] = None,
+        temperature: Optional[float] = None,
+        top_p: Optional[float] = None,
+        max_tokens: Optional[int] = None,
     ) -> AsyncIterator[StreamChunk]:
         """Stream chat completion from OpenAI.
 
         Args:
             messages: List of message dicts with 'role' and 'content'
             model: Model to use, defaults to settings.openai_model
+            temperature: Sampling temperature (0-2), defaults to settings.temperature
+            top_p: Nucleus sampling (0-1), defaults to settings.top_p
+            max_tokens: Max tokens in response, defaults to settings.max_tokens
 
         Yields:
             StreamChunk objects containing content or error
         """
         model = model or settings.openai_model
+        temperature = temperature if temperature is not None else settings.temperature
+        top_p = top_p if top_p is not None else settings.top_p
+        max_tokens = max_tokens if max_tokens is not None else settings.max_tokens
 
         try:
-            logger.info(f"stream_chat: model={model}, messages_count={len(messages)}")
+            logger.info(f"stream_chat: model={model}, messages_count={len(messages)}, temp={temperature}, top_p={top_p}")
             stream = await self.client.chat.completions.create(
                 model=model,
                 messages=messages,
                 stream=True,
+                temperature=temperature,
+                top_p=top_p,
+                max_tokens=max_tokens,
             )
 
             async for chunk in stream:

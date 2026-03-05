@@ -38,6 +38,7 @@ vi.mock("@/hooks", () => ({
     models: mockModels,
     setModel: mockSetModel,
     isLoading: mockIsLoadingModels,
+    parameters: { temperature: 0.7, top_p: 1.0, max_tokens: 4096 },
   })),
 }));
 
@@ -222,7 +223,11 @@ describe("ChatView", () => {
       const sendButton = screen.getByRole("button", { name: /send/i });
       fireEvent.click(sendButton);
 
-      expect(mockSendMessage).toHaveBeenCalledWith("Hello AI", "gpt-4");
+      expect(mockSendMessage).toHaveBeenCalledWith("Hello AI", "gpt-4", {
+        temperature: 0.7,
+        top_p: 1.0,
+        max_tokens: 4096,
+      });
     });
   });
 

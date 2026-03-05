@@ -21,6 +21,10 @@ class SettingsResponse(BaseModel):
     openai_base_url: Optional[str] = None
     openai_model: str = "gpt-4o-mini"
     has_api_key: bool = False
+    # Model parameters
+    temperature: float = 0.7
+    top_p: float = 1.0
+    max_tokens: int = 4096
 
 
 class SettingsUpdate(BaseModel):
@@ -28,6 +32,10 @@ class SettingsUpdate(BaseModel):
     openai_api_key: Optional[str] = None
     openai_base_url: Optional[str] = None
     openai_model: Optional[str] = None
+    # Model parameters
+    temperature: Optional[float] = None
+    top_p: Optional[float] = None
+    max_tokens: Optional[int] = None
 
 
 class ModelInfo(BaseModel):
@@ -74,12 +82,18 @@ async def get_settings():
     api_key = user_settings.get("openai_api_key") or settings.openai_api_key
     base_url = user_settings.get("openai_base_url") or settings.openai_base_url
     model = user_settings.get("openai_model") or settings.openai_model
+    temperature = user_settings.get("temperature", settings.temperature)
+    top_p = user_settings.get("top_p", settings.top_p)
+    max_tokens = user_settings.get("max_tokens", settings.max_tokens)
 
     return SettingsResponse(
         openai_api_key=api_key[:8] + "..." if api_key and len(api_key) > 8 else None,
         openai_base_url=base_url,
         openai_model=model,
         has_api_key=bool(api_key),
+        temperature=temperature,
+        top_p=top_p,
+        max_tokens=max_tokens,
     )
 
 
@@ -95,6 +109,13 @@ async def update_settings(update: SettingsUpdate):
         user_settings["openai_base_url"] = update.openai_base_url
     if update.openai_model is not None:
         user_settings["openai_model"] = update.openai_model
+    # Model parameters
+    if update.temperature is not None:
+        user_settings["temperature"] = update.temperature
+    if update.top_p is not None:
+        user_settings["top_p"] = update.top_p
+    if update.max_tokens is not None:
+        user_settings["max_tokens"] = update.max_tokens
 
     save_user_settings(user_settings)
 
@@ -105,6 +126,12 @@ async def update_settings(update: SettingsUpdate):
         settings.openai_base_url = update.openai_base_url
     if update.openai_model:
         settings.openai_model = update.openai_model
+    if update.temperature is not None:
+        settings.temperature = update.temperature
+    if update.top_p is not None:
+        settings.top_p = update.top_p
+    if update.max_tokens is not None:
+        settings.max_tokens = update.max_tokens
 
     api_key = user_settings.get("openai_api_key") or settings.openai_api_key
     return SettingsResponse(
@@ -112,6 +139,9 @@ async def update_settings(update: SettingsUpdate):
         openai_base_url=user_settings.get("openai_base_url") or settings.openai_base_url,
         openai_model=user_settings.get("openai_model") or settings.openai_model,
         has_api_key=bool(api_key),
+        temperature=user_settings.get("temperature", settings.temperature),
+        top_p=user_settings.get("top_p", settings.top_p),
+        max_tokens=user_settings.get("max_tokens", settings.max_tokens),
     )
 
 
