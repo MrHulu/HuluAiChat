@@ -92,7 +92,17 @@
     "toggleSidebar": "Toggle sidebar",
     "send": "Send message",
     "newLine": "New line in message",
-    "close": "Close dialog"
+    "close": "Close dialog",
+    "showHelp": "Show keyboard shortcuts",
+    "pressToOpen": "Press {{key1}} or {{key2}} to open this help anytime"
+  },
+  "update": {
+    "checking": "Checking for updates...",
+    "downloading": "Downloading update...",
+    "newVersion": "New version available",
+    "available": "v{{version}} available",
+    "updateNow": "Update Now",
+    "later": "Later"
   },
   "export": {
     "title": "Export Chat",

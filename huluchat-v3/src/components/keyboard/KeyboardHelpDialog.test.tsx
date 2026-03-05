@@ -22,16 +22,16 @@ describe("KeyboardHelpDialog", () => {
   it("should render dialog when open", () => {
     render(<KeyboardHelpDialog open={true} onOpenChange={mockOnOpenChange} />);
 
-    expect(screen.getByText("键盘快捷键")).toBeInTheDocument();
-    expect(screen.getByText("新建会话")).toBeInTheDocument();
-    expect(screen.getByText("切换侧边栏")).toBeInTheDocument();
-    expect(screen.getByText("打开设置")).toBeInTheDocument();
+    expect(screen.getByText("Keyboard Shortcuts")).toBeInTheDocument();
+    expect(screen.getByText("New chat")).toBeInTheDocument();
+    expect(screen.getByText("Toggle sidebar")).toBeInTheDocument();
+    expect(screen.getByText("Open settings")).toBeInTheDocument();
   });
 
   it("should not render dialog content when closed", () => {
     render(<KeyboardHelpDialog open={false} onOpenChange={mockOnOpenChange} />);
 
-    expect(screen.queryByText("键盘快捷键")).not.toBeInTheDocument();
+    expect(screen.queryByText("Keyboard Shortcuts")).not.toBeInTheDocument();
   });
 
   it("should display macOS shortcuts on Mac platform", () => {
@@ -65,18 +65,18 @@ describe("KeyboardHelpDialog", () => {
   it("should display all shortcut descriptions", () => {
     render(<KeyboardHelpDialog open={true} onOpenChange={mockOnOpenChange} />);
 
-    expect(screen.getByText("新建会话")).toBeInTheDocument();
-    expect(screen.getByText("切换侧边栏")).toBeInTheDocument();
-    expect(screen.getByText("打开设置")).toBeInTheDocument();
-    expect(screen.getByText("显示快捷键帮助")).toBeInTheDocument();
-    expect(screen.getByText("关闭对话框")).toBeInTheDocument();
+    expect(screen.getByText("New chat")).toBeInTheDocument();
+    expect(screen.getByText("Toggle sidebar")).toBeInTheDocument();
+    expect(screen.getByText("Open settings")).toBeInTheDocument();
+    expect(screen.getByText("Show keyboard shortcuts")).toBeInTheDocument();
+    expect(screen.getByText("Close dialog")).toBeInTheDocument();
   });
 
   it("should display help text at bottom", () => {
     render(<KeyboardHelpDialog open={true} onOpenChange={mockOnOpenChange} />);
 
     // Check for partial text since the content is split across elements
-    expect(screen.getByText(/随时打开此帮助/)).toBeInTheDocument();
+    expect(screen.getByText(/to open this help anytime/)).toBeInTheDocument();
   });
 
   it("should call onOpenChange when dialog is closed", async () => {

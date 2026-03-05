@@ -3,10 +3,12 @@
  * Shows update available, download progress, and install actions
  */
 import { Download, X, RefreshCw } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useUpdater } from "@/hooks";
 import { cn } from "@/lib/utils";
 
 export function UpdateNotification() {
+  const { t } = useTranslation();
   const {
     updateAvailable,
     updateInfo,
@@ -28,14 +30,14 @@ export function UpdateNotification() {
         {isChecking ? (
           <div className="flex items-center gap-3">
             <RefreshCw className="h-5 w-5 animate-spin text-muted-foreground" />
-            <span className="text-sm">检查更新中...</span>
+            <span className="text-sm">{t("update.checking")}</span>
           </div>
         ) : isDownloading ? (
           <div className="space-y-3">
             <div className="flex items-center gap-3">
               <Download className="h-5 w-5 text-primary animate-bounce" />
               <div className="flex-1">
-                <p className="text-sm font-medium">下载更新中...</p>
+                <p className="text-sm font-medium">{t("update.downloading")}</p>
                 <p className="text-xs text-muted-foreground">
                   v{updateInfo?.version} - {downloadProgress}%
                 </p>
@@ -56,9 +58,9 @@ export function UpdateNotification() {
                   <RefreshCw className="h-4 w-4 text-primary" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium">发现新版本</p>
+                  <p className="text-sm font-medium">{t("update.newVersion")}</p>
                   <p className="text-xs text-muted-foreground">
-                    v{updateInfo?.version} 可用
+                    {t("update.available", { version: updateInfo?.version })}
                   </p>
                 </div>
               </div>
@@ -85,13 +87,13 @@ export function UpdateNotification() {
                 )}
               >
                 <Download className="h-4 w-4" />
-                立即更新
+                {t("update.updateNow")}
               </button>
               <button
                 onClick={() => checkForUpdates(false)}
                 className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
               >
-                稍后
+                {t("update.later")}
               </button>
             </div>
           </div>
