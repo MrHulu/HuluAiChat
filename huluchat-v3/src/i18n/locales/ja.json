@@ -42,7 +42,19 @@
     "enterToSend": "Enter で送信、Shift+Enter で改行",
     "editMessage": "メッセージを編集",
     "saving": "保存中...",
-    "ctrlEnterToSave": "Ctrl+Enter で保存、Esc でキャンセル"
+    "ctrlEnterToSave": "Ctrl+Enter で保存、Esc でキャンセル",
+    "title": "チャット",
+    "selectSession": "セッションを選択または作成",
+    "selectSessionToChat": "チャットを開始するセッションを選択...",
+    "startConversation": "会話を始める",
+    "startConversationHint": "メッセージを送信してAIとのチャットを開始",
+    "thinking": "考え中...",
+    "messageUpdated": "メッセージを更新しました",
+    "messageUpdateFailed": "メッセージの更新に失敗しました",
+    "connecting": "接続中...",
+    "connected": "接続済み",
+    "disconnected": "切断済み",
+    "connectionError": "接続エラー"
   },
   "settings": {
     "title": "設定",

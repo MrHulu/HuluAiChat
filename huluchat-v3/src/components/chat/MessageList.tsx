@@ -7,6 +7,7 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { Message } from "@/api/client";
 import { MessageItem } from "./MessageItem";
 import { StreamingMessage } from "@/hooks/useChat";
+import { useTranslation } from "react-i18next";
 
 export interface MessageListProps {
   messages: Message[];
@@ -32,6 +33,7 @@ export function estimateMessageHeight(content: string): number {
 }
 
 export function MessageList({ messages, streamingMessage, isLoading, onEditMessage }: MessageListProps) {
+  const { t } = useTranslation();
   const parentRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -60,8 +62,8 @@ export function MessageList({ messages, streamingMessage, isLoading, onEditMessa
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center text-muted-foreground">
           <div className="text-4xl mb-4">💬</div>
-          <p className="text-lg font-medium">Start a conversation</p>
-          <p className="text-sm">Send a message to begin chatting with AI</p>
+          <p className="text-lg font-medium">{t("chat.startConversation")}</p>
+          <p className="text-sm">{t("chat.startConversationHint")}</p>
         </div>
       </div>
     );
@@ -122,7 +124,7 @@ export function MessageList({ messages, streamingMessage, isLoading, onEditMessa
                 <span className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
                 <span className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
               </div>
-              <span className="text-sm">Thinking...</span>
+              <span className="text-sm">{t("chat.thinking")}</span>
             </div>
           </div>
         </div>
