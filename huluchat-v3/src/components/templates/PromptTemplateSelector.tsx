@@ -3,6 +3,7 @@
  * Template selection dialog for prompt templates
  */
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -26,14 +27,6 @@ interface PromptTemplateSelectorProps {
   onSelect: (content: string) => void;
 }
 
-const CATEGORY_LABELS: Record<TemplateCategory, string> = {
-  writing: "Writing",
-  coding: "Coding",
-  analysis: "Analysis",
-  translation: "Translation",
-  custom: "Custom",
-};
-
 const CATEGORY_ICONS: Record<TemplateCategory, string> = {
   writing: "✍️",
   coding: "💻",
@@ -47,12 +40,17 @@ export function PromptTemplateSelector({
   onOpenChange,
   onSelect,
 }: PromptTemplateSelectorProps) {
+  const { t } = useTranslation();
   const [templates, setTemplates] = useState<PromptTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<TemplateCategory | null>(null);
   const [editingTemplate, setEditingTemplate] = useState<PromptTemplate | null>(null);
   const [editContent, setEditContent] = useState("");
   const [editName, setEditName] = useState("");
+
+  const getCategoryLabel = (category: TemplateCategory) => {
+    return t(`templates.categories.${category}`);
+  };
 
   // Load templates on mount
   useEffect(() => {
@@ -79,7 +77,7 @@ export function PromptTemplateSelector({
   };
 
   const handleCreateNew = async () => {
-    const name = editName.trim() || "New Template";
+    const name = editName.trim() || t("templates.newTemplate").replace("+ ", "");
     const content = editContent.trim();
 
     if (!content) return;
@@ -153,7 +151,7 @@ export function PromptTemplateSelector({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle>Prompt Templates</DialogTitle>
+          <DialogTitle>{t("templates.title")}</DialogTitle>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
@@ -164,7 +162,7 @@ export function PromptTemplateSelector({
                 setEditContent("");
               }}
             >
-              + New Template
+              {t("templates.newTemplate")}
             </Button>
           </div>
         </DialogHeader>
@@ -177,9 +175,9 @@ export function PromptTemplateSelector({
               className="w-full justify-start mb-1"
               onClick={() => setSelectedCategory(null)}
             >
-              All
+              {t("templates.all")}
             </Button>
-            {(Object.keys(CATEGORY_LABELS) as TemplateCategory[]).map((category) => (
+            {(Object.keys(CATEGORY_ICONS) as TemplateCategory[]).map((category) => (
               <Button
                 key={category}
                 variant={selectedCategory === category ? "secondary" : "ghost"}
@@ -187,7 +185,7 @@ export function PromptTemplateSelector({
                 onClick={() => setSelectedCategory(category)}
               >
                 <span className="mr-2">{CATEGORY_ICONS[category]}</span>
-                {CATEGORY_LABELS[category]}
+                {getCategoryLabel(category)}
               </Button>
             ))}
           </div>
@@ -196,27 +194,27 @@ export function PromptTemplateSelector({
           <div className="flex-1 overflow-y-auto p-4">
             {loading ? (
               <div className="flex items-center justify-center h-32">
-                <span className="text-muted-foreground">Loading...</span>
+                <span className="text-muted-foreground">{t("common.loading")}</span>
               </div>
             ) : editingTemplate ? (
               <div className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium mb-1">Name</label>
+                  <label className="text-sm font-medium mb-1">{t("templates.name")}</label>
                   <input
                     type="text"
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
                     className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    placeholder="Template name"
+                    placeholder={t("templates.namePlaceholder")}
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-1">Content</label>
+                  <label className="text-sm font-medium mb-1">{t("templates.content")}</label>
                   <textarea
                     value={editContent}
                     onChange={(e) => setEditContent(e.target.value)}
                     className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[200px]"
-                    placeholder="Template content. Use {variable} for placeholders."
+                    placeholder={t("templates.contentPlaceholder")}
                   />
                 </div>
                 <div className="flex gap-2">
@@ -228,7 +226,7 @@ export function PromptTemplateSelector({
                       setEditName("");
                     }}
                   >
-                    Cancel
+                    {t("common.cancel")}
                   </Button>
                   <Button
                     onClick={() =>
@@ -237,7 +235,7 @@ export function PromptTemplateSelector({
                         : handleCreateNew()
                     }
                   >
-                    {editingTemplate.is_builtin ? "Update" : "Create"}
+                    {editingTemplate.is_builtin ? t("common.save") : t("common.save")}
                   </Button>
                 </div>
               </div>
@@ -247,7 +245,7 @@ export function PromptTemplateSelector({
                   <div key={category}>
                     <h4 className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
                       <span>{CATEGORY_ICONS[category as TemplateCategory]}</span>
-                      <span>{CATEGORY_LABELS[category as TemplateCategory]}</span>
+                      <span>{getCategoryLabel(category as TemplateCategory)}</span>
                     </h4>
                     <div className="space-y-2">
                       {templates.map((template) => (

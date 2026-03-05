@@ -3,6 +3,7 @@
  * 单条消息展示，支持 Markdown 渲染和编辑
  */
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { Message } from "@/api/client";
 import { Button } from "@/components/ui/button";
@@ -44,6 +45,7 @@ export interface MessageItemProps {
 }
 
 export function MessageItem({ message, isStreaming, onEdit }: MessageItemProps) {
+  const { t } = useTranslation();
   const isUser = message.role === "user";
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(message.content);
@@ -132,13 +134,13 @@ export function MessageItem({ message, isStreaming, onEdit }: MessageItemProps) 
             isUser ? "text-primary-foreground/70" : "text-muted-foreground"
           )}
         >
-          <span>{isUser ? "You" : "AI"}</span>
+          <span>{isUser ? t("chat.you") : t("chat.ai")}</span>
           {/* Edit button for user messages */}
           {isUser && onEdit && !isEditing && (
             <button
               onClick={handleStartEdit}
               className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-primary-foreground/10 rounded"
-              title="Edit message"
+              title={t("chat.editMessage")}
             >
               <Pencil className="w-3 h-3" />
             </button>
@@ -171,7 +173,7 @@ export function MessageItem({ message, isStreaming, onEdit }: MessageItemProps) 
                 className="h-7 px-2 text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10"
               >
                 <X className="w-4 h-4 mr-1" />
-                Cancel
+                {t("chat.cancelEdit")}
               </Button>
               <Button
                 size="sm"
@@ -180,11 +182,11 @@ export function MessageItem({ message, isStreaming, onEdit }: MessageItemProps) 
                 className="h-7 px-2 bg-primary-foreground/20 hover:bg-primary-foreground/30 text-primary-foreground"
               >
                 <Check className="w-4 h-4 mr-1" />
-                {isSaving ? "Saving..." : "Save"}
+                {isSaving ? t("chat.saving") : t("chat.saveEdit")}
               </Button>
             </div>
             <span className="text-xs text-primary-foreground/50">
-              Ctrl+Enter to save, Esc to cancel
+              {t("chat.ctrlEnterToSave")}
             </span>
           </div>
         ) : (
