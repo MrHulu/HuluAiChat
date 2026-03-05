@@ -29,6 +29,11 @@ export const supportedLanguages = [
   { code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt' },
   { code: 'th', name: 'Thai', nativeName: 'ไทย' },
   { code: 'id', name: 'Indonesian', nativeName: 'Bahasa Indonesia' },
+  { code: 'sv', name: 'Swedish', nativeName: 'Svenska' },
+  { code: 'no', name: 'Norwegian', nativeName: 'Norsk' },
+  { code: 'fi', name: 'Finnish', nativeName: 'Suomi' },
+  { code: 'da', name: 'Danish', nativeName: 'Dansk' },
+  { code: 'cs', name: 'Czech', nativeName: 'Čeština' },
 ] as const;
 
 export type LanguageCode = typeof supportedLanguages[number]['code'];
