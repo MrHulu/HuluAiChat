@@ -44,6 +44,11 @@ export const supportedLanguages = [
   { code: 'ur', name: 'Urdu', nativeName: 'اردو' },
   { code: 'fa', name: 'Persian', nativeName: 'فارسی' },
   { code: 'sw', name: 'Swahili', nativeName: 'Kiswahili' },
+  { code: 'tl', name: 'Filipino', nativeName: 'Wikang Filipino' },
+  { code: 'jv', name: 'Javanese', nativeName: 'Basa Jawa' },
+  { code: 'te', name: 'Telugu', nativeName: 'తెలుగు' },
+  { code: 'mr', name: 'Marathi', nativeName: 'मराठी' },
+  { code: 'ta', name: 'Tamil', nativeName: 'தமிழ்' },
 ] as const;
 
 export type LanguageCode = typeof supportedLanguages[number]['code'];
