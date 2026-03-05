@@ -1,300 +1,227 @@
 # 🍵 HuluChat
 
-> A lightweight desktop AI chat app: multi-model switching, streaming replies, local history, and distributable builds.  
-> English | [中文](README.md)
+> **Minimal, Cross-Platform AI Chat Desktop App**
+> Quick model switching between GPT-4, Claude, Gemini and organized folder management
 
----
-
-## 📑 Table of Contents
-
-- [🍵 HuluChat](#-huluchat)
-  - [📑 Table of Contents](#-table-of-contents)
-  - [✨ Features](#-features)
-  - [📚 Documentation](#-documentation)
-  - [🏗️ Project Structure](#️-project-structure)
-  - [📐 Architecture](#-architecture)
-    - [High-level](#high-level)
-    - [Send message (streaming)](#send-message-streaming)
-    - [Data \& config](#data--config)
-  - [🚀 Quick Start](#-quick-start)
-    - [Requirements](#requirements)
-    - [Run](#run)
-  - [📦 Build \& Distribute](#-build--distribute)
-  - [📂 Config \& Data](#-config--data)
-  - [🔮 Roadmap](#-roadmap)
-  - [📋 Changelog](#-changelog)
-  - [📄 License](#-license)
+English | [中文](README.md)
 
 ---
 
 ## ✨ Features
 
-- **Multi-model support**: Add multiple OpenAI-compatible providers (Base URL, API Key, Model ID) and switch between them.
-- **Streaming chat**: Replies stream token-by-token for a smooth experience.
-- **Local persistence**: Sessions and messages stored in SQLite on your machine.
-- **Theme & layout**: Light/dark theme; collapsible sidebar.
-- **Distributable exe**: PyInstaller build for Windows; config and data stay in user directories.
+### 🤖 Multi-Model Support
+One-click switching between GPT-4, Claude, Gemini and other OpenAI-compatible APIs.
+
+### 📁 Session Folders
+Organize your chat history with folders to keep everything tidy.
+
+### 🔍 Global Search
+Quickly search through all your conversations with real-time highlighting.
+
+### 📤 Multi-Format Export
+Export to Markdown, JSON, or TXT for easy backup and sharing.
+
+### ⌨️ Efficient Shortcuts
+Full keyboard shortcut support for faster workflow.
+
+### 🌙 Dark Mode
+Carefully designed dark theme to protect your eyes.
+
+### ⚡ Auto-Update
+Always stay up to date without manual downloads.
 
 ---
 
-## 📚 Documentation
+## 📸 Screenshots
 
-| Document | Description |
-|----------|-------------|
-| [📖 User Guide](docs/USER_GUIDE.md) | Detailed usage guide with features, shortcuts, and FAQ |
-| [🔑 API Setup Guide](docs/API_SETUP.md) | How to get and configure OpenAI, DeepSeek, Azure APIs |
+<!-- Screenshot placeholders - User needs to add actual screenshots -->
 
----
+| Main Interface | Session Folders | Model Switching |
+|:---:|:---:|:---:|
+| ![Main](docs/screenshots/01-hero-main-interface.png) | ![Folders](docs/screenshots/02-session-folders.png) | ![Models](docs/screenshots/03-model-switching.png) |
 
-## 🏗️ Project Structure
-
-```
-HuluChat/
-├── main.py                 # 🚪 Entry point (run & PyInstaller)
-├── requirements.txt        # 📋 Python dependencies
-├── HuluChat.spec           # 📦 PyInstaller spec
-├── LICENSE                 # 📄 License
-│
-├── src/                    # Application source
-│   ├── main.py             # Wiring: Config, Persistence, Chat, AppService, UI
-│   ├── app_data.py         # App data dir (APPDATA / XDG / Library)
-│   ├── logging_config.py   # Logging setup
-│   │
-│   ├── app/                # Application / use-case layer
-│   │   └── service.py      # AppService: send message, sessions, config, theme
-│   │
-│   ├── chat/               # Chat layer
-│   │   ├── client.py       # ChatClient abstraction, StreamChunk types
-│   │   └── openai_client.py # OpenAI-compatible streaming (OpenHuluChatClient)
-│   │
-│   ├── config/             # Config layer
-│   │   ├── models.py       # AppConfig, Provider, serialization
-│   │   └── store.py       # ConfigStore + JsonConfigStore
-│   │
-│   ├── persistence/        # Persistence layer
-│   │   ├── db.py           # SQLite init & tables (session, message)
-│   │   ├── models.py       # Session, Message models
-│   │   ├── session_repo.py # Session CRUD
-│   │   └── message_repo.py # Message append & list by session
-│   │
-│   └── ui/                 # UI layer
-│       ├── main_window.py  # Main window: sidebar, chat area, input, model selector
-│       ├── settings.py     # Settings dialog: providers, theme, sidebar
-│       ├── settings_validation.py  # Validation for name/URL/model/API key
-│       └── settings_constants.py   # UI constants
-│
-├── .cursor/                # Cursor editor (rules, skills); optional
-└── openspec/               # OpenSpec specs & changes; optional
-```
-
-- **Root**: `main.py` is the entry; `requirements.txt` and `HuluChat.spec` for deps and packaging.
-- **src**: Core logic and UI. `app` orchestrates use cases; `chat` handles streaming API; `config`/`persistence` handle config and DB; `ui` is CustomTkinter.
-
----
-
-## 📐 Architecture
-
-### High-level
-
-```mermaid
-flowchart TB
-    subgraph UI["🖥️ UI Layer"]
-        MainWindow["MainWindow"]
-        Settings["Settings"]
-    end
-
-    subgraph App["📦 App Layer"]
-        AppService["AppService"]
-    end
-
-    subgraph Infra["🔧 Infrastructure"]
-        ConfigStore["ConfigStore"]
-        SessionRepo["SessionRepository"]
-        MessageRepo["MessageRepository"]
-        ChatClient["ChatClient"]
-    end
-
-    MainWindow --> AppService
-    Settings --> AppService
-    AppService --> ConfigStore
-    AppService --> SessionRepo
-    AppService --> MessageRepo
-    AppService --> ChatClient
-```
-
-### Send message (streaming)
-
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant MW as MainWindow
-    participant App as AppService
-    participant Repo as Repositories
-    participant API as OpenHuluChatClient
-
-    U->>MW: Send
-    MW->>App: send_message(session_id, content, chunk_queue)
-    App->>Repo: Load session / history
-    App->>API: stream_chat(provider, messages, on_chunk)
-    loop Stream
-        API-->>App: on_chunk(TextChunk)
-        App->>MW: chunk_queue -> UI update
-    end
-    API-->>App: on_chunk(DoneChunk)
-    App->>Repo: Save user + assistant messages
-    App->>MW: on_done()
-```
-
-### Data & config
-
-```mermaid
-flowchart LR
-    subgraph UserDir["User directory"]
-        config["config.json"]
-        db["chat.db"]
-    end
-
-    JsonConfigStore --> config
-    SqliteSessionRepo --> db
-    SqliteMessageRepo --> db
-```
+| Search | Export |
+|:---:|:---:|
+| ![Search](docs/screenshots/04-search-feature.png) | ![Export](docs/screenshots/05-export-feature.png) |
 
 ---
 
 ## 🚀 Quick Start
 
+### Download
+
+Visit the [Releases](https://github.com/MrHulu/HuluChat/releases) page:
+
+| Platform | Format | Notes |
+|----------|--------|-------|
+| **Windows** | `.msi` / `.exe` | Installer or portable |
+| **macOS** | `.dmg` | Intel & Apple Silicon |
+| **Linux** | `.AppImage` / `.deb` | Universal formats |
+
+### First Run
+
+1. Launch the app and click the **Settings** icon
+2. Add your API configuration:
+   - **Base URL**: API endpoint (e.g., `https://api.openai.com/v1`)
+   - **API Key**: Your key
+   - **Model ID**: Model name (e.g., `gpt-4o`)
+3. Start chatting!
+
+### API Configuration Examples
+
+| Provider | Base URL | Model ID |
+|----------|----------|----------|
+| OpenAI | `https://api.openai.com/v1` | `gpt-4o`, `gpt-4o-mini` |
+| Anthropic | `https://api.anthropic.com/v1` | `claude-sonnet-4-20250514` |
+| DeepSeek | `https://api.deepseek.com/v1` | `deepseek-chat` |
+| Google AI | `https://generativelanguage.googleapis.com/v1beta` | `gemini-2.0-flash` |
+| Local Model | `http://localhost:11434/v1` | `llama3` |
+
+---
+
+## ⌨️ Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl/Cmd + N` | New session |
+| `Ctrl/Cmd + B` | Toggle sidebar |
+| `Ctrl/Cmd + K` | Open search |
+| `Ctrl/Cmd + ,` | Open settings |
+| `Ctrl/Cmd + /` | Show shortcut help |
+| `Enter` | Send message |
+| `Shift + Enter` | New line |
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Desktop Framework** | Tauri 2.0 (Rust + System WebView) |
+| **Frontend** | React 19 + TypeScript |
+| **Styling** | Tailwind CSS 4 + shadcn/ui |
+| **Backend** | FastAPI (Python) |
+| **Database** | SQLite |
+| **Communication** | HTTP REST + WebSocket |
+| **Testing** | Vitest + React Testing Library (94% coverage) |
+
+---
+
+## 🔧 Development
+
 ### Requirements
 
+- Node.js 18+
 - Python 3.10+
-- Dependencies: `customtkinter`, `openai` (see `requirements.txt`)
+- Rust (Tauri CLI)
+- pnpm / npm
 
-### Run
-
-1. **Install**
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-2. **Start**
-
-   ```bash
-   python main.py
-   ```
-
-   or:
-
-   ```bash
-   python -m src.main
-   ```
-
-3. **First run**: If no provider is configured, open **Settings** and add a model (Base URL, API Key, Model ID), then send a message.
-
----
-
-## 📦 Build & Distribute
-
-### Method 1: NSIS Installer (Recommended)
-
-Generate a Windows installer (.exe) with uninstaller and shortcuts:
-
-**Requirement**: Install [NSIS](https://nsis.sourceforge.io/Download)
+### Local Development
 
 ```bash
-# Using Make
-make build-installer
+# Clone the repo
+git clone https://github.com/MrHulu/HuluChat.git
+cd HuluChat/huluchat-v3
 
-# Or using PowerShell (Windows)
-.\build.ps1 -Target installer
+# Install dependencies
+npm install
 
-# Or using batch script (Windows)
-build.bat installer
+# Install Python dependencies
+pip install -r ../requirements.txt
+
+# Start dev environment
+npm run tauri dev
 ```
 
-Output: `dist/HuluChat-Setup-1.0.1.exe`
-
-### Method 2: Standalone exe
-
-Build a portable, single-file exe:
-
-1. Install PyInstaller:
-
-   ```bash
-   pip install pyinstaller
-   ```
-
-2. From project root:
-
-   ```bash
-   pyinstaller HuluChat.spec
-
-   # Or using Make
-   make build-exe
-
-   # Or using PowerShell (Windows)
-   .\build.ps1 -Target exe
-   ```
-
-3. Output: `dist/HuluChat.exe`. Config and database still use the user directory, not the exe folder.
-
-### Clean build artifacts
+### Build
 
 ```bash
-# Using Make
-make clean-build
+# Build for production
+npm run tauri build
+```
 
-# Or using PowerShell (Windows)
-.\build.ps1 -Target clean
+### Testing
 
-# Or using batch script (Windows)
-build.bat clean
+```bash
+# Run tests
+npm run test:run
+
+# View coverage
+npm run test:coverage
 ```
 
 ---
 
-## 📂 Config & Data
+## 📁 Project Structure
 
-Config and SQLite DB are stored in an **app data root**, independent of process cwd:
-
-| OS | Path |
-|----|------|
-| **Windows** | `%APPDATA%/HuluChat` |
-| **Linux** | `$XDG_CONFIG_HOME/HuluChat` or `~/.config/HuluChat` |
-| **macOS** | `~/Library/Application Support/HuluChat` |
-
-Contents:
-
-- `config.json`: Providers, current model, theme, sidebar state
-- `chat.db`: Sessions and messages (SQLite)
-
-The directory is created on first run.
-
----
-
-## 🔮 Roadmap
-
-- **Image upload & vision**: Attach images in chat and use vision models (e.g. GPT-4V).
-- **More input**: Voice input, paste from file/clipboard.
-- **Export & backup**: Export sessions/messages to Markdown or JSON.
-- **Shortcuts & accessibility**: Global shortcuts, contrast and font size options.
-- **Extensions**: Hooks for custom tools or third-party APIs.
-
-Issues and PRs welcome.
+```
+huluchat-v3/
+├── src/                    # React frontend source
+│   ├── components/         # UI components
+│   │   ├── chat/          # Chat-related components
+│   │   ├── sidebar/       # Sidebar components
+│   │   ├── settings/      # Settings dialog
+│   │   ├── keyboard/      # Shortcut help
+│   │   └── ui/            # shadcn/ui base components
+│   ├── hooks/             # React Hooks
+│   ├── api/               # API client
+│   └── lib/               # Utility functions
+├── src-tauri/             # Tauri/Rust backend
+├── backend/               # FastAPI Python backend
+└── docs/                  # Documentation
+```
 
 ---
 
 ## 📋 Changelog
 
-See [docs/changlog.md](docs/changlog.md) for feature changes and fixes.
+See full changelog: [docs/changelog.md](docs/changelog.md)
+
+### Latest v3.8.0 (2026-03-04)
+
+- 🤖 Quick model switching - Switch between models in one click
+- 📁 Session folders - Organize chats with folders
+- 🔄 GitHub Actions CI/CD - Multi-platform builds
+- ⚡ Virtual list optimization - Smooth scrolling with many messages
+- ⌨️ Shortcut help - Press `/` or `?` to view
+- 📤 Session export - MD/JSON/TXT support
+- 🔍 Message search - Global search with highlighting
+
+---
+
+## 🤝 Contributing
+
+Issues and Pull Requests are welcome!
+
+1. Fork the repo
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Create a Pull Request
 
 ---
 
 ## 📄 License
 
-See [LICENSE](LICENSE).
+[MIT License](LICENSE)
+
+---
+
+## 🙏 Acknowledgments
+
+- [Tauri](https://tauri.app/) - Modern desktop app framework
+- [shadcn/ui](https://ui.shadcn.com/) - Beautiful React components
+- [FastAPI](https://fastapi.tiangolo.com/) - High-performance Python backend
+- [Lucide Icons](https://lucide.dev/) - Beautiful icons
 
 ---
 
 <p align="center">
-  <sub>🍵 HuluChat — Lightweight, local, packable desktop AI chat</sub>
+  <sub>🍵 HuluChat — Minimal, cross-platform, multi-model AI chat desktop app</sub>
+</p>
+
+<p align="center">
+  <a href="https://github.com/MrHulu/HuluChat/releases">Download</a> ·
+  <a href="https://github.com/MrHulu/HuluChat/issues">Feedback</a> ·
+  <a href="https://github.com/MrHulu/HuluChat/stargazers">Star ⭐</a>
 </p>
