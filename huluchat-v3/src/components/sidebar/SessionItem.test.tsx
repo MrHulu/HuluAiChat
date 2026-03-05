@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SessionItem } from "./SessionItem";
-import type { Session, Folder, ExportFormat } from "@/api/client";
+import type { Session, Folder } from "@/api/client";
 
 // Mock dropdown menu portal
 vi.mock("@radix-ui/react-dropdown-menu", async () => {
