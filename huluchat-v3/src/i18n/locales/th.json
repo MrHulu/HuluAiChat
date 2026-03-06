@@ -54,7 +54,9 @@
     "connecting": "กำลังเชื่อมต่อ...",
     "connected": "เชื่อมต่อแล้ว",
     "disconnected": "ตัดการเชื่อมต่อ",
-    "connectionError": "ข้อผิดพลาดในการเชื่อมต่อ"
+    "connectionError": "ข้อผิดพลาดในการเชื่อมต่อ",
+    "copyCode": "คัดลอกโค้ด",
+    "codeCopied": "คัดลอกแล้ว!"
   },
   "settings": {
     "title": "การตั้งค่า",

@@ -54,7 +54,9 @@
     "connecting": "Inaunganisha...",
     "connected": "Imeunganishwa",
     "disconnected": "Imetenganishwa",
-    "connectionError": "Hitilafu ya Muunganisho"
+    "connectionError": "Hitilafu ya Muunganisho",
+    "copyCode": "Nakili msimbo",
+    "codeCopied": "Msimbo umenakiliwa!"
   },
   "settings": {
     "title": "Mipangilio",

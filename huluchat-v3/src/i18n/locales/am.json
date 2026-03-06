@@ -54,7 +54,9 @@
     "connecting": "በመገናኘት ላይ...",
     "connected": "ተገናኝቷል",
     "disconnected": "ተቋርጧል",
-    "connectionError": "የግንኙነት ስህተት"
+    "connectionError": "የግንኙነት ስህተት",
+    "copyCode": "ኮድ ቅዳ",
+    "codeCopied": "ኮድ ተቀድቷል!"
   },
   "settings": {
     "title": "ቅንብሮች",

@@ -54,7 +54,9 @@
     "connecting": "Nungi Jokk...",
     "connected": "Jokk Na",
     "disconnected": "Dàq Na",
-    "connectionError": "Njuumte Jokk"
+    "connectionError": "Njuumte Jokk",
+    "copyCode": "Duppi kumpital",
+    "codeCopied": "Kumpital bi duppi!"
   },
   "settings": {
     "title": "Paraameetar",

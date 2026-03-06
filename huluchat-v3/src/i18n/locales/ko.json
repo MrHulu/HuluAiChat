@@ -54,7 +54,9 @@
     "connecting": "연결 중...",
     "connected": "연결됨",
     "disconnected": "연결 끊김",
-    "connectionError": "연결 오류"
+    "connectionError": "연결 오류",
+    "copyCode": "코드 복사",
+    "codeCopied": "복사됨!"
   },
   "settings": {
     "title": "설정",

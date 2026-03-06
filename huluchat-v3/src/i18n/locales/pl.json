@@ -54,7 +54,9 @@
     "connecting": "Łączenie...",
     "connected": "Połączono",
     "disconnected": "Rozłączono",
-    "connectionError": "Błąd połączenia"
+    "connectionError": "Błąd połączenia",
+    "copyCode": "Kopiuj kod",
+    "codeCopied": "Skopiowano kod!"
   },
   "settings": {
     "title": "Ustawienia",

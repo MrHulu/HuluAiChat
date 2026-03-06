@@ -54,7 +54,9 @@
     "connecting": "Kobler til...",
     "connected": "Tilkoblet",
     "disconnected": "Frakoblet",
-    "connectionError": "Tilkoblingsfeil"
+    "connectionError": "Tilkoblingsfeil",
+    "copyCode": "Kopier kode",
+    "codeCopied": "Kode kopiert!"
   },
   "settings": {
     "title": "Innstillinger",

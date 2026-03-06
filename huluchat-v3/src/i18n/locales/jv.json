@@ -54,7 +54,9 @@
     "connecting": "Nyambungake...",
     "connected": "Kesambung",
     "disconnected": "Diputus",
-    "connectionError": "Kesalahan Sambungan"
+    "connectionError": "Kesalahan Sambungan",
+    "copyCode": "Nyalin kode",
+    "codeCopied": "Kode disalin!"
   },
   "settings": {
     "title": "Pengaturan",

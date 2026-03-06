@@ -54,7 +54,9 @@
     "connecting": "Xirmaya...",
     "connected": "Xirmo",
     "disconnected": "Xirmo la'aan",
-    "connectionError": "Khalad Xirmo"
+    "connectionError": "Khalad Xirmo",
+    "copyCode": "Koobi lambarka",
+    "codeCopied": "Lambarka waa la koobiay!"
   },
   "settings": {
     "title": "Dejinta",

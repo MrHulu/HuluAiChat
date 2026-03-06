@@ -54,7 +54,9 @@
     "connecting": "Bağlanıyor...",
     "connected": "Bağlandı",
     "disconnected": "Bağlantı kesildi",
-    "connectionError": "Bağlantı Hatası"
+    "connectionError": "Bağlantı Hatası",
+    "copyCode": "Kodu kopyala",
+    "codeCopied": "Kod kopyalandı!"
   },
   "settings": {
     "title": "Ayarlar",

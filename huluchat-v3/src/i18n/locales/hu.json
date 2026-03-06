@@ -54,7 +54,9 @@
     "connecting": "Csatlakozás...",
     "connected": "Csatlakozva",
     "disconnected": "Leválasztva",
-    "connectionError": "Csatlakozási hiba"
+    "connectionError": "Csatlakozási hiba",
+    "copyCode": "Kód másolása",
+    "codeCopied": "Kód másolva!"
   },
   "settings": {
     "title": "Beállítások",

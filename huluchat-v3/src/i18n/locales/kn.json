@@ -54,7 +54,9 @@
     "connecting": "ಸಂಪರ್ಕಿಸುತ್ತಿದೆ...",
     "connected": "ಸಂಪರ್ಕಿತ",
     "disconnected": "ಸಂಪರ್ಕ ಕಡಿತ",
-    "connectionError": "ಸಂಪರ್ಕ ದೋಷ"
+    "connectionError": "ಸಂಪರ್ಕ ದೋಷ",
+    "copyCode": "ಕೋಡ್ ನಕಲಿಸಿ",
+    "codeCopied": "ಕೋಡ್ ನಕಲಾಗಿದೆ!"
   },
   "settings": {
     "title": "ಸೆಟ್ಟಿಂಗ್‌ಗಳು",

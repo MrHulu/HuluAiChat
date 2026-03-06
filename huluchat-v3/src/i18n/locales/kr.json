@@ -54,7 +54,9 @@
     "connecting": "Yi hadawa...",
     "connected": "An hada",
     "disconnected": "An sassara",
-    "connectionError": "Kuskuren haɗi"
+    "connectionError": "Kuskuren haɗi",
+    "copyCode": "Kwalaka lamba",
+    "codeCopied": "Lamba kwalaka!"
   },
   "settings": {
     "title": "Saituna",

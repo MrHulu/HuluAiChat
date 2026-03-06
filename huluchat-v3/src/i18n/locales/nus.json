@@ -54,7 +54,9 @@
     "connecting": "Ka luɔ̈ɔ̈k...",
     "connected": "Aluɔ̈ɔ̈k",
     "disconnected": "Gak luɔ̈ɔ̈k",
-    "connectionError": "Ŋick luɔ̈ɔ̈k"
+    "connectionError": "Ŋick luɔ̈ɔ̈k",
+    "copyCode": "Lokɛ köd",
+    "codeCopied": "Köd alɔkɛ!"
   },
   "settings": {
     "title": "Kuɔ̈r",

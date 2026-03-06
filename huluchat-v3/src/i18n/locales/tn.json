@@ -54,7 +54,9 @@
     "connecting": "E kopanya...",
     "connected": "E kopantswe",
     "disconnected": "E kgaogile",
-    "connectionError": "Phoso ya Kopanyo"
+    "connectionError": "Phoso ya Kopanyo",
+    "copyCode": "Kopisa khoutu",
+    "codeCopied": "Khoutu e kopisitswe!"
   },
   "settings": {
     "title": "Dipego",

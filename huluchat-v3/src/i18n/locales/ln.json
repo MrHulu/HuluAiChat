@@ -54,7 +54,9 @@
     "connecting": "Ezali kokangata...",
     "connected": "Ekangami",
     "disconnected": "Ekangami te",
-    "connectionError": "Libunga ya bokangami"
+    "connectionError": "Libunga ya bokangami",
+    "copyCode": "Kopía mosala",
+    "codeCopied": "Mosala ekopámá!"
   },
   "settings": {
     "title": "Mabóngoli",

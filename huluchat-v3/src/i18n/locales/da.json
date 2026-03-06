@@ -54,7 +54,9 @@
     "connecting": "Tilslutter...",
     "connected": "Tilsluttet",
     "disconnected": "Afbrudt",
-    "connectionError": "Forbindelsesfejl"
+    "connectionError": "Forbindelsesfejl",
+    "copyCode": "Kopiér kode",
+    "codeCopied": "Kode kopieret!"
   },
   "settings": {
     "title": "Indstillinger",

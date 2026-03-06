@@ -54,7 +54,9 @@
     "connecting": "Na-ejikọ...",
     "connected": "Ejikọtara",
     "disconnected": "E wepụrụ",
-    "connectionError": "Njehie Jikọ"
+    "connectionError": "Njehie Jikọ",
+    "copyCode": "Detuo koodu",
+    "codeCopied": "E depụtala koodu!"
   },
   "settings": {
     "title": "Ntọala",

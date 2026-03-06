@@ -54,7 +54,9 @@
     "connecting": "Tiep kubo...",
     "connected": "Okubo",
     "disconnected": "Pe okubo",
-    "connectionError": "Bal kubo"
+    "connectionError": "Bal kubo",
+    "copyCode": "Bäkë cök",
+    "codeCopied": "Cök abäkë!"
   },
   "settings": {
     "title": "Ter",

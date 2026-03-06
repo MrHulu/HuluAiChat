@@ -54,7 +54,9 @@
     "connecting": "Nana seŋoo...",
     "connected": "Seŋiima",
     "disconnected": "Seŋre Daaƴii",
-    "connectionError": "Jata Seŋre"
+    "connectionError": "Jata Seŋre",
+    "copyCode": "Natta binndol",
+    "codeCopied": "Binndol nattaama!"
   },
   "settings": {
     "title": "Teelte",

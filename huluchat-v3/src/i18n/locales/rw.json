@@ -54,7 +54,9 @@
     "connecting": "Kwihuza...",
     "connected": "Byahuze",
     "disconnected": "Bitahuze",
-    "connectionError": "Ikosa ry'ukwihuza"
+    "connectionError": "Ikosa ry'ukwihuza",
+    "copyCode": "Koporora kode",
+    "codeCopied": "Kode yaporowe!"
   },
   "settings": {
     "title": "Igenamiterere",

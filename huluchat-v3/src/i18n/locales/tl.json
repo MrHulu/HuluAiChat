@@ -54,7 +54,9 @@
     "connecting": "Kumokonekta...",
     "connected": "Nakakonekta",
     "disconnected": "Nadiskonekta",
-    "connectionError": "Error sa Koneksyon"
+    "connectionError": "Error sa Koneksyon",
+    "copyCode": "Kopyahin ang code",
+    "codeCopied": "Nakopya ang code!"
   },
   "settings": {
     "title": "Mga Setting",

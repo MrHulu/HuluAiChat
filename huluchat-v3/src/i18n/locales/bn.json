@@ -54,7 +54,9 @@
     "connecting": "সংযুক্ত হচ্ছে...",
     "connected": "সংযুক্ত",
     "disconnected": "সংযোগ বিচ্ছিন্ন",
-    "connectionError": "সংযোগ ত্রুটি"
+    "connectionError": "সংযোগ ত্রুটি",
+    "copyCode": "কোড কপি করুন",
+    "codeCopied": "কোড কপি হয়েছে!"
   },
   "settings": {
     "title": "সেটিংস",

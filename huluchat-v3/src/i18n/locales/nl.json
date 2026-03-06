@@ -54,7 +54,9 @@
     "connecting": "Verbinden...",
     "connected": "Verbonden",
     "disconnected": "Verbinding verbroken",
-    "connectionError": "Verbindingsfout"
+    "connectionError": "Verbindingsfout",
+    "copyCode": "Code kopiëren",
+    "codeCopied": "Code gekopieerd!"
   },
   "settings": {
     "title": "Instellingen",

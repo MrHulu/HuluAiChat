@@ -54,7 +54,9 @@
     "connecting": "Подключение...",
     "connected": "Подключено",
     "disconnected": "Отключено",
-    "connectionError": "Ошибка подключения"
+    "connectionError": "Ошибка подключения",
+    "copyCode": "Копировать код",
+    "codeCopied": "Код скопирован!"
   },
   "settings": {
     "title": "Настройки",

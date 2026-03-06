@@ -54,7 +54,9 @@
     "connecting": "Kele Kukungumuna...",
     "connected": "Kungumunile",
     "disconnected": "Kukatukana",
-    "connectionError": "Kisika Kukungumuna"
+    "connectionError": "Kisika Kukungumuna",
+    "copyCode": "Kopisa kode",
+    "codeCopied": "Kode ekopisami!"
   },
   "settings": {
     "title": "Bangisamunu",

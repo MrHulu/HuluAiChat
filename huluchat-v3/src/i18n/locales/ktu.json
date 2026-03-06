@@ -54,7 +54,9 @@
     "connecting": "Kukota...",
     "connected": "Kotidi",
     "disconnected": "Kata",
-    "connectionError": "Kwilu ya kutanina"
+    "connectionError": "Kwilu ya kutanina",
+    "copyCode": "Kopa kodo",
+    "codeCopied": "Kodo ekopa!"
   },
   "settings": {
     "title": "Mabue",

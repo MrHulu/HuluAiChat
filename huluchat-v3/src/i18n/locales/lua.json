@@ -54,7 +54,9 @@
     "connecting": "Kukutana...",
     "connected": "Ekutane",
     "disconnected": "Kata",
-    "connectionError": "Kashai kia kutana"
+    "connectionError": "Kashai kia kutana",
+    "copyCode": "Nakidila disang",
+    "codeCopied": "Disang dinakidile!"
   },
   "settings": {
     "title": "Makalakala",

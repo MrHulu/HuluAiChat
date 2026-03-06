@@ -54,7 +54,9 @@
     "connecting": "Ansluter...",
     "connected": "Ansluten",
     "disconnected": "Frånkopplad",
-    "connectionError": "Anslutningsfel"
+    "connectionError": "Anslutningsfel",
+    "copyCode": "Kopiera kod",
+    "codeCopied": "Kod kopierad!"
   },
   "settings": {
     "title": "Inställningar",

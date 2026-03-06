@@ -54,7 +54,9 @@
     "connecting": "Huru...",
     "connected": "Hurante",
     "disconnected": "Huranta",
-    "connectionError": "Huru fir"
+    "connectionError": "Huru fir",
+    "copyCode": "Kapa awo",
+    "codeCopied": "Awo akapaka!"
   },
   "settings": {
     "title": "Kayandi",
@@ -62,7 +64,7 @@
     "apiKey": "Kufal API",
     "apiKeyPlaceholder": "sk-...",
     "apiKeySet": "Kufal API cin. Kufal kor cin.",
-    "baseUrl": "URL badi (Fo),
+    "baseUrl": "URL badi (Fo)",
     "baseUrlPlaceholder": "https://api.openai.com/v1",
     "baseUrlHint": "Bada fo OpenAI default.",
     "model": "Moodu",
@@ -93,12 +95,12 @@
     "refreshStatus": "Bada status"
   },
   "update": {
-    "available": "Bada kor bar",
-    "newVersion": "Bada kor ({{version}}) bar!",
-    "download": "Zumandi",
-    "later": "Kan",
-    "installing": "Cin bada...",
-    "installed": "Bada cin! Karno..."
+    "checking": "Ce bada kor...",
+    "downloading": "Zumandi bada...",
+    "newVersion": "Bada kor bar",
+    "available": "v{{version}} bar",
+    "updateNow": "Bada sohõ",
+    "later": "Kan"
   },
   "keyboard": {
     "title": "Maa kufal",
@@ -111,14 +113,6 @@
     "close": "Daŋ kalma",
     "showHelp": "Cee maa kufal",
     "pressToOpen": "Naŋ {{key1}} walla {{key2}} kaŋ feeri bandu"
-  },
-  "update": {
-    "checking": "Ce bada kor...",
-    "downloading": "Zumandi bada...",
-    "newVersion": "Bada kor bar",
-    "available": "v{{version}} bar",
-    "updateNow": "Bada sohõ",
-    "later": "Kan"
   },
   "export": {
     "title": "Cin faado",

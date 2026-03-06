@@ -54,7 +54,9 @@
     "connecting": "ସଂଯୋଗ ହେଉଛି...",
     "connected": "ସଂଯୋଗ ହୋଇଗଲା",
     "disconnected": "ସଂଯୋଗ ବିଚ୍ଛିନ୍ନ ହେଲା",
-    "connectionError": "ସଂଯୋଗ ତ୍ରୁଟି"
+    "connectionError": "ସଂଯୋଗ ତ୍ରୁଟି",
+    "copyCode": "କୋଡ୍ କପି କରନ୍ତୁ",
+    "codeCopied": "କୋଡ୍ କପି ହୋଇଗଲା!"
   },
   "settings": {
     "title": "ସେଟିଂସ୍",

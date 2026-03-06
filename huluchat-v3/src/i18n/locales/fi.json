@@ -54,7 +54,9 @@
     "connecting": "Yhdistetään...",
     "connected": "Yhdistetty",
     "disconnected": "Yhteys katkaistu",
-    "connectionError": "Yhteysvirhe"
+    "connectionError": "Yhteysvirhe",
+    "copyCode": "Kopioi koodi",
+    "codeCopied": "Koodi kopioitu!"
   },
   "settings": {
     "title": "Asetukset",

@@ -54,7 +54,9 @@
     "connecting": "Kūsingila...",
     "connected": "Ōsingīte",
     "disconnected": "Ūtasingīte",
-    "connectionError": "Mose kūsingila"
+    "connectionError": "Mose kūsingila",
+    "copyCode": "Ĩthya kioni",
+    "codeCopied": "Koni kĩĩthietwo!"
   },
   "settings": {
     "title": "Mītūmbī",

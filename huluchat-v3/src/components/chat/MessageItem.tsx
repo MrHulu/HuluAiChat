@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { Message } from "@/api/client";
 import { Button } from "@/components/ui/button";
 import { Pencil, Check, X } from "lucide-react";
+import { CodeBlock } from "./CodeBlock";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
@@ -231,12 +232,20 @@ export function MessageItem({ message, isStreaming, onEdit }: MessageItemProps) 
                       {children}
                     </a>
                   ),
-                  // 自定义代码块
-                  pre: ({ children }) => (
-                    <pre className="!bg-zinc-900 rounded-lg p-3 overflow-x-auto my-2">
-                      {children}
-                    </pre>
-                  ),
+                  // 自定义代码块 - 使用 CodeBlock 组件
+                  pre: ({ children }) => {
+                    // Extract language from the code element's className
+                    let language = "";
+                    if (children && typeof children === "object" && "props" in children) {
+                      const codeProps = (children as React.ReactElement).props as { className?: string };
+                      language = codeProps.className?.replace("hljs language-", "") || "";
+                    }
+                    return (
+                      <CodeBlock language={language}>
+                        {children}
+                      </CodeBlock>
+                    );
+                  },
                   // 自定义行内代码
                   code: ({ className, children }) => {
                     const isBlock = className?.includes("hljs");

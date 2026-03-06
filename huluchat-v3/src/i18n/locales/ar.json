@@ -54,7 +54,9 @@
     "connecting": "جاري الاتصال...",
     "connected": "متصل",
     "disconnected": "غير متصل",
-    "connectionError": "خطأ في الاتصال"
+    "connectionError": "خطأ في الاتصال",
+    "copyCode": "نسخ الكود",
+    "codeCopied": "تم نسخ الكود!"
   },
   "settings": {
     "title": "الإعدادات",

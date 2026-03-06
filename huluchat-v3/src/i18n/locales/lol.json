@@ -54,7 +54,9 @@
     "connecting": "Ekokání...",
     "connected": "Ekokaní",
     "disconnected": "Ekokaní tíí",
-    "connectionError": "Libangi ya kokokana"
+    "connectionError": "Libangi ya kokokana",
+    "copyCode": "Benga ndüngä",
+    "codeCopied": "Ndüngä ebenga!"
   },
   "settings": {
     "title": "Ba paramɛ́tɛ",
@@ -93,12 +95,12 @@
     "refreshStatus": "Mísá statut"
   },
   "update": {
-    "available": "Mise à jour ezalí",
-    "newVersion": "Version mwa sika ({{version}}) ezalí!",
-    "download": "Télécharger",
-    "later": "Nsima",
-    "installing": "Installation ebelélí...",
-    "installed": "Mise à jour efungolámí! Redémarrage..."
+    "checking": "Boluká mise à jour...",
+    "downloading": "Téléchargement ebelélí...",
+    "newVersion": "Version mwa sika ezalí",
+    "available": "v{{version}} ezalí",
+    "updateNow": "Mettre à jour sikoyo",
+    "later": "Nsima"
   },
   "keyboard": {
     "title": "Ba raccourci clavier",
@@ -111,14 +113,6 @@
     "close": "Kangá dialogue",
     "showHelp": "Lakisa ba raccourci clavier",
     "pressToOpen": "Póña {{key1}} tǒ {{key2}} mpó na kofungolá aide moúsu"
-  },
-  "update": {
-    "checking": "Boluká mise à jour...",
-    "downloading": "Téléchargement ebelélí...",
-    "newVersion": "Version mwa sika ezalí",
-    "available": "v{{version}} ezalí",
-    "updateNow": "Mettre à jour sikoyo",
-    "later": "Nsima"
   },
   "export": {
     "title": "Expórtá ndónga",

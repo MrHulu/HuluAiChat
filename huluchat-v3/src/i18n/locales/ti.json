@@ -54,7 +54,9 @@
     "connecting": "ኣብ ምትንካፍ...",
     "connected": "ተተንኲሱ",
     "disconnected": "ተቋሪጹ",
-    "connectionError": "ጌጋ ምትንካፍ"
+    "connectionError": "ጌጋ ምትንካፍ",
+    "copyCode": "መስመር ቅዳ",
+    "codeCopied": "መስመር ተቐዲሑ!"
   },
   "settings": {
     "title": "ቅንብራት",

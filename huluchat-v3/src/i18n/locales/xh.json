@@ -54,7 +54,9 @@
     "connecting": "Iyanxibelelana...",
     "connected": "Inxibelelana",
     "disconnected": "Ayinxibelelani",
-    "connectionError": "Impazamo yoNxibelelwano"
+    "connectionError": "Impazamo yoNxibelelwano",
+    "copyCode": "Kopa ikhowudi",
+    "codeCopied": "Ikhowudi ikopiwe!"
   },
   "settings": {
     "title": "Izicwangiso",

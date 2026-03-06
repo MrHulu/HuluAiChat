@@ -54,7 +54,9 @@
     "connecting": "מתחבר...",
     "connected": "מחובר",
     "disconnected": "מנותק",
-    "connectionError": "שגיאת חיבור"
+    "connectionError": "שגיאת חיבור",
+    "copyCode": "העתק קוד",
+    "codeCopied": "הקוד הועתק!"
   },
   "settings": {
     "title": "הגדרות",

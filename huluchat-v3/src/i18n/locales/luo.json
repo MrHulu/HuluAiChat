@@ -54,7 +54,9 @@
     "connecting": "Tie kubo...",
     "connected": "Okubo",
     "disconnected": "Ok okubo",
-    "connectionError": "Bal kubo"
+    "connectionError": "Bal kubo",
+    "copyCode": "Lok kodi",
+    "codeCopied": "Kodi olose!"
   },
   "settings": {
     "title": "Tero",
