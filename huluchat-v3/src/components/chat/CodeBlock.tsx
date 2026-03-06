@@ -2,10 +2,12 @@
  * CodeBlock Component
  * 代码块组件，支持语法高亮和一键复制
  */
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo, memo } from "react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { Check, Copy } from "lucide-react";
+
+const COPY_FEEDBACK_DURATION_MS = 2000;
 
 export interface CodeBlockProps {
   children: React.ReactNode;
@@ -13,12 +15,26 @@ export interface CodeBlockProps {
   language?: string;
 }
 
-export function CodeBlock({ children, className, language }: CodeBlockProps) {
+export const CodeBlock = memo(function CodeBlock({
+  children,
+  className,
+  language,
+}: CodeBlockProps) {
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   // Extract code text from children
-  const getCodeText = useCallback(() => {
+  const codeText = useMemo(() => {
     if (typeof children === "string") {
       return children;
     }
@@ -32,21 +48,27 @@ export function CodeBlock({ children, className, language }: CodeBlockProps) {
     return "";
   }, [children]);
 
+  // Extract language from className (e.g., "language-typescript")
+  const displayLanguage = useMemo(
+    () => language || className?.replace("hljs language-", "") || "",
+    [language, className]
+  );
+
   const handleCopy = useCallback(async () => {
-    const code = getCodeText();
-    if (!code) return;
+    if (!codeText) return;
 
     try {
-      await navigator.clipboard.writeText(code);
+      await navigator.clipboard.writeText(codeText);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      // Clear any existing timeout before setting a new one
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      timeoutRef.current = setTimeout(() => setCopied(false), COPY_FEEDBACK_DURATION_MS);
     } catch (error) {
       console.error("Failed to copy code:", error);
     }
-  }, [getCodeText]);
-
-  // Extract language from className (e.g., "language-typescript")
-  const displayLanguage = language || className?.replace("hljs language-", "") || "";
+  }, [codeText]);
 
   return (
     <div className="relative group/codeblock">
@@ -64,13 +86,11 @@ export function CodeBlock({ children, className, language }: CodeBlockProps) {
             "bg-zinc-800 hover:bg-zinc-700",
             copied ? "text-green-400" : "text-zinc-400 hover:text-zinc-200"
           )}
+          aria-label={copied ? t("chat.codeCopied") : t("chat.copyCode")}
+          aria-live="polite"
           title={copied ? t("chat.codeCopied") : t("chat.copyCode")}
         >
-          {copied ? (
-            <Check className="w-4 h-4" />
-          ) : (
-            <Copy className="w-4 h-4" />
-          )}
+          {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
         </button>
       </div>
       <pre className={cn("!bg-zinc-900 rounded-lg p-3 overflow-x-auto my-2", className)}>
@@ -78,4 +98,4 @@ export function CodeBlock({ children, className, language }: CodeBlockProps) {
       </pre>
     </div>
   );
-}
+});

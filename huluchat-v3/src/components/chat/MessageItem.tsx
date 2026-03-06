@@ -2,7 +2,7 @@
  * MessageItem Component
  * 单条消息展示，支持 Markdown 渲染和编辑
  */
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, memo, useCallback, useMemo, type ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { Message } from "@/api/client";
@@ -49,13 +49,65 @@ export interface MessageItemProps {
   onEdit?: (messageId: string, newContent: string) => Promise<void>;
 }
 
-export function MessageItem({ message, isStreaming, onEdit }: MessageItemProps) {
+// Stable plugin references (defined outside component to avoid recreation)
+const remarkPlugins = [remarkGfm, remarkMath];
+const rehypePlugins = [rehypeHighlight, rehypeKatex];
+
+// Constants
+const HLJS_LANGUAGE_PREFIX = "hljs language-";
+const HLJS_CLASS = "hljs";
+
+/**
+ * Extracts code info from React children (for CodeBlock/MermaidBlock)
+ */
+function extractCodeInfo(children: React.ReactNode): { language: string; codeContent: string } {
+  if (!children || typeof children !== "object" || !("props" in children)) {
+    return { language: "", codeContent: "" };
+  }
+
+  const codeProps = (children as ReactElement).props as {
+    className?: string;
+    children?: React.ReactNode;
+  };
+
+  const language = codeProps.className?.replace(HLJS_LANGUAGE_PREFIX, "") || "";
+
+  // Extract code content
+  if (typeof codeProps.children === "string") {
+    return { language, codeContent: codeProps.children };
+  }
+
+  // Handle nested structure
+  if (codeProps.children && typeof codeProps.children === "object" && "props" in codeProps.children) {
+    const nested = (codeProps.children as ReactElement).props as { children?: string };
+    return { language, codeContent: nested.children || "" };
+  }
+
+  return { language, codeContent: "" };
+}
+
+/**
+ * Streaming cursor component - separated to avoid unnecessary re-renders
+ */
+const StreamingCursor = memo(function StreamingCursor({ isStreaming }: { isStreaming?: boolean }) {
+  if (!isStreaming) return null;
+  return <span className="inline-block w-2 h-4 ml-1 bg-current animate-pulse" aria-label="Streaming..." />;
+});
+
+export const MessageItem = memo(function MessageItem({ message, isStreaming, onEdit }: MessageItemProps) {
   const { t } = useTranslation();
   const isUser = message.role === "user";
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(message.content);
   const [isSaving, setIsSaving] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Sync editContent when message content changes (e.g., during streaming)
+  useEffect(() => {
+    if (!isEditing) {
+      setEditContent(message.content);
+    }
+  }, [message.content, isEditing]);
 
   // Auto-focus and resize textarea when editing starts
   useEffect(() => {
@@ -71,19 +123,19 @@ export function MessageItem({ message, isStreaming, onEdit }: MessageItemProps) 
     }
   }, [isEditing]);
 
-  const handleStartEdit = () => {
+  const handleStartEdit = useCallback(() => {
     if (isUser && onEdit) {
       setEditContent(message.content);
       setIsEditing(true);
     }
-  };
+  }, [isUser, onEdit, message.content]);
 
-  const handleCancelEdit = () => {
+  const handleCancelEdit = useCallback(() => {
     setIsEditing(false);
     setEditContent(message.content);
-  };
+  }, [message.content]);
 
-  const handleSaveEdit = async () => {
+  const handleSaveEdit = useCallback(async () => {
     if (!onEdit || editContent.trim() === message.content) {
       setIsEditing(false);
       return;
@@ -98,27 +150,90 @@ export function MessageItem({ message, isStreaming, onEdit }: MessageItemProps) 
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [onEdit, editContent, message.id, message.content]);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-      e.preventDefault();
-      handleSaveEdit();
-    } else if (e.key === "Escape") {
-      e.preventDefault();
-      handleCancelEdit();
-    }
-  };
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        handleSaveEdit();
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        handleCancelEdit();
+      }
+    },
+    [handleSaveEdit, handleCancelEdit]
+  );
 
-  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleTextareaChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setEditContent(e.target.value);
     // Auto-resize
     e.target.style.height = "auto";
     e.target.style.height = `${e.target.scrollHeight}px`;
-  };
+  }, []);
+
+  // Memoize markdown components to prevent unnecessary re-renders
+  const markdownComponents = useMemo(
+    () => ({
+      // Custom link that opens in new tab
+      a: ({ href, children }: { href?: string; children?: React.ReactNode }) => (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary hover:underline"
+        >
+          {children}
+        </a>
+      ),
+      // Custom code block - use CodeBlock/MermaidBlock components
+      pre: ({ children }: { children?: React.ReactNode }) => {
+        const { language, codeContent } = extractCodeInfo(children);
+        // Use MermaidBlock for mermaid diagrams
+        if (language === "mermaid" && codeContent) {
+          return <MermaidBlock chart={codeContent} />;
+        }
+        return <CodeBlock language={language}>{children}</CodeBlock>;
+      },
+      // Custom inline code
+      code: ({ className, children }: { className?: string; children?: React.ReactNode }) => {
+        const isBlock = className?.includes(HLJS_CLASS);
+        return (
+          <code
+            className={cn(
+              isBlock
+                ? "block text-sm"
+                : "bg-zinc-200 dark:bg-zinc-700 px-1.5 py-0.5 rounded text-xs"
+            )}
+          >
+            {children}
+          </code>
+        );
+      },
+    }),
+    []
+  );
+
+  // Memoize markdown content rendering to prevent unnecessary re-parsing
+  const renderedContent = useMemo(() => {
+    if (isUser) {
+      return <div className="whitespace-pre-wrap">{message.content}</div>;
+    }
+    return (
+      <ReactMarkdown
+        remarkPlugins={remarkPlugins}
+        rehypePlugins={rehypePlugins}
+        components={markdownComponents}
+      >
+        {message.content}
+      </ReactMarkdown>
+    );
+  }, [isUser, message.content, markdownComponents]);
 
   return (
     <div
+      role="article"
+      aria-label={isUser ? t("chat.you") : t("chat.ai")}
       className={cn(
         "group flex w-full mb-4",
         isUser ? "justify-end" : "justify-start"
@@ -144,8 +259,8 @@ export function MessageItem({ message, isStreaming, onEdit }: MessageItemProps) 
           {isUser && onEdit && !isEditing && (
             <button
               onClick={handleStartEdit}
+              aria-label={t("chat.editMessage")}
               className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-primary-foreground/10 rounded"
-              title={t("chat.editMessage")}
             >
               <Pencil className="w-3 h-3" />
             </button>
@@ -154,13 +269,14 @@ export function MessageItem({ message, isStreaming, onEdit }: MessageItemProps) 
 
         {/* 消息内容 */}
         {isEditing ? (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2" role="region" aria-label={t("chat.editMessage")}>
             <textarea
               ref={textareaRef}
               value={editContent}
               onChange={handleTextareaChange}
               onKeyDown={handleKeyDown}
               disabled={isSaving}
+              aria-label={t("chat.editMessage")}
               className={cn(
                 "w-full min-h-[60px] p-2 rounded-lg resize-none",
                 "bg-primary-foreground/10 text-primary-foreground",
@@ -175,6 +291,7 @@ export function MessageItem({ message, isStreaming, onEdit }: MessageItemProps) 
                 variant="ghost"
                 onClick={handleCancelEdit}
                 disabled={isSaving}
+                aria-label={t("chat.cancelEdit")}
                 className="h-7 px-2 text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10"
               >
                 <X className="w-4 h-4 mr-1" />
@@ -184,6 +301,7 @@ export function MessageItem({ message, isStreaming, onEdit }: MessageItemProps) 
                 size="sm"
                 onClick={handleSaveEdit}
                 disabled={isSaving || !editContent.trim()}
+                aria-label={t("chat.saveEdit")}
                 className="h-7 px-2 bg-primary-foreground/20 hover:bg-primary-foreground/30 text-primary-foreground"
               >
                 <Check className="w-4 h-4 mr-1" />
@@ -216,88 +334,11 @@ export function MessageItem({ message, isStreaming, onEdit }: MessageItemProps) 
               isUser && "[&_code:not(.hljs)]:bg-primary-foreground/20"
             )}
           >
-            {isUser ? (
-              // 用户消息直接显示，不解析 Markdown
-              <div className="whitespace-pre-wrap">{message.content}</div>
-            ) : (
-              // AI 消息渲染 Markdown
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm, remarkMath]}
-                rehypePlugins={[rehypeHighlight, rehypeKatex]}
-                components={{
-                  // 自定义链接在新窗口打开
-                  a: ({ href, children }) => (
-                    <a
-                      href={href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline"
-                    >
-                      {children}
-                    </a>
-                  ),
-                  // 自定义代码块 - 使用 CodeBlock 组件
-                  pre: ({ children }) => {
-                    // Extract language from the code element's className
-                    let language = "";
-                    let codeContent = "";
-                    if (children && typeof children === "object" && "props" in children) {
-                      const codeProps = (children as React.ReactElement).props as {
-                        className?: string;
-                        children?: React.ReactNode;
-                      };
-                      language = codeProps.className?.replace("hljs language-", "") || "";
-                      // Extract code content for mermaid
-                      if (codeProps.children && typeof codeProps.children === "string") {
-                        codeContent = codeProps.children;
-                      } else if (
-                        codeProps.children &&
-                        typeof codeProps.children === "object" &&
-                        "props" in codeProps.children
-                      ) {
-                        // Handle nested structure
-                        const nested = (codeProps.children as React.ReactElement).props as {
-                          children?: string;
-                        };
-                        codeContent = nested.children || "";
-                      }
-                    }
-                    // Use MermaidBlock for mermaid diagrams
-                    if (language === "mermaid" && codeContent) {
-                      return <MermaidBlock chart={codeContent} />;
-                    }
-                    return (
-                      <CodeBlock language={language}>
-                        {children}
-                      </CodeBlock>
-                    );
-                  },
-                  // 自定义行内代码
-                  code: ({ className, children }) => {
-                    const isBlock = className?.includes("hljs");
-                    return (
-                      <code
-                        className={cn(
-                          isBlock
-                            ? "block text-sm"
-                            : "bg-zinc-200 dark:bg-zinc-700 px-1.5 py-0.5 rounded text-xs"
-                        )}
-                      >
-                        {children}
-                      </code>
-                    );
-                  },
-                }}
-              >
-                {message.content}
-              </ReactMarkdown>
-            )}
-            {isStreaming && (
-              <span className="inline-block w-2 h-4 ml-1 bg-current animate-pulse" />
-            )}
+            {renderedContent}
+            <StreamingCursor isStreaming={isStreaming} />
           </div>
         )}
       </div>
     </div>
   );
-}
+});

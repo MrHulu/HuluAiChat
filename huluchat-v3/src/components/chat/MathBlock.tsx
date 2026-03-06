@@ -13,15 +13,6 @@ export interface MathBlockProps {
   className?: string;
 }
 
-// HTML 转义工具函数
-const escapeHtml = (str: string): string =>
-  str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-
 export const MathBlock = memo(function MathBlock({
   math,
   inline = false,
