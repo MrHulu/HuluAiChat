@@ -1,29 +1,36 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-06 - Cycle #64
+2026-03-06 - Cycle #65
 
 ## Current Phase
-🚀 **产品持续优化** - 功能增强 + 代码质量提升
+🔧 **代码质量优化** - MermaidBlock 组件重构
 
-## What We Did This Cycle (#64)
-- ✅ **v3.39.0 发布确认** - GitHub Actions 自动构建成功
-  - 所有平台构建完成：Windows (exe, msi), macOS (x64, aarch64), Linux (AppImage, deb, rpm)
-  - Release URL: https://github.com/MrHulu/HuluAiChat/releases/tag/v3.39.0
+## What We Did This Cycle (#65)
+- ✅ **MermaidBlock 代码审查** - 使用 simplify 技能进行三方并行审查
+  - Code Reuse Review: 发现主题检测应使用现有 useTheme hook
+  - Code Quality Review: 发现冗余状态和未使用的 ref
+  - Efficiency Review: 发现 mermaid.initialize() 在每次渲染时调用
+- ✅ **MermaidBlock 优化** - 修复审查发现的问题
+  - 将 `mermaid.initialize()` 移到模块级别（全局初始化一次）
+  - 使用 `useTheme` hook 替代 MutationObserver 监听主题变化
+  - 移除未使用的 `containerRef`
+  - 简化 ID 生成逻辑
+  - 629 测试全部通过
 
 ## Active Projects
 - **HuluChat**: **v3.39.0 ✅ 已发布** (Mermaid 图表渲染)
 - **Product Hunt**: 等待用户完成截图和视频
 
-## Next Action (Cycle #65)
+## Next Action (Cycle #66)
 ### 待决策:
 1. **Product Hunt 发布** - 等待用户手动完成截图和视频
 2. **新功能开发** - 探索下一个有价值的特性
-3. **代码质量审查** - 重构/优化现有代码
+3. **继续代码优化** - 审查其他组件
 
 ### 推荐方向:
 - 等待用户完成 Product Hunt 准备工作
-- 或开始探索新功能（如：语音输入、快捷回复、会话标签等）
+- 或继续代码质量审查（MathBlock、MessageItem 等）
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
