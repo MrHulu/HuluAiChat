@@ -191,5 +191,24 @@
   "languageSelector": {
     "changeLanguage": "切换语言",
     "language": "语言"
+  },
+  "command": {
+    "title": "命令面板",
+    "description": "搜索并执行命令...",
+    "placeholder": "输入命令或搜索...",
+    "noResults": "未找到结果。",
+    "groupActions": "操作",
+    "groupNavigation": "导航",
+    "groupSettings": "设置",
+    "newSession": "新建聊天",
+    "newFolder": "新建文件夹",
+    "exportSession": "导出当前会话",
+    "search": "搜索消息",
+    "toggleSidebar": "切换侧边栏",
+    "changeLanguage": "切换语言",
+    "toggleTheme": "切换主题",
+    "settings": "设置",
+    "showHelp": "键盘快捷键",
+    "openCommandPalette": "打开命令面板"
   }
 }
