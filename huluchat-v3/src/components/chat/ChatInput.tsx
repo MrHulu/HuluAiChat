@@ -2,13 +2,17 @@
  * ChatInput Component
  * 聊天输入框，支持多行输入、快捷键和模板选择器
  */
-import { useState, useRef, useEffect, KeyboardEvent } from "react";
+import { useState, useRef, useEffect, useCallback, memo, type KeyboardEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { LayoutTemplate, Send } from "lucide-react";
 import {
   PromptTemplateSelector,
 } from "@/components/templates/PromptTemplateSelector";
+
+// Constants
+const MAX_TEXTAREA_HEIGHT = 200;
 
 export interface ChatInputProps {
   onSend: (message: string) => void;
@@ -17,7 +21,7 @@ export interface ChatInputProps {
   onTemplateSelect?: (content: string) => void;
 }
 
-export function ChatInput({
+export const ChatInput = memo(function ChatInput({
   onSend,
   disabled = false,
   placeholder,
@@ -34,11 +38,11 @@ export function ChatInput({
     const textarea = textareaRef.current;
     if (textarea) {
       textarea.style.height = "auto";
-      textarea.style.height = `${Math.min(textarea.scrollHeight, 200)}px`;
+      textarea.style.height = `${Math.min(textarea.scrollHeight, MAX_TEXTAREA_HEIGHT)}px`;
     }
   }, [value]);
 
-  const handleSend = () => {
+  const handleSend = useCallback(() => {
     if (value.trim() && !disabled) {
       onSend(value.trim());
       setValue("");
@@ -47,63 +51,59 @@ export function ChatInput({
         textareaRef.current.style.height = "auto";
       }
     }
-  };
+  }, [value, disabled, onSend]);
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = useCallback((e: KeyboardEvent<HTMLTextAreaElement>) => {
     // Enter 发送，Shift+Enter 换行
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
-  };
+  }, [handleSend]);
 
-  const handleTemplateSelect = (content: string) => {
+  const handleTemplateSelect = useCallback((content: string) => {
     setValue(content);
     setShowTemplateSelector(false);
     // Focus textarea after selection
     if (textareaRef.current) {
       textareaRef.current.focus();
     }
-  };
+  }, []);
+
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setValue(e.target.value);
+  }, []);
+
+  const handleOpenTemplateSelector = useCallback(() => {
+    setShowTemplateSelector(true);
+  }, []);
 
   return (
-    <div className="border-t border-border bg-background p-4">
+    <div className="border-t border-border bg-background p-4" role="region" aria-label={t("chat.typeMessage")}>
       <div className="flex items-end gap-3 max-w-4xl mx-auto">
         {/* Template Button */}
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => setShowTemplateSelector(true)}
+          onClick={handleOpenTemplateSelector}
           disabled={disabled}
           className="rounded-xl px-3 h-12"
           title={t("chat.selectTemplate")}
+          aria-label={t("chat.selectTemplate")}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-            <path d="M3 9h18h18" />
-            <path d="M12 3v18" />
-          </svg>
+          <LayoutTemplate className="w-[18px] h-[18px]" />
         </Button>
 
         <div className="flex-1 relative">
           <textarea
             ref={textareaRef}
             value={value}
-            onChange={(e) => setValue(e.target.value)}
+            onChange={handleChange}
             onKeyDown={handleKeyDown}
             placeholder={actualPlaceholder}
             disabled={disabled}
             rows={1}
+            aria-label={actualPlaceholder}
             className={cn(
               "w-full resize-none rounded-xl border border-input bg-background",
               "px-4 py-3 text-sm",
@@ -118,25 +118,13 @@ export function ChatInput({
           onClick={handleSend}
           disabled={disabled || !value.trim()}
           className="rounded-xl px-6 h-12"
+          aria-label={t("chat.send")}
         >
           <span className="mr-2">{t("chat.send")}</span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <line x1="22" y1="2" x2="11" y2="13" />
-            <polygon points="22 2 15 22 11 13 2 9 22 2" />
-          </svg>
+          <Send className="w-4 h-4" />
         </Button>
       </div>
-      <div className="text-xs text-muted-foreground mt-2 text-center">
+      <div className="text-xs text-muted-foreground mt-2 text-center" aria-live="polite">
         {t("chat.enterToSend")}
       </div>
 
@@ -148,4 +136,4 @@ export function ChatInput({
       />
     </div>
   );
-}
+});
