@@ -1,0 +1,193 @@
+{
+  "common": {
+    "save": "Cin",
+    "cancel": "Donye",
+    "delete": "Sugu",
+    "rename": "Bada sunzu",
+    "test": "Jarab",
+    "loading": "Cinowo...",
+    "error": "Fir",
+    "success": "Cin kamma"
+  },
+  "sidebar": {
+    "chats": "Faado",
+    "newChat": "Faado kor",
+    "searchChats": "Ce faado...",
+    "noResults": "Fo wuhi",
+    "tryDifferent": "Ca kalma kor",
+    "folders": "Faldare",
+    "uncategorized": "Faldiraa",
+    "backToAll": "Dabaru",
+    "newFolder": "Faldira kor",
+    "folderName": "Sunzu faldira...",
+    "expandSidebar": "Kollasu faado",
+    "collapseSidebar": "Kollasu faado",
+    "deleteFolder": "Sugu faldira",
+    "deleteFolderConfirm": "A ga sugu faldira woo? Faado ga yira faldiraa."
+  },
+  "chat": {
+    "you": "Ni",
+    "ai": "AI",
+    "typeMessage": "Ru alhakiika...",
+    "send": "Cin",
+    "regenerate": "Sootu",
+    "copy": "Nafa",
+    "copied": "Nafa cin kamma!",
+    "edit": "Bada",
+    "saveEdit": "Cin",
+    "cancelEdit": "Donye",
+    "newChat": "Faado kor",
+    "selectTemplate": "Su nakala",
+    "templates": "Nakalare",
+    "enterToSend": "Enter ga cin, Shift+Enter ga sorro kor",
+    "editMessage": "Bada alhakiika",
+    "saving": "Cinowo...",
+    "ctrlEnterToSave": "Ctrl+Enter ga cin, Esc ga donye",
+    "title": "Faado",
+    "selectSession": "Su walla kaŋ faado kor",
+    "selectSessionToChat": "Su faado kaŋ cire...",
+    "startConversation": "Shiri faado",
+    "startConversationHint": "Cin alhakiika kaŋ shiri faado nda AI",
+    "thinking": "Hangal...",
+    "messageUpdated": "Alhakiika bada kamma",
+    "messageUpdateFailed": "Alhakiika bada fir",
+    "connecting": "Huru...",
+    "connected": "Hurante",
+    "disconnected": "Huranta",
+    "connectionError": "Huru fir"
+  },
+  "settings": {
+    "title": "Kayandi",
+    "description": "Kayandi API nda kabuwani.",
+    "apiKey": "Kufal API",
+    "apiKeyPlaceholder": "sk-...",
+    "apiKeySet": "Kufal API cin. Kufal kor cin.",
+    "baseUrl": "URL badi (Fo),
+    "baseUrlPlaceholder": "https://api.openai.com/v1",
+    "baseUrlHint": "Bada fo OpenAI default.",
+    "model": "Moodu",
+    "selectModel": "Su moodu",
+    "modelParameters": "Kayandi moodu",
+    "temperature": "Kayan",
+    "temperatureHint": "Mamaku = hangal, Kanjiku = miyiti",
+    "topP": "Top P",
+    "topPHint": "Kawoguna",
+    "maxTokens": "Token beeri",
+    "maxTokensHint": "Alhakiika AI beeri",
+    "connectionSuccessful": "Huru cin kamma",
+    "connectionFailed": "Huru fir",
+    "settingsSaved": "Kayandi cin kamma",
+    "settingsSaveFailed": "Kayandi cin fir"
+  },
+  "ollama": {
+    "title": "Ollama (Moodu cimi)",
+    "download": "Zumandi Ollama",
+    "online": "Ollama hurante",
+    "offline": "Ollama huranta",
+    "models": "{{count}} moodu cimi",
+    "installedModels": "Moodu cin:",
+    "testConnection": "Jarab huru Ollama",
+    "connectionSuccessful": "Huru Ollama cin kamma",
+    "connectionFailed": "Huru Ollama fir",
+    "statusRefreshed": "Status Ollama bada",
+    "refreshStatus": "Bada status"
+  },
+  "update": {
+    "available": "Bada kor bar",
+    "newVersion": "Bada kor ({{version}}) bar!",
+    "download": "Zumandi",
+    "later": "Kan",
+    "installing": "Cin bada...",
+    "installed": "Bada cin! Karno..."
+  },
+  "keyboard": {
+    "title": "Maa kufal",
+    "newChat": "Faado kor",
+    "search": "Ce faado",
+    "settings": "Feeri kayandi",
+    "toggleSidebar": "Bada faado",
+    "send": "Cin alhakiika",
+    "newLine": "Sorro kor",
+    "close": "Daŋ kalma",
+    "showHelp": "Cee maa kufal",
+    "pressToOpen": "Naŋ {{key1}} walla {{key2}} kaŋ feeri bandu"
+  },
+  "update": {
+    "checking": "Ce bada kor...",
+    "downloading": "Zumandi bada...",
+    "newVersion": "Bada kor bar",
+    "available": "v{{version}} bar",
+    "updateNow": "Bada sohõ",
+    "later": "Kan"
+  },
+  "export": {
+    "title": "Cin faado",
+    "markdown": "Markdown (.md)",
+    "json": "JSON (.json)",
+    "text": "Kalma (.txt)"
+  },
+  "language": {
+    "title": "Songo",
+    "en": "Inglisi",
+    "zh": "Sinuwa",
+    "ja": "Jabone",
+    "ko": "Kore",
+    "es": "Spani"
+  },
+  "modelSelector": {
+    "cloudModels": "Moodu hangal",
+    "localModels": "Moodu cimi (Ollama)",
+    "ollamaOffline": "Ollama huranta",
+    "ollamaHint": "Ollama ga cin sohõ"
+  },
+  "templates": {
+    "title": "Nakala alhakiika",
+    "newTemplate": "+ Nakala kor",
+    "all": "Kul",
+    "name": "Sunzu",
+    "namePlaceholder": "Sunzu nakala",
+    "content": "Bayray",
+    "contentPlaceholder": "Bayray nakala. Naŋ {variable} kaŋ bayray fo.",
+    "categories": {
+      "writing": "Ru",
+      "coding": "Porogaram",
+      "analysis": "Lee",
+      "translation": "Berandi",
+      "custom": "Fo"
+    }
+  },
+  "app": {
+    "deleteConfirm": "A ga sugu faado woo?",
+    "exportSuccess": "Cin nda {{format}}",
+    "exportFailed": "Faado cin fir",
+    "folderCreated": "Faldira \"{{name}}\" cin",
+    "folderRenamed": "Faldira bada \"{{name}}\"",
+    "deleteFolderConfirm": "Sugu faldira \"{{name}}\"? Faado ga yira faldiraa.",
+    "folderDeleted": "Faldira \"{{name}}\" sugu",
+    "movedTo": "Yira {{name}}",
+    "moveFailed": "Faado yira fir"
+  },
+  "sessionItem": {
+    "newChat": "Faado kor",
+    "today": "Hõo",
+    "yesterday": "Subaa",
+    "daysAgo": "{{count}} za",
+    "exportSession": "Cin faado",
+    "moveToFolder": "Yira faldira",
+    "uncategorized": "Faldiraa",
+    "deleteSession": "Sugu faado",
+    "markdown": "Markdown (.md)",
+    "json": "JSON (.json)",
+    "plainText": "Kalma (.txt)"
+  },
+  "theme": {
+    "toggle": "Bada cee",
+    "light": "Cee",
+    "dark": "Boni",
+    "system": "System"
+  },
+  "languageSelector": {
+    "changeLanguage": "Bada songo",
+    "language": "Songo"
+  }
+}
