@@ -2,20 +2,34 @@
  * MermaidBlock Component
  * 图表渲染组件，支持 Mermaid 流程图、时序图等
  */
-import { useEffect, useState, memo, useRef } from "react";
+import { useEffect, useState, memo } from "react";
 import mermaid from "mermaid";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/components/theme-provider";
 
 // 生成唯一 ID
 let mermaidCounter = 0;
-const generateId = () => `mermaid-${++mermaidCounter}-${Date.now()}`;
+const generateId = () => `mermaid-${++mermaidCounter}`;
 
 // Mermaid 主题类型
 type MermaidTheme = "default" | "dark" | "forest" | "neutral" | "base";
 
-// 获取当前主题
-const getTheme = (): MermaidTheme =>
-  document.documentElement.classList.contains("dark") ? "dark" : "default";
+// 全局初始化 mermaid（只执行一次）
+let mermaidInitialized = false;
+const initMermaid = (theme: MermaidTheme) => {
+  if (!mermaidInitialized) {
+    mermaid.initialize({
+      startOnLoad: false,
+      theme,
+      securityLevel: "loose",
+      fontFamily: "inherit",
+    });
+    mermaidInitialized = true;
+  }
+};
+
+// 获取 Mermaid 主题
+const getMermaidTheme = (isDark: boolean): MermaidTheme => (isDark ? "dark" : "default");
 
 export interface MermaidBlockProps {
   chart: string;
@@ -26,35 +40,25 @@ export const MermaidBlock = memo(function MermaidBlock({
   chart,
   className,
 }: MermaidBlockProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
   const [svg, setSvg] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [id] = useState(() => generateId());
-  const [theme, setTheme] = useState(() => getTheme());
 
-  // 监听主题变化
+  // 使用全局主题管理
+  const { theme } = useTheme();
+  const isDark =
+    theme === "dark" ||
+    (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  const mermaidTheme = getMermaidTheme(isDark);
+
+  // 初始化 mermaid（只执行一次）
   useEffect(() => {
-    const observer = new MutationObserver(() => {
-      setTheme(getTheme());
-    });
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-    return () => observer.disconnect();
-  }, []);
+    initMermaid(mermaidTheme);
+  }, [mermaidTheme]);
 
   useEffect(() => {
     const renderChart = async () => {
       try {
-        // 初始化 mermaid（带当前主题）
-        mermaid.initialize({
-          startOnLoad: false,
-          theme,
-          securityLevel: "loose",
-          fontFamily: "inherit",
-        });
-
         // 渲染图表
         const { svg: renderedSvg } = await mermaid.render(id, chart);
         setSvg(renderedSvg);
@@ -70,7 +74,7 @@ export const MermaidBlock = memo(function MermaidBlock({
     if (chart.trim()) {
       renderChart();
     }
-  }, [chart, id, theme]);
+  }, [chart, id]);
 
   if (error) {
     return (
@@ -95,7 +99,6 @@ export const MermaidBlock = memo(function MermaidBlock({
 
   return (
     <div
-      ref={containerRef}
       className={cn(
         "mermaid-container flex justify-center p-4 rounded-lg",
         "bg-zinc-50 dark:bg-zinc-900 overflow-x-auto",
