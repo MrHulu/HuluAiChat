@@ -2,7 +2,7 @@
  * PromptTemplateSelector Component
  * Template selection dialog for prompt templates
  */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
@@ -52,14 +52,7 @@ export function PromptTemplateSelector({
     return t(`templates.categories.${category}`);
   };
 
-  // Load templates on mount
-  useEffect(() => {
-    if (open) {
-      loadTemplates();
-    }
-  }, [open]);
-
-  const loadTemplates = async () => {
+  const loadTemplates = useCallback(async () => {
     setLoading(true);
     try {
       const data = await listTemplates(selectedCategory || undefined);
@@ -69,7 +62,14 @@ export function PromptTemplateSelector({
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedCategory]);
+
+  // Load templates on mount
+  useEffect(() => {
+    if (open) {
+      loadTemplates();
+    }
+  }, [open, loadTemplates]);
 
   const handleSelect = (template: PromptTemplate) => {
     onSelect(template.content);
