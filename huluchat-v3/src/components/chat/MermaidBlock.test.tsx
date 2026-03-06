@@ -13,6 +13,11 @@ vi.mock("mermaid", () => ({
   },
 }));
 
+// Mock useTheme hook
+vi.mock("@/components/theme-provider", () => ({
+  useTheme: vi.fn(() => ({ theme: "light", setTheme: vi.fn() })),
+}));
+
 describe("MermaidBlock", () => {
   beforeEach(() => {
     vi.clearAllMocks();
