@@ -9,9 +9,13 @@ import { Message } from "@/api/client";
 import { Button } from "@/components/ui/button";
 import { Pencil, Check, X } from "lucide-react";
 import { CodeBlock } from "./CodeBlock";
+import { MathBlock } from "./MathBlock";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
 import rehypeHighlight from "rehype-highlight";
+import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css";
 
 // 只导入需要的 highlight.js 语言（减少体积）
 import hljs from "highlight.js/lib/core";
@@ -218,8 +222,8 @@ export function MessageItem({ message, isStreaming, onEdit }: MessageItemProps) 
             ) : (
               // AI 消息渲染 Markdown
               <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeHighlight]}
+                remarkPlugins={[remarkGfm, remarkMath]}
+                rehypePlugins={[rehypeHighlight, rehypeKatex]}
                 components={{
                   // 自定义链接在新窗口打开
                   a: ({ href, children }) => (

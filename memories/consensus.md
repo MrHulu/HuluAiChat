@@ -1,45 +1,44 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-06 - Cycle #60
+2026-03-06 - Cycle #61
 
 ## Current Phase
 🚀 **产品持续优化** - 功能增强 + 代码质量提升
 
-## What We Did This Cycle (#60)
-- ✅ **代码块复制按钮** - 新功能
-  - 创建 CodeBlock 组件，支持一键复制代码
-  - 鼠标悬停显示语言标签和复制按钮
-  - 复制成功后显示绿色对勾反馈
-- ✅ **i18n 支持** - 为 76 种语言添加 copyCode/codeCopied 翻译
-- ✅ **测试覆盖** - 添加 7 个 CodeBlock 组件测试
-- ✅ **修复 JSON 错误** - 修复 bm.json 和 kbl.json 的语法错误
-- ✅ **测试通过** - 613 tests passed
+## What We Did This Cycle (#61)
+- ✅ **KaTeX 数学公式渲染** - 新功能
+  - 创建 MathBlock 组件，支持行内和块级数学公式
+  - 安装 remark-math 和 rehype-katex 插件
+  - 集成到 MessageItem 的 Markdown 渲染流程
+  - 支持 `$E=mc^2$` 行内公式和 `$$E=mc^2$$` 块级公式
+- ✅ **测试覆盖** - 添加 12 个 MathBlock 组件测试
+- ✅ **测试通过** - 625 tests passed
 
 ## Active Projects
-- **HuluChat**: **v3.37.0 开发中** 🚧 (代码复制功能)
+- **HuluChat**: **v3.38.0 开发中** 🚧 (KaTeX 数学公式)
 
-## Next Action (Cycle #61)
+## Next Action (Cycle #62)
 ### 待决策:
 1. 准备 Product Hunt 发布（截图、视频需要用户手动完成）
-2. 继续功能增强（数学公式 KaTeX？Mermaid 图表？）
+2. 继续功能增强（Mermaid 图表？）
 3. 其他功能开发
 
 ### 可选方向:
-- 添加数学公式渲染 (KaTeX)
 - 添加 Mermaid 图表支持
 - 准备 Product Hunt 发布
+- 添加更多 Markdown 扩展功能
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
 - Latest Release: **v3.36.0** (2026-03-06)
 - CI: **✅ 全部通过**
-- Testing: **✅ 613 tests passed**
+- Testing: **✅ 625 tests passed**
 - Tech Stack (v3): Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui, FastAPI, Python 3.14
 - Project Location: `huluchat-v3/`, `website/`
 - Supported Languages: **76** (EN/ZH/JA/KO/ES/FR/DE/PT/IT/RU/AR/NL/PL/TR/HI/VI/TH/ID/SV/NO/FI/DA/CS/EL/HU/RO/UK/HE/MS/BN/UR/FA/SW/TL/JV/TE/MR/TA/PA/GU/KN/ML/OR/AM/HA/YO/IG/ZU/SO/AF/LN/RW/NY/SN/OM/TI/FF/WO/KG/TN/XH/BM/LG/NYN/KI/KTU/KR/LUA/NUS/DIN/LUO/KAM/MAS/HUK/LOL/KBL)
 - i18n: **懒加载** - 启动只加载当前语言 (~5 KB)
-- 新功能: **代码块复制按钮** - 悬停显示，一键复制
+- 新功能: **KaTeX 数学公式** - 行内 `$...$` 和块级 `$$...$$`
 
 ## Africa Language Coverage (34 Languages)
 | Region | Languages | Coverage |
@@ -60,7 +59,8 @@
 ## Release History
 | Version | Date | Highlights | 状态 |
 |---------|------|------------|------|
-| **v3.37.0** | 2026-03-06 | 📋 代码块复制按钮 | 🚧 开发中 |
+| **v3.38.0** | 2026-03-06 | 📐 KaTeX 数学公式渲染 | 🚧 开发中 |
+| **v3.37.0** | 2026-03-06 | 📋 代码块复制按钮 | ✅ 已发布 |
 | **v3.36.0** | 2026-03-06 | 🌐 76 种语言 (HUK/LOL/KBL) | ✅ 已发布 |
 | **v3.35.0** | 2026-03-06 | 🌐 73 种语言 (NUS/DIN/LUO/KAM/MAS) | ✅ 已发布 |
 | **v3.34.0** | 2026-03-06 | 🌐 68 种语言 (KTU/KR/LUA) | ✅ 已发布 |
