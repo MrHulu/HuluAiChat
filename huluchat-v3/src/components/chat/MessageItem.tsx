@@ -9,7 +9,6 @@ import { Message } from "@/api/client";
 import { Button } from "@/components/ui/button";
 import { Pencil, Check, X } from "lucide-react";
 import { CodeBlock } from "./CodeBlock";
-import { MathBlock } from "./MathBlock";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
