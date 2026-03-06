@@ -54,7 +54,9 @@
     "connecting": "Iyaxhuma...",
     "connected": "Ixhunyiwe",
     "disconnected": "Iqhunyiwe",
-    "connectionError": "Iphutha Loxhumo"
+    "connectionError": "Iphutha Loxhumo",
+    "copyCode": "Khipha ikhodi",
+    "codeCopied": "Ikhodi ikhishiwe!"
   },
   "settings": {
     "title": "Izilungiselelo",

@@ -54,7 +54,9 @@
     "connecting": "കണക്റ്റ് ചെയ്യുന്നു...",
     "connected": "കണക്റ്റ് ചെയ്തു",
     "disconnected": "ഡിസ്കണക്റ്റ് ചെയ്തു",
-    "connectionError": "കണക്ഷൻ പിശക്"
+    "connectionError": "കണക്ഷൻ പിശക്",
+    "copyCode": "കോഡ് പകർത്തുക",
+    "codeCopied": "കോഡ് പകർത്തി!"
   },
   "settings": {
     "title": "ക്രമീകരണങ്ങൾ",

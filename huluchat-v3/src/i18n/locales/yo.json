@@ -54,7 +54,9 @@
     "connecting": "N dasọ...",
     "connected": "A ti dasọ",
     "disconnected": "A ti yọ",
-    "connectionError": "Aṣiṣe Asopọ"
+    "connectionError": "Aṣiṣe Asopọ",
+    "copyCode": "Da koodu kọọ",
+    "codeCopied": "A ti da koodu kọọ!"
   },
   "settings": {
     "title": "Eto",

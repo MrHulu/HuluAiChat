@@ -54,7 +54,9 @@
     "connecting": "Đang kết nối...",
     "connected": "Đã kết nối",
     "disconnected": "Đã ngắt kết nối",
-    "connectionError": "Lỗi kết nối"
+    "connectionError": "Lỗi kết nối",
+    "copyCode": "Sao chép mã",
+    "codeCopied": "Đã sao chép mã!"
   },
   "settings": {
     "title": "Cài đặt",

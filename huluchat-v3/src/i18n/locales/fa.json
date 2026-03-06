@@ -54,7 +54,9 @@
     "connecting": "در حال اتصال...",
     "connected": "متصل",
     "disconnected": "قطع",
-    "connectionError": "خطای اتصال"
+    "connectionError": "خطای اتصال",
+    "copyCode": "کپی کد",
+    "codeCopied": "کد کپی شد!"
   },
   "settings": {
     "title": "تنظیمات",

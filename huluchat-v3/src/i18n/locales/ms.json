@@ -54,7 +54,9 @@
     "connecting": "Menyambung...",
     "connected": "Disambungkan",
     "disconnected": "Terputus",
-    "connectionError": "Ralat Sambungan"
+    "connectionError": "Ralat Sambungan",
+    "copyCode": "Salin kod",
+    "codeCopied": "Kod disalin!"
   },
   "settings": {
     "title": "Tetapan",

@@ -54,7 +54,9 @@
     "connecting": "Nikukwatanisa...",
     "connected": "Nikwatanisibwe",
     "disconnected": "Tikwikwatanisibwe",
-    "connectionError": "Erine y'okukwatanisa"
+    "connectionError": "Erine y'okukwatanisa",
+    "copyCode": "Koppa erimu",
+    "codeCopied": "Erimu ekoppiddwa!"
   },
   "settings": {
     "title": "Enteekateeka",
@@ -93,12 +95,12 @@
     "refreshStatus": "Ongyeresa status"
   },
   "update": {
-    "available": "Update iriwo",
-    "newVersion": "Vershini mpya ({{version}}) iriwo!",
-    "download": "Kura",
-    "later": "Banyezibye",
-    "installing": "Nikuteeka update...",
-    "installed": "Update eteekwire! Nikugaruka..."
+    "checking": "Nikyebera update...",
+    "downloading": "Nikukura update...",
+    "newVersion": "Vershini mpya iriwo",
+    "available": "v{{version}} iriwo",
+    "updateNow": "Update hati",
+    "later": "Banyezibye"
   },
   "keyboard": {
     "title": "Obwanyabwengye bw'akanyabwengye",
@@ -111,14 +113,6 @@
     "close": "Kinga dialog",
     "showHelp": "Laga obwanyabwengye bw'akanyabwengye",
     "pressToOpen": "Nyiga {{key1}} oba {{key2}} kugira obone obuyambi"
-  },
-  "update": {
-    "checking": "Nikyebera update...",
-    "downloading": "Nikukura update...",
-    "newVersion": "Vershini mpya iriwo",
-    "available": "v{{version}} iriwo",
-    "updateNow": "Update hati",
-    "later": "Banyezibye"
   },
   "export": {
     "title": "Yayo bigambo",

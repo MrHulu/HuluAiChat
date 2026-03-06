@@ -54,7 +54,9 @@
     "connecting": "接続中...",
     "connected": "接続済み",
     "disconnected": "切断済み",
-    "connectionError": "接続エラー"
+    "connectionError": "接続エラー",
+    "copyCode": "コードをコピー",
+    "codeCopied": "コピーしました！"
   },
   "settings": {
     "title": "設定",

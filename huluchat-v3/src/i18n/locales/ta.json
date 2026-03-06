@@ -54,7 +54,9 @@
     "connecting": "இணைக்கிறது...",
     "connected": "இணைக்கப்பட்டது",
     "disconnected": "துண்டிக்கப்பட்டது",
-    "connectionError": "இணைப்பு பிழை"
+    "connectionError": "இணைப்பு பிழை",
+    "copyCode": "குறியீட்டை நகலெடு",
+    "codeCopied": "குறியீடு நகலெடுக்கப்பட்டது!"
   },
   "settings": {
     "title": "அமைப்புகள்",

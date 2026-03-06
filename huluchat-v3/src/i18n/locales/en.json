@@ -33,6 +33,8 @@
     "regenerate": "Regenerate",
     "copy": "Copy",
     "copied": "Copied!",
+    "copyCode": "Copy code",
+    "codeCopied": "Code copied!",
     "edit": "Edit",
     "saveEdit": "Save",
     "cancelEdit": "Cancel",

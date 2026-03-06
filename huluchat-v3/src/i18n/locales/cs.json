@@ -54,7 +54,9 @@
     "connecting": "Připojování...",
     "connected": "Připojeno",
     "disconnected": "Odpojeno",
-    "connectionError": "Chyba připojení"
+    "connectionError": "Chyba připojení",
+    "copyCode": "Kopírovat kód",
+    "codeCopied": "Kód zkopírován!"
   },
   "settings": {
     "title": "Nastavení",

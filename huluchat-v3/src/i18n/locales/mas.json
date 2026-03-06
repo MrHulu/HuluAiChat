@@ -54,7 +54,9 @@
     "connecting": "Erekito net...",
     "connected": "Enetii",
     "disconnected": "Taare enetii",
-    "connectionError": "Enaai net"
+    "connectionError": "Enaai net",
+    "copyCode": "Kopöyö önkishu",
+    "codeCopied": "Önkishu kopöyöt!"
   },
   "settings": {
     "title": "Enk Pus",

@@ -54,7 +54,9 @@
     "connecting": "Qabsiisaa jira...",
     "connected": "Qabsiifameera",
     "disconnected": "Caccabameera",
-    "connectionError": "Dogoggora Qabsiisaa"
+    "connectionError": "Dogoggora Qabsiisaa",
+    "copyCode": "Kuusaa gulaalu",
+    "codeCopied": "Kuusaa gulaaletame!"
   },
   "settings": {
     "title": "Qindaa'ina",

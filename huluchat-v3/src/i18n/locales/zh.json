@@ -33,6 +33,8 @@
     "regenerate": "重新生成",
     "copy": "复制",
     "copied": "已复制！",
+    "copyCode": "复制代码",
+    "codeCopied": "代码已复制！",
     "edit": "编辑",
     "saveEdit": "保存",
     "cancelEdit": "取消",

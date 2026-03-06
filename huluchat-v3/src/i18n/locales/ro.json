@@ -54,7 +54,9 @@
     "connecting": "Conectare...",
     "connected": "Conectat",
     "disconnected": "Deconectat",
-    "connectionError": "Eroare de conexiune"
+    "connectionError": "Eroare de conexiune",
+    "copyCode": "Copiază codul",
+    "codeCopied": "Cod copiat!"
   },
   "settings": {
     "title": "Setări",

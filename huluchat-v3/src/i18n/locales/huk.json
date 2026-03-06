@@ -54,7 +54,9 @@
     "connecting": "Kwihuza...",
     "connected": "Bihujwe",
     "disconnected": "Bitahujwe",
-    "connectionError": "Ikosa ry'ukwihuza"
+    "connectionError": "Ikosa ry'ukwihuza",
+    "copyCode": "Kopa kode",
+    "codeCopied": "Kode ekopame!"
   },
   "settings": {
     "title": "Ibanga",
@@ -93,12 +95,12 @@
     "refreshStatus": "Kongera imimerere"
   },
   "update": {
-    "available": "Hari ihinduka rishasha",
-    "newVersion": "Verisiyo nshasha ({{version}}) iriho!",
-    "download": "Kuramo",
-    "later": "Nyuma",
-    "installing": "Shyiramo ihinduka...",
-    "installed": "Ihinduka ryashyizwemo! Ongera utangire..."
+    "checking": "Kugenzura ihinduka...",
+    "downloading": "Kuramo ihinduka...",
+    "newVersion": "Verisiyo nshasha iriho",
+    "available": "v{{version}} iriho",
+    "updateNow": "Hindura none",
+    "later": "Nyuma"
   },
   "keyboard": {
     "title": "Buto z'umwanya",
@@ -111,14 +113,6 @@
     "close": "Funga ikiganiro",
     "showHelp": "Erekana buto z'umwanya",
     "pressToOpen": "Kanda {{key1}} cyangwa {{key2}} wo gufungura ubu bufasha icyarimwe"
-  },
-  "update": {
-    "checking": "Kugenzura ihinduka...",
-    "downloading": "Kuramo ihinduka...",
-    "newVersion": "Verisiyo nshasha iriho",
-    "available": "v{{version}} iriho",
-    "updateNow": "Hindura none",
-    "later": "Nyuma"
   },
   "export": {
     "title": "Kohereza ikiganiro",

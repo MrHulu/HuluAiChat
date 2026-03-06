@@ -54,7 +54,9 @@
     "connecting": "Yitabye ku kuyungibwa...",
     "connected": "Oyungidwa",
     "disconnected": "Toli muyungidwa",
-    "connectionError": "Ensobi mu kuyungibwa"
+    "connectionError": "Ensobi mu kuyungibwa",
+    "copyCode": "Koppa ekoodi",
+    "codeCopied": "Ekoodi ekoppiddwa!"
   },
   "settings": {
     "title": "Enteekateeka",
@@ -93,12 +95,12 @@
     "refreshStatus": "Zza omutindo"
   },
   "update": {
-    "available": "Update eriwo",
-    "newVersion": "Vasomyo mpya ({{version}}) eriwo!",
-    "download": "Wannya",
-    "later": "Oluvannyuma",
-    "installing": "Yitabye kuuteekateeka update...",
-    "installed": "Update eteekeddwa! Owanjiitiridde..."
+    "checking": "Noonya update...",
+    "downloading": "Wannyira update...",
+    "newVersion": "Vasomyo mpya eriwo",
+    "available": "v{{version}} eriwo",
+    "updateNow": "Update hati",
+    "later": "Oluvannyuma"
   },
   "keyboard": {
     "title": "Mapeesa ga kibalo",
@@ -111,14 +113,6 @@
     "close": "Ggalawo dialog",
     "showHelp": "Laga mapeesa ga kibalo",
     "pressToOpen": "Nyiga {{key1}} oba {{key2}} okulaba obuyambi"
-  },
-  "update": {
-    "checking": "Noonya update...",
-    "downloading": "Wannyira update...",
-    "newVersion": "Vasomyo mpya eriwo",
-    "available": "v{{version}} eriwo",
-    "updateNow": "Update hati",
-    "later": "Oluvannyuma"
   },
   "export": {
     "title": "Yitta byogero",

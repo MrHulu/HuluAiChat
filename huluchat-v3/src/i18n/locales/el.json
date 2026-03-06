@@ -54,7 +54,9 @@
     "connecting": "Σύνδεση...",
     "connected": "Συνδεδεμένο",
     "disconnected": "Αποσυνδεδεμένο",
-    "connectionError": "Σφάλμα σύνδεσης"
+    "connectionError": "Σφάλμα σύνδεσης",
+    "copyCode": "Αντιγραφή κώδικα",
+    "codeCopied": "Ο κώδικας αντιγράφηκε!"
   },
   "settings": {
     "title": "Ρυθμίσεις",

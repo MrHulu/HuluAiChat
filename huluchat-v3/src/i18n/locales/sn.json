@@ -54,7 +54,9 @@
     "connecting": "Kubatana...",
     "connected": "Yakabatana",
     "disconnected": "Yakarambana",
-    "connectionError": "Kukanganisa kubatana"
+    "connectionError": "Kukanganisa kubatana",
+    "copyCode": "Kopera kodhi",
+    "codeCopied": "Kodhi yakoperwa!"
   },
   "settings": {
     "title": "Marongero",

@@ -54,7 +54,9 @@
     "connecting": "Gukurithania...",
     "connected": "Wakurithanirio",
     "disconnected": "Ndiwakurithanirio",
-    "connectionError": "Muhera wa gukurithania"
+    "connectionError": "Muhera wa gukurithania",
+    "copyCode": "Gũcokia mũtaratara",
+    "codeCopied": "Mũtaratara wacokire!"
   },
   "settings": {
     "title": "Magetha ma thondeko",
@@ -93,12 +95,12 @@
     "refreshStatus": "Ongerera status"
   },
   "update": {
-    "available": "Update iriyo",
-    "newVersion": "Rutere rwa ngeri ({{version}}) iriyo!",
-    "download": "Ruta",
-    "later": "Thutha",
-    "installing": "Kuthondeka update...",
-    "installed": "Update ithondekwo! Ngarutira..."
+    "checking": "Gurorera update...",
+    "downloading": "Guruta update...",
+    "newVersion": "Rutere rwa ngeri iriyo",
+    "available": "v{{version}} iriyo",
+    "updateNow": "Update hati",
+    "later": "Thutha"
   },
   "keyboard": {
     "title": "Mabataru ma kibarari",
@@ -111,14 +113,6 @@
     "close": "Gura dialog",
     "showHelp": "Onyithia mabataru ma kibarari",
     "pressToOpen": "Inyua {{key1}} kana {{key2}} kuona ubariri"
-  },
-  "update": {
-    "checking": "Gurorera update...",
-    "downloading": "Guruta update...",
-    "newVersion": "Rutere rwa ngeri iriyo",
-    "available": "v{{version}} iriyo",
-    "updateNow": "Update hati",
-    "later": "Thutha"
   },
   "export": {
     "title": "Buna marua",

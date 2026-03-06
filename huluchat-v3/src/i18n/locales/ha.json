@@ -54,7 +54,9 @@
     "connecting": "Ana haɗawa...",
     "connected": "An haɗa",
     "disconnected": "An sassara",
-    "connectionError": "Kuskuren Haɗi"
+    "connectionError": "Kuskuren Haɗi",
+    "copyCode": "Kwafa lamba",
+    "codeCopied": "An kwafa lamba!"
   },
   "settings": {
     "title": "Saituna",

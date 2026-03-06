@@ -54,7 +54,9 @@
     "connecting": "Kukolerana...",
     "connected": "Wakolerana",
     "disconnected": "Wadukana",
-    "connectionError": "Khalidwe loipa kolakwika"
+    "connectionError": "Khalidwe loipa kolakwika",
+    "copyCode": "Kopera khodi",
+    "codeCopied": "Khodi yapenedwe!"
   },
   "settings": {
     "title": "Zosintha",

@@ -54,7 +54,9 @@
     "connecting": "Ka kuntigilɛ...",
     "connected": "Kuntigilɛra",
     "disconnected": "Kuntigilɛbaliya",
-    "connectionError": "Kuntigilɛ Nisɔndiya"
+    "connectionError": "Kuntigilɛ Nisɔndiya",
+    "copyCode": "Lakunta kɔnɔ",
+    "codeCopied": "Kɔnɔ lakuntara!"
   },
   "settings": {
     "title": "Sɛgɛsɛgɛliw",
@@ -64,7 +66,7 @@
     "apiKeySet": "API key sigira. Key kura sɛbɛn ka kura.",
     "baseUrl": "Base URL (Sugandili)",
     "baseUrlPlaceholder": "https://api.openai.com/v1",
-    "baseUrlHint": "Bila nɛgɛn na ka API OpenAI default."
+    "baseUrlHint": "Bila nɛgɛn na ka API OpenAI default.",
     "model": "Modele",
     "selectModel": "Modele ye",
     "modelParameters": "Modele Parametɛriw",

@@ -54,7 +54,9 @@
     "connecting": "કનેક્ટ થઈ રહ્યું છે...",
     "connected": "કનેક્ટેડ",
     "disconnected": "ડિસ્કનેક્ટેડ",
-    "connectionError": "કનેક્શન ભૂલ"
+    "connectionError": "કનેક્શન ભૂલ",
+    "copyCode": "કોડ કૉપી કરો",
+    "codeCopied": "કોડ કૉપી થયું!"
   },
   "settings": {
     "title": "સેટિંગ્સ",

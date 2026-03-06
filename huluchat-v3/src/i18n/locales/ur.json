@@ -54,7 +54,9 @@
     "connecting": "کنیکٹ ہو رہا ہے...",
     "connected": "کنیکٹڈ",
     "disconnected": "ڈسکنیکٹڈ",
-    "connectionError": "کنیکشن خرابی"
+    "connectionError": "کنیکشن خرابی",
+    "copyCode": "کوڈ کاپی کریں",
+    "codeCopied": "کوڈ کاپی ہو گیا!"
   },
   "settings": {
     "title": "سیٹنگز",
