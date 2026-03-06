@@ -1,7 +1,7 @@
 {
   "name": "huluchat-v3",
   "private": true,
-  "version": "3.38.0",
+  "version": "3.39.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -32,6 +32,7 @@
     "i18next-browser-languagedetector": "^8.2.1",
     "katex": "^0.16.35",
     "lucide-react": "^0.576.0",
+    "mermaid": "^11.12.3",
     "radix-ui": "^1.4.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
