@@ -2,14 +2,14 @@
 
 ## Overview
 
-HuluChat supports **73 languages** with lazy loading for optimal performance.
+HuluChat supports **76 languages** with lazy loading for optimal performance.
 
 | Metric | Before | After | Savings |
 |--------|--------|-------|---------|
 | Initial i18n load | ~120 KB | ~5 KB | **~115 KB (96%)** |
 | Gzip initial | ~45 KB | ~2 KB | **~43 KB (96%)** |
 
-## Supported Languages (v3.35.0)
+## Supported Languages (v3.36.0)
 
 ### Global / Americas / Europe (20)
 
@@ -114,8 +114,11 @@ HuluChat supports **73 languages** with lazy loading for optimal performance.
 | 29 | Luo | `luo` | Dholuo | East Africa | 5M |
 | 30 | Kamba | `kam` | Kikamba | East Africa | 4M |
 | 31 | Maasai | `mas` | ɔl-Maa | East Africa | 1.5M |
+| 32 | Hunde | `huk` | Kihunde | Central Africa | 0.2M |
+| 33 | Mongo | `lol` | Lomongo | Central Africa | 4M |
+| 34 | Kanembu | `kbl` | Kanembu | Central Africa | 0.5M |
 
-**Total Africa Coverage**: ~732M+ speakers
+**Total Africa Coverage**: ~736M+ speakers
 
 ---
 
@@ -123,14 +126,15 @@ HuluChat supports **73 languages** with lazy loading for optimal performance.
 
 ## Regional Coverage
 
-### 🌍 Africa (31 Languages)
+### 🌍 Africa (34 Languages)
 
 | Region | Languages | Coverage |
 |--------|-----------|----------|
 | West Africa | Hausa, Yoruba, Igbo, Fula, Wolof, Bambara, Kanuri | ~181M speakers |
 | East Africa | Swahili, Amharic, Somali, Kinyarwanda, Oromo, Tigrinya, Luganda, Runyankole, Kikuyu, Nuer, Dinka, Luo, Kamba, Maasai | ~380M+ speakers |
-| Central Africa | Lingala, Kikongo, Kituba, Luba-Kasai | ~58M speakers |
+| Central Africa | Lingala, Kikongo, Kituba, Luba-Kasai, Hunde, Mongo | ~62M speakers |
 | Southern Africa | Zulu, Afrikaans, Chichewa, Shona, Tswana, Xhosa | ~73M speakers |
+| Sahel | Kanembu | ~0.5M speakers |
 
 ### 🌏 Asia (19 Languages)
 
@@ -296,6 +300,7 @@ export const supportedLanguages = [
 
 | Version | Date | Languages Added | Total |
 |---------|------|-----------------|-------|
+| v3.36.0 | 2026-03-06 | Hunde, Mongo, Kanembu (+3) | 76 |
 | v3.35.0 | 2026-03-06 | Nuer, Dinka, Luo, Kamba, Maasai (+5) | 73 |
 | v3.34.0 | 2026-03-06 | Kituba, Kanuri, Luba-Kasai (+3) | 68 |
 | v3.33.0 | 2026-03-06 | Luganda, Runyankole, Kikuyu (+3) | 65 |
@@ -324,4 +329,4 @@ Arabic (`ar`), Hebrew (`he`), and Persian (`fa`) use Right-to-Left text directio
 
 ---
 
-*Last updated: 2026-03-06 (v3.35.0)*
+*Last updated: 2026-03-06 (v3.36.0)*

@@ -1,0 +1,193 @@
+{
+  "common": {
+    "save": "Bómba",
+    "cancel": "Libóla",
+    "delete": "Kolímola",
+    "rename": "Balulá nkómbó",
+    "test": "Komeká",
+    "loading": "Ekíkelí...",
+    "error": "Libangi",
+    "success": "Ebíkámalí"
+  },
+  "sidebar": {
+    "chats": "Ba ndónga",
+    "newChat": "Ndónga mwa sika",
+    "searchChats": "Boluká ba ndónga...",
+    "noResults": "Ba resultá mokákí",
+    "tryDifferent": "Komeká molái mwa kolúka mosúsu",
+    "folders": "Ba folo",
+    "uncategorized": "Ba ndónga o folo mokákí",
+    "backToAll": "Zóngá na nyóso",
+    "newFolder": "Folo mwa sika",
+    "folderName": "Nkómbó ya folo...",
+    "expandSidebar": "Kotólá folo",
+    "collapseSidebar": "Kangá folo",
+    "deleteFolder": "Kolímola folo",
+    "deleteFolderConfirm": "Okolíma kolímola folo oyé? Ba ndónga bakokíma na ba ndónga o folo mokákí."
+  },
+  "chat": {
+    "you": "Yóyo",
+    "ai": "AI",
+    "typeMessage": "Koma nsango...",
+    "send": "Tindá",
+    "regenerate": "Bongísá",
+    "copy": "Kopí",
+    "copied": "Ekopámí!",
+    "edit": "Bobóngolá",
+    "saveEdit": "Bómba",
+    "cancelEdit": "Libóla",
+    "newChat": "Ndónga mwa sika",
+    "selectTemplate": "Póná modèle",
+    "templates": "Ba modèle",
+    "enterToSend": "Póná Enter mpé tindá, Shift+Enter mpó na molái mwa sika",
+    "editMessage": "Bobóngolá nsango",
+    "saving": "Ebombámí...",
+    "ctrlEnterToSave": "Ctrl+Enter mpó na kobómba, Esc mpó na kolibóla",
+    "title": "Ndónga",
+    "selectSession": "Póná tǒ sala ndónga",
+    "selectSessionToChat": "Póná ndónga mpó na kobándá koloba...",
+    "startConversation": "Bándá ndónga",
+    "startConversationHint": "Tindá nsango mpó na kobándá ndónga na AI",
+    "thinking": "Ebelélí...",
+    "messageUpdated": "Nsango ebongolámí",
+    "messageUpdateFailed": "Libangi ya bobóngolá nsango",
+    "connecting": "Ekokání...",
+    "connected": "Ekokaní",
+    "disconnected": "Ekokaní tíí",
+    "connectionError": "Libangi ya kokokana"
+  },
+  "settings": {
+    "title": "Ba paramɛ́tɛ",
+    "description": "Fongolá ba paramɛ́tɛ ya API na ba préférence.",
+    "apiKey": "Clé ya API",
+    "apiKeyPlaceholder": "sk-...",
+    "apiKeySet": "Clé ya API efungolámí. Koma clé mwa sika mpó na kobóngolá.",
+    "baseUrl": "URL ya base (Opcionel)",
+    "baseUrlPlaceholder": "https://api.openai.com/v1",
+    "baseUrlHint": "Kotíkáanga mpó na URL ya OpenAI ndakisa.",
+    "model": "Modèle",
+    "selectModel": "Póná modèle",
+    "modelParameters": "Ba paramɛ́tɛ ya modèle",
+    "temperature": "Température",
+    "temperatureHint": "Ya sé = ebimí, Ya monɛ́nɛ = ya mayele",
+    "topP": "Top P",
+    "topPHint": "Seuil ya échantillonnage nucléaire",
+    "maxTokens": "Max Tokens",
+    "maxTokensHint": "Longueur max ya réponse AI",
+    "connectionSuccessful": "Connexion ebíkámalí",
+    "connectionFailed": "Connexion ekopákí",
+    "settingsSaved": "Ba paramɛ́tɛ ebombámí",
+    "settingsSaveFailed": "Libangi ya kobómba ba paramɛ́tɛ"
+  },
+  "ollama": {
+    "title": "Ollama (Ba modèle locaux)",
+    "download": "Télécharger Ollama",
+    "online": "Ollama ezalí na ligne",
+    "offline": "Ollama ezalí na ligne tíí",
+    "models": "{{count}} ba modèle locaux",
+    "installedModels": "Ba modèle efungolámí:",
+    "testConnection": "Komeká connexion Ollama",
+    "connectionSuccessful": "Connexion Ollama ebíkámalí",
+    "connectionFailed": "Connexion Ollama ekopákí",
+    "statusRefreshed": "Statut Ollama emísisámí",
+    "refreshStatus": "Mísá statut"
+  },
+  "update": {
+    "available": "Mise à jour ezalí",
+    "newVersion": "Version mwa sika ({{version}}) ezalí!",
+    "download": "Télécharger",
+    "later": "Nsima",
+    "installing": "Installation ebelélí...",
+    "installed": "Mise à jour efungolámí! Redémarrage..."
+  },
+  "keyboard": {
+    "title": "Ba raccourci clavier",
+    "newChat": "Ndónga mwa sika",
+    "search": "Boluká ba ndónga",
+    "settings": "Fungolá ba paramɛ́tɛ",
+    "toggleSidebar": "Bobóngolá sidebar",
+    "send": "Tindá nsango",
+    "newLine": "Molái mwa sika na nsango",
+    "close": "Kangá dialogue",
+    "showHelp": "Lakisa ba raccourci clavier",
+    "pressToOpen": "Póña {{key1}} tǒ {{key2}} mpó na kofungolá aide moúsu"
+  },
+  "update": {
+    "checking": "Boluká mise à jour...",
+    "downloading": "Téléchargement ebelélí...",
+    "newVersion": "Version mwa sika ezalí",
+    "available": "v{{version}} ezalí",
+    "updateNow": "Mettre à jour sikoyo",
+    "later": "Nsima"
+  },
+  "export": {
+    "title": "Expórtá ndónga",
+    "markdown": "Markdown (.md)",
+    "json": "JSON (.json)",
+    "text": "Texte (.txt)"
+  },
+  "language": {
+    "title": "Lóla",
+    "en": "Anglais",
+    "zh": "Chinois",
+    "ja": "Japonais",
+    "ko": "Coréen",
+    "es": "Espagnol"
+  },
+  "modelSelector": {
+    "cloudModels": "Ba modèle cloud",
+    "localModels": "Ba modèle locaux (Ollama)",
+    "ollamaOffline": "Ollama na ligne tíí",
+    "ollamaHint": "Sikówa service Ollama ezalí na fonctionnement"
+  },
+  "templates": {
+    "title": "Ba modèle ya prompt",
+    "newTemplate": "+ Modèle mwa sika",
+    "all": "Nyóso",
+    "name": "Nkómbó",
+    "namePlaceholder": "Nkómbó ya modèle",
+    "content": "Contenu",
+    "contentPlaceholder": "Contenu ya modèle. Sala {variable} mpó na ba placeholder.",
+    "categories": {
+      "writing": "Ecriture",
+      "coding": "Programmation",
+      "analysis": "Analyse",
+      "translation": "Traduction",
+      "custom": "Personnalisation"
+    }
+  },
+  "app": {
+    "deleteConfirm": "Okolíma kolímola ndónga oyo?",
+    "exportSuccess": "Expórtámí lokola {{format}}",
+    "exportFailed": "Libangi ya expórtá ndónga",
+    "folderCreated": "Folo \"{{name}}\" esalámí",
+    "folderRenamed": "Nkómbó ya folo ebongolámí \"{{name}}\"",
+    "deleteFolderConfirm": "Kolímola folo \"{{name}}\"? Ba ndónga bakokíma na ba ndónga o folo mokákí.",
+    "folderDeleted": "Folo \"{{name}}\" elímolámí",
+    "movedTo": "Emímíní na {{name}}",
+    "moveFailed": "Libangi ya kokómísa ndónga"
+  },
+  "sessionItem": {
+    "newChat": "Ndónga mwa sika",
+    "today": "Lélo",
+    "yesterday": "Lóbí",
+    "daysAgo": "{{count}} ba mósi ekóútí",
+    "exportSession": "Expórtá ndónga",
+    "moveToFolder": "Kómísa na folo",
+    "uncategorized": "Ba ndónga o folo mokákí",
+    "deleteSession": "Kolímola ndónga",
+    "markdown": "Markdown (.md)",
+    "json": "JSON (.json)",
+    "plainText": "Texte (.txt)"
+  },
+  "theme": {
+    "toggle": "Bobóngolá thème",
+    "light": "Lumière",
+    "dark": "Noir",
+    "system": "Système"
+  },
+  "languageSelector": {
+    "changeLanguage": "Bobóngolá lóla",
+    "language": "Lóla"
+  }
+}
