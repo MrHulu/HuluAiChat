@@ -11,6 +11,7 @@ import { SessionList } from "@/components/sidebar";
 import { UpdateNotification } from "@/components/UpdateNotification";
 import { KeyboardHelpDialog } from "@/components/keyboard/KeyboardHelpDialog";
 import { LanguageSelector } from "@/components/LanguageSelector";
+import { CommandPalette } from "@/components/command";
 import { useSession, useKeyboardShortcuts, useFolders } from "@/hooks";
 import { exportSession, moveSessionToFolder, ExportFormat } from "@/api/client";
 
@@ -24,6 +25,7 @@ function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [keyboardHelpOpen, setKeyboardHelpOpen] = useState(false);
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
 
   const {
     sessions,
@@ -160,18 +162,41 @@ function App() {
     }
   }, []);
 
+  // Ctrl/Cmd + K 打开命令面板
+  const handleCommandPaletteKeyDown = useCallback((event: KeyboardEvent) => {
+    const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+    const modifierKey = isMac ? event.metaKey : event.ctrlKey;
+
+    if (event.key.toLowerCase() === "k" && modifierKey) {
+      event.preventDefault();
+      setCommandPaletteOpen((prev) => !prev);
+    }
+  }, []);
+
   useEffect(() => {
     window.addEventListener("keydown", handleHelpKeyDown);
+    window.addEventListener("keydown", handleCommandPaletteKeyDown);
     return () => {
       window.removeEventListener("keydown", handleHelpKeyDown);
+      window.removeEventListener("keydown", handleCommandPaletteKeyDown);
     };
-  }, [handleHelpKeyDown]);
+  }, [handleHelpKeyDown, handleCommandPaletteKeyDown]);
 
   return (
     <>
       <Toaster position="top-center" richColors closeButton />
       <UpdateNotification />
       <KeyboardHelpDialog open={keyboardHelpOpen} onOpenChange={setKeyboardHelpOpen} />
+      <CommandPalette
+        open={commandPaletteOpen}
+        onOpenChange={setCommandPaletteOpen}
+        onNewSession={handleCreateSession}
+        onNewFolder={() => handleCreateFolder(t("sidebar.newFolder"))}
+        onToggleSidebar={() => setSidebarCollapsed((prev) => !prev)}
+        onOpenSettings={() => setSettingsOpen(true)}
+        onExportSession={() => currentSession && handleExportSession(currentSession.id, "markdown")}
+        onShowHelp={() => setKeyboardHelpOpen(true)}
+      />
       <div className="flex h-screen bg-background text-foreground">
       {/* 侧边栏 */}
       <SessionList

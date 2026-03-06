@@ -191,5 +191,24 @@
   "languageSelector": {
     "changeLanguage": "Change language",
     "language": "Language"
+  },
+  "command": {
+    "title": "Command Palette",
+    "description": "Search for a command to run...",
+    "placeholder": "Type a command or search...",
+    "noResults": "No results found.",
+    "groupActions": "Actions",
+    "groupNavigation": "Navigation",
+    "groupSettings": "Settings",
+    "newSession": "New Chat",
+    "newFolder": "New Folder",
+    "exportSession": "Export Current Session",
+    "search": "Search Messages",
+    "toggleSidebar": "Toggle Sidebar",
+    "changeLanguage": "Change Language",
+    "toggleTheme": "Toggle Theme",
+    "settings": "Settings",
+    "showHelp": "Keyboard Shortcuts",
+    "openCommandPalette": "Open Command Palette"
   }
 }
