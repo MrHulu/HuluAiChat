@@ -1,44 +1,52 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-06 - Cycle #61
+2026-03-06 - Cycle #64
 
 ## Current Phase
 🚀 **产品持续优化** - 功能增强 + 代码质量提升
 
-## What We Did This Cycle (#61)
-- ✅ **KaTeX 数学公式渲染** - 新功能
-  - 创建 MathBlock 组件，支持行内和块级数学公式
-  - 安装 remark-math 和 rehype-katex 插件
-  - 集成到 MessageItem 的 Markdown 渲染流程
-  - 支持 `$E=mc^2$` 行内公式和 `$$E=mc^2$$` 块级公式
-- ✅ **测试覆盖** - 添加 12 个 MathBlock 组件测试
-- ✅ **测试通过** - 625 tests passed
+## What We Did This Cycle (#64)
+- ✅ **v3.39.0 发布确认** - GitHub Actions 自动构建成功
+  - 所有平台构建完成：Windows (exe, msi), macOS (x64, aarch64), Linux (AppImage, deb, rpm)
+  - Release URL: https://github.com/MrHulu/HuluAiChat/releases/tag/v3.39.0
 
 ## Active Projects
-- **HuluChat**: **v3.38.0 开发中** 🚧 (KaTeX 数学公式)
+- **HuluChat**: **v3.39.0 ✅ 已发布** (Mermaid 图表渲染)
+- **Product Hunt**: 等待用户完成截图和视频
 
-## Next Action (Cycle #62)
+## Next Action (Cycle #65)
 ### 待决策:
-1. 准备 Product Hunt 发布（截图、视频需要用户手动完成）
-2. 继续功能增强（Mermaid 图表？）
-3. 其他功能开发
+1. **Product Hunt 发布** - 等待用户手动完成截图和视频
+2. **新功能开发** - 探索下一个有价值的特性
+3. **代码质量审查** - 重构/优化现有代码
 
-### 可选方向:
-- 添加 Mermaid 图表支持
-- 准备 Product Hunt 发布
-- 添加更多 Markdown 扩展功能
+### 推荐方向:
+- 等待用户完成 Product Hunt 准备工作
+- 或开始探索新功能（如：语音输入、快捷回复、会话标签等）
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
-- Latest Release: **v3.36.0** (2026-03-06)
+- Latest Release: **v3.39.0** (2026-03-06)
+- Next Release: 待规划
 - CI: **✅ 全部通过**
-- Testing: **✅ 625 tests passed**
+- Testing: **✅ 629 tests passed**
 - Tech Stack (v3): Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui, FastAPI, Python 3.14
 - Project Location: `huluchat-v3/`, `website/`
 - Supported Languages: **76** (EN/ZH/JA/KO/ES/FR/DE/PT/IT/RU/AR/NL/PL/TR/HI/VI/TH/ID/SV/NO/FI/DA/CS/EL/HU/RO/UK/HE/MS/BN/UR/FA/SW/TL/JV/TE/MR/TA/PA/GU/KN/ML/OR/AM/HA/YO/IG/ZU/SO/AF/LN/RW/NY/SN/OM/TI/FF/WO/KG/TN/XH/BM/LG/NYN/KI/KTU/KR/LUA/NUS/DIN/LUO/KAM/MAS/HUK/LOL/KBL)
 - i18n: **懒加载** - 启动只加载当前语言 (~5 KB)
-- 新功能: **KaTeX 数学公式** - 行内 `$...$` 和块级 `$$...$$`
+- 新功能: **KaTeX 数学公式** + **Mermaid 图表**
+
+## Mermaid 图表支持
+支持以下图表类型：
+- Flowchart（流程图）
+- Sequence Diagram（时序图）
+- Class Diagram（类图）
+- State Diagram（状态图）
+- Entity Relationship Diagram（实体关系图）
+- Gantt Chart（甘特图）
+- Pie Chart（饼图）
+- Git Graph（Git 图）
 
 ## Africa Language Coverage (34 Languages)
 | Region | Languages | Coverage |
@@ -59,7 +67,8 @@
 ## Release History
 | Version | Date | Highlights | 状态 |
 |---------|------|------------|------|
-| **v3.38.0** | 2026-03-06 | 📐 KaTeX 数学公式渲染 | 🚧 开发中 |
+| **v3.39.0** | 2026-03-06 | 📊 Mermaid 图表渲染 | ✅ 已发布 |
+| **v3.38.0** | 2026-03-06 | 📐 KaTeX 数学公式渲染 | ✅ 已发布 |
 | **v3.37.0** | 2026-03-06 | 📋 代码块复制按钮 | ✅ 已发布 |
 | **v3.36.0** | 2026-03-06 | 🌐 76 种语言 (HUK/LOL/KBL) | ✅ 已发布 |
 | **v3.35.0** | 2026-03-06 | 🌐 73 种语言 (NUS/DIN/LUO/KAM/MAS) | ✅ 已发布 |
