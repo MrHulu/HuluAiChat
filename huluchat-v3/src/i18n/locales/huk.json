@@ -1,0 +1,193 @@
+{
+  "common": {
+    "save": "Bika",
+    "cancel": "Hagarika",
+    "delete": "Sibura",
+    "rename": "Hindura izina",
+    "test": "Gerageza",
+    "loading": "Biratwarika...",
+    "error": "Ikosa",
+    "success": "Byagenze neza"
+  },
+  "sidebar": {
+    "chats": "Ibiganiro",
+    "newChat": "Ikiganiro gishasha",
+    "searchChats": "Shakisha ibiganiro...",
+    "noResults": "Nta bisubizo byabonetse",
+    "tryDifferent": "Gerageza ijambo ryo gushakisha rindi",
+    "folders": "Ububiko",
+    "uncategorized": "Bitawe mu bubiko",
+    "backToAll": "Subira ku bindi",
+    "newFolder": "Ububiko bushasha",
+    "folderName": "Izina ry'ububiko...",
+    "expandSidebar": "Kwagura umwanya",
+    "collapseSidebar": "Kugabanya umwanya",
+    "deleteFolder": "Sibura ububiko",
+    "deleteFolderConfirm": "Urashaka ko ubu bubiko burasiburwa? Ibiganiro bizimurirwa mu bitawe mu bubiko."
+  },
+  "chat": {
+    "you": "Uriwe",
+    "ai": "AI",
+    "typeMessage": "Andika ubutumwa...",
+    "send": "Ohereza",
+    "regenerate": "Ongera uhuze",
+    "copy": "Koporora",
+    "copied": "Byakoporowe!",
+    "edit": "Hindura",
+    "saveEdit": "Bika",
+    "cancelEdit": "Hagarika",
+    "newChat": "Ikiganiro gishasha",
+    "selectTemplate": "Hitamo inyandiko-ngenga",
+    "templates": "Inyandiko-ngenga",
+    "enterToSend": "Kanda Enter wo kohereza, Shift+Enter ku murongo mushasha",
+    "editMessage": "Hindura ubutumwa",
+    "saving": "Bika...",
+    "ctrlEnterToSave": "Ctrl+Enter wo kubika, Esc wo guhagarika",
+    "title": "Ikiganiro",
+    "selectSession": "Hitoma cyangwa ureme ikiganiro",
+    "selectSessionToChat": "Hitamo ikiganiro yo gutangira kuganira...",
+    "startConversation": "Tangira ikiganiro",
+    "startConversationHint": "Ohereza ubutumwa wo gutangira kuganira na AI",
+    "thinking": "Fikirisha...",
+    "messageUpdated": "Ubutumwa bwahinduwe",
+    "messageUpdateFailed": "Byanze guhindura ubutumwa",
+    "connecting": "Kwihuza...",
+    "connected": "Bihujwe",
+    "disconnected": "Bitahujwe",
+    "connectionError": "Ikosa ry'ukwihuza"
+  },
+  "settings": {
+    "title": "Ibanga",
+    "description": "Shyiraho ibanga ryawe rya API n'ibyishingikirizo.",
+    "apiKey": "Urufunguzo rwa API",
+    "apiKeyPlaceholder": "sk-...",
+    "apiKeySet": "Urufunguzo rwa API ruriho. Andika urufunguzo rushasha rw'ihindura.",
+    "baseUrl": "URL y'ibanze (Bitimukanwa)",
+    "baseUrlPlaceholder": "https://api.openai.com/v1",
+    "baseUrlHint": "Reka ubusa kuri URL ntahinduka ya OpenAI.",
+    "model": "Ubwoko",
+    "selectModel": "Hitamo ubwoko",
+    "modelParameters": "Ibipimo by'ubwoko",
+    "temperature": "Ubushyuhe",
+    "temperatureHint": "Byo hasi = byibanda, Byo hejuru = by'ubwenge",
+    "topP": "Top P",
+    "topPHint": "Umugozi wa nucleic",
+    "maxTokens": "Token z'ikinini",
+    "maxTokensHint": "Uburebure bw'inka bwo gushoboza kwa AI",
+    "connectionSuccessful": "Ukwihuza byagenze neza",
+    "connectionFailed": "Ukwihuza byanze",
+    "settingsSaved": "Ibanga byabitswe neza",
+    "settingsSaveFailed": "Byanze kubika ibanga"
+  },
+  "ollama": {
+    "title": "Ollama (Ubwoko bwa hafi)",
+    "download": "Kuramo Ollama",
+    "online": "Ollama iri kumurongo",
+    "offline": "Ollama itari kumurongo",
+    "models": "{{count}} ubwoko bwa hafi",
+    "installedModels": "Ubwoko bwatoranyijwe:",
+    "testConnection": "Gerageza ukwihuza kwa Ollama",
+    "connectionSuccessful": "Ukwihuza kwa Ollama kwagenze neza",
+    "connectionFailed": "Ukwihuza kwa Ollama kwanze",
+    "statusRefreshed": "Imimerere ya Ollama yongeweho",
+    "refreshStatus": "Kongera imimerere"
+  },
+  "update": {
+    "available": "Hari ihinduka rishasha",
+    "newVersion": "Verisiyo nshasha ({{version}}) iriho!",
+    "download": "Kuramo",
+    "later": "Nyuma",
+    "installing": "Shyiramo ihinduka...",
+    "installed": "Ihinduka ryashyizwemo! Ongera utangire..."
+  },
+  "keyboard": {
+    "title": "Buto z'umwanya",
+    "newChat": "Ikiganiro gishasha",
+    "search": "Shakisha ibiganiro",
+    "settings": "Fungura ibanga",
+    "toggleSidebar": "Hindura umwanya",
+    "send": "Ohereza ubutumwa",
+    "newLine": "Umurongo mushasha mu butumwa",
+    "close": "Funga ikiganiro",
+    "showHelp": "Erekana buto z'umwanya",
+    "pressToOpen": "Kanda {{key1}} cyangwa {{key2}} wo gufungura ubu bufasha icyarimwe"
+  },
+  "update": {
+    "checking": "Kugenzura ihinduka...",
+    "downloading": "Kuramo ihinduka...",
+    "newVersion": "Verisiyo nshasha iriho",
+    "available": "v{{version}} iriho",
+    "updateNow": "Hindura none",
+    "later": "Nyuma"
+  },
+  "export": {
+    "title": "Kohereza ikiganiro",
+    "markdown": "Markdown (.md)",
+    "json": "JSON (.json)",
+    "text": "Inyandiko (.txt)"
+  },
+  "language": {
+    "title": "Ururimi",
+    "en": "Icongereza",
+    "zh": "Igishinwa",
+    "ja": "Ikiyapani",
+    "ko": "Ikoreya",
+    "es": "Icyesipanyole"
+  },
+  "modelSelector": {
+    "cloudModels": "Ubwoko bw'ibicu",
+    "localModels": "Ubwoko bwa hafi (Ollama)",
+    "ollamaOffline": "Ollama itari kumurongo",
+    "ollamaHint": "Menya neza ko serivisi ya Ollama iriho"
+  },
+  "templates": {
+    "title": "Inyandiko-ngenga z'ubutumwa",
+    "newTemplate": "+ Inyandiko-ngenga nshasha",
+    "all": "Zose",
+    "name": "Izina",
+    "namePlaceholder": "Izina ry'inyandiko-ngenga",
+    "content": "Ibikubiyemo",
+    "contentPlaceholder": "Ibikubiyemo by'inyandiko-ngenga. Koresha {variable} ku bice bitandukanye.",
+    "categories": {
+      "writing": "Kwandika",
+      "coding": "Gukora porogaramu",
+      "analysis": "Gusesengura",
+      "translation": "Guhindura ururimi",
+      "custom": "Ibishusho"
+    }
+  },
+  "app": {
+    "deleteConfirm": "Urashaka ko iki kiganiro kirasure?",
+    "exportSuccess": "Byoherejwe nka {{format}}",
+    "exportFailed": "Byanze kohereza ikiganiro",
+    "folderCreated": "Ububiko \"{{name}}\" bwaremwe",
+    "folderRenamed": "Izina ry'ububiko ryahinduwe \"{{name}}\"",
+    "deleteFolderConfirm": "Sibura ububiko \"{{name}}\"? Ibiganiro bizimurirwa mu bitawe mu bubiko.",
+    "folderDeleted": "Ububiko \"{{name}}\" burasure",
+    "movedTo": "Byimuriwe mu {{name}}",
+    "moveFailed": "Byanze kwimura ikiganiro"
+  },
+  "sessionItem": {
+    "newChat": "Ikiganiro gishasha",
+    "today": "Uyu munsi",
+    "yesterday": "Ejo",
+    "daysAgo": "{{count}} iminsi ishize",
+    "exportSession": "Kohereza ikiganiro",
+    "moveToFolder": "Imura mu bubiko",
+    "uncategorized": "Bitawe mu bubiko",
+    "deleteSession": "Sibura ikiganiro",
+    "markdown": "Markdown (.md)",
+    "json": "JSON (.json)",
+    "plainText": "Inyandiko (.txt)"
+  },
+  "theme": {
+    "toggle": "Hindura ishusho",
+    "light": "Rumuri",
+    "dark": "Umwijima",
+    "system": "Sisitemu"
+  },
+  "languageSelector": {
+    "changeLanguage": "Hindura ururimi",
+    "language": "Ururimi"
+  }
+}
