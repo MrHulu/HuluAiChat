@@ -9,6 +9,7 @@ import { Message } from "@/api/client";
 import { Button } from "@/components/ui/button";
 import { Pencil, Check, X } from "lucide-react";
 import { CodeBlock } from "./CodeBlock";
+import { MermaidBlock } from "./MermaidBlock";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
@@ -239,9 +240,31 @@ export function MessageItem({ message, isStreaming, onEdit }: MessageItemProps) 
                   pre: ({ children }) => {
                     // Extract language from the code element's className
                     let language = "";
+                    let codeContent = "";
                     if (children && typeof children === "object" && "props" in children) {
-                      const codeProps = (children as React.ReactElement).props as { className?: string };
+                      const codeProps = (children as React.ReactElement).props as {
+                        className?: string;
+                        children?: React.ReactNode;
+                      };
                       language = codeProps.className?.replace("hljs language-", "") || "";
+                      // Extract code content for mermaid
+                      if (codeProps.children && typeof codeProps.children === "string") {
+                        codeContent = codeProps.children;
+                      } else if (
+                        codeProps.children &&
+                        typeof codeProps.children === "object" &&
+                        "props" in codeProps.children
+                      ) {
+                        // Handle nested structure
+                        const nested = (codeProps.children as React.ReactElement).props as {
+                          children?: string;
+                        };
+                        codeContent = nested.children || "";
+                      }
+                    }
+                    // Use MermaidBlock for mermaid diagrams
+                    if (language === "mermaid" && codeContent) {
+                      return <MermaidBlock chart={codeContent} />;
                     }
                     return (
                       <CodeBlock language={language}>
