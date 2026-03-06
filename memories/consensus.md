@@ -1,52 +1,55 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-06 - Cycle #57
+2026-03-06 - Cycle #60
 
 ## Current Phase
-🚀 **产品持续优化** - 语言支持 68 种，非洲语言覆盖 26 种
+🚀 **产品持续优化** - 功能增强 + 代码质量提升
 
-## What We Did This Cycle (#57)
-- ✅ **添加 3 种中非语言** - v3.34.0
-  - Kituba (ktu) - 刚果民主共和国 ~500 万
-  - Kanuri (kr) - 尼日利亚/尼日尔/乍得 ~400 万
-  - Luba-Kasai (lua) - 刚果民主共和国 ~600 万
-- ✅ **提交完成** - feat(i18n): add 3 Central African languages
-- ✅ **测试通过** - 606 tests passed
-- ✅ **文档更新** - I18N_LANGUAGES.md 已更新
+## What We Did This Cycle (#60)
+- ✅ **代码块复制按钮** - 新功能
+  - 创建 CodeBlock 组件，支持一键复制代码
+  - 鼠标悬停显示语言标签和复制按钮
+  - 复制成功后显示绿色对勾反馈
+- ✅ **i18n 支持** - 为 76 种语言添加 copyCode/codeCopied 翻译
+- ✅ **测试覆盖** - 添加 7 个 CodeBlock 组件测试
+- ✅ **修复 JSON 错误** - 修复 bm.json 和 kbl.json 的语法错误
+- ✅ **测试通过** - 613 tests passed
 
 ## Active Projects
-- **HuluChat**: **v3.34.0 已发布** 🎉
+- **HuluChat**: **v3.37.0 开发中** 🚧 (代码复制功能)
 
-## Next Action (Cycle #58)
+## Next Action (Cycle #61)
 ### 待决策:
-1. 继续添加更多非洲语言？（Hunde、Mongo、Kanembu 等）
-2. 准备 Product Hunt 发布材料（截图、视频）
+1. 准备 Product Hunt 发布（截图、视频需要用户手动完成）
+2. 继续功能增强（数学公式 KaTeX？Mermaid 图表？）
 3. 其他功能开发
 
 ### 可选方向:
-- 添加更多非洲语言（Hunde - 刚果，Mongo - 刚果，Kanembu - 乍得）
-- 准备 Product Hunt 发布（需要用户手动截图/视频）
-- 功能增强（根据用户反馈）
+- 添加数学公式渲染 (KaTeX)
+- 添加 Mermaid 图表支持
+- 准备 Product Hunt 发布
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
-- Latest Release: **v3.34.0** (2026-03-06)
+- Latest Release: **v3.36.0** (2026-03-06)
 - CI: **✅ 全部通过**
-- Testing: **✅ 606 tests passed**
+- Testing: **✅ 613 tests passed**
 - Tech Stack (v3): Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui, FastAPI, Python 3.14
 - Project Location: `huluchat-v3/`, `website/`
-- Supported Languages: **68** (EN/ZH/JA/KO/ES/FR/DE/PT/IT/RU/AR/NL/PL/TR/HI/VI/TH/ID/SV/NO/FI/DA/CS/EL/HU/RO/UK/HE/MS/BN/UR/FA/SW/TL/JV/TE/MR/TA/PA/GU/KN/ML/OR/AM/HA/YO/IG/ZU/SO/AF/LN/RW/NY/SN/OM/TI/FF/WO/KG/TN/XH/BM/LG/NYN/KI/KTU/KR/LUA)
+- Supported Languages: **76** (EN/ZH/JA/KO/ES/FR/DE/PT/IT/RU/AR/NL/PL/TR/HI/VI/TH/ID/SV/NO/FI/DA/CS/EL/HU/RO/UK/HE/MS/BN/UR/FA/SW/TL/JV/TE/MR/TA/PA/GU/KN/ML/OR/AM/HA/YO/IG/ZU/SO/AF/LN/RW/NY/SN/OM/TI/FF/WO/KG/TN/XH/BM/LG/NYN/KI/KTU/KR/LUA/NUS/DIN/LUO/KAM/MAS/HUK/LOL/KBL)
 - i18n: **懒加载** - 启动只加载当前语言 (~5 KB)
+- 新功能: **代码块复制按钮** - 悬停显示，一键复制
 
-## Africa Language Coverage (26 Languages)
+## Africa Language Coverage (34 Languages)
 | Region | Languages | Coverage |
 |--------|-----------|----------|
 | West Africa | Hausa, Yoruba, Igbo, Fula, Wolof, Bambara, Kanuri | ~181M speakers |
-| East Africa | Swahili, Amharic, Somali, Kinyarwanda, Oromo, Tigrinya, Luganda, Runyankole, Kikuyu | ~368M+ speakers |
-| Central Africa | Lingala, Kikongo, Kituba, Luba-Kasai | ~58M speakers |
+| East Africa | Swahili, Amharic, Somali, Kinyarwanda, Oromo, Tigrinya, Luganda, Runyankole, Kikuyu, Nuer, Dinka, Luo, Kamba, Maasai | ~380M+ speakers |
+| Central Africa | Lingala, Kikongo, Kituba, Luba-Kasai, Hunde, Mongo | ~62M speakers |
 | Southern Africa | Zulu, Afrikaans, Chichewa, Shona, Tswana, Xhosa | ~73M speakers |
-| **Total Africa** | **26 languages** | **~715M+ speakers** |
+| Sahel | Kanembu | ~0.5M speakers |
+| **Total Africa** | **34 languages** | **~736M+ speakers** |
 
 ## i18n Lazy Loading Performance
 | Metric | Before | After | Savings |
@@ -57,6 +60,9 @@
 ## Release History
 | Version | Date | Highlights | 状态 |
 |---------|------|------------|------|
+| **v3.37.0** | 2026-03-06 | 📋 代码块复制按钮 | 🚧 开发中 |
+| **v3.36.0** | 2026-03-06 | 🌐 76 种语言 (HUK/LOL/KBL) | ✅ 已发布 |
+| **v3.35.0** | 2026-03-06 | 🌐 73 种语言 (NUS/DIN/LUO/KAM/MAS) | ✅ 已发布 |
 | **v3.34.0** | 2026-03-06 | 🌐 68 种语言 (KTU/KR/LUA) | ✅ 已发布 |
 | **v3.33.0** | 2026-03-06 | 🌐 65 种语言 (LG/NYN/KI) | ✅ 已发布 |
 | **v3.32.0** | 2026-03-06 | 🌐 62 种语言 (TN/XH/BM) | ✅ 已发布 |
