@@ -7,6 +7,7 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { Message } from "@/api/client";
 import { MessageItem } from "./MessageItem";
 import { StreamingMessage } from "@/hooks/useChat";
+import { Loading } from "@/components/ui/loading";
 import { useTranslation } from "react-i18next";
 
 export interface MessageListRef {
@@ -161,16 +162,9 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
 
       {/* 加载指示器 */}
       {isLoading && !streamingMessage && (
-        <div className="flex justify-start mb-4">
+        <div className="flex justify-start mb-4 animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
           <div className="bg-muted rounded-2xl px-4 py-3">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <div className="flex gap-1">
-                <span className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                <span className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                <span className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
-              </div>
-              <span className="text-sm">{t("chat.thinking")}</span>
-            </div>
+            <Loading variant="dots" size="md" text={t("chat.thinking")} />
           </div>
         </div>
       )}
