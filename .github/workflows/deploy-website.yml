@@ -40,6 +40,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: huluchat-website
+          # 不指定 projectName，让 Cloudflare 自动创建
           directory: website/out
+          # 使用 Git 集成方式
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
