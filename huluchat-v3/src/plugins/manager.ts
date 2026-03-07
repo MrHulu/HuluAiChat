@@ -222,6 +222,98 @@ class PluginManagerImpl implements PluginManager {
     }
   }
 
+  // ============== Installation ==============
+
+  async installPlugin(sourcePath: string): Promise<PluginInstance> {
+    const fs = await getTauriFs();
+    if (!fs) {
+      throw new Error("Plugin installation requires Tauri environment");
+    }
+
+    // Read manifest from source
+    const manifestPath = `${sourcePath}/manifest.json`;
+    const manifestContent = await fs.readTextFile(manifestPath, {
+      baseDir: fs.BaseDirectory.AppData,
+    });
+    const manifest = JSON.parse(manifestContent) as PluginManifest;
+
+    // Validate plugin
+    const validation = this.validatePlugin(manifest);
+    if (!validation.valid) {
+      throw new Error(`Invalid plugin: ${validation.errors.join(", ")}`);
+    }
+
+    // Check if already installed
+    if (this.plugins.has(manifest.id)) {
+      throw new Error(`Plugin ${manifest.id} is already installed`);
+    }
+
+    // Create plugin directory
+    const pluginDir = await getPluginsDirectory();
+    const targetPath = `${pluginDir}/${manifest.id.replace(/\./g, "_")}`;
+
+    // Ensure plugins directory exists
+    const pluginsDirExists = await fs.exists(pluginDir, {
+      baseDir: fs.BaseDirectory.AppData,
+    });
+    if (!pluginsDirExists) {
+      await fs.mkdir(pluginDir, {
+        baseDir: fs.BaseDirectory.AppData,
+        recursive: true,
+      });
+    }
+
+    // Copy plugin files
+    await this.copyPluginFiles(sourcePath, targetPath);
+
+    // Load the plugin
+    const instance = await this.loadPlugin(targetPath);
+    this.emit("plugin:loaded", instance);
+
+    return instance;
+  }
+
+  async uninstallPlugin(id: string): Promise<void> {
+    const plugin = this.plugins.get(id);
+    if (!plugin) {
+      throw new Error(`Plugin not found: ${id}`);
+    }
+
+    const fs = await getTauriFs();
+    if (!fs) {
+      throw new Error("Plugin uninstallation requires Tauri environment");
+    }
+
+    // Unload the plugin first
+    await this.unloadPlugin(id);
+
+    // Remove plugin directory
+    try {
+      const pluginPath = plugin.path;
+      await this.removePluginDirectory(pluginPath);
+    } catch (error) {
+      console.error(`Failed to remove plugin directory: ${error}`);
+      // Continue even if directory removal fails
+    }
+
+    // Remove storage
+    try {
+      const storagePath = `plugins/storage/${id}.json`;
+      const storageExists = await fs.exists(storagePath, {
+        baseDir: fs.BaseDirectory.AppData,
+      });
+      if (storageExists) {
+        await fs.remove(storagePath, {
+          baseDir: fs.BaseDirectory.AppData,
+        });
+      }
+    } catch (error) {
+      console.error(`Failed to remove plugin storage: ${error}`);
+    }
+
+    this.pluginStorages.delete(id);
+  }
+
   // ============== Commands ==============
 
   getCommands(): Command[] {
@@ -628,6 +720,68 @@ class PluginManagerImpl implements PluginManager {
         console.error("Plugin event handler error:", error);
       }
     }
+  }
+
+  private async copyPluginFiles(sourcePath: string, targetPath: string): Promise<void> {
+    const fs = await getTauriFs();
+    if (!fs) return;
+
+    // Create target directory
+    await fs.mkdir(targetPath, {
+      baseDir: fs.BaseDirectory.AppData,
+      recursive: true,
+    });
+
+    // Read source directory
+    const entries = await fs.readDir(sourcePath, {
+      baseDir: fs.BaseDirectory.AppData,
+    });
+
+    // Copy each file
+    for (const entry of entries) {
+      const sourceFile = `${sourcePath}/${entry.name}`;
+      const targetFile = `${targetPath}/${entry.name}`;
+
+      if (entry.isDirectory) {
+        // Recursively copy subdirectory
+        await this.copyPluginFiles(sourceFile, targetFile);
+      } else {
+        // Copy file
+        const content = await fs.readTextFile(sourceFile, {
+          baseDir: fs.BaseDirectory.AppData,
+        });
+        await fs.writeTextFile(targetFile, content, {
+          baseDir: fs.BaseDirectory.AppData,
+        });
+      }
+    }
+  }
+
+  private async removePluginDirectory(pluginPath: string): Promise<void> {
+    const fs = await getTauriFs();
+    if (!fs) return;
+
+    // Read directory contents
+    const entries = await fs.readDir(pluginPath, {
+      baseDir: fs.BaseDirectory.AppData,
+    });
+
+    // Remove all files and subdirectories first
+    for (const entry of entries) {
+      const entryPath = `${pluginPath}/${entry.name}`;
+      if (entry.isDirectory) {
+        await this.removePluginDirectory(entryPath);
+      } else {
+        await fs.remove(entryPath, {
+          baseDir: fs.BaseDirectory.AppData,
+        });
+      }
+    }
+
+    // Remove the directory itself
+    await fs.remove(pluginPath, {
+      baseDir: fs.BaseDirectory.AppData,
+    });
   }
 }
 

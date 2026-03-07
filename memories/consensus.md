@@ -1,10 +1,10 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-07 - Cycle #84
+2026-03-07 - Cycle #85
 
 ## Current Phase
-🟢 **插件系统功能增强** - PR #135 等待 CI 审核
+🟢 **插件系统功能增强** - PR #136 等待 CI 审核
 
 ## 🚨 Boss 指令：推送前必须本地验证
 
@@ -36,42 +36,26 @@ npm run lint
 - ❌ 直接推送，等 CI 失败再修
 - ❌ 忽略本地错误强制推送
 
-## What We Did This Cycle (#84)
+## What We Did This Cycle (#85)
+- ✅ **合并 PR #135 并发布 v3.44.0**
+  - Tauri FS API 插件加载
+  - CI 全部通过
+- ✅ **创建 PR #136** - feat(plugins): add plugin install/uninstall UI
+  - 分支 `feature/plugin-install-ui` → master
+  - 753 additions, 77 deletions
+  - 新增功能:
+    - `installPlugin()` / `uninstallPlugin()` 方法
+    - 拖拽安装插件 UI
+    - 文件夹浏览器对话框
+    - 卸载确认对话框
+    - i18n 翻译 (en, zh)
+  - CI 正在运行中
+
+## Previous Cycle (#84)
 - ✅ **创建 PR #135** - feat(plugins): implement Tauri FS API for plugin loading
   - 分支 `feature/plugin-fs-loading` → master
   - 263 additions, 65 deletions
   - CI 正在运行中 (test-backend, test-frontend)
-
-## Previous Cycle (#83)
-- ✅ **实现 Tauri FS API 插件加载**
-  - 添加 `tauri-plugin-fs` 到 Rust 后端 (Cargo.toml)
-  - 添加 `@tauri-apps/plugin-fs` 到前端 (package.json)
-  - 更新 capabilities/default.json 添加 FS 权限
-  - 实现 `loadManifest()` 使用 Tauri FS API 读取 manifest.json
-  - 实现 `loadPluginModule()` 使用沙箱评估加载 JS 模块
-  - 添加 `discoverPlugins()` 扫描插件目录
-  - 实现插件存储持久化 (`persistStorage`)
-  - 添加环境检测（Tauri vs Web）优雅降级
-- ✅ **本地验证通过** (typecheck + lint + build)
-- ✅ **创建分支** `feature/plugin-fs-loading` 并提交
-
-## Previous Cycle (#82)
-- ✅ **合并三个 PR 并发布**
-  - PR #131 (v3.41.0 语音输入) ✅ 合并 → tag v3.41.0
-  - PR #132 (v3.42.0 多模态图片) ✅ 合并 (解决 rebase 冲突) → tag v3.42.0
-  - PR #133 (v3.43.0 插件系统) ✅ 合并 (两次 rebase) → tag v3.43.0
-- ✅ **创建并推送 release tags**
-  - `v3.41.0` - 语音输入 (Web Speech API)
-  - `v3.42.0` - 多模态图片 (GPT-4o Vision)
-  - `v3.43.0` - 插件系统
-
-## Previous Cycle (#81)
-- ✅ **修复 PR #133 CI 失败**
-  - 发现 `test-frontend` 失败：ESLint `@typescript-eslint/no-this-alias` 错误
-  - 修复 `huluchat-v3/src/plugins/manager.ts` 中的 `const self = this` 模式
-  - 改用箭头函数自动绑定 `this`，移除 `self` 别名
-  - 本地验证通过 (lint + typecheck + build)
-  - 推送修复 commit 02a9afc
 
 ## Plugin System Architecture
 
@@ -94,51 +78,50 @@ npm run lint
 - `api` - HuluChat API 访问
 - `clipboard` - 剪贴板访问
 - `network` - 网络请求
+- `files` - 文件系统访问
 
 ## Active Projects
-- **HuluChat**: **v3.43.0 已发布** | PR #135 (Tauri FS API) 审核中
+- **HuluChat**: **v3.44.0 已发布** | PR #136 (插件安装 UI) 审核中
 - **Product Hunt**: 等待用户完成截图和视频
 
-## Next Action (Cycle #85)
-1. **监控 PR #135 CI 结果**：
-   - 如果通过 → 合并并发布 v3.44.0
+## Next Action (Cycle #86)
+1. **监控 PR #136 CI 结果**：
+   - 如果通过 → 合并并发布 v3.45.0
    - 如果失败 → 修复并重新推送
 2. **插件系统下一步**：
-   - [ ] 创建插件安装/卸载 UI（拖拽安装）
-   - [ ] 完善插件设置页面（显示已加载插件列表）
    - [ ] 实现插件自动更新检查
+   - [ ] 添加插件市场/商店 UI（可选）
 3. **Product Hunt 发布准备**：
    - 用户需要完成截图和视频
    - 准备发布日社区推广
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
-- Latest Release: **v3.43.0** (2026-03-07)
-- CI: **🔄 PR #135 审核中**
+- Latest Release: **v3.44.0** (2026-03-07)
+- CI: **🔄 PR #136 审核中**
 - Tech Stack (v3): Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui, FastAPI, Python 3.14
 - Project Location: `huluchat-v3/`, `website/`
 - Supported Languages: **76**
-- 新功能: **插件系统** + 多模态图片 + 语音输入 + Command Palette
+- 新功能: **插件系统** (加载/安装/卸载) + 多模态图片 + 语音输入 + Command Palette
 
 ## Plugin System Files
 | File | Description |
 |------|-------------|
 | `docs/PLUGIN_SYSTEM.md` | 设计文档 |
 | `huluchat-v3/src/plugins/types.ts` | TypeScript 类型定义 |
-| `huluchat-v3/src/plugins/manager.ts` | 插件管理器实现（含 Tauri FS 加载）|
+| `huluchat-v3/src/plugins/manager.ts` | 插件管理器实现（含 Tauri FS 加载/安装/卸载）|
 | `huluchat-v3/src/plugins/index.ts` | 模块导出 |
 | `huluchat-v3/src/hooks/usePluginManager.ts` | React Hook |
-| `huluchat-v3/src/components/settings/PluginSettings.tsx` | 设置页面组件 |
-| `huluchat-v3/src/components/ui/switch.tsx` | Switch 组件 |
-| `huluchat-v3/src/components/ui/badge.tsx` | Badge 组件 |
-| `huluchat-v3/src/components/ui/card.tsx` | Card 组件 |
-| `huluchat-v3/src-tauri/Cargo.toml` | 添加 tauri-plugin-fs |
-| `huluchat-v3/src-tauri/capabilities/default.json` | FS 权限配置 |
+| `huluchat-v3/src/components/settings/PluginSettings.tsx` | 设置页面组件（含拖拽安装）|
+| `huluchat-v3/src/components/ui/alert-dialog.tsx` | AlertDialog 组件 |
+| `huluchat-v3/src-tauri/Cargo.toml` | 添加 tauri-plugin-fs, tauri-plugin-dialog |
+| `huluchat-v3/src-tauri/capabilities/default.json` | FS + Dialog 权限配置 |
 | `plugins/sample-hello/` | 示例插件 |
 
 ## Release History
 | Version | Date | Highlights | 状态 |
 |---------|------|------------|------|
+| **v3.44.0** | 2026-03-07 | 🔌 Tauri FS API 插件加载 | ✅ 已发布 |
 | **v3.43.0** | 2026-03-07 | 🔌 插件系统 | ✅ 已发布 |
 | **v3.42.0** | 2026-03-07 | 🖼️ 多模态图片支持 (GPT-4o Vision) | ✅ 已发布 |
 | **v3.41.0** | 2026-03-07 | 🎤 语音输入 (Web Speech API) | ✅ 已发布 |
@@ -170,5 +153,5 @@ npm run lint
 - [ ] 发布日社区推广
 
 ## 循环计数
-当前周期: 84
+当前周期: 85
 上次发邮件: 82

@@ -287,6 +287,12 @@ export interface PluginManager {
   /** Deactivate a plugin */
   deactivatePlugin: (id: string) => Promise<void>;
 
+  // ============== Installation ==============
+  /** Install a plugin from a directory path */
+  installPlugin: (sourcePath: string) => Promise<PluginInstance>;
+  /** Uninstall a plugin (removes from disk) */
+  uninstallPlugin: (id: string) => Promise<void>;
+
   // ============== Commands ==============
   /** Get all registered commands */
   getCommands: () => Command[];
