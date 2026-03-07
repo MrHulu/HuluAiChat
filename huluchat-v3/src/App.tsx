@@ -12,6 +12,7 @@ import { UpdateNotification } from "@/components/UpdateNotification";
 import { KeyboardHelpDialog } from "@/components/keyboard/KeyboardHelpDialog";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { CommandPalette } from "@/components/command";
+import { WelcomeDialog } from "@/components/WelcomeDialog";
 import { useSession, useKeyboardShortcuts, useFolders } from "@/hooks";
 import { exportSession, moveSessionToFolder, ExportFormat } from "@/api/client";
 
@@ -23,12 +24,25 @@ const SettingsDialog = lazy(() =>
   import("@/components/settings").then((mod) => ({ default: mod.SettingsDialog }))
 );
 
+// Local storage keys
+const WELCOME_SHOWN_KEY = "huluchat-welcome-shown";
+
 function App() {
   const { t } = useTranslation();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [keyboardHelpOpen, setKeyboardHelpOpen] = useState(false);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+
+  // Welcome dialog state - check if first time user
+  const [welcomeOpen, setWelcomeOpen] = useState(() => {
+    const hasSeenWelcome = localStorage.getItem(WELCOME_SHOWN_KEY);
+    return !hasSeenWelcome;
+  });
+
+  const handleWelcomeComplete = () => {
+    localStorage.setItem(WELCOME_SHOWN_KEY, "true");
+  };
 
   const {
     sessions,
@@ -189,6 +203,11 @@ function App() {
     <>
       <Toaster position="top-center" richColors closeButton />
       <UpdateNotification />
+      <WelcomeDialog
+        open={welcomeOpen}
+        onOpenChange={setWelcomeOpen}
+        onComplete={handleWelcomeComplete}
+      />
       <KeyboardHelpDialog open={keyboardHelpOpen} onOpenChange={setKeyboardHelpOpen} />
       <CommandPalette
         open={commandPaletteOpen}
