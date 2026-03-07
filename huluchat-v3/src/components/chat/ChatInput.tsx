@@ -174,7 +174,7 @@ export const ChatInput = memo(function ChatInput({
               <button
                 type="button"
                 onClick={() => handleRemoveImage(index)}
-                className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity duration-150 active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+                className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-all duration-200 hover:scale-110 active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
                 aria-label={t("chat.removeImage")}
               >
                 <X className="w-3 h-3" aria-hidden="true" />
@@ -191,10 +191,10 @@ export const ChatInput = memo(function ChatInput({
           size="sm"
           onClick={handleOpenTemplateSelector}
           disabled={disabled}
-          className="px-3 h-12"
+          className="px-3 h-12 transition-all duration-200 hover:bg-accent hover:scale-105 active:scale-95"
           aria-label={t("chat.selectTemplate")}
         >
-          <LayoutTemplate className="w-[18px] h-[18px]" aria-hidden="true" />
+          <LayoutTemplate className="w-[18px] h-[18px] transition-transform duration-200 group-hover:rotate-12" aria-hidden="true" />
         </Button>
 
         {/* Image Upload Button */}
@@ -203,7 +203,7 @@ export const ChatInput = memo(function ChatInput({
           size="sm"
           onClick={handleOpenImagePicker}
           disabled={disabled || images.length >= MAX_IMAGES}
-          className="px-3 h-12"
+          className="px-3 h-12 transition-all duration-200 hover:bg-accent hover:scale-105 active:scale-95 disabled:hover:scale-100"
           aria-label={t("chat.uploadImage")}
         >
           <ImagePlus className="w-[18px] h-[18px]" aria-hidden="true" />
@@ -248,7 +248,7 @@ export const ChatInput = memo(function ChatInput({
           onClick={handleSend}
           disabled={disabled || isLoading || (!value.trim() && images.length === 0)}
           data-loading={isLoading || undefined}
-          className="px-6 h-12"
+          className="px-6 h-12 transition-all duration-200 hover:scale-105 active:scale-95 disabled:hover:scale-100"
           aria-label={isLoading ? t("chat.sending") : t("chat.send")}
         >
           {isLoading ? (

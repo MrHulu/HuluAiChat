@@ -84,7 +84,7 @@ export function ModelSelector({
           variant="outline"
           size="sm"
           disabled={disabled}
-          className="gap-2 max-w-[180px]"
+          className="gap-2 max-w-[180px] transition-all duration-200 hover:bg-accent hover:scale-105 active:scale-95 disabled:hover:scale-100"
           aria-label={t("modelSelector.selectModel")}
           aria-haspopup="listbox"
         >
@@ -108,7 +108,8 @@ export function ModelSelector({
                   key={model.id}
                   onClick={() => onChange(model.id)}
                   className={cn(
-                    "flex items-center justify-between gap-2",
+                    "flex items-center justify-between gap-2 transition-all duration-150",
+                    "hover:bg-accent/50 hover:translate-x-0.5",
                     value === model.id && "bg-accent"
                   )}
                 >
@@ -118,7 +119,7 @@ export function ModelSelector({
                       {model.description}
                     </span>
                   </div>
-                  {value === model.id && <Check className="h-4 w-4 shrink-0" />}
+                  {value === model.id && <Check className="h-4 w-4 shrink-0 animate-scale-in" />}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuGroup>
@@ -144,7 +145,8 @@ export function ModelSelector({
                     key={model.id}
                     onClick={() => onChange(model.id)}
                     className={cn(
-                      "flex items-center justify-between gap-2",
+                      "flex items-center justify-between gap-2 transition-all duration-150",
+                      "hover:bg-accent/50 hover:translate-x-0.5",
                       value === model.id && "bg-accent"
                     )}
                   >
@@ -154,7 +156,7 @@ export function ModelSelector({
                         {model.description}
                       </span>
                     </div>
-                    {value === model.id && <Check className="h-4 w-4 shrink-0" />}
+                    {value === model.id && <Check className="h-4 w-4 shrink-0 animate-scale-in" />}
                   </DropdownMenuItem>
                 ))
               ) : (
