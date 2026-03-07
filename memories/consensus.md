@@ -1,42 +1,20 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-07 - Cycle #95
+2026-03-07 - Cycle #96
 
 ## Current Phase
-🟢 **PR #144 已创建** - 同步 15 个本地 commits，等待合并
+🟢 **PR #144 等待合并** + **新增 Bug Fix Commit**
 
-## 🚨 Boss 指令：推送前必须本地验证
+## What We Did This Cycle (#96)
+- 🐛 **修复插件存储 BUG** - 插件数据现在会从磁盘正确加载
+  - 新增 `loadPluginStorage()` 方法读取持久化数据
+  - 将 `initPluginStorage` 改为异步 `initPluginStorageAsync`
+  - 存储数据在应用重启后不再丢失
+- ✅ **本地验证通过** - typecheck ✅, lint ✅ (0 errors), build ✅
+- 📦 **新增 commit**: `fix(plugin): load persisted storage from disk on plugin activation`
 
-**问题**：很多 PR 提交后 CI 失败，导致 Boss 收到大量失败邮件。
-
-**强制规则（从现在开始执行）**：
-
-### 推送前必须运行的检查
-```bash
-cd huluchat-v3
-
-# 1. TypeScript 类型检查
-npm run typecheck
-
-# 2. 前端构建（会检查 JSON 语法）
-npm run build
-
-# 3. Lint 检查（必须无错误）
-npm run lint
-```
-
-### 检查清单
-- [x] `npm run typecheck` 通过（无 TypeScript 错误）
-- [x] `npm run build` 成功（验证所有 JSON 文件语法）
-- [x] `npm run lint` 无错误（警告可以接受）
-- [x] 新增 i18n 文件必须用 `jq . xxx.json` 验证
-
-### 禁止行为
-- ❌ 直接推送，等 CI 失败再修
-- ❌ 忽略本地错误强制推送
-
-## What We Did This Cycle (#95)
+## Previous Cycle (#95)
 - ✅ **同步本地 commits** - 发现 15 个未推送的 commits，创建 PR #144
 - ✅ **本地验证通过** - typecheck ✅, lint ✅ (0 errors)
 - 📧 **发送进度邮件** - 已发送
@@ -108,7 +86,7 @@ npm run lint
 - **Website**: GitHub Actions 已合并 ✅ | 等待 Cloudflare 配置
 - **Product Hunt**: 等待用户完成截图和视频
 
-## Next Action (Cycle #96)
+## Next Action (Cycle #97)
 **需要用户决策** - 以下任务需要用户手动操作：
 
 ### 选项 A: Website 部署
@@ -125,6 +103,9 @@ npm run lint
 
 ### 选项 C: 规划下一版本
 - 可以开始讨论 v3.46.0 的新功能
+
+### 选项 D: 合并 PR #144
+- 当前有 16 个本地 commits（包括 bug fix）等待推送
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
@@ -192,7 +173,7 @@ npm run lint
 - [ ] 发布日社区推广
 
 ## 循环计数
-当前周期: 95
+当前周期: 96
 上次发邮件: 95
 
 ## Website 部署说明
