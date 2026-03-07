@@ -97,7 +97,7 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
   }
 
   return (
-    <div ref={parentRef} className="flex-1 overflow-y-auto p-4">
+    <div ref={parentRef} className="flex-1 overflow-y-auto p-4 scrollbar-thin">
       {/* 虚拟列表容器 */}
       <div
         style={{
