@@ -2,18 +2,25 @@
  * MessageList Component
  * 消息列表展示，支持流式消息和虚拟列表优化
  */
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useImperativeHandle, forwardRef } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Message } from "@/api/client";
 import { MessageItem } from "./MessageItem";
 import { StreamingMessage } from "@/hooks/useChat";
 import { useTranslation } from "react-i18next";
 
+export interface MessageListRef {
+  scrollToMessage: (messageId: string) => void;
+}
+
 export interface MessageListProps {
   messages: Message[];
   streamingMessage: StreamingMessage | null;
   isLoading: boolean;
   onEditMessage?: (messageId: string, newContent: string) => Promise<void>;
+  // Bookmark props
+  bookmarkedMessages?: Map<string, string>; // messageId -> bookmarkId
+  onBookmarkToggle?: (messageId: string, isBookmarked: boolean, bookmarkId?: string) => void;
 }
 
 /**
@@ -32,10 +39,29 @@ export function estimateMessageHeight(content: string): number {
   return baseHeight + lines * 24 + codeHeight;
 }
 
-export function MessageList({ messages, streamingMessage, isLoading, onEditMessage }: MessageListProps) {
+export const MessageList = forwardRef<MessageListRef, MessageListProps>(function MessageList(
+  { messages, streamingMessage, isLoading, onEditMessage, bookmarkedMessages, onBookmarkToggle },
+  ref
+) {
   const { t } = useTranslation();
   const parentRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const messageRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+
+  // Expose scrollToMessage method via ref
+  useImperativeHandle(ref, () => ({
+    scrollToMessage: (messageId: string) => {
+      const messageElement = messageRefs.current.get(messageId);
+      if (messageElement) {
+        messageElement.scrollIntoView({ behavior: "smooth", block: "center" });
+        // Add highlight effect
+        messageElement.classList.add("ring-2", "ring-primary", "ring-opacity-50");
+        setTimeout(() => {
+          messageElement.classList.remove("ring-2", "ring-primary", "ring-opacity-50");
+        }, 2000);
+      }
+    },
+  }), []);
 
   // 虚拟列表配置
   const virtualizer = useVirtualizer({
@@ -81,20 +107,39 @@ export function MessageList({ messages, streamingMessage, isLoading, onEditMessa
       >
         {virtualizer.getVirtualItems().map((virtualItem) => {
           const message = messages[virtualItem.index];
+          const bookmarkId = bookmarkedMessages?.get(message.id);
+          const isBookmarked = bookmarkId !== undefined;
           return (
             <div
               key={message.id}
               data-index={virtualItem.index}
-              ref={virtualizer.measureElement}
+              ref={(el) => {
+                // Store ref for scroll-to-message
+                if (el) {
+                  messageRefs.current.set(message.id, el);
+                } else {
+                  messageRefs.current.delete(message.id);
+                }
+                // Also pass to virtualizer for measurement
+                virtualizer.measureElement(el);
+              }}
               style={{
                 position: "absolute",
                 top: 0,
                 left: 0,
                 width: "100%",
                 transform: `translateY(${virtualItem.start}px)`,
+                transition: "ring 0.3s ease",
               }}
+              className="rounded-lg"
             >
-              <MessageItem message={message} onEdit={onEditMessage} />
+              <MessageItem
+                message={message}
+                onEdit={onEditMessage}
+                isBookmarked={isBookmarked}
+                bookmarkId={bookmarkId}
+                onBookmarkToggle={onBookmarkToggle}
+              />
             </div>
           );
         })}
@@ -134,4 +179,4 @@ export function MessageList({ messages, streamingMessage, isLoading, onEditMessa
       <div ref={bottomRef} />
     </div>
   );
-}
+});
