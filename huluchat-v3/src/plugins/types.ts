@@ -63,6 +63,10 @@ export interface PluginManifest {
   repository?: string;
   /** What the plugin contributes */
   contributes?: PluginContributes;
+  /** URL to check for updates (returns updated manifest.json) */
+  updateUrl?: string;
+  /** URL to download plugin package (.zip) */
+  downloadUrl?: string;
 }
 
 // ============== Plugin Instance ==============
@@ -312,6 +316,14 @@ export interface PluginManager {
   // ============== Storage ==============
   /** Get plugin storage */
   getPluginStorage: (pluginId: string) => PluginStorage;
+
+  // ============== Updates ==============
+  /** Check for updates for a specific plugin */
+  checkForUpdate: (id: string) => Promise<PluginUpdateInfo | null>;
+  /** Check for updates for all plugins */
+  checkForAllUpdates: () => Promise<Map<string, PluginUpdateInfo>>;
+  /** Update a plugin to the latest version */
+  updatePlugin: (id: string) => Promise<void>;
 }
 
 // ============== Utility Types ==============
@@ -333,3 +345,37 @@ export interface PluginValidationResult {
   errors: string[];
   warnings: string[];
 }
+
+// ============== Plugin Update Types ==============
+
+/**
+ * Plugin update check result
+ */
+export interface PluginUpdateInfo {
+  /** Plugin ID */
+  id: string;
+  /** Current installed version */
+  currentVersion: string;
+  /** Latest available version */
+  latestVersion: string;
+  /** Whether an update is available */
+  hasUpdate: boolean;
+  /** Release notes for the update */
+  releaseNotes?: string;
+  /** Download URL for the update */
+  downloadUrl?: string;
+  /** Update manifest from remote */
+  manifest?: PluginManifest;
+}
+
+/**
+ * Plugin update state for UI
+ */
+export type PluginUpdateState =
+  | "idle" // No update check done
+  | "checking" // Currently checking for updates
+  | "available" // Update available
+  | "downloading" // Downloading update
+  | "installing" // Installing update
+  | "updated" // Successfully updated
+  | "error"; // Update failed
