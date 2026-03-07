@@ -1,0 +1,33 @@
+{
+  "id": "com.huluchat.export-chat",
+  "name": "Export Chat",
+  "version": "1.0.0",
+  "description": "Export your chat conversations to Markdown or JSON format",
+  "author": "HuluChat Team",
+  "minAppVersion": "3.40.0",
+  "permissions": [
+    "chat.read",
+    "storage",
+    "api",
+    "clipboard"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "id": "exportChat.exportMarkdown",
+        "title": "Export Current Chat as Markdown",
+        "category": "Export"
+      },
+      {
+        "id": "exportChat.exportJSON",
+        "title": "Export Current Chat as JSON",
+        "category": "Export"
+      },
+      {
+        "id": "exportChat.copyAsMarkdown",
+        "title": "Copy Current Chat as Markdown",
+        "category": "Export"
+      }
+    ]
+  }
+}
