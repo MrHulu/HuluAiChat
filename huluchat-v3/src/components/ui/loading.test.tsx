@@ -13,8 +13,16 @@ describe("Loading", () => {
 
   it("should render dots variant", () => {
     render(<Loading variant="dots" />);
-    const dots = document.querySelectorAll(".animate-bounce");
+    // Check for 3 rounded dots
+    const dots = document.querySelectorAll(".rounded-full.bg-primary");
     expect(dots).toHaveLength(3);
+  });
+
+  it("should render wave variant", () => {
+    render(<Loading variant="wave" />);
+    // Check for 5 wave bars
+    const waves = document.querySelectorAll(".rounded-full.bg-primary");
+    expect(waves).toHaveLength(5);
   });
 
   it("should render pulse variant", () => {
