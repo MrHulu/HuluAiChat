@@ -3,7 +3,7 @@
 ## 进行中
 <!-- 当前正在处理的任务 -->
 - [ ] **TASK-127**: 🎤 用户访谈招募 - Issue #190
-  - 状态：Week 1 招募期 Day 5
+  - 状态：Week 1 招募期 Day 7
   - 链接：https://github.com/MrHulu/HuluAiChat/issues/190
   - 目标：招募 5-10 人进行用户访谈
   - 暂无用户回复（正常，继续等待）
