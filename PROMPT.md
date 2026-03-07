@@ -1,112 +1,309 @@
-# HuluChat — 工作流程
+# Auto Company - 工作流程
 
-你是 HuluChat 项目的自主开发协调器。每次唤醒，执行一轮工作循环。
+> 本文档定义 AI Agent 的自主工作流程
+
+## 核心原则
+
+1. **自主决策** - 完成任务后自动规划下一个版本，无需等待
+2. **TDD 优先** - 测试驱动开发
+3. **小步提交** - 频繁提交，便于回滚
+4. **文档同步** - 代码和文档同步更新
+5. **进度汇报** - 每完成一个 Phase 发邮件给 Boss ⚠️ **重要**
 
 ---
 
-## 工作循环
+## 工作流程
 
-### Step 1: 读取共识
+### Phase 1: 取任务
 
-读取 `memories/consensus.md`，了解当前状态和下一步行动。
+1. **读取 TASKS.md**
+   - 查看"待开始"区域
+   - 选择优先级最高的任务
 
-### Step 2: 检查 TASKS
+2. **读取 memories/consensus.md**
+   - 了解当前项目状态
+   - 查看最近的决策和背景
 
-读取 `TASKS.md`，检查是否有未完成任务？
+3. **更新 consensus.md Next Action**
+   - 记录即将开始的任务
 
-- **有 TASK** → 取一个到 consensus.md → 组队执行
-- **无 TASK** → 检查长期任务
-  - **有长期任务** → 自主决策 → 更新 consensus.md → 执行
-  - **无长期任务** → 等待新 TASK（不发邮件）
+### Phase 2: 执行任务
 
-### Step 3: 组队执行
+#### 技术任务（开发/修复）
 
-读 `.claude/skills/team/SKILL.md`，按流程组建团队执行任务。
+1. **分析需求**
+   - 阅读相关文档（CLAUDE.md, README, 技术文档）
+   - 查看现有代码结构
 
-**每轮选 3-5 个最相关的 Agent，不要全部拉上。**
+2. **TDD 流程**
+   ```bash
+   # 先写测试
+   npm run test:watch -- <test-file>
 
-### Step 4: TDD 开发流程（强制）
+   # 再写代码
+   # 代码会让测试失败
 
+   # 实现功能
+   # 测试通过
+
+   # 重构
+   # 保持测试通过
+   ```
+
+3. **本地验证**
+   ```bash
+   # 类型检查
+   npm run typecheck
+
+   # Lint
+   npm run lint
+
+   # 构建
+   npm run build
+
+   # 完整测试
+   npm test
+   ```
+
+4. **提交代码**
+   ```bash
+   git add .
+   git commit -m "feat: 简短描述"
+
+   git push
+   ```
+
+#### 规划任务（产品/设计）
+
+1. **组建 Agent 团队**
+   - 使用 `/team` 指令动态组建团队
+   - 不同任务类型需要不同的 Agent 组合
+
+2. **协作决策**
+   - 每个 Agent 发挥专业能力
+   - CEO 做最终决策
+
+3. **输出文档**
+   - 保存到 `docs/` 目录
+   - 更新 consensus.md
+
+### Phase 3: 完成任务
+
+1. **更新 TASKS.md**
+   - 将任务从"待开始"移到"已完成"
+   - 记录完成时间
+
+2. **更新 consensus.md**
+   - 记录完成情况
+   - 更新 Company State
+
+3. **检查下一个任务**
+   - 查看 TASKS.md 是否还有待开始任务
+   - 如果有 → 返回 Phase 1
+   - **如果没有 → 进入 Phase 4**
+
+### Phase 3.5: 进度汇报 ⚠️ **新增**
+
+**当开发任务包含多个 Phase 时，每个 Phase 完成后必须发邮件给 Boss**
+
+#### 触发条件
+
+- ✅ 完成一个开发 Phase（如 Phase 1, Phase 2, Phase 2.5）
+- ✅ 代码已提交并合并
+- ✅ 测试全部通过
+
+#### 邮件模板
+
+```bash
+cd D:/HuluMan/project/ai-center
+python .claude/skills/email-sender/scripts/send.py \
+  --to "491849417@qq.com" \
+  --subject "[HuluChat] 进度汇报 - TASK-XXX Phase Y 完成" \
+  --body "Hi Boss,
+
+TASK-XXX 进度更新：
+- 任务：{任务名称}
+- Phase {Y}: {Phase 名称} ✅ 完成
+
+本阶段成果：
+- {列出完成的功能}
+- {代码改动统计}
+- {测试结果}
+
+下一步：
+- Phase {Z}: {下一阶段名称}
+
+整体进度：{X}%
+
+---
+AI Assistant
+AI Center Secretary"
 ```
-1. 写测试 - 先写失败测试定义预期行为
-2. 运行测试 - 确认失败（Red）
-3. 写代码 - 写最少代码让测试通过
-4. 运行测试 - 确认通过（Green）
-5. 重构 - 优化代码质量
-6. 验证覆盖率 - 必须 80%+
-```
 
-**禁止**：❌ 先写实现再补测试 ❌ 提交无测试代码
+#### 记录发送
 
-### Step 5: 更新共识（必须）
-
-结束前**必须**更新 `memories/consensus.md`：
+在 `memories/consensus.md` 中添加：
 
 ```markdown
-# 共识
-
-## 状态
-🟢 执行中 / 🟡 自主规划中 / ⚪ 等待任务
-
-## 当前任务
-> [任务描述]
-
-## 来源
-- TASK-XXX / 长期任务: [名称]
-
-## 本轮产出
-- [产出1]
-- [产出2]
-
-## 下一步
-> [具体行动]
-
-## 循环计数
-当前周期: N
-上次发邮件: M
+## 进度汇报记录
+- **Cycle #{N}**: Phase {Y} 完成 - ✅ 邮件已发送
 ```
 
-### Step 6: 检查邮件
+---
 
-```
-发邮件条件：
-├─ (当前周期 - 上次发邮件) >= 5 → 发进度邮件
-├─ 完成 TASK → 发完成邮件
-└─ 无长期任务 && TASK 全部完成 && 已发过完成邮件 → 不再发
-```
+### Phase 4: 无任务时的处理
 
-**发送邮件**（项目自带脚本）：
+**当 TASKS.md 中"待开始"区域为空时，必须执行以下操作**：
+
+#### 步骤 1: 检查当前状态
+
+- 查看 `memories/consensus.md`
+- 确认所有任务确实已完成
+- 检查是否有未合并的 PR
+
+#### 步骤 2: 发邮件给 Boss
+
+**使用秘书的邮件系统发送决策请求邮件**：
+
 ```bash
-python scripts/send-email.py "HuluChat - [邮件类型]" "$(cat docs/report.md)"
+cd D:/HuluMan/project/ai-center
+python .claude/skills/email-sender/scripts/send.py \
+  --to "491849417@qq.com" \
+  --subject "[HuluChat] 所有任务完成 - 等待指示" \
+  --body "Hi Boss,
+
+HuluChat 所有短期任务已完成，当前状态：
+- 版本：{当前版本}
+- 周期：{当前周期}
+- 已完成：{列出完成的任务}
+
+等待决策：下一步方向
+
+选项：
+A. 发布新版本
+B. 规划下一个版本（v3.XX.0）
+C. 执行长期任务（UI 重构、UI/UX 优化等）
+
+默认推荐：B（规划下一个版本）
+
+📧 若 5 分钟内未收到回复，将自动执行选项 B。
+
+请确认或给出其他指示。
+
+---
+AI Assistant
+AI Center Secretary"
 ```
+
+#### 步骤 3: 记录邮件发送
+
+在 `memories/consensus.md` 中添加：
+
+```markdown
+## 邮件发送记录
+- **时间**: {当前时间}
+- **主题**: [HuluChat] 所有任务完成 - 等待指示
+- **状态**: ✅ 已发送
+- **等待**: Boss 回复或 5 分钟后自动执行
+```
+
+#### 步骤 4: 等待或自动执行
+
+**如果 5 分钟内收到 Boss 回复**：
+- 按照 Boss 的指示执行
+
+**如果 5 分钟内未收到回复**：
+- **自动执行选项 B：规划下一个版本**
+- 使用 `/team` 组建完整 Agent 团队
+- 执行自主决策流程
 
 ---
 
-## 收敛规则
+## 循环规则
 
-1. **Cycle 1**：分析任务，确定方案
-2. **Cycle 2+**：执行开发，产出代码
-3. **产出强制**：每轮必须有实物产出，禁止纯讨论
-4. **TDD 检查**：没有测试的功能 = 没有功能
-5. **卡住检测**：同一任务连续 2 轮无进展 → 换方向或 ship 当前状态
+### 每个周期必须执行
+
+1. ✅ 读取 consensus.md
+2. ✅ 读取 TASKS.md
+3. ✅ 执行一个任务（或完成一个阶段）
+4. ✅ 更新 consensus.md
+5. ✅ 更新 TASKS.md（如果任务完成）
+6. ✅ 提交代码（如果有代码变更）
+7. ✅ **检查是否完成一个 Phase** → 如果是，发邮件 ⚠️
+8. ✅ 检查是否还有待开始任务
+9. ⚠️ **如果没有 → 发邮件给 Boss**
+
+### 中断条件
+
+- 遇到无法解决的技术问题（记录到 consensus.md 的 Open Questions）
+- 需要 Boss 手动操作（如配置 Cloudflare Secrets）
 
 ---
 
-## 长期任务
+## 自动停止条件
 
-1. **UI 重构**：使用 Tauri + FastAPI 重构（当前最高优先级）
-2. **UI/UX 优化**：保持高级审美的工程师视角
+以下情况会暂停自动循环，创建 `.auto-loop-paused` 文件：
+
+1. 连续 3 个周期遇到同一个阻塞问题
+2. CI 构建失败且无法自动修复
+3. 发现 P0 级 Bug
 
 ---
 
-## 产出目录
+## 长期任务清单
 
+当自动执行"规划下一个版本"时，参考以下顺序：
+
+1. **默认任务**：规划下一个版本（v3.XX.0）
+   - 使用 Agent 团队协作
+   - 必须咨询 critic-munger
+
+2. **其他长期任务**（需明确指定）：
+   - UI 重构：Tauri + FastAPI
+   - UI/UX 优化
+   - 插件沙箱环境
+   - 官方插件市场
+   - 性能监控
+
+---
+
+## 快速参考
+
+### 常用命令
+
+```bash
+# 查看任务
+cat TASKS.md
+
+# 查看状态
+cat memories/consensus.md
+
+# 运行测试
+npm test
+
+# 类型检查
+npm run typecheck
+
+# 构建
+npm run build
+
+# 提交
+git add . && git commit -m "message" && git push
 ```
-docs/
-├── fullstack/        # 代码实现
-├── cto/              # 架构设计
-├── qa/               # 测试计划和报告
-├── product/          # 产品文档
-├── ui/               # UI 设计
-└── report.md         # 邮件报告
-```
+
+### 文件位置
+
+| 文件 | 用途 |
+|------|------|
+| `TASKS.md` | 任务清单 |
+| `memories/consensus.md` | 项目状态和决策记录 |
+| `CLAUDE.md` | 项目使命和架构 |
+| `.claude/agents/` | Agent 角色定义 |
+| `.claude/skills/team/SKILL.md` | 动态组队 |
+
+---
+
+**记住**：
+1. 每个 Phase 完成后**必须发进度邮件给 Boss**
+2. 所有任务完成时**必须发邮件给 Boss**
+3. 不要让 Boss 猜测进度！
