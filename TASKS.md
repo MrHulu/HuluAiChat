@@ -2,26 +2,29 @@
 
 ## 进行中
 <!-- 当前正在处理的任务 -->
-- [ ] TASK-104: 官网部署配置（Cloudflare secrets）
-  - ⚠️ **阻塞**: 等待 Boss 配置 GitHub Secrets
-  - 需要配置: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`
-  - 邮件已发送: 2026-03-07 (Cycle #117)
 
 ## 待开始
 <!-- 新任务添加到这里 -->
-- [ ] **TASK-111**: 💻 开发 v3.47.0 - 用户体验优化
-  - Phase 1: 输入框自动聚焦 + 消息发送反馈 (P1)
-  - Phase 2: 空状态引导 + 搜索 loading (P2)
-  - Phase 3: 消息编辑键盘提示 (P3) - 可选
-  - 预计时间: ~3.5 小时
-  - 状态: 等待 TASK-104 或自动开始
 
 ## 已完成
+- [x] **TASK-111**: 💻 开发 v3.47.0 - 用户体验优化 ✅ 2026-03-07
+  - Phase 1: 输入框自动聚焦 + 消息发送反馈 ✅
+  - Phase 2: 空状态引导 + 搜索 loading ✅ (已存在)
+  - Phase 3: 消息编辑键盘提示 ✅ (已存在)
+
+- [x] **TASK-104**: 🌐 官网部署配置（Cloudflare secrets）✅ 2026-03-07
+  - GitHub Secrets 已配置:
+    - CLOUDFLARE_API_TOKEN ✅
+    - CLOUDFLARE_ACCOUNT_ID ✅
+  - GitHub Actions workflow 已就绪
+  - 下次推送将自动部署
+
 - [x] **TASK-110**: 💻 开发 v3.46.0 - DeepSeek 默认模型 + RAG 单文档对话 ✅ 2026-03-07
   - Phase 1: DeepSeek 默认模型 ✅
   - Phase 2: RAG 后端 Pipeline ✅ (PR #147)
   - Phase 2.5: RAG 前端 UI ✅ (Cycle #114)
   - Phase 3: 发布 v3.46.0 ✅ (Cycle #116)
+
 - [x] **TASK-109**: 🚀 规划 v3.46.0 新功能（自主决策）✅ 2026-03-07 (Cycle #104)
 - [x] **TASK-105**: ⚡ 性能优化 - Rust LTO + Mermaid 懒加载 ✅ 2026-03-07 (Cycle #98)
 - [x] **TASK-108**: 🧹 清理项目目录结构 - 删除旧 Python 架构遗留文件 ✅ 2026-03-07 (Cycle #97)
