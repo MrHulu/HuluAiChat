@@ -14,6 +14,10 @@
 
 ---
 
+> 🎤 **用户访谈招募中** - 帮助我们改进 HuluChat！[参与访谈](https://github.com/MrHulu/HuluAiChat/issues/190) 🙏
+
+---
+
 ## ✨ 功能亮点
 
 ### 🤖 多模型支持
