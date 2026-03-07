@@ -4,6 +4,32 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [3.46.0] - 2026-03-07
+
+### Added
+- **DeepSeek Default Model**: DeepSeek V3 as default AI model option
+  - Provider routing for model selection
+  - Updated model list with DeepSeek first
+
+- **RAG Document Chat (Experimental)**: Chat with uploaded documents
+  - Single document upload support
+  - Supported formats: TXT, MD, PDF
+  - Semantic search with OpenAI embeddings
+  - In-chat document context integration
+  - Document management panel
+
+### Components
+- `RAGPanel`: Document upload and management panel
+- `DocumentUploader`: Drag-and-drop file upload component
+- `DocumentList`: Uploaded documents list with delete support
+
+### Technical
+- Backend: Chroma vector store integration
+- Backend: OpenAI text-embedding-3-small for embeddings
+- Backend: Recursive character text chunking (500 chars)
+- Frontend: 32 new tests for RAG components
+- i18n: Full RAG translations (EN/ZH)
+
 ## [3.41.0] - 2026-03-07
 
 ### Added

@@ -267,5 +267,29 @@
     "settings": "Settings",
     "showHelp": "Keyboard Shortcuts",
     "openCommandPalette": "Open Command Palette"
+  },
+  "rag": {
+    "title": "Document Chat (Experimental)",
+    "description": "Upload a document to chat with it",
+    "uploadDocument": "Upload Document",
+    "supportedFormats": "Supported formats: TXT, MD, PDF",
+    "maxSize": "Max size: 5MB",
+    "uploading": "Uploading...",
+    "uploadSuccess": "Document uploaded successfully",
+    "uploadError": "Upload failed",
+    "selectFile": "Select File",
+    "dragDrop": "Drag and drop a file here, or click to select",
+    "documents": "Documents",
+    "noDocuments": "No documents uploaded",
+    "chunks": "{{count}} chunks",
+    "delete": "Delete",
+    "deleteConfirm": "Are you sure you want to delete this document?",
+    "deleting": "Deleting...",
+    "deleteError": "Failed to delete document",
+    "queryError": "Failed to query documents",
+    "enableRAG": "Enable Document Chat",
+    "disableRAG": "Disable Document Chat",
+    "ragEnabled": "Document Chat Active",
+    "ragDisabled": "Document Chat Disabled"
   }
 }
