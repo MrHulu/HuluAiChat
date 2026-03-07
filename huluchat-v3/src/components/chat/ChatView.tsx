@@ -8,7 +8,7 @@ import { ModelSelector } from "./ModelSelector";
 import { useChat, useModel } from "@/hooks";
 import { ConnectionStatus } from "@/hooks/useWebSocket";
 import { cn } from "@/lib/utils";
-import { updateMessage } from "@/api/client";
+import { updateMessage, ImageContent } from "@/api/client";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
@@ -44,8 +44,8 @@ export function ChatView({ sessionId }: ChatViewProps) {
 
   const isDisabled = connectionStatus !== "connected" || isLoading;
 
-  const handleSend = (content: string) => {
-    sendMessage(content, currentModel, parameters);
+  const handleSend = (content: string, images?: ImageContent[]) => {
+    sendMessage(content, currentModel, parameters, images);
   };
 
   // 编辑消息处理

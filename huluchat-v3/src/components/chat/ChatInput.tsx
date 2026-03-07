@@ -1,22 +1,25 @@
 /**
  * ChatInput Component
- * 聊天输入框，支持多行输入、快捷键和模板选择器
+ * 聊天输入框，支持多行输入、快捷键、模板选择器和图片上传
  */
 import { useState, useRef, useEffect, useCallback, memo, type KeyboardEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { LayoutTemplate, Send } from "lucide-react";
+import { LayoutTemplate, Send, ImagePlus, X } from "lucide-react";
 import {
   PromptTemplateSelector,
 } from "@/components/templates/PromptTemplateSelector";
 import { VoiceInputButton } from "@/components/chat/VoiceInputButton";
+import { ImageContent } from "@/api/client";
 
 // Constants
 const MAX_TEXTAREA_HEIGHT = 200;
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_IMAGES = 5;
 
 export interface ChatInputProps {
-  onSend: (message: string) => void;
+  onSend: (message: string, images?: ImageContent[]) => void;
   disabled?: boolean;
   placeholder?: string;
   onTemplateSelect?: (content: string) => void;
@@ -30,7 +33,9 @@ export const ChatInput = memo(function ChatInput({
   const { t, i18n } = useTranslation();
   const [value, setValue] = useState("");
   const [showTemplateSelector, setShowTemplateSelector] = useState(false);
+  const [images, setImages] = useState<ImageContent[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const actualPlaceholder = placeholder || t("chat.typeMessage");
 
@@ -43,16 +48,56 @@ export const ChatInput = memo(function ChatInput({
     }
   }, [value]);
 
+  // 处理图片文件选择
+  const handleImageSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const newImages: ImageContent[] = [];
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (!file.type.startsWith("image/")) continue;
+      if (file.size > MAX_IMAGE_SIZE) {
+        console.warn(`Image ${file.name} is too large (max 10MB)`);
+        continue;
+      }
+      if (images.length + newImages.length >= MAX_IMAGES) break;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const dataUrl = event.target?.result as string;
+        if (dataUrl) {
+          setImages((prev) => {
+            if (prev.length >= MAX_IMAGES) return prev;
+            return [...prev, { type: "image_url", image_url: { url: dataUrl } }];
+          });
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }, [images.length]);
+
+  // 移除图片
+  const handleRemoveImage = useCallback((index: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== index));
+  }, []);
+
   const handleSend = useCallback(() => {
-    if (value.trim() && !disabled) {
-      onSend(value.trim());
+    if ((value.trim() || images.length > 0) && !disabled) {
+      onSend(value.trim(), images.length > 0 ? images : undefined);
       setValue("");
+      setImages([]);
       // 重置高度
       if (textareaRef.current) {
         textareaRef.current.style.height = "auto";
       }
     }
-  }, [value, disabled, onSend]);
+  }, [value, images, disabled, onSend]);
 
   const handleKeyDown = useCallback((e: KeyboardEvent<HTMLTextAreaElement>) => {
     // Enter 发送，Shift+Enter 换行
@@ -88,8 +133,36 @@ export const ChatInput = memo(function ChatInput({
     setShowTemplateSelector(true);
   }, []);
 
+  // 打开图片选择器
+  const handleOpenImagePicker = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
   return (
     <div className="border-t border-border bg-background p-4" role="region" aria-label={t("chat.typeMessage")}>
+      {/* Image Preview Area */}
+      {images.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-3 max-w-4xl mx-auto">
+          {images.map((image, index) => (
+            <div key={index} className="relative group">
+              <img
+                src={image.image_url.url}
+                alt={`Upload ${index + 1}`}
+                className="w-16 h-16 object-cover rounded-lg border border-border"
+              />
+              <button
+                type="button"
+                onClick={() => handleRemoveImage(index)}
+                className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                aria-label={t("chat.removeImage")}
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="flex items-end gap-3 max-w-4xl mx-auto">
         {/* Template Button */}
         <Button
@@ -103,6 +176,27 @@ export const ChatInput = memo(function ChatInput({
         >
           <LayoutTemplate className="w-[18px] h-[18px]" />
         </Button>
+
+        {/* Image Upload Button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleOpenImagePicker}
+          disabled={disabled || images.length >= MAX_IMAGES}
+          className="rounded-xl px-3 h-12"
+          title={t("chat.uploadImage")}
+          aria-label={t("chat.uploadImage")}
+        >
+          <ImagePlus className="w-[18px] h-[18px]" />
+        </Button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={handleImageSelect}
+          className="hidden"
+        />
 
         {/* Voice Input Button */}
         <VoiceInputButton
@@ -133,7 +227,7 @@ export const ChatInput = memo(function ChatInput({
         </div>
         <Button
           onClick={handleSend}
-          disabled={disabled || !value.trim()}
+          disabled={disabled || (!value.trim() && images.length === 0)}
           className="rounded-xl px-6 h-12"
           aria-label={t("chat.send")}
         >

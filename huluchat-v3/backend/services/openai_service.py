@@ -1,6 +1,6 @@
 """OpenAI streaming service for HuluChat."""
 import logging
-from typing import AsyncIterator, Optional
+from typing import AsyncIterator, Optional, Union, List
 from dataclasses import dataclass
 
 from openai import AsyncOpenAI
@@ -17,6 +17,10 @@ class StreamChunk:
     content: str
     is_done: bool = False
     error: Optional[str] = None
+
+
+# Type for multimodal content
+MultimodalContent = Union[str, List[dict]]
 
 
 class OpenAIService:
@@ -39,7 +43,7 @@ class OpenAIService:
 
     async def stream_chat(
         self,
-        messages: list[dict[str, str]],
+        messages: list[dict],
         model: Optional[str] = None,
         temperature: Optional[float] = None,
         top_p: Optional[float] = None,
@@ -49,6 +53,7 @@ class OpenAIService:
 
         Args:
             messages: List of message dicts with 'role' and 'content'
+                     content can be string (text only) or list (multimodal)
             model: Model to use, defaults to settings.openai_model
             temperature: Sampling temperature (0-2), defaults to settings.temperature
             top_p: Nucleus sampling (0-1), defaults to settings.top_p
