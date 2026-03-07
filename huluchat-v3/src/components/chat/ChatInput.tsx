@@ -187,7 +187,7 @@ export const ChatInput = memo(function ChatInput({
           size="sm"
           onClick={handleOpenTemplateSelector}
           disabled={disabled}
-          className="rounded-xl px-3 h-12"
+          className="px-3 h-12"
           title={t("chat.selectTemplate")}
           aria-label={t("chat.selectTemplate")}
         >
@@ -200,7 +200,7 @@ export const ChatInput = memo(function ChatInput({
           size="sm"
           onClick={handleOpenImagePicker}
           disabled={disabled || images.length >= MAX_IMAGES}
-          className="rounded-xl px-3 h-12"
+          className="px-3 h-12"
           title={t("chat.uploadImage")}
           aria-label={t("chat.uploadImage")}
         >
@@ -233,7 +233,7 @@ export const ChatInput = memo(function ChatInput({
             rows={1}
             aria-label={actualPlaceholder}
             className={cn(
-              "w-full resize-none rounded-xl border border-input bg-background",
+              "w-full resize-none rounded-lg border border-input bg-background",
               "px-4 py-3 text-sm",
               "placeholder:text-muted-foreground",
               "focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent",
@@ -246,7 +246,7 @@ export const ChatInput = memo(function ChatInput({
           onClick={handleSend}
           disabled={disabled || isLoading || (!value.trim() && images.length === 0)}
           data-loading={isLoading || undefined}
-          className="rounded-xl px-6 h-12"
+          className="px-6 h-12"
           aria-label={t("chat.send")}
         >
           {isLoading ? (
