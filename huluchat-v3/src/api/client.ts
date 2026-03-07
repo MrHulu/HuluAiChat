@@ -716,3 +716,61 @@ export async function getMessageBookmark(messageId: string): Promise<BookmarkRes
   const response = await fetch(`${API_BASE}/messages/${messageId}/bookmark`);
   return response.json();
 }
+
+/**
+ * Export all bookmarks as JSON
+ */
+export async function exportBookmarksJSON(): Promise<{ blob: Blob; filename: string }> {
+  const response = await fetch(`${API_BASE}/bookmarks/export/json`);
+  if (!response.ok) {
+    throw new Error(`Export failed: ${response.statusText}`);
+  }
+
+  const contentDisposition = response.headers.get("Content-Disposition");
+  let filename = "huluchat-bookmarks.json";
+  if (contentDisposition) {
+    const match = contentDisposition.match(/filename="(.+)"/);
+    if (match) {
+      filename = match[1];
+    }
+  }
+
+  const blob = await response.blob();
+  return { blob, filename };
+}
+
+/**
+ * Export all bookmarks as Markdown
+ */
+export async function exportBookmarksMarkdown(): Promise<{ blob: Blob; filename: string }> {
+  const response = await fetch(`${API_BASE}/bookmarks/export/markdown`);
+  if (!response.ok) {
+    throw new Error(`Export failed: ${response.statusText}`);
+  }
+
+  const contentDisposition = response.headers.get("Content-Disposition");
+  let filename = "huluchat-bookmarks.md";
+  if (contentDisposition) {
+    const match = contentDisposition.match(/filename="(.+)"/);
+    if (match) {
+      filename = match[1];
+    }
+  }
+
+  const blob = await response.blob();
+  return { blob, filename };
+}
+
+/**
+ * Helper function to download a blob as file
+ */
+export function downloadBlob(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
