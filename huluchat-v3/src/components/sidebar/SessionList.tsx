@@ -1,6 +1,6 @@
 /**
  * SessionList Component
- * 会话列表侧边栏，支持文件夹分组
+ * 会话列表侧边栏，支持文件夹分组和标签筛选
  */
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -11,8 +11,11 @@ import {
   searchSessions,
   ExportFormat,
   moveSessionToFolder,
+  getSessionTags,
+  listAllTags,
 } from "@/api/client";
 import { SessionItem } from "./SessionItem";
+import { TagFilter } from "./TagFilter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -33,6 +36,9 @@ export interface SessionListProps {
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
 }
+
+// Session tags state type
+type SessionTagsMap = Record<string, string[]>;
 
 export function SessionList({
   sessions,
@@ -61,6 +67,60 @@ export function SessionList({
   const [editingFolderName, setEditingFolderName] = useState("");
   const [activeFolderFilter, setActiveFolderFilter] = useState<string | null>(null);
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Tag-related state
+  const [sessionTags, setSessionTags] = useState<SessionTagsMap>({});
+  const [allTags, setAllTags] = useState<string[]>([]);
+  const [selectedFilterTags, setSelectedFilterTags] = useState<string[]>([]);
+
+  // Load all tags on mount
+  useEffect(() => {
+    const loadAllTags = async () => {
+      try {
+        const tags = await listAllTags();
+        setAllTags(tags);
+      } catch (error) {
+        console.error("Failed to load tags:", error);
+      }
+    };
+    loadAllTags();
+  }, []);
+
+  // Load tags for all sessions
+  useEffect(() => {
+    const loadSessionTags = async () => {
+      const tagsMap: SessionTagsMap = {};
+      for (const session of sessions) {
+        try {
+          const tagList = await getSessionTags(session.id);
+          tagsMap[session.id] = tagList.tags;
+        } catch (error) {
+          console.error(`Failed to load tags for session ${session.id}:`, error);
+          tagsMap[session.id] = [];
+        }
+      }
+      setSessionTags(tagsMap);
+    };
+
+    if (sessions.length > 0) {
+      loadSessionTags();
+    }
+  }, [sessions]);
+
+  // Tag filter handlers
+  const handleTagFilterSelect = useCallback((tag: string) => {
+    setSelectedFilterTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+  }, []);
+
+  const handleClearTagFilter = useCallback(() => {
+    setSelectedFilterTags([]);
+  }, []);
+
+  const handleTagClick = useCallback((tag: string) => {
+    handleTagFilterSelect(tag);
+  }, [handleTagFilterSelect]);
 
   // Debounced search
   const performSearch = useCallback(async (query: string) => {
@@ -126,16 +186,28 @@ export function SessionList({
     return grouped;
   }, [sessions, folders]);
 
-  // Display sessions based on search state
+  // Display sessions based on search state and tag filter
   const displaySessions = useMemo(() => {
+    let result: Session[];
+
     if (searchResults) {
-      return searchResults.map((r) => r.session);
+      result = searchResults.map((r) => r.session);
+    } else if (activeFolderFilter !== null) {
+      result = sessionsByFolder[activeFolderFilter] || [];
+    } else {
+      result = sessions;
     }
-    if (activeFolderFilter !== null) {
-      return sessionsByFolder[activeFolderFilter] || [];
+
+    // Filter by selected tags (AND logic - session must have all selected tags)
+    if (selectedFilterTags.length > 0) {
+      result = result.filter((session) => {
+        const sessionTagList = sessionTags[session.id] || [];
+        return selectedFilterTags.every((tag) => sessionTagList.includes(tag));
+      });
     }
-    return sessions;
-  }, [sessions, sessionsByFolder, searchResults, activeFolderFilter]);
+
+    return result;
+  }, [sessions, sessionsByFolder, searchResults, activeFolderFilter, selectedFilterTags, sessionTags]);
 
   const toggleFolder = (folderId: string) => {
     setExpandedFolders((prev) => {
@@ -332,6 +404,18 @@ export function SessionList({
         </div>
       </div>
 
+      {/* Tag Filter */}
+      {allTags.length > 0 && (
+        <div className="px-3 pb-2">
+          <TagFilter
+            allTags={allTags}
+            selectedTags={selectedFilterTags}
+            onTagSelect={handleTagFilterSelect}
+            onClearSelection={handleClearTagFilter}
+          />
+        </div>
+      )}
+
       {/* Session List */}
       <div className="flex-1 overflow-y-auto px-2">
         {isLoading || isSearching ? (
@@ -361,6 +445,8 @@ export function SessionList({
                       onDelete={() => onDeleteSession(session.id)}
                       onExport={onExportSession}
                       onMoveToFolder={handleMoveSession}
+                      tags={sessionTags[session.id] || []}
+                      onTagClick={handleTagClick}
                     />
                     {matchedMessages.length > 0 && (
                       <div className="ml-4 mt-1 mb-2 space-y-1">
@@ -478,6 +564,8 @@ export function SessionList({
                   onExportSession={onExportSession}
                   onMoveSession={handleMoveSession}
                   folders={folders}
+                  sessionTags={sessionTags}
+                  onTagClick={handleTagClick}
                 />
               ))}
             </div>
@@ -501,6 +589,8 @@ export function SessionList({
                       onDelete={() => onDeleteSession(session.id)}
                       onExport={onExportSession}
                       onMoveToFolder={handleMoveSession}
+                      tags={sessionTags[session.id] || []}
+                      onTagClick={handleTagClick}
                     />
                   ))}
                 </div>
@@ -540,6 +630,8 @@ export function SessionList({
                       onDelete={() => onDeleteSession(session.id)}
                       onExport={onExportSession}
                       onMoveToFolder={handleMoveSession}
+                      tags={sessionTags[session.id] || []}
+                      onTagClick={handleTagClick}
                     />
                   ))}
                 </div>
@@ -575,6 +667,8 @@ interface FolderItemProps {
   onExportSession?: (sessionId: string, format: ExportFormat) => void;
   onMoveSession: (sessionId: string, folderId: string | null) => void;
   folders: Folder[];
+  sessionTags: SessionTagsMap;
+  onTagClick: (tag: string) => void;
 }
 
 function FolderItem({
@@ -597,6 +691,8 @@ function FolderItem({
   onExportSession,
   onMoveSession,
   folders,
+  sessionTags,
+  onTagClick,
 }: FolderItemProps) {
   const { t } = useTranslation();
   const [showMenu, setShowMenu] = useState(false);
@@ -749,6 +845,8 @@ function FolderItem({
               onDelete={() => onDeleteSession(session.id)}
               onExport={onExportSession}
               onMoveToFolder={onMoveSession}
+              tags={sessionTags[session.id] || []}
+              onTagClick={onTagClick}
             />
           ))}
         </div>

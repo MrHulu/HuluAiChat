@@ -60,6 +60,14 @@
     "connectionError": "连接错误",
     "uploadImage": "上传图片",
     "removeImage": "移除图片",
+    "bookmarks": "书签",
+    "addBookmark": "添加书签",
+    "removeBookmark": "移除书签",
+    "bookmarkAdded": "书签已添加",
+    "bookmarkRemoved": "书签已移除",
+    "bookmarkError": "书签操作失败",
+    "bookmarkLoadError": "加载书签失败",
+    "noBookmarks": "当前对话暂无书签",
     "voice": {
       "startRecording": "开始语音输入",
       "stopRecording": "停止录音",
@@ -314,5 +322,22 @@
       "tip2": "📄 上传文档与它对话",
       "tip3": "⚙️ 在设置中配置 API"
     }
+  },
+  "tags": {
+    "addTag": "添加标签...",
+    "tag": "标签",
+    "selected": "已选",
+    "filterByTag": "按标签筛选",
+    "clear": "清除",
+    "maxTagsReached": "每个会话最多 5 个标签"
+  },
+  "bookmarks": {
+    "title": "书签",
+    "add": "添加书签",
+    "remove": "移除书签",
+    "note": "备注",
+    "notePlaceholder": "添加备注...",
+    "noBookmarks": "暂无书签",
+    "bookmarked": "已添加书签"
   }
 }

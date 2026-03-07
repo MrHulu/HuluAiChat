@@ -9,6 +9,21 @@
 3. **小步提交** - 频繁提交，便于回滚
 4. **文档同步** - 代码和文档同步更新
 5. **进度汇报** - 每完成一个 Phase 发邮件给 Boss ⚠️ **重要**
+6. **隐私优先** - ❌ **不做埋点功能** ⚠️ **Boss 明确要求**
+
+---
+
+## 禁止事项
+
+根据 Boss 明确要求，以下功能**禁止实施**：
+
+| 功能 | 状态 | 原因 |
+|------|------|------|
+| **用户行为埋点** | ❌ 禁止 | Boss 明确要求不做 |
+| **数据追踪** | ❌ 禁止 | 隐私优先原则 |
+| **遥测功能** | ❌ 禁止 | 无需数据收集 |
+
+**注意**：任何涉及用户数据收集、行为追踪的功能都需要先获得 Boss 批准！
 
 ---
 
@@ -34,6 +49,7 @@
 1. **分析需求**
    - 阅读相关文档（CLAUDE.md, README, 技术文档）
    - 查看现有代码结构
+   - **确认不涉及埋点功能**
 
 2. **TDD 流程**
    ```bash
@@ -82,6 +98,7 @@
 2. **协作决策**
    - 每个 Agent 发挥专业能力
    - CEO 做最终决策
+   - **确认不包含埋点功能**
 
 3. **输出文档**
    - 保存到 `docs/` 目录
@@ -102,7 +119,7 @@
    - 如果有 → 返回 Phase 1
    - **如果没有 → 进入 Phase 4**
 
-### Phase 3.5: 进度汇报 ⚠️ **新增**
+### Phase 3.5: 进度汇报 ⚠️ **重要**
 
 **当开发任务包含多个 Phase 时，每个 Phase 完成后必须发邮件给 Boss**
 
@@ -116,42 +133,21 @@
 
 ```bash
 cd D:/HuluMan/project/ai-center
-python .claude/skills/email-sender/scripts/send.py \
-  --to "491849417@qq.com" \
-  --subject "[HuluChat] 进度汇报 - TASK-XXX Phase Y 完成" \
-  --body "Hi Boss,
-
-TASK-XXX 进度更新：
-- 任务：{任务名称}
-- Phase {Y}: {Phase 名称} ✅ 完成
-
-本阶段成果：
-- {列出完成的功能}
-- {代码改动统计}
-- {测试结果}
-
-下一步：
-- Phase {Z}: {下一阶段名称}
-
-整体进度：{X}%
-
----
-AI Assistant
-AI Center Secretary"
+python .claude/skills/email-sender/scripts/send_email.py <json_file>
 ```
 
-#### 记录发送
-
-在 `memories/consensus.md` 中添加：
-
-```markdown
-## 进度汇报记录
-- **Cycle #{N}**: Phase {Y} 完成 - ✅ 邮件已发送
+JSON 内容：
+```json
+{
+  "to": "491849417@qq.com",
+  "subject": "[HuluChat] 进度汇报 - TASK-XXX Phase Y 完成",
+  "body": "Hi Boss,\n\nTASK-XXX 进度更新：\n- 任务：{任务名称}\n- Phase {Y}: {Phase 名称} ✅ 完成\n\n本阶段成果：\n- {列出完成的功能}\n\n下一步：\n- Phase {Z}: {下一阶段名称}\n\n整体进度：{X}%\n\n---\nAI Assistant\nAI Center Secretary"
+}
 ```
 
 ---
 
-### Phase 4: 无任务时的处理
+### Phase 4: 无任务时的处理 ⚠️ **重要**
 
 **当 TASKS.md 中"待开始"区域为空时，必须执行以下操作**：
 
@@ -163,57 +159,15 @@ AI Center Secretary"
 
 #### 步骤 2: 发邮件给 Boss
 
-**使用秘书的邮件系统发送决策请求邮件**：
+**使用秘书的邮件系统发送决策请求邮件**
 
-```bash
-cd D:/HuluMan/project/ai-center
-python .claude/skills/email-sender/scripts/send.py \
-  --to "491849417@qq.com" \
-  --subject "[HuluChat] 所有任务完成 - 等待指示" \
-  --body "Hi Boss,
-
-HuluChat 所有短期任务已完成，当前状态：
-- 版本：{当前版本}
-- 周期：{当前周期}
-- 已完成：{列出完成的任务}
-
-等待决策：下一步方向
-
-选项：
-A. 发布新版本
-B. 规划下一个版本（v3.XX.0）
-C. 执行长期任务（UI 重构、UI/UX 优化等）
-
-默认推荐：B（规划下一个版本）
-
-📧 若 5 分钟内未收到回复，将自动执行选项 B。
-
-请确认或给出其他指示。
-
----
-AI Assistant
-AI Center Secretary"
-```
-
-#### 步骤 3: 记录邮件发送
-
-在 `memories/consensus.md` 中添加：
-
-```markdown
-## 邮件发送记录
-- **时间**: {当前时间}
-- **主题**: [HuluChat] 所有任务完成 - 等待指示
-- **状态**: ✅ 已发送
-- **等待**: Boss 回复或 5 分钟后自动执行
-```
-
-#### 步骤 4: 等待或自动执行
+#### 步骤 3: 等待或自动执行
 
 **如果 5 分钟内收到 Boss 回复**：
 - 按照 Boss 的指示执行
 
 **如果 5 分钟内未收到回复**：
-- **自动执行选项 B：规划下一个版本**
+- **自动执行：规划下一个版本**
 - 使用 `/team` 组建完整 Agent 团队
 - 执行自主决策流程
 
@@ -237,16 +191,7 @@ AI Center Secretary"
 
 - 遇到无法解决的技术问题（记录到 consensus.md 的 Open Questions）
 - 需要 Boss 手动操作（如配置 Cloudflare Secrets）
-
----
-
-## 自动停止条件
-
-以下情况会暂停自动循环，创建 `.auto-loop-paused` 文件：
-
-1. 连续 3 个周期遇到同一个阻塞问题
-2. CI 构建失败且无法自动修复
-3. 发现 P0 级 Bug
+- **发现规划中包含埋点功能** → 立即停止并报告 Boss
 
 ---
 
@@ -257,6 +202,7 @@ AI Center Secretary"
 1. **默认任务**：规划下一个版本（v3.XX.0）
    - 使用 Agent 团队协作
    - 必须咨询 critic-munger
+   - **确保不包含埋点功能**
 
 2. **其他长期任务**（需明确指定）：
    - UI 重构：Tauri + FastAPI
@@ -306,4 +252,5 @@ git add . && git commit -m "message" && git push
 **记住**：
 1. 每个 Phase 完成后**必须发进度邮件给 Boss**
 2. 所有任务完成时**必须发邮件给 Boss**
-3. 不要让 Boss 猜测进度！
+3. **永远不要添加埋点功能**
+4. 不要让 Boss 猜测进度！

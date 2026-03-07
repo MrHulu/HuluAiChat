@@ -60,6 +60,14 @@
     "connectionError": "Connection Error",
     "uploadImage": "Upload image",
     "removeImage": "Remove image",
+    "bookmarks": "Bookmarks",
+    "addBookmark": "Add bookmark",
+    "removeBookmark": "Remove bookmark",
+    "bookmarkAdded": "Bookmark added",
+    "bookmarkRemoved": "Bookmark removed",
+    "bookmarkError": "Failed to update bookmark",
+    "bookmarkLoadError": "Failed to load bookmarks",
+    "noBookmarks": "No bookmarks in this chat",
     "voice": {
       "startRecording": "Start voice input",
       "stopRecording": "Stop recording",
@@ -317,5 +325,22 @@
       "tip2": "📄 Upload a document to chat with it",
       "tip3": "⚙️ Configure API settings in Settings"
     }
+  },
+  "tags": {
+    "addTag": "Add tag...",
+    "tag": "Tag",
+    "selected": "selected",
+    "filterByTag": "Filter by tag",
+    "clear": "Clear",
+    "maxTagsReached": "Maximum 5 tags per session"
+  },
+  "bookmarks": {
+    "title": "Bookmarks",
+    "add": "Add bookmark",
+    "remove": "Remove bookmark",
+    "note": "Note",
+    "notePlaceholder": "Add a note...",
+    "noBookmarks": "No bookmarks yet",
+    "bookmarked": "Bookmarked"
   }
 }
