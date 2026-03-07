@@ -6,7 +6,7 @@ import { useState, useRef, useEffect, useCallback, memo, type KeyboardEvent } fr
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { LayoutTemplate, Send, ImagePlus, X } from "lucide-react";
+import { LayoutTemplate, Send, ImagePlus, X, Loader2 } from "lucide-react";
 import {
   PromptTemplateSelector,
 } from "@/components/templates/PromptTemplateSelector";
@@ -23,12 +23,14 @@ export interface ChatInputProps {
   disabled?: boolean;
   placeholder?: string;
   onTemplateSelect?: (content: string) => void;
+  isLoading?: boolean;
 }
 
 export const ChatInput = memo(function ChatInput({
   onSend,
   disabled = false,
   placeholder,
+  isLoading = false,
 }: ChatInputProps) {
   const { t, i18n } = useTranslation();
   const [value, setValue] = useState("");
@@ -36,6 +38,7 @@ export const ChatInput = memo(function ChatInput({
   const [images, setImages] = useState<ImageContent[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const prevDisabledRef = useRef<boolean | undefined>(undefined);
 
   const actualPlaceholder = placeholder || t("chat.typeMessage");
 
@@ -47,6 +50,19 @@ export const ChatInput = memo(function ChatInput({
       textarea.style.height = `${Math.min(textarea.scrollHeight, MAX_TEXTAREA_HEIGHT)}px`;
     }
   }, [value]);
+
+  // 自动聚焦：初始渲染时或 disabled 从 true 变为 false 时聚焦
+  useEffect(() => {
+    const shouldFocus = !disabled && (prevDisabledRef.current === true || prevDisabledRef.current === undefined);
+    prevDisabledRef.current = disabled;
+
+    if (shouldFocus && textareaRef.current) {
+      // 使用 setTimeout 确保 DOM 更新完成
+      setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 0);
+    }
+  }, [disabled]);
 
   // 处理图片文件选择
   const handleImageSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -92,9 +108,10 @@ export const ChatInput = memo(function ChatInput({
       onSend(value.trim(), images.length > 0 ? images : undefined);
       setValue("");
       setImages([]);
-      // 重置高度
+      // 重置高度并保持聚焦
       if (textareaRef.current) {
         textareaRef.current.style.height = "auto";
+        textareaRef.current.focus();
       }
     }
   }, [value, images, disabled, onSend]);
@@ -227,12 +244,22 @@ export const ChatInput = memo(function ChatInput({
         </div>
         <Button
           onClick={handleSend}
-          disabled={disabled || (!value.trim() && images.length === 0)}
+          disabled={disabled || isLoading || (!value.trim() && images.length === 0)}
+          data-loading={isLoading || undefined}
           className="rounded-xl px-6 h-12"
           aria-label={t("chat.send")}
         >
-          <span className="mr-2">{t("chat.send")}</span>
-          <Send className="w-4 h-4" />
+          {isLoading ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span className="mr-2">{t("chat.sending")}</span>
+            </>
+          ) : (
+            <>
+              <span className="mr-2">{t("chat.send")}</span>
+              <Send className="w-4 h-4" />
+            </>
+          )}
         </Button>
       </div>
       <div className="text-xs text-muted-foreground mt-2 text-center" aria-live="polite">
