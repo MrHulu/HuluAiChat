@@ -272,7 +272,7 @@ export function SessionList({
           className="p-2 rounded-lg hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
           aria-label={t("sidebar.expandSidebar")}
         >
-          <PanelLeft className="w-5 h-5" />
+          <PanelLeft className="w-5 h-5" aria-hidden="true" />
         </button>
 
         <button
@@ -280,7 +280,7 @@ export function SessionList({
           className="mt-4 p-2 rounded-lg hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
           aria-label={t("sidebar.newChat")}
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="w-5 h-5" aria-hidden="true" />
         </button>
       </div>
     );
@@ -304,7 +304,7 @@ export function SessionList({
             className="p-1.5 rounded-md hover:bg-muted transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
             aria-label={t("sidebar.collapseSidebar")}
           >
-            <PanelLeftClose className="w-4 h-4" />
+            <PanelLeftClose className="w-4 h-4" aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -316,7 +316,7 @@ export function SessionList({
           className="w-full justify-start gap-2"
           variant="outline"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-4 h-4" aria-hidden="true" />
           {t("sidebar.newChat")}
         </Button>
       </div>
@@ -339,7 +339,7 @@ export function SessionList({
               className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               aria-label={t("common.clear")}
             >
-              <X className="w-3 h-3" />
+              <X className="w-3 h-3" aria-hidden="true" />
             </button>
           )}
         </div>
@@ -440,7 +440,7 @@ export function SessionList({
                   className="p-1 rounded-md hover:bg-background/50 transition-all text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   aria-label={t("sidebar.newFolder")}
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-3.5 h-3.5" aria-hidden="true" />
                 </button>
               </div>
 

@@ -38,9 +38,9 @@ export interface ModelSelectorProps {
 // Provider 图标组件
 function ProviderIcon({ provider }: { provider: ModelProvider }) {
   return provider === "ollama" ? (
-    <Server className="h-3 w-3 text-muted-foreground" />
+    <Server className="h-3 w-3 text-muted-foreground" aria-hidden="true" />
   ) : (
-    <Cloud className="h-3 w-3 text-muted-foreground" />
+    <Cloud className="h-3 w-3 text-muted-foreground" aria-hidden="true" />
   );
 }
 
@@ -65,7 +65,7 @@ export function ModelSelector({
   if (isLoading) {
     return (
       <Button variant="outline" size="sm" disabled className="gap-2">
-        <Loader2 className="h-3 w-3 animate-spin" />
+        <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
         <span>Loading...</span>
       </Button>
     );
@@ -98,7 +98,7 @@ export function ModelSelector({
           <>
             {showGroupHeaders && (
               <DropdownMenuLabel className="flex items-center gap-2 text-xs">
-                <Cloud className="h-3 w-3" />
+                <Cloud className="h-3 w-3" aria-hidden="true" />
                 {t("modelSelector.cloudModels")}
               </DropdownMenuLabel>
             )}
@@ -119,7 +119,7 @@ export function ModelSelector({
                       {model.description}
                     </span>
                   </div>
-                  {value === model.id && <Check className="h-4 w-4 shrink-0 animate-scale-in" />}
+                  {value === model.id && <Check className="h-4 w-4 shrink-0 animate-scale-in" aria-hidden="true" />}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuGroup>
@@ -134,7 +134,7 @@ export function ModelSelector({
           <>
             {showGroupHeaders && (
               <DropdownMenuLabel className="flex items-center gap-2 text-xs">
-                <Server className="h-3 w-3" />
+                <Server className="h-3 w-3" aria-hidden="true" />
                 {t("modelSelector.localModels")}
               </DropdownMenuLabel>
             )}
@@ -156,7 +156,7 @@ export function ModelSelector({
                         {model.description}
                       </span>
                     </div>
-                    {value === model.id && <Check className="h-4 w-4 shrink-0 animate-scale-in" />}
+                    {value === model.id && <Check className="h-4 w-4 shrink-0 animate-scale-in" aria-hidden="true" />}
                   </DropdownMenuItem>
                 ))
               ) : (
