@@ -1,7 +1,7 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-08 - Cycle #124
+2026-03-08 - Cycle #125
 
 ## Current Phase
 🎨 **UI/UX 美化优化** - 持续进行
@@ -22,20 +22,23 @@
 ### 状态
 - **类型**：长期任务
 - **状态**：持续进行
-- **方向**：界面美化、交互优化、视觉一致性
+- **方向**：界面美化、交互优化、视觉一致性、可访问性
 
 ### 已完成优化
 - ✅ Cycle #104: 统一圆角规范 + hover 效果
 - ✅ Cycle #105: 统一间距规范 + 视觉层次
 - ✅ Cycle #106: 消息气泡样式优化
-- ✅ Cycle #120-123: 可访问性优化（对话框、表单、加载组件等）
-- ✅ Cycle #124: 更多可访问性优化（ThemeToggle、UpdateNotification、WelcomeDialog、PluginSettings）
+- ✅ Cycle #121: 表单组件可访问性优化
+- ✅ Cycle #122: 加载/模型选择器/Ollama状态组件可访问性优化
+- ✅ Cycle #123: 对话框组件可访问性优化
+- ✅ Cycle #124: 更多组件可访问性优化
+- ✅ Cycle #125: 侧边栏和聊天核心组件可访问性优化
 
 ### 下一步优化方向
+- 更多组件可访问性优化
 - 深色模式细节优化
 - 组件样式统一
 - 加载动画优化
-- 过渡效果优化
 
 ---
 
@@ -44,7 +47,7 @@
 - Latest Release: **v3.51.0** (2026-03-07)
 - Current Task: **TASK-122 - UI/UX 美化优化**
 - Tech Stack: Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui
-- Tests: ✅ 700 passed (33 files)
+- Tests: ✅ 699 passed (33 files)
 - MAU: ~100 (6 个版本无变化)
 
 ---
@@ -69,4 +72,4 @@
 ---
 
 ## 循环计数
-当前周期: 124
+当前周期: 125

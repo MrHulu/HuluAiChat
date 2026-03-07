@@ -96,13 +96,16 @@ export function SessionItem({
 
   return (
     <div
-      role="button"
-      tabIndex={0}
-      onClick={onClick}
-      onKeyDown={handleKeyDown}
-      aria-label={t("sessionItem.selectSession", { title: session.title || t("sessionItem.newChat") })}
-      aria-current={isActive ? "true" : undefined}
-      className={cn(
+      role="listitem"
+    >
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={onClick}
+        onKeyDown={handleKeyDown}
+        aria-label={t("sessionItem.selectSession", { title: session.title || t("sessionItem.newChat") })}
+        aria-current={isActive ? "true" : undefined}
+        className={cn(
         "group flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer",
         "transition-all duration-200 ease-out",
         "list-item-enter",
@@ -122,7 +125,12 @@ export function SessionItem({
         </div>
         {/* Tags */}
         {tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-1" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="flex flex-wrap gap-1 mt-1"
+            onClick={(e) => e.stopPropagation()}
+            role="group"
+            aria-label={t("sessionItem.tags")}
+          >
             {tags.slice(0, 3).map((tag) => (
               <SessionTag
                 key={tag}
@@ -132,7 +140,9 @@ export function SessionItem({
               />
             ))}
             {tags.length > 3 && (
-              <span className="text-[10px] text-muted-foreground">+{tags.length - 3}</span>
+              <span className="text-[10px] text-muted-foreground" aria-label={t("sessionItem.moreTags", { count: tags.length - 3 })}>
+                +{tags.length - 3}
+              </span>
             )}
           </div>
         )}
@@ -152,10 +162,11 @@ export function SessionItem({
                 "p-1.5 rounded-md",
                 "text-muted-foreground hover:text-primary hover:bg-primary/10",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                "focus-visible:opacity-100",
                 isExporting && "opacity-50 cursor-wait"
               )}
             >
-              <Download className="w-3.5 h-3.5" />
+              <Download className="w-3.5 h-3.5" aria-hidden="true" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
@@ -191,10 +202,11 @@ export function SessionItem({
                   "opacity-0 group-hover:opacity-100 transition-all duration-150",
                   "p-1.5 rounded-md",
                   "text-muted-foreground hover:text-primary hover:bg-primary/10",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  "focus-visible:opacity-100"
                 )}
               >
-                <FolderOpen className="w-3.5 h-3.5" />
+                <FolderOpen className="w-3.5 h-3.5" aria-hidden="true" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
@@ -231,12 +243,14 @@ export function SessionItem({
             "opacity-0 group-hover:opacity-100 transition-all duration-150",
             "p-1.5 rounded-md",
             "text-muted-foreground hover:text-destructive hover:bg-destructive/10",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+            "focus-visible:opacity-100"
           )}
         >
-          <Trash2 className="w-3.5 h-3.5" />
+          <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
         </button>
       </div>
     </div>
+  </div>
   );
 }

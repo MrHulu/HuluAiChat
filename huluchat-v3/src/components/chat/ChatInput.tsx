@@ -159,21 +159,25 @@ export const ChatInput = memo(function ChatInput({
     <div className="border-t border-border bg-background p-4" role="region" aria-label={t("chat.typeMessage")}>
       {/* Image Preview Area */}
       {images.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-3 max-w-4xl mx-auto animate-fade-in">
+        <div
+          className="flex flex-wrap gap-2 mb-3 max-w-4xl mx-auto animate-fade-in"
+          role="group"
+          aria-label={t("chat.uploadedImages")}
+        >
           {images.map((image, index) => (
             <div key={index} className="relative group list-item-enter">
               <img
                 src={image.image_url.url}
-                alt={`Upload ${index + 1}`}
+                alt={t("chat.uploadedImage", { index: index + 1 })}
                 className="w-16 h-16 object-cover rounded-lg border border-border"
               />
               <button
                 type="button"
                 onClick={() => handleRemoveImage(index)}
-                className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 active:scale-90"
+                className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity duration-150 active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
                 aria-label={t("chat.removeImage")}
               >
-                <X className="w-3 h-3" />
+                <X className="w-3 h-3" aria-hidden="true" />
               </button>
             </div>
           ))}
@@ -188,10 +192,9 @@ export const ChatInput = memo(function ChatInput({
           onClick={handleOpenTemplateSelector}
           disabled={disabled}
           className="px-3 h-12"
-          title={t("chat.selectTemplate")}
           aria-label={t("chat.selectTemplate")}
         >
-          <LayoutTemplate className="w-[18px] h-[18px]" />
+          <LayoutTemplate className="w-[18px] h-[18px]" aria-hidden="true" />
         </Button>
 
         {/* Image Upload Button */}
@@ -201,10 +204,9 @@ export const ChatInput = memo(function ChatInput({
           onClick={handleOpenImagePicker}
           disabled={disabled || images.length >= MAX_IMAGES}
           className="px-3 h-12"
-          title={t("chat.uploadImage")}
           aria-label={t("chat.uploadImage")}
         >
-          <ImagePlus className="w-[18px] h-[18px]" />
+          <ImagePlus className="w-[18px] h-[18px]" aria-hidden="true" />
         </Button>
         <input
           ref={fileInputRef}
@@ -247,17 +249,17 @@ export const ChatInput = memo(function ChatInput({
           disabled={disabled || isLoading || (!value.trim() && images.length === 0)}
           data-loading={isLoading || undefined}
           className="px-6 h-12"
-          aria-label={t("chat.send")}
+          aria-label={isLoading ? t("chat.sending") : t("chat.send")}
         >
           {isLoading ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
               <span className="mr-2">{t("chat.sending")}</span>
             </>
           ) : (
             <>
               <span className="mr-2">{t("chat.send")}</span>
-              <Send className="w-4 h-4" />
+              <Send className="w-4 h-4" aria-hidden="true" />
             </>
           )}
         </Button>

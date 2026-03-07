@@ -424,23 +424,23 @@ describe("App", () => {
     it("should toggle sidebar collapse state", () => {
       render(<App />);
 
-      const collapseButton = screen.getByTitle("Collapse sidebar");
+      const collapseButton = screen.getByLabelText("Collapse sidebar");
       fireEvent.click(collapseButton);
 
       // Sidebar should be collapsed - the button title changes to "Expand"
-      expect(screen.getByTitle("Expand sidebar")).toBeInTheDocument();
+      expect(screen.getByLabelText("Expand sidebar")).toBeInTheDocument();
     });
 
     it("should expand collapsed sidebar", () => {
       render(<App />);
 
       // First collapse
-      fireEvent.click(screen.getByTitle("Collapse sidebar"));
+      fireEvent.click(screen.getByLabelText("Collapse sidebar"));
 
       // Then expand
-      fireEvent.click(screen.getByTitle("Expand sidebar"));
+      fireEvent.click(screen.getByLabelText("Expand sidebar"));
 
-      expect(screen.getByTitle("Collapse sidebar")).toBeInTheDocument();
+      expect(screen.getByLabelText("Collapse sidebar")).toBeInTheDocument();
     });
   });
 
@@ -905,15 +905,15 @@ describe("App", () => {
     it("should toggle sidebar via keyboard shortcut", async () => {
       render(<App />);
 
-      const collapseButton = screen.getByTitle("Collapse sidebar");
+      const collapseButton = screen.getByLabelText("Collapse sidebar");
 
       // Click to collapse
       fireEvent.click(collapseButton);
-      expect(screen.getByTitle("Expand sidebar")).toBeInTheDocument();
+      expect(screen.getByLabelText("Expand sidebar")).toBeInTheDocument();
 
       // Click to expand
-      fireEvent.click(screen.getByTitle("Expand sidebar"));
-      expect(screen.getByTitle("Collapse sidebar")).toBeInTheDocument();
+      fireEvent.click(screen.getByLabelText("Expand sidebar"));
+      expect(screen.getByLabelText("Collapse sidebar")).toBeInTheDocument();
     });
   });
 
@@ -925,7 +925,7 @@ describe("App", () => {
       render(<App />);
 
       // Click "New folder" button
-      const newFolderButton = screen.getByTitle("New folder");
+      const newFolderButton = screen.getByLabelText("New folder");
       fireEvent.click(newFolderButton);
 
       // Find the input and type folder name
@@ -946,7 +946,7 @@ describe("App", () => {
 
       render(<App />);
 
-      const newFolderButton = screen.getByTitle("New folder");
+      const newFolderButton = screen.getByLabelText("New folder");
       fireEvent.click(newFolderButton);
 
       const folderInput = screen.getByPlaceholderText("Folder name...");
@@ -966,7 +966,7 @@ describe("App", () => {
 
       render(<App />);
 
-      const newFolderButton = screen.getByTitle("New folder");
+      const newFolderButton = screen.getByLabelText("New folder");
       fireEvent.click(newFolderButton);
 
       const folderInput = screen.getByPlaceholderText("Folder name...");
@@ -1131,14 +1131,14 @@ describe("App", () => {
       });
 
       // Sidebar should be collapsed
-      expect(screen.getByTitle("Expand sidebar")).toBeInTheDocument();
+      expect(screen.getByLabelText("Expand sidebar")).toBeInTheDocument();
 
       // Call again to expand
       await act(async () => {
         callbacks.onToggleSidebar();
       });
 
-      expect(screen.getByTitle("Collapse sidebar")).toBeInTheDocument();
+      expect(screen.getByLabelText("Collapse sidebar")).toBeInTheDocument();
     });
 
     it("should open settings via keyboard shortcut callback", async () => {

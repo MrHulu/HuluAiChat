@@ -150,7 +150,9 @@ describe("SessionItem", () => {
       />
     );
 
-    expect(container.firstChild).toHaveClass("bg-accent");
+    // Get the button element (nested due to listitem wrapper)
+    const buttonElement = container.querySelector('[role="button"]');
+    expect(buttonElement).toHaveClass("bg-accent");
   });
 
   it("should apply inactive styling when isActive is false", () => {
@@ -163,8 +165,10 @@ describe("SessionItem", () => {
       />
     );
 
-    expect(container.firstChild).not.toHaveClass("bg-accent");
-    expect(container.firstChild).toHaveClass("hover:bg-muted/50");
+    // Get the button element (nested due to listitem wrapper)
+    const buttonElement = container.querySelector('[role="button"]');
+    expect(buttonElement).not.toHaveClass("bg-accent");
+    expect(buttonElement).toHaveClass("hover:bg-muted/50");
   });
 
   it("should call onDelete when delete button is clicked", async () => {
