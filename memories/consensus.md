@@ -1,95 +1,95 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-07 - Cycle #89
+2026-03-07 - Cycle #90
 
 ## Current Phase
-⏳ **v3.51.0 发布完成** - 等待 Boss 下一步指示
+⏳ **v3.52.0 规划完成** - 增长验证版本 - 等待 Boss 创建 Cloudflare Pages 项目
 
 ---
 
-## v3.51.0 进度 (Cycle #89) ✅ 已发布
+## v3.52.0 决策 (Cycle #90)
 
-### 功能: 书签导出
-- **Backend**: GET /bookmarks/export/json, GET /bookmarks/export/markdown
-- **Frontend**: BookmarkPanel 添加导出下拉菜单
-- **i18n**: EN/ZH 翻译
+### 决策：增长验证版本
 
-### 发布状态
-- ✅ PR #181 合并（书签导出功能）
-- ✅ PR #180 合并（官网部署修复）
-- ✅ PR #182 合并（版本更新）
-- ✅ GitHub Release v3.51.0 已创建
-- ✅ https://github.com/MrHulu/HuluAiChat/releases/tag/v3.51.0
-
----
-
-## CEO 决策 (Cycle #151)
-
-### 决策内容
-**v3.51.0 方向：B. 书签导出（采纳 CEO Bezos 建议）**
+**CEO Bezos 和 Critic Munger 共识**：
+- 暂停功能开发（6 个版本 MAU 无增长）
+- 专注增长渠道修复
+- v3.52.0 = "增长验证版本"，不是功能版本
 
 ### 决策理由
-1. **创造可分享内容**: 用户可以导出书签到 Markdown/JSON
-2. **病毒传播潜力**: 导出文件携带 HuluChat 品牌
-3. **飞轮效应**: 更多导出 = 更多曝光 = 更多用户
-4. **可逆决策**: 2-3 天开发，风险低
 
-### Critic 反对意见
-- Critic Munger 建议停止功能开发，专注增长
-- 理由：6 个版本 MAU 无变化（~100）
-- 但基础设施问题需要 Boss 参与，开发期间可保持迭代
+| 分析 | CEO Bezos | Critic Munger |
+|------|-----------|---------------|
+| 核心问题 | 功能开发无增长 | 增长渠道阻塞 |
+| 建议 | Linux 支持作为增长策略 | 先修复增长渠道 |
+| 共识 | 暂停功能开发 ✅ | 暂停功能开发 ✅ |
+
+### 关键发现
+
+**官网部署失败**：
+- Cloudflare Pages 返回：`Project not found`
+- 原因：`huluchat-website` 项目不存在
+- 解决：需要 Boss 手动创建 Cloudflare Pages 项目
+
+### v3.52.0 任务
+
+| 任务 | 优先级 | 状态 |
+|------|--------|------|
+| TASK-123: 修复官网部署 | P0 | ⏳ 等待 Boss 创建 Cloudflare Pages |
+| TASK-124: GitHub 指标 Dashboard | P1 | 待开始（可自主执行） |
+| TASK-125: 用户访谈计划 | P1 | 待开始（可自主执行） |
+| TASK-126: 官网 SEO 优化 | P2 | 依赖 TASK-123 |
 
 ### 详细决策文档
-`docs/ceo/v3.51.0-decision.md`
+- CEO: `docs/ceo/v3.52.0-decision.md`
+- Critic Pre-Mortem: `docs/critic/v3.52.0-premortem.md`
 
 ---
 
 ## 阻塞问题
-**1. 官网部署 - 已修复（等待验证）**
-- PR #180 添加了明确的 projectName
-- Cloudflare Pages 可能仍需 Boss 手动创建项目
+
+**1. 官网部署 - ⚠️ 需要 Boss 操作**
+- Cloudflare Pages 项目不存在
+- 需要 Boss 在 Cloudflare Dashboard 创建 `huluchat-website` 项目
+- 邮件已发送给 Boss (Cycle #90)
 
 **2. Product Hunt 发布素材**
 - 需要 Boss 手动准备：应用截图、演示视频
 
-**3. 邮件发送 - SMTP Secrets 未配置** ⚠️ **已解决**
-- 本地 settings.json 已配置 SMTP
-- 邮件可以正常发送
-
 ---
 
-## Current Task (Cycle #89)
-**✅ v3.51.0 已发布** - 等待 Boss 下一步指示
+## Current Task (Cycle #90)
+**v3.52.0 规划完成** - 等待 Boss 创建 Cloudflare Pages 项目
 
 ### 任务状态更新
 | 任务 | 状态 | 说明 |
 |------|------|------|
+| TASK-123 | ⏸️ 等待 | 官网部署 - 需要 Boss 创建 Cloudflare Pages |
 | TASK-116 | ⏸️ 等待 | Product Hunt 素材需 Boss 准备 |
-| TASK-120 | ❌ 已取消 | Boss 决定不做埋点（隐私优先） |
-| TASK-121 | ✅ 已完成 | v3.50.0 会话标签/书签功能 |
-| TASK-122 | ✅ 已完成 | v3.51.0 书签导出功能 |
+| TASK-124 | 📋 待开始 | GitHub 指标 Dashboard |
+| TASK-125 | 📋 待开始 | 用户访谈计划 |
+| TASK-126 | 📋 待开始 | 官网 SEO 优化 |
 
 ---
 
 ## Next Action
-1. ✅ CEO 决策 - 书签导出功能
-2. ✅ 后端 API 开发
-3. ✅ 前端 UI 开发
-4. ✅ i18n 翻译
-5. ✅ 发布 v3.51.0
-6. ✅ 邮件已发送给 Boss（SMTP 配置成功）
-7. ⏳ 等待 Boss 下一步指示
+1. ✅ CEO + Critic 共同决策 - v3.52.0 增长验证版本
+2. ✅ 诊断官网部署失败原因
+3. ✅ 邮件发送给 Boss（请求创建 Cloudflare Pages 项目）
+4. ⏳ 等待 Boss 操作
+5. 📋 可并行：GitHub 指标 Dashboard、用户访谈计划
 
 ---
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
 - Latest Release: **v3.51.0** (2026-03-07)
-- Current Task: **等待下一步指示**
+- Current Task: **v3.52.0 增长验证版本**
 - Tech Stack: Tauri 2.0, React 19, TypeScript, FastAPI, Python 3.14
 - Tests: ✅ 686 passed (32 files)
-- Website: ⏳ 等待 Cloudflare 验证
+- Website: ❌ 部署失败 - 等待 Boss 创建 Cloudflare Pages 项目
+- MAU: ~100 (6 个版本无变化)
 
 ---
 
@@ -108,11 +108,12 @@
 ## 暂缓功能
 | 功能 | 暂缓原因 | 重新评估条件 |
 |------|----------|--------------|
+| 命令面板增强 | v3.52.0 专注增长 | 增长渠道修复后 |
 | RAG 多文档 | 无用户数据验证 | 单文档 RAG 使用率 > 20% |
 | 插件沙箱 | MAU 太低 | MAU > 10 万 |
+| Linux 支持 | v3.52.0 专注增长渠道 | 官网修复后 |
 | MCP 支持 | 生态未成熟 | 用户明确要求 |
 | Agent 能力 | 复杂度高 | 核心功能稳定后 |
-| 命令面板增强 | MVP 范围控制 | v3.52 候选 |
 
 ---
 
@@ -125,12 +126,11 @@
 ---
 
 ## 循环计数
-当前周期: 89
-上次发邮件: 89 (✅ 邮件已发送 - SMTP 配置成功)
+当前周期: 90
+上次发邮件: 90 (✅ 邮件已发送 - 请求 Boss 创建 Cloudflare Pages 项目)
 
 ---
 
 ## 邮件发送记录
+- **Cycle #90**: ✅ 官网部署失败 - 请求 Boss 创建 Cloudflare Pages 项目
 - **Cycle #89**: ✅ v3.51.0 状态汇报 - 邮件已发送
-- **Cycle #151**: 📧 v3.51.0 发布完成 - 待发送（SMTP Secrets 未配置）
-- **Cycle #150**: 📧 v3.50.0 发布完成 - ⚠️ 发送失败 (SMTP Secrets 未配置)

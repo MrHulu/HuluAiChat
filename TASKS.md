@@ -5,7 +5,14 @@
 
 ## 待开始
 <!-- 新任务添加到这里 -->
+- [ ] **TASK-123**: 🔧 修复官网部署 - 创建 Cloudflare Pages 项目（等待 Boss 操作）
 - [ ] **TASK-116**: 🎬 准备 Product Hunt 发布素材（截图、视频）- 等待 Boss
+
+## v3.52.0 计划 - 增长验证版本
+> **决策**: CEO Bezos + Critic Munger 共识 - 暂停功能开发，专注增长
+- [ ] **TASK-124**: 📊 建立 GitHub 指标 Dashboard（Stars, Downloads, Issues）
+- [ ] **TASK-125**: 💬 用户访谈计划（5-10 人，验证 PMF）
+- [ ] **TASK-126**: 📝 官网 SEO 优化（等待 TASK-123 完成）
 
 ## ⚠️ 永久禁止事项（Boss 明确要求）
 - ❌ **禁止功能**：用户行为埋点、数据追踪、遥测功能、使用统计
