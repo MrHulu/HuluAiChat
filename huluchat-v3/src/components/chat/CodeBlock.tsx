@@ -75,7 +75,7 @@ export const CodeBlock = memo(function CodeBlock({
       {/* Language badge and copy button */}
       <div className="absolute right-2 top-2 flex items-center gap-2 opacity-0 group-hover/codeblock:opacity-100 transition-opacity">
         {displayLanguage && (
-          <span className="text-xs text-zinc-400 bg-zinc-800 px-2 py-0.5 rounded">
+          <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">
             {displayLanguage}
           </span>
         )}
@@ -83,8 +83,8 @@ export const CodeBlock = memo(function CodeBlock({
           onClick={handleCopy}
           className={cn(
             "p-1.5 rounded-md transition-colors",
-            "bg-zinc-800 hover:bg-zinc-700",
-            copied ? "text-green-400" : "text-zinc-400 hover:text-zinc-200"
+            "bg-muted hover:bg-accent",
+            copied ? "text-primary" : "text-muted-foreground hover:text-foreground"
           )}
           aria-label={copied ? t("chat.codeCopied") : t("chat.copyCode")}
           aria-live="polite"
@@ -93,7 +93,7 @@ export const CodeBlock = memo(function CodeBlock({
           {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
         </button>
       </div>
-      <pre className={cn("!bg-zinc-900 rounded-lg p-3 overflow-x-auto my-2", className)}>
+      <pre className={cn("!bg-muted rounded-lg p-3 overflow-x-auto my-2 border border-border", className)}>
         {children}
       </pre>
     </div>
