@@ -27,10 +27,16 @@
 ### 已完成优化
 - ✅ Cycle #104-106: 统一圆角规范 + hover 效果 + 间距规范
 - ✅ Cycle #135-148: 微交互动画优化 (所有组件)
-- ✅ Cycle #149: 无障碍 (a11y) 改进
+- ✅ Cycle #149: 无障碍 (a11y) 改进 (Phase 1 & 2)
   - MessageItem: aria-hidden on icons, 图片 alt 改进, aria-pressed
   - SettingsDialog: role=status, aria-live, aria-hidden on icons
   - BookmarkButton: aria-hidden on icons
+  - ThemeToggle: aria-hidden on Sun/Moon icons
+  - LanguageSelector: aria-hidden on Globe/Loader2 icons
+  - VoiceInputButton: aria-hidden on Mic/MicOff icons
+  - ModelSelector: aria-hidden on Cloud/Server/Check/Loader2 icons
+  - SessionList: aria-hidden on PanelLeft/Plus/X icons
+  - CodeBlock: aria-hidden on Copy/Check icons
 
 ### 下一步优化方向
 - 继续检查其他组件的 a11y 问题
