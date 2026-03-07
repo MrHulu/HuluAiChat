@@ -1,37 +1,19 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-07 - Cycle #97
+2026-03-07 - Cycle #99
 
 ## Current Phase
-🟢 **TASK-108 已完成** + **PR #144 已合并** ✅
+⚪ **等待用户决策** - 无可自动执行的任务
 
-## What We Did This Cycle (#97)
-- ✅ **TASK-108 完成** - 清理旧架构遗留文件
-  - 删除 51 个文件，共 16,548 行代码
-  - 验证构建通过：typecheck ✅, lint ✅ (0 errors), build ✅
-- ✅ **PR #144 合并** - CI 全部通过
-  - test-backend ✅, test-frontend ✅, build-tauri ✅
+## What We Did This Cycle (#99)
+- 检查任务状态：TASK-105 已完成，TASK-104 需要用户手动配置
+- 无可自动执行的任务，等待用户决策
 
-### 删除清单 (TASK-108)
-| 文件/目录 | 删除原因 |
-|-----------|----------|
-| `main.py` (root) | 旧 Python 入口，已迁移到 `huluchat-v3/backend/` |
-| `HuluChat.spec` | PyInstaller 配置，已改用 Tauri |
-| `monitor.py` | Auto Company 监控脚本 |
-| `AUTO_COMPANY_README.md` | Auto Company 文档 |
-| `openspec/` | 旧设计文档目录 |
-| `.agents/` | 旧 agent 配置目录 |
-| `src/` | 旧 Python 源码目录 |
-
-## Previous Cycle (#96)
-- 🐛 **修复插件存储 BUG** - 插件数据现在会从磁盘正确加载
-- ✅ **本地验证通过** - typecheck ✅, lint ✅ (0 errors), build ✅
-
-## Previous Cycle (#95)
-- ✅ **同步本地 commits** - 发现 15 个未推送的 commits，创建 PR #144
-- ✅ **本地验证通过** - typecheck ✅, lint ✅ (0 errors)
-- 📧 **发送进度邮件** - 已发送
+## Previous Cycle (#98)
+- ✅ **TASK-105 完成** - 性能优化
+  - Rust LTO + Mermaid 懒加载
+  - 初始 JS 从 ~3.5MB 减至 ~1.1MB
 
 ## Plugin System Architecture
 
@@ -66,37 +48,34 @@
 | `code-formatter` | 代码格式化 | Format JSON, Minify JSON, Format Code, Extract Code |
 
 ## Active Projects
-- **HuluChat**: **v3.45.0 已发布** ✅ | 插件系统功能完整 + 5 个示例插件 + 自动更新
-- **Website**: GitHub Actions 已合并 ✅ | 等待 Cloudflare 配置
+- **HuluChat**: **v3.45.0 已发布** ✅ | 性能优化完成
+- **Website**: 等待 Cloudflare secrets 配置 (TASK-104)
 - **Product Hunt**: 等待用户完成截图和视频
 
-## Next Action (Cycle #98)
-**需要用户决策** - 以下任务需要用户手动操作：
+## Next Action (Cycle #100)
+**等待用户决策** - 需要用户指示下一步行动
 
-### 选项 A: Website 部署
-- **方式 1 (推荐)**: Cloudflare Pages Git 集成
-  1. 登录 Cloudflare Dashboard > Pages > Connect to Git
-  2. 选择 MrHulu/HuluAiChat 仓库
-  3. Build command: `cd website && npm install && npm run build`
-  4. Output directory: `website/out`
-- **方式 2**: GitHub Actions (需配置 Secrets)
-  - 在 GitHub Repo > Settings > Secrets 添加 `CLOUDFLARE_API_TOKEN` 和 `CLOUDFLARE_ACCOUNT_ID`
+### 选项 A: 配置 Cloudflare secrets (用户操作)
+- 在 GitHub Repo > Settings > Secrets 添加:
+  - `CLOUDFLARE_API_TOKEN`
+  - `CLOUDFLARE_ACCOUNT_ID`
 
-### 选项 B: Product Hunt 准备
-- 用户需要完成截图 (5 张) 和视频 (60 秒)
+### 选项 B: Product Hunt 准备 (用户操作)
+- 完成截图 (5 张) 和视频 (60 秒)
 
-### 选项 C: 规划下一版本
-- 可以开始讨论 v3.46.0 的新功能
+### 选项 C: 规划 v3.46.0 新功能 (AI 可执行)
+- 开始讨论和规划下一个版本的功能
 
-### 选项 D: 执行 TASK-105
-- 性能优化 - 减少包体积
+### 选项 D: 执行长期任务 (AI 可执行)
+- UI 重构：Tauri + FastAPI
+- UI/UX 优化
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
 - Latest Release: **v3.45.0** (2026-03-07)
-- Current Task: **TASK-108 ✅ 已完成** | PR #144 ✅ 已合并
+- Current Task: **TASK-105 ✅ 已完成**
 - Tech Stack: Tauri 2.0, React 19, TypeScript, FastAPI, Python 3.14
-- CI: ✅ 全部通过
+- CI: ✅ 本地验证通过 (typecheck ✅, lint ✅, build ✅)
 
 ## Release History
 | Version | Date | Highlights |
@@ -112,5 +91,5 @@
 - **轻微**: 无
 
 ## 循环计数
-当前周期: 97
+当前周期: 99
 上次发邮件: 95
