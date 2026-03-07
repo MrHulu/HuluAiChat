@@ -122,7 +122,7 @@ export function BookmarkPanel({
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2 border-b border-border">
         <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-          <Bookmark className="w-4 h-4 text-primary" />
+          <Bookmark className="w-4 h-4 text-primary" aria-hidden="true" />
           <span>{t("chat.bookmarks")}</span>
           <span className="text-xs text-muted-foreground">({bookmarks.length})</span>
         </div>
@@ -137,16 +137,16 @@ export function BookmarkPanel({
               disabled={isExporting || bookmarks.length === 0}
               aria-label={t("chat.exportBookmarks")}
             >
-              <Download className="h-3 w-3" />
+              <Download className="h-3 w-3" aria-hidden="true" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={handleExportJSON}>
-              <FileJson className="h-4 w-4 mr-2" />
+              <FileJson className="h-4 w-4 mr-2" aria-hidden="true" />
               {t("chat.exportJSON")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleExportMarkdown}>
-              <FileText className="h-4 w-4 mr-2" />
+              <FileText className="h-4 w-4 mr-2" aria-hidden="true" />
               {t("chat.exportMarkdown")}
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -187,6 +187,7 @@ export function BookmarkPanel({
                   ? "text-primary"
                   : "text-muted-foreground"
               )}
+              aria-hidden="true"
             />
 
             {/* Content */}
@@ -203,7 +204,7 @@ export function BookmarkPanel({
 
             {/* Actions */}
             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-              <ChevronRight className="w-3 h-3 text-muted-foreground" />
+              <ChevronRight className="w-3 h-3 text-muted-foreground" aria-hidden="true" />
               <button
                 onClick={(e) => handleDelete(bookmark.id, e)}
                 className={cn(
@@ -214,7 +215,7 @@ export function BookmarkPanel({
                 )}
                 aria-label={t("chat.removeBookmark")}
               >
-                <X className="w-3 h-3" />
+                <X className="w-3 h-3" aria-hidden="true" />
               </button>
             </div>
           </div>

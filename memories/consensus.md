@@ -1,7 +1,7 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-08 - Cycle #149
+2026-03-08 - Cycle #150
 
 ## Current Phase
 🎨 **UI/UX 美化优化** - 持续进行
@@ -37,6 +37,10 @@
   - ModelSelector: aria-hidden on Cloud/Server/Check/Loader2 icons
   - SessionList: aria-hidden on PanelLeft/Plus/X icons
   - CodeBlock: aria-hidden on Copy/Check icons
+- ✅ Cycle #150: 无障碍 (a11y) 改进 (Phase 3)
+  - ChatInput: aria-hidden on LayoutTemplate icon
+  - BookmarkPanel: aria-hidden on Bookmark, Download, MessageSquare, ChevronRight, X, FileJson, FileText icons
+  - SessionItem: aria-hidden on FileText, ChevronLeft, FolderOpen, Check icons in DropdownMenu
 
 ### 下一步优化方向
 - 继续检查其他组件的 a11y 问题
@@ -76,4 +80,4 @@
 ---
 
 ## 循环计数
-当前周期: 149
+当前周期: 150
