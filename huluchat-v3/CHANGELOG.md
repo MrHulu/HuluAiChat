@@ -4,6 +4,34 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [3.48.0] - 2026-03-07
+
+### Added
+- **Welcome Guide System**: First-time user onboarding experience
+  - 3-step interactive welcome dialog
+  - Introduces core features: AI Chat, RAG, and Plugins
+  - "Skip" and "Get Started" options
+  - Only shown once (stored in localStorage)
+  - Prepared for Product Hunt launch
+
+### Components
+- `WelcomeDialog`: Interactive welcome guide component
+  - Step indicator with progress dots
+  - Step navigation (Next/Skip)
+  - Completion callback for tracking
+
+### i18n
+- Added welcome translations for EN/ZH:
+  - `welcome.step1.title/description`: Welcome message
+  - `welcome.step2.title/description`: RAG feature introduction
+  - `welcome.step3.title/description`: Plugin system introduction
+  - `welcome.skip/next/getStarted`: Navigation buttons
+
+### Technical
+- Tests: WelcomeDialog unit tests with mocked i18n
+- localStorage key: `huluchat-welcome-shown`
+- Version bump to 3.48.0
+
 ## [3.47.0] - 2026-03-07
 
 ### Improved
