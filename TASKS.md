@@ -2,11 +2,14 @@
 
 ## 进行中
 <!-- 当前正在处理的任务 -->
-- 无
+- [ ] TASK-104: 官网部署配置（Cloudflare secrets）
+  - ⚠️ **阻塞**: 等待 Boss 配置 GitHub Secrets
+  - 需要配置: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`
+  - 邮件已发送: 2026-03-07 (Cycle #117)
 
 ## 待开始
 <!-- 新任务添加到这里 -->
-- [ ] TASK-104: 官网部署配置（Cloudflare secrets）
+- 无
 
 ## 已完成
 - [x] **TASK-110**: 💻 开发 v3.46.0 - DeepSeek 默认模型 + RAG 单文档对话 ✅ 2026-03-07
