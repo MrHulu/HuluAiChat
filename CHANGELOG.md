@@ -2,6 +2,49 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [3.50.0] - 2026-03-07
+
+### ✨ Features
+
+- **Session Tags**: Organize chat sessions with custom tags
+  - Add/remove tags from sessions
+  - Filter sessions by tags
+  - Tag input with autocomplete suggestions
+  - Visual tag display on session items
+  - Full i18n support (English/Chinese)
+
+- **Message Bookmarks**: Mark important messages for quick access
+  - Bookmark button on message hover
+  - Dedicated bookmark panel (toggle with toolbar button)
+  - Click to jump to bookmarked message with highlight effect
+  - Auto-scroll to target message in long conversations
+  - Full i18n support (English/Chinese)
+
+### 🔧 Technical Details
+
+- **Database Models**:
+  - `SessionTagModel`: Session tagging support
+  - `MessageBookmarkModel`: Message bookmark support
+
+- **Backend APIs**:
+  - Tag CRUD operations
+  - Bookmark CRUD operations
+  - Filter sessions by tags
+  - List bookmarks by session
+
+- **Frontend Components**:
+  - `SessionTag`: Tag display component
+  - `TagInput`: Tag input with suggestions
+  - `TagFilter`: Tag-based filter UI
+  - `BookmarkButton`: Message bookmark toggle
+  - `BookmarkPanel`: Bookmark list panel
+
+### 🧪 Testing
+
+- Frontend: 686 tests passed (32 files)
+- TypeScript check passed
+- ESLint passed (0 errors)
+
 ## [3.49.0] - 2026-03-07
 
 ### ✨ Features
