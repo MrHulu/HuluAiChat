@@ -11,6 +11,10 @@ English | [中文](README.md)
 
 ---
 
+> 🎤 **User Interview Recruitment** - Help us improve HuluChat! [Join Interview](https://github.com/MrHulu/HuluAiChat/issues/190) 🙏
+
+---
+
 ## ✨ Features
 
 ### 🤖 Multi-Model Support
