@@ -43,7 +43,7 @@ describe("ChatInput", () => {
     const sendButton = screen.getByRole("button", { name: /send/i });
     await user.click(sendButton);
 
-    expect(mockOnSend).toHaveBeenCalledWith("Hello, world!");
+    expect(mockOnSend).toHaveBeenCalledWith("Hello, world!", undefined);
   });
 
   it("should clear input after sending", async () => {
@@ -118,7 +118,7 @@ describe("ChatInput", () => {
     const input = screen.getByPlaceholderText("Type a message...");
     await user.type(input, "Test message{enter}");
 
-    expect(mockOnSend).toHaveBeenCalledWith("Test message");
+    expect(mockOnSend).toHaveBeenCalledWith("Test message", undefined);
   });
 
   it("should not send message on Shift+Enter", async () => {
@@ -180,7 +180,7 @@ describe("ChatInput", () => {
     const input = screen.getByPlaceholderText("Type a message...");
     await user.type(input, "Line 1{Shift>}{enter}{/Shift}Line 2{enter}");
 
-    expect(mockOnSend).toHaveBeenCalledWith("Line 1\nLine 2");
+    expect(mockOnSend).toHaveBeenCalledWith("Line 1\nLine 2", undefined);
   });
 
   it("should handle special characters in input", async () => {
@@ -190,7 +190,7 @@ describe("ChatInput", () => {
     const input = screen.getByPlaceholderText("Type a message...");
     await user.type(input, "Hello <world> & 'friends'{enter}");
 
-    expect(mockOnSend).toHaveBeenCalledWith("Hello <world> & 'friends'");
+    expect(mockOnSend).toHaveBeenCalledWith("Hello <world> & 'friends'", undefined);
   });
 
   it("should handle unicode characters in input", async () => {
@@ -200,6 +200,6 @@ describe("ChatInput", () => {
     const input = screen.getByPlaceholderText("Type a message...");
     await user.type(input, "你好世界 🌍 مرحبا{enter}");
 
-    expect(mockOnSend).toHaveBeenCalledWith("你好世界 🌍 مرحبا");
+    expect(mockOnSend).toHaveBeenCalledWith("你好世界 🌍 مرحبا", undefined);
   });
 });
