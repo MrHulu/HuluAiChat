@@ -445,6 +445,12 @@ describe("SettingsDialog", () => {
     });
   });
 
+  // Helper function to switch to Ollama tab
+  const switchToOllamaTab = async (user: ReturnType<typeof userEvent.setup>) => {
+    const ollamaTab = screen.getByRole("tab", { name: /ollama/i });
+    await user.click(ollamaTab);
+  };
+
   // ========== Ollama Phase 2: Ollama 配置区块测试 ==========
   describe("Ollama configuration section", () => {
     it("should render Ollama section", async () => {
@@ -454,6 +460,12 @@ describe("SettingsDialog", () => {
       const button = screen.getByRole("button", { name: /settings/i });
       await user.click(button);
 
+      // Switch to Ollama tab first
+      await waitFor(() => {
+        expect(screen.getByRole("tab", { name: /ollama/i })).toBeInTheDocument();
+      });
+      await switchToOllamaTab(user);
+
       await waitFor(() => {
         // Ollama section with Local Models text
         expect(screen.getByText(/ollama.*local|local.*ollama/i)).toBeInTheDocument();
@@ -461,9 +473,16 @@ describe("SettingsDialog", () => {
     });
 
     it("should display Ollama connection status", async () => {
+      const user = userEvent.setup();
       mockGetOllamaStatus.mockResolvedValue(defaultOllamaStatus);
 
       render(<SettingsDialog open={true} onOpenChange={vi.fn()} />);
+
+      // Switch to Ollama tab
+      await waitFor(() => {
+        expect(screen.getByRole("tab", { name: /ollama/i })).toBeInTheDocument();
+      });
+      await switchToOllamaTab(user);
 
       await waitFor(() => {
         // Online or URL
@@ -472,9 +491,16 @@ describe("SettingsDialog", () => {
     });
 
     it("should show Ollama version when available", async () => {
+      const user = userEvent.setup();
       mockGetOllamaStatus.mockResolvedValue(defaultOllamaStatus);
 
       render(<SettingsDialog open={true} onOpenChange={vi.fn()} />);
+
+      // Switch to Ollama tab
+      await waitFor(() => {
+        expect(screen.getByRole("tab", { name: /ollama/i })).toBeInTheDocument();
+      });
+      await switchToOllamaTab(user);
 
       await waitFor(() => {
         expect(screen.getByText(/0\.1\.28/)).toBeInTheDocument();
@@ -482,12 +508,19 @@ describe("SettingsDialog", () => {
     });
 
     it("should show disconnected status when Ollama is not available", async () => {
+      const user = userEvent.setup();
       mockGetOllamaStatus.mockResolvedValue({
         available: false,
         base_url: "http://localhost:11434",
       });
 
       render(<SettingsDialog open={true} onOpenChange={vi.fn()} />);
+
+      // Switch to Ollama tab
+      await waitFor(() => {
+        expect(screen.getByRole("tab", { name: /ollama/i })).toBeInTheDocument();
+      });
+      await switchToOllamaTab(user);
 
       await waitFor(() => {
         // Offline text
@@ -502,6 +535,12 @@ describe("SettingsDialog", () => {
       const button = screen.getByRole("button", { name: /settings/i });
       await user.click(button);
 
+      // Switch to Ollama tab
+      await waitFor(() => {
+        expect(screen.getByRole("tab", { name: /ollama/i })).toBeInTheDocument();
+      });
+      await switchToOllamaTab(user);
+
       // 当前实现没有 URL 输入框，跳过此测试
       await waitFor(() => {
         expect(screen.getByText(/ollama.*local|local.*ollama/i)).toBeInTheDocument();
@@ -514,6 +553,12 @@ describe("SettingsDialog", () => {
 
       const button = screen.getByRole("button", { name: /settings/i });
       await user.click(button);
+
+      // Switch to Ollama tab
+      await waitFor(() => {
+        expect(screen.getByRole("tab", { name: /ollama/i })).toBeInTheDocument();
+      });
+      await switchToOllamaTab(user);
 
       // 当前实现没有 URL 输入框，只验证 Ollama 区域存在
       await waitFor(() => {
@@ -528,6 +573,12 @@ describe("SettingsDialog", () => {
 
         const button = screen.getByRole("button", { name: /settings/i });
         await user.click(button);
+
+        // Switch to Ollama tab
+        await waitFor(() => {
+          expect(screen.getByRole("tab", { name: /ollama/i })).toBeInTheDocument();
+        });
+        await switchToOllamaTab(user);
 
         await waitFor(() => {
           // Test Ollama Connection button
@@ -552,6 +603,12 @@ describe("SettingsDialog", () => {
 
         render(<SettingsDialog open={true} onOpenChange={vi.fn()} />);
 
+        // Switch to Ollama tab
+        await waitFor(() => {
+          expect(screen.getByRole("tab", { name: /ollama/i })).toBeInTheDocument();
+        });
+        await switchToOllamaTab(user);
+
         await waitFor(async () => {
           const ollamaTestButton = screen.getByRole("button", { name: /test.*ollama|ollama.*connection/i });
           await user.click(ollamaTestButton);
@@ -568,6 +625,12 @@ describe("SettingsDialog", () => {
         mockTestOllamaConnection.mockRejectedValue(new Error("Cannot connect to Ollama"));
 
         render(<SettingsDialog open={true} onOpenChange={vi.fn()} />);
+
+        // Switch to Ollama tab
+        await waitFor(() => {
+          expect(screen.getByRole("tab", { name: /ollama/i })).toBeInTheDocument();
+        });
+        await switchToOllamaTab(user);
 
         await waitFor(async () => {
           const ollamaTestButton = screen.getByRole("button", { name: /test.*ollama|ollama.*connection/i });
@@ -591,6 +654,12 @@ describe("SettingsDialog", () => {
 
         render(<SettingsDialog open={true} onOpenChange={vi.fn()} />);
 
+        // Switch to Ollama tab
+        await waitFor(() => {
+          expect(screen.getByRole("tab", { name: /ollama/i })).toBeInTheDocument();
+        });
+        await switchToOllamaTab(user);
+
         await waitFor(async () => {
           const ollamaTestButton = screen.getByRole("button", { name: /test.*ollama|ollama.*connection/i });
           await user.click(ollamaTestButton);
@@ -609,6 +678,7 @@ describe("SettingsDialog", () => {
 
     describe("Ollama models display", () => {
       it("should display installed Ollama models", async () => {
+        const user = userEvent.setup();
         // API 返回 OllamaModel[] 数组格式
         mockGetOllamaModels.mockResolvedValue([
           { name: "llama3", size: 4600000000, modified_at: "2024-01-01" },
@@ -617,6 +687,12 @@ describe("SettingsDialog", () => {
 
         render(<SettingsDialog open={true} onOpenChange={vi.fn()} />);
 
+        // Switch to Ollama tab
+        await waitFor(() => {
+          expect(screen.getByRole("tab", { name: /ollama/i })).toBeInTheDocument();
+        });
+        await switchToOllamaTab(user);
+
         await waitFor(() => {
           expect(screen.getByText(/llama3/i)).toBeInTheDocument();
           expect(screen.getByText(/mistral/i)).toBeInTheDocument();
@@ -624,9 +700,16 @@ describe("SettingsDialog", () => {
       });
 
       it("should show empty state when no Ollama models installed", async () => {
+        const user = userEvent.setup();
         mockGetOllamaModels.mockResolvedValue([]);
 
         render(<SettingsDialog open={true} onOpenChange={vi.fn()} />);
+
+        // Switch to Ollama tab
+        await waitFor(() => {
+          expect(screen.getByRole("tab", { name: /ollama/i })).toBeInTheDocument();
+        });
+        await switchToOllamaTab(user);
 
         // 当没有模型时，不显示模型列表，但显示 Ollama 区域
         await waitFor(() => {
@@ -635,9 +718,16 @@ describe("SettingsDialog", () => {
       });
 
       it("should handle Ollama models API error gracefully", async () => {
+        const user = userEvent.setup();
         mockGetOllamaModels.mockRejectedValue(new Error("Failed to fetch models"));
 
         render(<SettingsDialog open={true} onOpenChange={vi.fn()} />);
+
+        // Switch to Ollama tab
+        await waitFor(() => {
+          expect(screen.getByRole("tab", { name: /ollama/i })).toBeInTheDocument();
+        });
+        await switchToOllamaTab(user);
 
         // 应该不崩溃，显示 Ollama 区域（即使出错）
         await waitFor(() => {
@@ -648,6 +738,12 @@ describe("SettingsDialog", () => {
       it("should refresh Ollama models list when refresh button is clicked", async () => {
         const user = userEvent.setup();
         render(<SettingsDialog open={true} onOpenChange={vi.fn()} />);
+
+        // Switch to Ollama tab
+        await waitFor(() => {
+          expect(screen.getByRole("tab", { name: /ollama/i })).toBeInTheDocument();
+        });
+        await switchToOllamaTab(user);
 
         await waitFor(() => {
           expect(mockGetOllamaModels).toHaveBeenCalledTimes(1);
@@ -670,7 +766,14 @@ describe("SettingsDialog", () => {
 
     describe("Ollama settings persistence", () => {
       it("should display Ollama section in settings", async () => {
+        const user = userEvent.setup();
         render(<SettingsDialog open={true} onOpenChange={vi.fn()} />);
+
+        // Switch to Ollama tab
+        await waitFor(() => {
+          expect(screen.getByRole("tab", { name: /ollama/i })).toBeInTheDocument();
+        });
+        await switchToOllamaTab(user);
 
         await waitFor(() => {
           expect(screen.getByText(/ollama.*local|local.*ollama/i)).toBeInTheDocument();
@@ -689,7 +792,14 @@ describe("SettingsDialog", () => {
 
     describe("Ollama section toggle", () => {
       it("should display Ollama section with status", async () => {
+        const user = userEvent.setup();
         render(<SettingsDialog open={true} onOpenChange={vi.fn()} />);
+
+        // Switch to Ollama tab
+        await waitFor(() => {
+          expect(screen.getByRole("tab", { name: /ollama/i })).toBeInTheDocument();
+        });
+        await switchToOllamaTab(user);
 
         await waitFor(() => {
           // 验证 Ollama 区域存在
@@ -739,14 +849,15 @@ describe("SettingsDialog", () => {
       const button = screen.getByRole("button", { name: /settings/i });
       await user.click(button);
 
+      // Model selector is in API tab (default), not Ollama tab
       await waitFor(async () => {
         const modelSelect = screen.getByRole("combobox");
         await user.click(modelSelect);
       });
 
-      // 验证 Local 模型存在（可能有多个匹配）
+      // 验证 Ollama 模型 Llama 3 存在
       await waitFor(() => {
-        expect(screen.getAllByText(/local|本地/i).length).toBeGreaterThanOrEqual(1);
+        expect(screen.getAllByText("Llama 3").length).toBeGreaterThanOrEqual(1);
       });
     });
   });
