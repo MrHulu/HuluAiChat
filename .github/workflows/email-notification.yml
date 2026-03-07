@@ -1,0 +1,34 @@
+name: Email Notification
+
+on:
+  workflow_dispatch:
+    inputs:
+      to_email:
+        description: 'Recipient email address'
+        required: true
+        type: string
+      subject:
+        description: 'Email subject'
+        required: true
+        type: string
+      body:
+        description: 'Email body'
+        required: true
+        type: string
+
+jobs:
+  send-email:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: ${{ inputs.subject }}
+          to: ${{ inputs.to_email }}
+          from: AI Assistant <${{ secrets.SMTP_USERNAME }}>
+          body: ${{ inputs.body }}
+          content_type: text
