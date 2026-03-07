@@ -86,9 +86,9 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
   // 空状态
   if (messages.length === 0 && !streamingMessage) {
     return (
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex-1 flex items-center justify-center" role="status">
         <div className="text-center text-muted-foreground animate-in fade-in-0 zoom-in-95 duration-300">
-          <div className="text-5xl mb-4 animate-bounce">💬</div>
+          <div className="text-5xl mb-4 animate-bounce" aria-hidden="true">💬</div>
           <p className="text-lg font-medium">{t("chat.startConversation")}</p>
           <p className="text-sm mt-1 opacity-70">{t("chat.startConversationHint")}</p>
         </div>
@@ -97,7 +97,13 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
   }
 
   return (
-    <div ref={parentRef} className="flex-1 overflow-y-auto p-4 scrollbar-thin">
+    <div
+      ref={parentRef}
+      className="flex-1 overflow-y-auto p-4 scrollbar-thin"
+      role="log"
+      aria-label={t("chat.messageList")}
+      aria-live="polite"
+    >
       {/* 虚拟列表容器 */}
       <div
         style={{

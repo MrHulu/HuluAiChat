@@ -1,10 +1,10 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-08 - Cycle #150
+2026-03-08 - Cycle #151
 
 ## Current Phase
-🎨 **UI/UX 美化优化** - 持续进行
+🎨 **UI/UX 美化优化** - 无障碍改进
 
 ## Boss 指令 (来自秘书)
 **TASK-127: 用户访谈招募 → ❌ 取消**
@@ -22,31 +22,17 @@
 ### 状态
 - **类型**：长期任务
 - **状态**：持续进行
-- **方向**：界面美化、交互优化、视觉一致性
+- **方向**：界面美化、交互优化、视觉一致性、无障碍改进
 
 ### 已完成优化
-- ✅ Cycle #104-106: 统一圆角规范 + hover 效果 + 间距规范
-- ✅ Cycle #135-148: 微交互动画优化 (所有组件)
-- ✅ Cycle #149: 无障碍 (a11y) 改进 (Phase 1 & 2)
-  - MessageItem: aria-hidden on icons, 图片 alt 改进, aria-pressed
-  - SettingsDialog: role=status, aria-live, aria-hidden on icons
-  - BookmarkButton: aria-hidden on icons
-  - ThemeToggle: aria-hidden on Sun/Moon icons
-  - LanguageSelector: aria-hidden on Globe/Loader2 icons
-  - VoiceInputButton: aria-hidden on Mic/MicOff icons
-  - ModelSelector: aria-hidden on Cloud/Server/Check/Loader2 icons
-  - SessionList: aria-hidden on PanelLeft/Plus/X icons
-  - CodeBlock: aria-hidden on Copy/Check icons
-- ✅ Cycle #150: 无障碍 (a11y) 改进 (Phase 3)
-  - ChatInput: aria-hidden on LayoutTemplate icon
-  - BookmarkPanel: aria-hidden on Bookmark, Download, MessageSquare, ChevronRight, X, FileJson, FileText icons
-  - SessionItem: aria-hidden on FileText, ChevronLeft, FolderOpen, Check icons in DropdownMenu
+- ✅ Cycle #104-107: 统一圆角规范 + hover 效果 + 间距规范
+- ✅ Cycle #148: 深色模式细节优化
+- ✅ Cycle #149-150: a11y improvements (aria-hidden, focus-visible)
+- ✅ Cycle #151: MessageList 无障碍属性 + PromptTemplateSelector aria-hidden
 
 ### 下一步优化方向
-- 继续检查其他组件的 a11y 问题
-- 深色模式细节优化
-- 组件样式统一
-- 加载动画优化
+- 继续检查其他组件的无障碍支持
+- 动画和过渡效果优化
 
 ---
 
@@ -80,4 +66,4 @@
 ---
 
 ## 循环计数
-当前周期: 150
+当前周期: 151

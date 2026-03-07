@@ -306,6 +306,7 @@ export function PromptTemplateSelector({
                                     strokeWidth="2"
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
+                                    aria-hidden="true"
                                   >
                                     <path d="M17 3a2.85 2.83 0 1 1 4 4L3.5 13.5 4 4 12.5 2.5 0 0 5.5 6.5L12 21l6.5-6.5-6.5-6.5z" />
                                   </svg>
@@ -330,6 +331,7 @@ export function PromptTemplateSelector({
                                     strokeWidth="2"
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
+                                    aria-hidden="true"
                                   >
                                     <path d="M3 6h18" />
                                     <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
