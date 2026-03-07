@@ -153,6 +153,11 @@ function App() {
     onNewSession: handleCreateSession,
     onToggleSidebar: () => setSidebarCollapsed((prev) => !prev),
     onOpenSettings: () => setSettingsOpen(true),
+    onSwitchSession: (index: number) => {
+      if (sessions[index]) {
+        selectSession(sessions[index].id);
+      }
+    },
   });
 
   // F1 和 ? 键打开快捷键帮助
