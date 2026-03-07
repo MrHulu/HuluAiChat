@@ -23,7 +23,13 @@
   - 访谈目标、问题设计、流程规划
   - 招募模板和成功标准
   - 文档: docs/user-interview-plan.md
-- [ ] **TASK-126**: 📝 官网 SEO 优化（等待 TASK-123 完成）
+- [x] **TASK-126**: 📝 官网 SEO 优化 ✅ 2026-03-08
+  - 更新版本号到 v3.51.0
+  - 更新 Features 列表（RAG、隐私、插件）
+  - 添加 sitemap.xml 和 robots.txt
+  - 添加 JSON-LD structured data
+  - 优化 metadata（DeepSeek 关键词）
+  - **注意**: 官网部署仍需 Boss 创建 Cloudflare Pages 项目
 
 ## ⚠️ 永久禁止事项（Boss 明确要求）
 - ❌ **禁止功能**：用户行为埋点、数据追踪、遥测功能、使用统计
