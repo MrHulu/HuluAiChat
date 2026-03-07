@@ -5,11 +5,21 @@
 
 ## 待开始
 <!-- 新任务添加到这里 -->
-- [ ] **TASK-114**: 📧 提醒 Boss 配置 Cloudflare Secrets（官网部署）
-- [ ] **TASK-115**: 📝 优化 GitHub README（营销优化）
 - [ ] **TASK-116**: 🎬 准备 Product Hunt 发布素材（截图、视频）
 
 ## 已完成
+- [x] **TASK-115**: 📝 优化 GitHub README（营销优化）✅ 2026-03-07
+  - 添加 shields.io badges (release, license, platform)
+  - 添加新功能：RAG 智能问答、插件系统
+  - 更新版本到 v3.47.0
+  - 添加 DeepSeek 推荐标记
+  - 添加 Moonshot API 配置
+
+- [x] **TASK-114**: 📧 提醒 Boss 配置 Cloudflare Secrets ✅ 2026-03-07
+  - 邮件已发送：详细配置指南
+  - 部署失败原因：apiToken 未配置
+  - 等待 Boss 配置
+
 - [x] **TASK-111**: 💻 开发 v3.47.0 - 用户体验优化 ✅ 2026-03-07
   - Phase 1: 输入框自动聚焦 + 消息发送反馈 ✅
   - Phase 2: 空状态引导 + 搜索 loading ✅

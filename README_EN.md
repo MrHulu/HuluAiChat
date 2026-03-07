@@ -1,7 +1,11 @@
 # 🍵 HuluChat
 
 > **Minimal, Cross-Platform AI Chat Desktop App**
-> Quick model switching between GPT-4, Claude, Gemini, organized folder management, and 18 languages
+> Quick model switching between GPT-4, Claude, Gemini, DeepSeek, RAG Q&A, Plugin System, organized folder management, and 18 languages
+
+[![GitHub release](https://img.shields.io/github/v/release/MrHulu/HuluChat?style=flat-square)](https://github.com/MrHulu/HuluChat/releases)
+[![License](https://img.shields.io/github/license/MrHulu/HuluChat?style=flat-square)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-blue?style=flat-square)](https://github.com/MrHulu/HuluChat/releases)
 
 English | [中文](README.md)
 
@@ -10,7 +14,13 @@ English | [中文](README.md)
 ## ✨ Features
 
 ### 🤖 Multi-Model Support
-One-click switching between GPT-4, Claude, Gemini and other OpenAI-compatible APIs.
+One-click switching between GPT-4, Claude, Gemini, DeepSeek and other OpenAI-compatible APIs.
+
+### 🧠 RAG Intelligence
+Upload documents for intelligent Q&A with Retrieval-Augmented Generation.
+
+### 🔌 Plugin System
+Extend functionality with a powerful plugin architecture.
 
 ### 📁 Session Folders
 Organize your chat history with folders to keep everything tidy.
@@ -76,8 +86,9 @@ Visit the [Releases](https://github.com/MrHulu/HuluChat/releases) page:
 |----------|----------|----------|
 | OpenAI | `https://api.openai.com/v1` | `gpt-4o`, `gpt-4o-mini` |
 | Anthropic | `https://api.anthropic.com/v1` | `claude-sonnet-4-20250514` |
-| DeepSeek | `https://api.deepseek.com/v1` | `deepseek-chat` |
+| **DeepSeek** | `https://api.deepseek.com/v1` | `deepseek-chat` ⭐ Recommended |
 | Google AI | `https://generativelanguage.googleapis.com/v1beta` | `gemini-2.0-flash` |
+| Moonshot | `https://api.moonshot.cn/v1` | `moonshot-v1-8k` |
 | Local Model | `http://localhost:11434/v1` | `llama3` |
 
 ---
@@ -178,19 +189,18 @@ huluchat-v3/
 
 ## 📋 Changelog
 
-See full changelog: [docs/changelog.md](docs/changelog.md)
+See full changelog: [Releases](https://github.com/MrHulu/HuluChat/releases)
 
-### Latest v3.22.0 (2026-03-06)
+### Latest v3.47.0 (2026-03-07)
 
-- 🌐 18 languages - Covers 65% of global users
-- ⚡ i18n lazy loading - 94% smaller initial load
-- 🤖 Quick model switching - Switch between models in one click
-- 📁 Session folders - Organize chats with folders
-- 🔄 GitHub Actions CI/CD - Multi-platform builds
-- ⚡ Virtual list optimization - Smooth scrolling with many messages
-- ⌨️ Shortcut help - Press `/` or `?` to view
-- 📤 Session export - MD/JSON/TXT support
-- 🔍 Message search - Global search with highlighting
+- 🧠 **RAG Q&A** - Upload documents for intelligent chat
+- 🔌 **Plugin System** - Extensible plugin architecture
+- 🤖 **DeepSeek Default** - Cost-effective AI model
+- 🎨 **UX Improvements** - Auto-focus, loading feedback
+- 🌐 **18 Languages** - Covers 65% of global users
+- 📁 **Session Folders** - Organize chats with folders
+- 🔍 **Global Search** - Real-time search with highlighting
+- 📤 **Multi-Format Export** - MD/JSON/TXT support
 
 ---
 
