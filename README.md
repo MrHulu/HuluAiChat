@@ -1,7 +1,11 @@
 # 🍵 HuluChat
 
 > **极简、跨平台 AI 聊天桌面应用**
-> 支持 GPT-4、Claude、Gemini 等多模型快速切换，会话分组管理，18 种语言界面
+> 支持 GPT-4、Claude、Gemini、DeepSeek 等多模型快速切换，RAG 智能问答，插件系统，会话分组管理，18 种语言界面
+
+[![GitHub release](https://img.shields.io/github/v/release/MrHulu/HuluChat?style=flat-square)](https://github.com/MrHulu/HuluChat/releases)
+[![License](https://img.shields.io/github/license/MrHulu/HuluChat?style=flat-square)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-blue?style=flat-square)](https://github.com/MrHulu/HuluChat/releases)
 
 [English](README_EN.md) | 中文
 
@@ -10,7 +14,13 @@
 ## ✨ 功能亮点
 
 ### 🤖 多模型支持
-一键切换 GPT-4、Claude、Gemini 等 OpenAI 兼容 API，无需切换应用。
+一键切换 GPT-4、Claude、Gemini、DeepSeek 等 OpenAI 兼容 API，无需切换应用。
+
+### 🧠 RAG 智能问答
+上传文档进行智能问答，基于检索增强生成技术，让 AI 理解你的私有知识。
+
+### 🔌 插件系统
+可扩展的插件架构，安装官方或第三方插件增强功能。
 
 ### 📁 会话分组管理
 用文件夹整理你的对话历史，保持井井有条。
@@ -76,8 +86,9 @@
 |----------|----------|----------|
 | OpenAI | `https://api.openai.com/v1` | `gpt-4o`, `gpt-4o-mini` |
 | Anthropic | `https://api.anthropic.com/v1` | `claude-sonnet-4-20250514` |
-| DeepSeek | `https://api.deepseek.com/v1` | `deepseek-chat` |
+| **DeepSeek** | `https://api.deepseek.com/v1` | `deepseek-chat` ⭐ 默认推荐 |
 | Google AI | `https://generativelanguage.googleapis.com/v1beta` | `gemini-2.0-flash` |
+| Moonshot | `https://api.moonshot.cn/v1` | `moonshot-v1-8k` |
 | 本地模型 | `http://localhost:11434/v1` | `llama3` |
 
 ---
@@ -178,19 +189,18 @@ huluchat-v3/
 
 ## 📋 更新日志
 
-查看完整更新日志：[docs/changelog.md](docs/changelog.md)
+查看完整更新日志：[Releases](https://github.com/MrHulu/HuluChat/releases)
 
-### 最新版本 v3.22.0 (2026-03-06)
+### 最新版本 v3.47.0 (2026-03-07)
 
-- 🌐 18 种语言支持 - 覆盖全球 65% 用户
-- ⚡ i18n 懒加载 - 初始加载减少 94%
-- 🤖 AI 模型快速切换 - 一键切换不同模型
-- 📁 会话分组/文件夹 - 用文件夹整理对话
-- 🔄 GitHub Actions CI/CD - 多平台自动构建
-- ⚡ 虚拟列表优化 - 大量消息流畅滚动
-- ⌨️ 快捷键帮助 - 按 `/` 或 `?` 查看
-- 📤 会话导出 - 支持 MD/JSON/TXT
-- 🔍 消息搜索 - 全局搜索 + 高亮
+- 🧠 **RAG 智能问答** - 上传文档进行智能对话
+- 🔌 **插件系统** - 可扩展的插件架构
+- 🤖 **DeepSeek 默认模型** - 高性价比 AI 模型
+- 🎨 **UX 优化** - 自动聚焦、loading 反馈
+- 🌐 **18 种语言** - 覆盖全球 65% 用户
+- 📁 **会话分组** - 用文件夹整理对话
+- 🔍 **全局搜索** - 实时搜索 + 高亮
+- 📤 **多格式导出** - MD/JSON/TXT
 
 ---
 
