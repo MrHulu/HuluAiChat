@@ -159,9 +159,9 @@ export const ChatInput = memo(function ChatInput({
     <div className="border-t border-border bg-background p-4" role="region" aria-label={t("chat.typeMessage")}>
       {/* Image Preview Area */}
       {images.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-3 max-w-4xl mx-auto">
+        <div className="flex flex-wrap gap-2 mb-3 max-w-4xl mx-auto animate-fade-in">
           {images.map((image, index) => (
-            <div key={index} className="relative group">
+            <div key={index} className="relative group list-item-enter">
               <img
                 src={image.image_url.url}
                 alt={`Upload ${index + 1}`}
@@ -170,7 +170,7 @@ export const ChatInput = memo(function ChatInput({
               <button
                 type="button"
                 onClick={() => handleRemoveImage(index)}
-                className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 active:scale-90"
                 aria-label={t("chat.removeImage")}
               >
                 <X className="w-3 h-3" />
@@ -238,7 +238,7 @@ export const ChatInput = memo(function ChatInput({
               "placeholder:text-muted-foreground",
               "focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent",
               "disabled:cursor-not-allowed disabled:opacity-50",
-              "transition-all duration-200"
+              "transition-all duration-200 ease-out"
             )}
           />
         </div>

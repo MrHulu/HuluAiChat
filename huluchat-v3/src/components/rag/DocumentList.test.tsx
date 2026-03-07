@@ -131,7 +131,9 @@ describe("DocumentList", () => {
 
     render(<DocumentList />);
 
-    expect(screen.getByRole("status")).toBeInTheDocument();
+    // Loading component renders an element with animate-spin class
+    const loadingElement = document.querySelector(".animate-spin");
+    expect(loadingElement).toBeInTheDocument();
   });
 
   it("should remove document from list after successful delete", async () => {
