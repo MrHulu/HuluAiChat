@@ -2,6 +2,31 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [3.48.0] - 2026-03-07
+
+### ✨ Features
+
+- **Welcome Guide System**: Interactive 3-step onboarding for first-time users
+  - Step 1: Welcome screen with app introduction
+  - Step 2: Quick API configuration guide
+  - Step 3: Ready-to-use confirmation
+  - Auto-detects first launch via localStorage
+  - Full i18n support (English/Chinese)
+
+### 🔧 Technical Details
+
+- **WelcomeDialog Component**:
+  - Radix UI Dialog for accessibility
+  - Progress indicator with step dots
+  - Smooth transitions between steps
+  - localStorage integration for first-run detection
+
+### 🧪 Testing
+
+- Frontend: 665 tests passed (31 files)
+- TypeScript check passed
+- ESLint passed (0 errors)
+
 ## [3.47.0] - 2026-03-07
 
 ### ✨ Features
