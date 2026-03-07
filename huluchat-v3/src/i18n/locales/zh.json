@@ -173,6 +173,8 @@
   },
   "keyboard": {
     "title": "键盘快捷键",
+    "description": "查看所有可用的键盘快捷键，高效导航应用程序",
+    "shortcutsList": "快捷键列表",
     "newChat": "新建聊天",
     "search": "搜索聊天",
     "settings": "打开设置",
@@ -214,6 +216,7 @@
   },
   "templates": {
     "title": "提示词模板",
+    "description": "选择一个模板，快速开始预设提示词的对话",
     "newTemplate": "+ 新建模板",
     "all": "全部",
     "name": "名称",
@@ -222,6 +225,9 @@
     "contentPlaceholder": "模板内容。使用 {变量名} 作为占位符。",
     "edit": "编辑模板",
     "delete": "删除模板",
+    "categoriesLabel": "模板分类",
+    "templateList": "可用模板列表",
+    "selectTemplate": "选择 {{name}} 模板",
     "categories": {
       "writing": "写作",
       "coding": "编程",

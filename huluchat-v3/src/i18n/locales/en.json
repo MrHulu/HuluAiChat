@@ -176,6 +176,8 @@
   },
   "keyboard": {
     "title": "Keyboard Shortcuts",
+    "description": "View all available keyboard shortcuts to navigate the app efficiently",
+    "shortcutsList": "List of keyboard shortcuts",
     "newChat": "New chat",
     "search": "Search chats",
     "settings": "Open settings",
@@ -217,6 +219,7 @@
   },
   "templates": {
     "title": "Prompt Templates",
+    "description": "Select a template to quickly start a conversation with a predefined prompt",
     "newTemplate": "+ New Template",
     "all": "All",
     "name": "Name",
@@ -225,6 +228,9 @@
     "contentPlaceholder": "Template content. Use {variable} for placeholders.",
     "edit": "Edit template",
     "delete": "Delete template",
+    "categoriesLabel": "Template categories",
+    "templateList": "Available templates",
+    "selectTemplate": "Select {{name}} template",
     "categories": {
       "writing": "Writing",
       "coding": "Coding",

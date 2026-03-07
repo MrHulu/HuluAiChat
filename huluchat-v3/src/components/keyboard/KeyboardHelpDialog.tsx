@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -35,14 +36,21 @@ export function KeyboardHelpDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <span className="text-lg">⌨️</span>
+            <span className="text-lg" aria-hidden="true">⌨️</span>
             {t("keyboard.title")}
           </DialogTitle>
+          <DialogDescription>
+            {t("keyboard.description")}
+          </DialogDescription>
         </DialogHeader>
         <div className="mt-4">
-          <div className="space-y-2">
+          <ul
+            className="space-y-2"
+            role="list"
+            aria-label={t("keyboard.shortcutsList")}
+          >
             {KEYBOARD_SHORTCUTS.map((shortcut, index) => (
-              <div
+              <li
                 key={index}
                 className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
               >
@@ -52,9 +60,9 @@ export function KeyboardHelpDialog({
                 <kbd className="px-2 py-1 text-xs font-mono bg-background rounded border shadow-sm">
                   {isMac ? shortcut.mac : shortcut.windows}
                 </kbd>
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
           <p className="mt-4 text-xs text-muted-foreground text-center">
             {t("keyboard.pressToOpen", {
               key1: <kbd className="px-1 py-0.5 text-xs font-mono bg-muted rounded">?</kbd>,
