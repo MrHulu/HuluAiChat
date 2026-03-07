@@ -418,7 +418,7 @@ export function SessionList({
       )}
 
       {/* Session List */}
-      <div className="flex-1 overflow-y-auto p-2">
+      <div className="flex-1 overflow-y-auto p-2 scrollbar-thin">
         {isLoading || isSearching ? (
           <div className="flex items-center justify-center py-8 animate-fade-in">
             <Loading variant="ring" size="md" />
