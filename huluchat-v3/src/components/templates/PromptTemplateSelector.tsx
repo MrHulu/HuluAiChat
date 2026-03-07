@@ -273,6 +273,7 @@ export function PromptTemplateSelector({
                                   variant="ghost"
                                   size="sm"
                                   className="h-6 w-6 p-0"
+                                  aria-label={t("templates.edit")}
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     startEditing(template);
@@ -296,6 +297,7 @@ export function PromptTemplateSelector({
                                   variant="ghost"
                                   size="sm"
                                   className="h-6 w-6 p-0 text-destructive"
+                                  aria-label={t("templates.delete")}
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     handleDeleteTemplate(template);

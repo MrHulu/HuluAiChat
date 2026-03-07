@@ -104,10 +104,22 @@ export function DocumentUploader({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if ((e.key === "Enter" || e.key === " ") && !disabled && !isUploading) {
+      e.preventDefault();
+      fileInputRef.current?.click();
+    }
+  };
+
   return (
     <div
+      role="button"
+      tabIndex={disabled ? -1 : 0}
+      aria-label={t("rag.selectFile")}
+      aria-disabled={disabled || isUploading}
       className={cn(
         "border-2 border-dashed rounded-lg p-4 transition-colors cursor-pointer",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         isDragging && "border-primary bg-primary/5",
         disabled && "opacity-50 cursor-not-allowed",
         className
@@ -116,6 +128,7 @@ export function DocumentUploader({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       onClick={handleClick}
+      onKeyDown={handleKeyDown}
     >
       <input
         ref={fileInputRef}
