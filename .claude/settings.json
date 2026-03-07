@@ -6,7 +6,13 @@
     "deny": []
   },
   "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "SMTP_HOST": "smtp.qq.com",
+    "SMTP_PORT": "587",
+    "SMTP_USER": "491849417@qq.com",
+    "SMTP_PASSWORD": "macqqfctlrnrbhic",
+    "EMAIL_FROM": "491849417@qq.com",
+    "EMAIL_TO": "491849417@qq.com"
   },
   "enableAllProjectMcpServers": true
 }
