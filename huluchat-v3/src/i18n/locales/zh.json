@@ -23,7 +23,11 @@
     "expandSidebar": "展开侧边栏",
     "collapseSidebar": "收起侧边栏",
     "deleteFolder": "删除文件夹",
-    "deleteFolderConfirm": "确定要删除此文件夹吗？聊天将移至未分类。"
+    "deleteFolderConfirm": "确定要删除此文件夹吗？聊天将移至未分类。",
+    "folderWithName": "{{name}}（{{count}} 个会话）",
+    "expandFolder": "展开文件夹",
+    "collapseFolder": "折叠文件夹",
+    "sessionCount": "{{count}} 个会话"
   },
   "chat": {
     "you": "你",
@@ -60,6 +64,8 @@
     "connectionError": "连接错误",
     "uploadImage": "上传图片",
     "removeImage": "移除图片",
+    "uploadedImages": "已上传图片",
+    "uploadedImage": "已上传图片 {{index}}",
     "bookmarks": "书签",
     "addBookmark": "添加书签",
     "removeBookmark": "移除书签",
@@ -259,7 +265,9 @@
     "deleteSession": "删除会话",
     "markdown": "Markdown (.md)",
     "json": "JSON (.json)",
-    "plainText": "纯文本 (.txt)"
+    "plainText": "纯文本 (.txt)",
+    "tags": "标签",
+    "moreTags": "+{{count}} 个标签"
   },
   "theme": {
     "toggle": "切换主题",

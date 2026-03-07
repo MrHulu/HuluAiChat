@@ -52,28 +52,28 @@ describe("SessionList", () => {
     it("should render collapsed sidebar when isCollapsed is true", () => {
       render(<SessionList {...defaultProps} isCollapsed={true} />);
 
-      expect(screen.getByTitle("Expand sidebar")).toBeInTheDocument();
+      expect(screen.getByLabelText("Expand sidebar")).toBeInTheDocument();
     });
 
     it("should call onToggleCollapse when expand button clicked", () => {
       const onToggleCollapse = vi.fn();
       render(<SessionList {...defaultProps} isCollapsed={true} onToggleCollapse={onToggleCollapse} />);
 
-      fireEvent.click(screen.getByTitle("Expand sidebar"));
+      fireEvent.click(screen.getByLabelText("Expand sidebar"));
       expect(onToggleCollapse).toHaveBeenCalled();
     });
 
     it("should show new chat button in collapsed state", () => {
       render(<SessionList {...defaultProps} isCollapsed={true} />);
 
-      expect(screen.getByTitle("New Chat")).toBeInTheDocument();
+      expect(screen.getByLabelText("New Chat")).toBeInTheDocument();
     });
 
     it("should call onCreateSession when new chat clicked in collapsed state", () => {
       const onCreateSession = vi.fn();
       render(<SessionList {...defaultProps} isCollapsed={true} onCreateSession={onCreateSession} />);
 
-      fireEvent.click(screen.getByTitle("New Chat"));
+      fireEvent.click(screen.getByLabelText("New Chat"));
       expect(onCreateSession).toHaveBeenCalled();
     });
   });
@@ -89,7 +89,7 @@ describe("SessionList", () => {
       const onToggleCollapse = vi.fn();
       render(<SessionList {...defaultProps} onToggleCollapse={onToggleCollapse} />);
 
-      fireEvent.click(screen.getByTitle("Collapse sidebar"));
+      fireEvent.click(screen.getByLabelText("Collapse sidebar"));
       expect(onToggleCollapse).toHaveBeenCalled();
     });
   });
@@ -211,7 +211,7 @@ describe("SessionList", () => {
     it("should show new folder input when + button clicked", () => {
       render(<SessionList {...defaultProps} />);
 
-      const newFolderButton = screen.getByTitle("New folder");
+      const newFolderButton = screen.getByLabelText("New folder");
       fireEvent.click(newFolderButton);
 
       expect(screen.getByPlaceholderText("Folder name...")).toBeInTheDocument();
@@ -222,7 +222,7 @@ describe("SessionList", () => {
       render(<SessionList {...defaultProps} onCreateFolder={onCreateFolder} />);
 
       // Click new folder button
-      fireEvent.click(screen.getByTitle("New folder"));
+      fireEvent.click(screen.getByLabelText("New folder"));
 
       // Enter folder name
       const input = screen.getByPlaceholderText("Folder name...");
@@ -575,7 +575,7 @@ describe("SessionList", () => {
       render(<SessionList {...defaultProps} />);
 
       // Click new folder button
-      fireEvent.click(screen.getByTitle("New folder"));
+      fireEvent.click(screen.getByLabelText("New folder"));
 
       const input = screen.getByPlaceholderText("Folder name...");
       expect(input).toBeInTheDocument();
@@ -591,7 +591,7 @@ describe("SessionList", () => {
       render(<SessionList {...defaultProps} />);
 
       // Click new folder button
-      fireEvent.click(screen.getByTitle("New folder"));
+      fireEvent.click(screen.getByLabelText("New folder"));
 
       const input = screen.getByPlaceholderText("Folder name...");
       fireEvent.change(input, { target: { value: "New" } });

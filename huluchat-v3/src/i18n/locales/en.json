@@ -23,7 +23,11 @@
     "expandSidebar": "Expand sidebar",
     "collapseSidebar": "Collapse sidebar",
     "deleteFolder": "Delete folder",
-    "deleteFolderConfirm": "Are you sure you want to delete this folder? Sessions will be moved to Uncategorized."
+    "deleteFolderConfirm": "Are you sure you want to delete this folder? Sessions will be moved to Uncategorized.",
+    "folderWithName": "{{name}} ({{count}} sessions)",
+    "expandFolder": "Expand folder",
+    "collapseFolder": "Collapse folder",
+    "sessionCount": "{{count}} sessions"
   },
   "chat": {
     "you": "You",
@@ -60,6 +64,8 @@
     "connectionError": "Connection Error",
     "uploadImage": "Upload image",
     "removeImage": "Remove image",
+    "uploadedImages": "Uploaded images",
+    "uploadedImage": "Uploaded image {{index}}",
     "bookmarks": "Bookmarks",
     "addBookmark": "Add bookmark",
     "removeBookmark": "Remove bookmark",
@@ -262,7 +268,9 @@
     "deleteSession": "Delete session",
     "markdown": "Markdown (.md)",
     "json": "JSON (.json)",
-    "plainText": "Plain Text (.txt)"
+    "plainText": "Plain Text (.txt)",
+    "tags": "Tags",
+    "moreTags": "+{{count}} more tags"
   },
   "theme": {
     "toggle": "Toggle theme",
