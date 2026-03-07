@@ -56,7 +56,12 @@
     "connecting": "Connecting...",
     "connected": "Connected",
     "disconnected": "Disconnected",
-    "connectionError": "Connection Error"
+    "connectionError": "Connection Error",
+    "voice": {
+      "startRecording": "Start voice input",
+      "stopRecording": "Stop recording",
+      "notSupported": "Voice input not supported in this browser"
+    }
   },
   "settings": {
     "title": "Settings",
