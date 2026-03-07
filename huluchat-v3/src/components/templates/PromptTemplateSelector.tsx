@@ -197,27 +197,29 @@ export function PromptTemplateSelector({
           {/* Template List / Editor */}
           <div className="flex-1 overflow-y-auto p-4">
             {loading ? (
-              <div className="flex items-center justify-center h-32">
+              <div className="flex items-center justify-center h-32" role="status" aria-live="polite">
                 <span className="text-muted-foreground">{t("common.loading")}</span>
               </div>
             ) : editingTemplate ? (
               <div className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium mb-1">{t("templates.name")}</label>
+                  <label htmlFor="template-name" className="text-sm font-medium mb-1 block">{t("templates.name")}</label>
                   <input
+                    id="template-name"
                     type="text"
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     placeholder={t("templates.namePlaceholder")}
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-1">{t("templates.content")}</label>
+                  <label htmlFor="template-content" className="text-sm font-medium mb-1 block">{t("templates.content")}</label>
                   <textarea
+                    id="template-content"
                     value={editContent}
                     onChange={(e) => setEditContent(e.target.value)}
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[200px]"
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[200px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     placeholder={t("templates.contentPlaceholder")}
                   />
                 </div>
