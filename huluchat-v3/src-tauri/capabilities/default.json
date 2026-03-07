@@ -16,6 +16,31 @@
           "sidecar": true
         }
       ]
+    },
+    "fs:default",
+    {
+      "identifier": "fs:allow-read-text-file",
+      "allow": [
+        { "path": "$APPDATA/plugins/**" },
+        { "path": "$APPCONFIG/plugins/**" },
+        { "path": "$RESOURCE/plugins/**" }
+      ]
+    },
+    {
+      "identifier": "fs:allow-read-dir",
+      "allow": [
+        { "path": "$APPDATA/plugins/**" },
+        { "path": "$APPCONFIG/plugins/**" },
+        { "path": "$RESOURCE/plugins/**" }
+      ]
+    },
+    {
+      "identifier": "fs:allow-exists",
+      "allow": [
+        { "path": "$APPDATA/plugins/**" },
+        { "path": "$APPCONFIG/plugins/**" },
+        { "path": "$RESOURCE/plugins/**" }
+      ]
     }
   ]
 }
