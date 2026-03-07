@@ -167,10 +167,12 @@ describe("App", () => {
       expect(screen.getByText("HuluChat")).toBeInTheDocument();
     });
 
-    it("should render version badge", () => {
+    it("should render version badge from package.json", () => {
       render(<App />);
 
-      expect(screen.getByText("v3.20.0")).toBeInTheDocument();
+      // Version should be dynamically loaded from package.json
+      const { version } = require("../package.json");
+      expect(screen.getByText(`v${version}`)).toBeInTheDocument();
     });
 
     it("should render Toaster component", () => {

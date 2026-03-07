@@ -463,3 +463,104 @@ export async function updateTemplate(
 export async function deleteTemplate(id: string): Promise<void> {
   await fetch(`${API_BASE}/templates/${id}`, { method: "DELETE" });
 }
+
+// ============== RAG APIs ==============
+
+/**
+ * RAG document interface
+ */
+export interface RAGDocument {
+  doc_id: string;
+  filename: string;
+  chunk_count: number;
+}
+
+/**
+ * Retrieved chunk from RAG query
+ */
+export interface RetrievedChunk {
+  content: string;
+  source: string;
+  chunk_index: number;
+  score: number;
+}
+
+/**
+ * RAG query response
+ */
+export interface RAGQueryResponse {
+  success: boolean;
+  chunks: RetrievedChunk[];
+  context: string;
+}
+
+/**
+ * RAG upload response
+ */
+export interface RAGUploadResponse {
+  success: boolean;
+  doc_id: string;
+  filename: string;
+  chunk_count: number;
+  error?: string;
+}
+
+/**
+ * Upload and index a document for RAG
+ * Supports TXT, MD, PDF formats
+ * Maximum file size: 5MB
+ */
+export async function uploadRAGDocument(file: File): Promise<RAGUploadResponse> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch(`${API_BASE}/rag/upload`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ detail: "Upload failed" }));
+    throw new Error(error.detail || "Upload failed");
+  }
+
+  return response.json();
+}
+
+/**
+ * Query indexed documents for relevant content
+ */
+export async function queryRAGDocuments(
+  query: string,
+  nResults: number = 5
+): Promise<RAGQueryResponse> {
+  const response = await fetch(`${API_BASE}/rag/query`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query, n_results: nResults }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Query failed");
+  }
+
+  return response.json();
+}
+
+/**
+ * List all indexed documents
+ */
+export async function listRAGDocuments(): Promise<{ documents: RAGDocument[] }> {
+  const response = await fetch(`${API_BASE}/rag/documents`);
+  return response.json();
+}
+
+/**
+ * Delete an indexed document
+ */
+export async function deleteRAGDocument(docId: string): Promise<{ success: boolean; error?: string }> {
+  const response = await fetch(`${API_BASE}/rag/documents/${docId}`, {
+    method: "DELETE",
+  });
+  return response.json();
+}

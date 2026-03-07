@@ -103,3 +103,38 @@ class OpenAIService:
 
 # Global service instance
 openai_service = OpenAIService()
+
+
+def get_client_for_provider(provider: str) -> AsyncOpenAI:
+    """Get OpenAI-compatible client for different providers.
+
+    Args:
+        provider: Provider name ('deepseek', 'openai', 'ollama')
+
+    Returns:
+        AsyncOpenAI client configured for the specified provider
+
+    Raises:
+        ValueError: If provider is unknown or API key not configured
+    """
+    if provider == "deepseek":
+        if not settings.deepseek_api_key:
+            raise ValueError("DeepSeek API key not configured")
+        return AsyncOpenAI(
+            api_key=settings.deepseek_api_key,
+            base_url=settings.deepseek_base_url,
+        )
+    elif provider == "openai":
+        if not settings.openai_api_key:
+            raise ValueError("OpenAI API key not configured")
+        return AsyncOpenAI(
+            api_key=settings.openai_api_key,
+            base_url=settings.openai_base_url,
+        )
+    elif provider == "ollama":
+        return AsyncOpenAI(
+            api_key="ollama",  # Ollama doesn't need a real API key
+            base_url=f"{settings.ollama_base_url}/v1",
+        )
+    else:
+        raise ValueError(f"Unknown provider: {provider}")

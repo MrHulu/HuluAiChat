@@ -15,6 +15,9 @@ import { CommandPalette } from "@/components/command";
 import { useSession, useKeyboardShortcuts, useFolders } from "@/hooks";
 import { exportSession, moveSessionToFolder, ExportFormat } from "@/api/client";
 
+// Import version from package.json for dynamic version display
+import { version } from "../package.json";
+
 // 懒加载设置对话框（非核心功能）
 const SettingsDialog = lazy(() =>
   import("@/components/settings").then((mod) => ({ default: mod.SettingsDialog }))
@@ -223,7 +226,7 @@ function App() {
           <div className="flex items-center gap-3">
             <h1 className="text-lg font-bold">HuluChat</h1>
             <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-              v3.20.0
+              v{version}
             </span>
           </div>
           <div className="flex items-center gap-2">

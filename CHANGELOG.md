@@ -2,6 +2,67 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [3.46.0] - 2026-03-07
+
+### ✨ Features
+
+- **DeepSeek 默认模型**: DeepSeek V3 作为新的默认 AI 模型选项
+  - 高性价比、高性能的国产大模型
+  - 在模型列表中排在首位
+  - 支持 Provider 路由切换
+
+- **RAG 单文档对话**: 上传文档进行基于内容的智能对话
+  - 支持格式：TXT, MD, PDF
+  - 一次性上传一个文档
+  - 自动语义检索相关内容
+  - 对话时显示引用来源
+  - 简洁的上传界面和文档管理
+
+### 🔧 Technical Details
+
+- **RAG Pipeline**:
+  - Chroma 嵌入式向量存储
+  - OpenAI text-embedding-3-small 嵌入模型
+  - 递归字符分块（500 字符）
+  - 相似度检索
+
+- **前端组件**:
+  - `DocumentUploader`: 文档上传组件
+  - `DocumentList`: 文档列表管理
+  - `RAGPanel`: RAG 面板集成到 ChatView
+
+### 🧪 Testing
+
+- 后端：95 tests passed
+- 前端：669 tests passed
+- **总计：764 tests passed**
+
+## [3.45.0] - 2026-03-07
+
+### ✨ Features
+
+- **插件管理 UI**: 完整的插件安装/卸载用户界面
+  - 插件列表展示已安装插件
+  - 一键卸载插件功能
+  - 插件启用/禁用开关
+
+## [3.44.0] - 2026-03-07
+
+### ✨ Features
+
+- **Tauri FS API 插件加载**: 使用 Tauri 文件系统 API 加载插件
+  - 更安全的插件加载机制
+  - 支持热重载
+
+## [3.43.0] - 2026-03-07
+
+### ✨ Features
+
+- **插件系统**: 基础插件架构
+  - 插件加载机制
+  - 插件 API 接口
+  - 插件生命周期管理
+
 ## [2.8.0] - 2026-03-03
 
 ### ✨ Features
