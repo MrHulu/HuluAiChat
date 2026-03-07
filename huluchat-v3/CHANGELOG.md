@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [3.47.0] - 2026-03-07
+
+### Improved
+- **UX Enhancements**: Better user experience across the app
+  - Auto-focus input after message sent
+  - Auto-focus input when switching sessions
+  - Loading indicator on send button during message sending
+  - Empty state guidance for new conversations
+  - Search loading indicator in session list
+  - Keyboard shortcut hint for message editing (Ctrl+Enter to save)
+
+### Components
+- `ChatInput`: Auto-focus behavior, loading state on send button
+- `MessageList`: Empty state with guidance message
+- `SessionList`: Search loading spinner
+- `MessageItem`: Keyboard shortcut hint for edit mode
+
+### Technical
+- Tests: Full coverage for auto-focus and loading states
+- i18n: All new UI strings translated (EN/ZH)
+
 ## [3.46.0] - 2026-03-07
 
 ### Added
