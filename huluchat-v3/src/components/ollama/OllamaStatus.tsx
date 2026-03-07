@@ -40,7 +40,7 @@ export function OllamaStatus({
           className={cn(
             "flex items-center justify-center w-8 h-8 rounded-full",
             available
-              ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
+              ? "bg-success/20 text-success"
               : "bg-muted text-muted-foreground"
           )}
         >
@@ -106,7 +106,7 @@ export function OllamaStatusIndicator({
         className={cn(
           "w-2 h-2 rounded-full",
           available
-            ? "bg-green-500 animate-pulse"
+            ? "bg-success animate-pulse"
             : "bg-muted-foreground"
         )}
       />

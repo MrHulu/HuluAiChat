@@ -397,8 +397,8 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                 <div
                   className={`flex items-center gap-2 p-3 rounded-md ${
                     testResult.success
-                      ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-                      : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                      ? "bg-success-muted text-success-foreground"
+                      : "bg-error-muted text-error-foreground"
                   }`}
                 >
                   {testResult.success ? (
@@ -433,7 +433,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
               <div
                 className={`flex items-center justify-between p-3 rounded-lg border mb-3 ${
                   ollamaAvailable
-                    ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800"
+                    ? "bg-success-muted/50 border-success/30"
                     : "bg-muted"
                 }`}
               >
@@ -441,7 +441,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                   <div
                     className={`flex items-center justify-center w-8 h-8 rounded-full ${
                       ollamaAvailable
-                        ? "bg-green-100 text-green-600 dark:bg-green-900/50 dark:text-green-400"
+                        ? "bg-success/20 text-success"
                         : "bg-muted text-muted-foreground"
                     }`}
                   >
@@ -497,8 +497,8 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                 <div
                   className={`flex items-center gap-2 p-3 rounded-md mb-3 ${
                     ollamaTestResult.success
-                      ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-                      : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                      ? "bg-success-muted text-success-foreground"
+                      : "bg-error-muted text-error-foreground"
                   }`}
                 >
                   {ollamaTestResult.success ? (

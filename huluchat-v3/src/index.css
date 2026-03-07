@@ -40,6 +40,16 @@
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
   --sidebar: oklch(0.985 0 0);
+  /* Semantic status colors - Light mode */
+  --success: oklch(0.72 0.19 142.5);
+  --success-foreground: oklch(0.98 0 0);
+  --success-muted: oklch(0.95 0.05 142.5);
+  --warning: oklch(0.75 0.15 85);
+  --warning-foreground: oklch(0.2 0 0);
+  --warning-muted: oklch(0.95 0.05 85);
+  --error: oklch(0.6 0.22 25);
+  --error-foreground: oklch(0.98 0 0);
+  --error-muted: oklch(0.95 0.05 25);
 }
 
 .dark {
@@ -76,6 +86,16 @@
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
   --sidebar: oklch(0.205 0 0);
+  /* Semantic status colors - Dark mode */
+  --success: oklch(0.75 0.17 142.5);
+  --success-foreground: oklch(0.15 0 0);
+  --success-muted: oklch(0.3 0.08 142.5);
+  --warning: oklch(0.78 0.13 85);
+  --warning-foreground: oklch(0.15 0 0);
+  --warning-muted: oklch(0.3 0.06 85);
+  --error: oklch(0.65 0.2 25);
+  --error-foreground: oklch(0.98 0 0);
+  --error-muted: oklch(0.3 0.08 25);
 }
 
 /* Step 2: Map Variables to Tailwind Utilities */
@@ -117,6 +137,16 @@
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
+  /* Semantic status colors */
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-muted: var(--success-muted);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-muted: var(--warning-muted);
+  --color-error: var(--error);
+  --color-error-foreground: var(--error-foreground);
+  --color-error-muted: var(--error-muted);
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);

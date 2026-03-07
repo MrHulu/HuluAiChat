@@ -62,7 +62,7 @@ export const VoiceInputButton = memo(function VoiceInputButton({
       disabled={disabled}
       className={cn(
         "px-3 h-12",
-        isListening && "bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50",
+        isListening && "bg-error-muted hover:bg-error-muted/80",
         className
       )}
       title={isListening ? t("chat.voice.stopRecording") : t("chat.voice.startRecording")}
@@ -70,7 +70,7 @@ export const VoiceInputButton = memo(function VoiceInputButton({
       aria-pressed={isListening}
     >
       {isListening ? (
-        <MicOff className="w-[18px] h-[18px] text-red-500 animate-pulse" />
+        <MicOff className="w-[18px] h-[18px] text-error animate-pulse" />
       ) : (
         <Mic className="w-[18px] h-[18px]" />
       )}
