@@ -2,17 +2,27 @@
  * ChatView Component
  * 聊天主界面，整合消息列表和输入框
  */
-import { useState } from "react";
-import { MessageList } from "./MessageList";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { MessageList, MessageListRef } from "./MessageList";
 import { ChatInput } from "./ChatInput";
 import { ModelSelector } from "./ModelSelector";
 import { RAGPanel } from "@/components/rag";
+import { BookmarkPanel } from "./BookmarkPanel";
 import { useChat, useModel } from "@/hooks";
 import { ConnectionStatus } from "@/hooks/useWebSocket";
 import { cn } from "@/lib/utils";
-import { updateMessage, ImageContent, queryRAGDocuments, listRAGDocuments } from "@/api/client";
+import {
+  updateMessage,
+  ImageContent,
+  queryRAGDocuments,
+  listRAGDocuments,
+  getSessionBookmarks,
+  createBookmark,
+  deleteBookmark,
+} from "@/api/client";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import { Bookmark } from "lucide-react";
 
 export interface ChatViewProps {
   sessionId: string | null;
@@ -44,9 +54,70 @@ export function ChatView({ sessionId }: ChatViewProps) {
     useChat(sessionId);
   const { currentModel, models, setModel, isLoading: isLoadingModels, parameters } = useModel();
 
+  // Refs
+  const messageListRef = useRef<MessageListRef>(null);
+
   // RAG Panel state
   const [isRAGPanelOpen, setIsRAGPanelOpen] = useState(false);
   const [hasDocuments, setHasDocuments] = useState(false);
+
+  // Bookmark state
+  const [isBookmarkPanelOpen, setIsBookmarkPanelOpen] = useState(false);
+  const [bookmarkedMessages, setBookmarkedMessages] = useState<Map<string, string>>(new Map());
+
+  // Load bookmarks when session changes
+  const loadBookmarks = useCallback(async () => {
+    if (!sessionId) return;
+    try {
+      const bookmarks = await getSessionBookmarks(sessionId);
+      const map = new Map<string, string>();
+      bookmarks.forEach((b) => map.set(b.message_id, b.id));
+      setBookmarkedMessages(map);
+    } catch (error) {
+      console.error("Failed to load bookmarks:", error);
+    }
+  }, [sessionId]);
+
+  useEffect(() => {
+    if (sessionId) {
+      loadBookmarks();
+    } else {
+      setBookmarkedMessages(new Map());
+    }
+  }, [sessionId, loadBookmarks]);
+
+  const handleBookmarkToggle = async (
+    messageId: string,
+    isBookmarked: boolean,
+    bookmarkId?: string
+  ) => {
+    try {
+      if (isBookmarked && bookmarkId) {
+        await deleteBookmark(bookmarkId);
+        setBookmarkedMessages((prev) => {
+          const next = new Map(prev);
+          next.delete(messageId);
+          return next;
+        });
+        toast.success(t("chat.bookmarkRemoved"));
+      } else {
+        const bookmark = await createBookmark(messageId, sessionId!);
+        setBookmarkedMessages((prev) => {
+          const next = new Map(prev);
+          next.set(messageId, bookmark.id);
+          return next;
+        });
+        toast.success(t("chat.bookmarkAdded"));
+      }
+    } catch (error) {
+      console.error("Failed to toggle bookmark:", error);
+      toast.error(t("chat.bookmarkError"));
+    }
+  };
+
+  const handleJumpToMessage = (messageId: string) => {
+    messageListRef.current?.scrollToMessage(messageId);
+  };
 
   // Check for documents when RAG panel opens
   const checkDocuments = async () => {
@@ -124,6 +195,24 @@ export function ChatView({ sessionId }: ChatViewProps) {
           )}
         </div>
         <div className="flex items-center gap-2">
+          {/* Bookmark Toggle Button */}
+          {sessionId && (
+            <button
+              onClick={() => setIsBookmarkPanelOpen(!isBookmarkPanelOpen)}
+              aria-pressed={isBookmarkPanelOpen}
+              className={cn(
+                "px-2 py-1 text-xs rounded-md border transition-colors flex items-center gap-1",
+                isBookmarkPanelOpen
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-background hover:bg-accent border-border"
+              )}
+            >
+              <Bookmark className="w-3 h-3" />
+              {bookmarkedMessages.size > 0 && (
+                <span className="text-[10px]">{bookmarkedMessages.size}</span>
+              )}
+            </button>
+          )}
           {/* RAG Toggle Button */}
           {sessionId && (
             <button
@@ -145,11 +234,24 @@ export function ChatView({ sessionId }: ChatViewProps) {
 
       {/* 消息列表 */}
       <MessageList
+        ref={messageListRef}
         messages={messages}
         streamingMessage={streamingMessage}
         isLoading={isLoading}
         onEditMessage={handleEditMessage}
+        bookmarkedMessages={bookmarkedMessages}
+        onBookmarkToggle={handleBookmarkToggle}
       />
+
+      {/* Bookmark Panel */}
+      {isBookmarkPanelOpen && sessionId && (
+        <div className="border-t border-border bg-muted/30">
+          <BookmarkPanel
+            sessionId={sessionId}
+            onJumpToMessage={handleJumpToMessage}
+          />
+        </div>
+      )}
 
       {/* RAG Panel（可展开） */}
       {isRAGPanelOpen && sessionId && (
