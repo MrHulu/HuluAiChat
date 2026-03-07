@@ -36,8 +36,9 @@ export function Skeleton({ className, animate = true }: SkeletonProps) {
       aria-label="Loading"
       className={cn(
         "rounded-md bg-muted",
+        "dark:bg-muted/60",
         animate && "animate-shimmer",
-        "bg-gradient-to-r from-muted via-muted/70 to-muted bg-[length:200%_100%]",
+        "bg-gradient-to-r from-muted via-muted/70 to-muted dark:via-muted/50 bg-[length:200%_100%]",
         className
       )}
     >
