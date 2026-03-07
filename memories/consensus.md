@@ -1,10 +1,10 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-07 - Cycle #75
+2026-03-07 - Cycle #76
 
 ## Current Phase
-🟢 **正常运行** - v3.40.0 稳定版
+🟡 **开发中** - v3.41.0 语音输入功能
 
 ## 🚨 Boss 指令：推送前必须本地验证
 
@@ -27,9 +27,9 @@ npm run test
 ```
 
 ### 检查清单
-- [ ] `npm run typecheck` 通过（无 TypeScript 错误）
-- [ ] `npm run build` 成功（验证所有 JSON 文件语法）
-- [ ] 新增 i18n 文件必须用 `jq . xxx.json` 验证
+- [x] `npm run typecheck` 通过（无 TypeScript 错误）
+- [x] `npm run build` 成功（验证所有 JSON 文件语法）
+- [x] 新增 i18n 文件必须用 `jq . xxx.json` 验证
 
 ### 禁止行为
 - ❌ 直接推送，等 CI 失败再修
@@ -41,33 +41,50 @@ npm run test
 错误 2: bm.json:68 invalid JSON syntax (缺少逗号)
 ```
 
-## What We Did This Cycle (#74-#75)
-- ✅ Command Palette (Ctrl/Cmd+K) 功能完成并合并
-- ✅ v3.40.0 发布（Command Palette 快捷命令面板）
+## What We Did This Cycle (#76)
+- ✅ **语音输入功能** - Web Speech API 实现
+- ✅ `useVoiceRecognition` hook - 浏览器原生语音识别
+- ✅ `VoiceInputButton` 组件 - 麦克风按钮 UI
+- ✅ 集成到 ChatInput - 自动跟随当前语言
+- ✅ i18n 翻译 (EN/ZH)
+- ✅ 4 个新测试用例
+- ✅ 本地验证通过 (typecheck + build + 633 tests)
+- ✅ PR #131 已创建
 
 ## Active Projects
-- **HuluChat**: **v3.40.0 ✅ 已发布**
+- **HuluChat**: **v3.41.0 开发中** - PR #131 待合并
 - **Product Hunt**: 等待用户完成截图和视频
 
-## Next Action (Cycle #76)
-
-### 决策选项（等待用户确认）
-1. **Product Hunt 发布** - 需要用户完成截图和视频
-2. **探索新功能**: 语音输入/多模态/插件系统
+## Next Action (Cycle #77)
+1. 等待 PR #131 合并
+2. **决策选项**：
+   - Product Hunt 发布 - 需要用户完成截图和视频
+   - 探索新功能: 多模态/插件系统
+   - 优化语音输入（添加更多语言支持）
 
 **重要**：任何新功能开发前，先本地验证通过再推送！
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
 - Latest Release: **v3.40.0** (2026-03-07)
-- Next Release: 待规划
-- CI: **✅ 全部通过**
-- Testing: **✅ 629 tests passed**
+- Next Release: **v3.41.0** (语音输入)
+- CI: **⏳ PR #131 等待合并**
+- Testing: **✅ 633 tests passed**
 - Tech Stack (v3): Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui, FastAPI, Python 3.14
 - Project Location: `huluchat-v3/`, `website/`
 - Supported Languages: **76** (EN/ZH/JA/KO/ES/FR/DE/PT/IT/RU/AR/NL/PL/TR/HI/VI/TH/ID/SV/NO/FI/DA/CS/EL/HU/RO/UK/HE/MS/BN/UR/FA/SW/TL/JV/TE/MR/TA/PA/GU/KN/ML/OR/AM/HA/YO/IG/ZU/SO/AF/LN/RW/NY/SN/OM/TI/FF/WO/KG/TN/XH/BM/LG/NYN/KI/KTU/KR/LUA/NUS/DIN/LUO/KAM/MAS/HUK/LOL/KBL)
 - i18n: **懒加载** - 启动只加载当前语言 (~5 KB)
-- 新功能: **Command Palette** + KaTeX 数学公式 + Mermaid 图表
+- 新功能: **语音输入** + Command Palette + KaTeX 数学公式 + Mermaid 图表
+
+## Voice Input Feature (v3.41.0)
+- **技术**: Web Speech API (浏览器原生)
+- **组件**:
+  - `useVoiceRecognition` hook
+  - `VoiceInputButton` 组件
+- **特性**:
+  - 自动检测浏览器支持
+  - 跟随当前语言设置
+  - 录音时红色脉冲动画
 
 ## Mermaid 图表支持
 支持以下图表类型：
@@ -99,6 +116,7 @@ npm run test
 ## Release History
 | Version | Date | Highlights | 状态 |
 |---------|------|------------|------|
+| **v3.41.0** | 2026-03-07 | 🎤 语音输入 (Web Speech API) | ⏳ PR #131 |
 | **v3.40.0** | 2026-03-07 | ⌨️ Command Palette (Ctrl/Cmd+K) | ✅ 已发布 |
 | **v3.39.0** | 2026-03-06 | 📊 Mermaid 图表渲染 | ✅ 已发布 |
 | **v3.38.0** | 2026-03-06 | 📐 KaTeX 数学公式渲染 | ✅ 已发布 |
@@ -153,12 +171,12 @@ npm run test
 ## Open Questions
 - 何时进行 Product Hunt 发布？（建议下周二）
 - 是否继续添加更多非洲语言？
-- 下一个功能方向？（语音/多模态/插件/快捷命令）
+- 下一个功能方向？（多模态/插件系统）
 
 ## Product Hunt 准备清单
 
 ## 循环计数
-当前周期: 75
+当前周期: 76
 上次发邮件: 70
 - [x] 产品信息 (Tagline, 描述)
 - [x] 社交媒体文案
