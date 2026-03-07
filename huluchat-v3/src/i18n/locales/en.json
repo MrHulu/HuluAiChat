@@ -30,6 +30,7 @@
     "ai": "AI",
     "typeMessage": "Type a message...",
     "send": "Send",
+    "sending": "Sending...",
     "regenerate": "Regenerate",
     "copy": "Copy",
     "copied": "Copied!",

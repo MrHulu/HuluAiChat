@@ -30,6 +30,7 @@
     "ai": "AI",
     "typeMessage": "输入消息...",
     "send": "发送",
+    "sending": "发送中...",
     "regenerate": "重新生成",
     "copy": "复制",
     "copied": "已复制！",

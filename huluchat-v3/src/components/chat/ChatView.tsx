@@ -165,6 +165,7 @@ export function ChatView({ sessionId }: ChatViewProps) {
       <ChatInput
         onSend={handleSend}
         disabled={isDisabled || !sessionId}
+        isLoading={isLoading}
         placeholder={
           !sessionId
             ? t("chat.selectSessionToChat")

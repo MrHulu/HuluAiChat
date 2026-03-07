@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ChatInput } from "./ChatInput";
 
@@ -201,5 +201,66 @@ describe("ChatInput", () => {
     await user.type(input, "你好世界 🌍 مرحبا{enter}");
 
     expect(mockOnSend).toHaveBeenCalledWith("你好世界 🌍 مرحبا", undefined);
+  });
+
+  describe("auto-focus behavior", () => {
+    it("should auto-focus when disabled changes from true to false", async () => {
+      const { rerender } = render(<ChatInput onSend={mockOnSend} disabled={true} />);
+
+      const input = screen.getByPlaceholderText("Type a message...");
+      expect(input).not.toHaveFocus();
+
+      // Re-render with disabled=false
+      rerender(<ChatInput onSend={mockOnSend} disabled={false} />);
+
+      // Wait for async focus
+      await waitFor(() => {
+        expect(input).toHaveFocus();
+      });
+    });
+
+    it("should auto-focus on initial render when not disabled", async () => {
+      render(<ChatInput onSend={mockOnSend} disabled={false} />);
+
+      const input = screen.getByPlaceholderText("Type a message...");
+      // Wait for async focus
+      await waitFor(() => {
+        expect(input).toHaveFocus();
+      });
+    });
+
+    it("should keep focus after sending message", async () => {
+      const user = userEvent.setup();
+      render(<ChatInput onSend={mockOnSend} />);
+
+      const input = screen.getByPlaceholderText("Type a message...");
+      await user.type(input, "Test message{enter}");
+
+      expect(mockOnSend).toHaveBeenCalled();
+      expect(input).toHaveFocus();
+    });
+  });
+
+  describe("loading state", () => {
+    it("should show loading state on send button when isLoading is true", () => {
+      render(<ChatInput onSend={mockOnSend} isLoading={true} />);
+
+      const sendButton = screen.getByRole("button", { name: /send/i });
+      expect(sendButton).toHaveAttribute("data-loading");
+    });
+
+    it("should disable send button when isLoading is true", () => {
+      render(<ChatInput onSend={mockOnSend} isLoading={true} />);
+
+      const sendButton = screen.getByRole("button", { name: /send/i });
+      expect(sendButton).toBeDisabled();
+    });
+
+    it("should not show loading state when isLoading is false", () => {
+      render(<ChatInput onSend={mockOnSend} isLoading={false} />);
+
+      const sendButton = screen.getByRole("button", { name: /send/i });
+      expect(sendButton).not.toHaveAttribute("data-loading");
+    });
   });
 });
