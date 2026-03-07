@@ -165,7 +165,7 @@ describe("OllamaStatus", () => {
         />
       );
 
-      const dot = container.querySelector(".bg-gray-400");
+      const dot = container.querySelector(".bg-muted-foreground");
       expect(dot).toBeInTheDocument();
       expect(screen.getByText(/Offline/)).toBeInTheDocument();
     });
