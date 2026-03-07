@@ -5,12 +5,19 @@
 
 ## 待开始
 <!-- 新任务添加到这里 -->
+- [ ] **TASK-111**: 💻 开发 v3.47.0 - 用户体验优化
+  - Phase 1: 输入框自动聚焦 + 消息发送反馈 (P1)
+  - Phase 2: 空状态引导 + 搜索 loading (P2)
+  - Phase 3: 消息编辑键盘提示 (P3) - 可选
+  - 预计时间: ~3.5 小时
+  - 状态: 等待 TASK-112 或自动开始
 
 ## 已完成
-- [x] **TASK-111**: 💻 开发 v3.47.0 - 用户体验优化 ✅ 2026-03-07
-  - Phase 1: 输入框自动聚焦 + 消息发送反馈 ✅
-  - Phase 2: 空状态引导 + 搜索 loading ✅ (已存在)
-  - Phase 3: 消息编辑键盘提示 ✅ (已存在)
+- [x] **TASK-112**: 📱 手机版构建调研（团队协作）✅ 2026-03-07
+  - 组建 6 人调研团队（research-thompson, cto-vogels, fullstack-dhh, cfo-campbell, critic-munger, ceo-bezos）
+  - 输出调研报告：`docs/mobile-research/mobile-research-report.md`
+  - **结论**: 不推荐立即开发手机版
+  - **等待 Boss 决策**
 
 - [x] **TASK-104**: 🌐 官网部署配置（Cloudflare secrets）✅ 2026-03-07
   - GitHub Secrets 已配置:
