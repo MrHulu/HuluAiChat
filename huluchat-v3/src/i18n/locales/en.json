@@ -57,6 +57,8 @@
     "connected": "Connected",
     "disconnected": "Disconnected",
     "connectionError": "Connection Error",
+    "uploadImage": "Upload image",
+    "removeImage": "Remove image",
     "voice": {
       "startRecording": "Start voice input",
       "stopRecording": "Stop recording",

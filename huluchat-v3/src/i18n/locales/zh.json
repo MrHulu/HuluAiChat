@@ -57,6 +57,8 @@
     "connected": "已连接",
     "disconnected": "已断开",
     "connectionError": "连接错误",
+    "uploadImage": "上传图片",
+    "removeImage": "移除图片",
     "voice": {
       "startRecording": "开始语音输入",
       "stopRecording": "停止录音",
