@@ -18,6 +18,8 @@ import {
   Trash2,
   Upload,
   FolderOpen,
+  Download,
+  ArrowUpCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -41,7 +43,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { usePluginManager } from "@/hooks";
-import type { PluginInstance } from "@/plugins";
+import type { PluginInstance, PluginUpdateInfo, PluginUpdateState } from "@/plugins";
 
 /**
  * Get badge variant based on plugin state
@@ -84,20 +86,29 @@ function StateIcon({ state }: { state: PluginInstance["state"] }) {
  */
 function PluginCard({
   plugin,
+  updateInfo,
+  updateState,
   onActivate,
   onDeactivate,
   onUninstall,
+  onCheckUpdate,
+  onUpdate,
   isProcessing,
 }: {
   plugin: PluginInstance;
+  updateInfo: PluginUpdateInfo | null;
+  updateState: PluginUpdateState;
   onActivate: () => void;
   onDeactivate: () => void;
   onUninstall: () => void;
+  onCheckUpdate: () => void;
+  onUpdate: () => void;
   isProcessing: boolean;
 }) {
   const { t } = useTranslation();
   const isActive = plugin.state === "active";
   const isActivating = plugin.state === "activating";
+  const hasUpdate = updateInfo?.hasUpdate ?? false;
 
   return (
     <Card>
@@ -107,9 +118,17 @@ function PluginCard({
             <StateIcon state={plugin.state} />
             {plugin.manifest.name}
           </CardTitle>
-          <Badge variant={getStateBadgeVariant(plugin.state)}>
-            {t(`plugins.state.${plugin.state}`)}
-          </Badge>
+          <div className="flex items-center gap-2">
+            {hasUpdate && (
+              <Badge variant="default" className="bg-primary text-xs">
+                <ArrowUpCircle className="h-3 w-3 mr-1" />
+                {t("plugins.updateAvailable")}
+              </Badge>
+            )}
+            <Badge variant={getStateBadgeVariant(plugin.state)}>
+              {t(`plugins.state.${plugin.state}`)}
+            </Badge>
+          </div>
         </div>
         <CardDescription className="text-xs mt-1">
           {plugin.manifest.description}
@@ -122,7 +141,14 @@ function PluginCard({
             <span>
               {t("plugins.byAuthor", { author: plugin.manifest.author })}
             </span>
-            <span>v{plugin.manifest.version}</span>
+            <span>
+              v{plugin.manifest.version}
+              {hasUpdate && updateInfo && (
+                <span className="text-primary ml-1">
+                  → v{updateInfo.latestVersion}
+                </span>
+              )}
+            </span>
           </div>
 
           {/* Homepage */}
@@ -157,6 +183,38 @@ function PluginCard({
             </div>
           )}
 
+          {/* Update status */}
+          {updateState === "checking" && (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              {t("plugins.checkingUpdate")}
+            </div>
+          )}
+          {updateState === "downloading" && (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Download className="h-3 w-3 animate-bounce" />
+              {t("plugins.downloadingUpdate")}
+            </div>
+          )}
+          {updateState === "installing" && (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              {t("plugins.installingUpdate")}
+            </div>
+          )}
+          {updateState === "updated" && (
+            <div className="flex items-center gap-2 text-xs text-green-600">
+              <CheckCircle2 className="h-3 w-3" />
+              {t("plugins.updateSuccess")}
+            </div>
+          )}
+          {updateState === "error" && (
+            <div className="flex items-center gap-2 text-xs text-destructive">
+              <AlertCircle className="h-3 w-3" />
+              {t("plugins.updateFailed")}
+            </div>
+          )}
+
           {/* Actions */}
           <div className="flex items-center justify-between pt-2">
             <div className="flex items-center gap-2">
@@ -174,6 +232,40 @@ function PluginCard({
               />
             </div>
             <div className="flex items-center gap-2">
+              {/* Update button */}
+              {hasUpdate && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onUpdate}
+                  disabled={isProcessing || updateState === "downloading" || updateState === "installing"}
+                  className="h-8"
+                >
+                  {updateState === "downloading" || updateState === "installing" ? (
+                    <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                  ) : (
+                    <Download className="h-3 w-3 mr-1" />
+                  )}
+                  {t("plugins.update")}
+                </Button>
+              )}
+              {/* Check update button */}
+              {plugin.manifest.updateUrl && !hasUpdate && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onCheckUpdate}
+                  disabled={isProcessing || updateState === "checking"}
+                  className="h-8"
+                >
+                  {updateState === "checking" ? (
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                  ) : (
+                    <RefreshCw className="h-3 w-3" />
+                  )}
+                  <span className="sr-only">{t("plugins.checkUpdate")}</span>
+                </Button>
+              )}
               {isActivating && (
                 <span className="text-xs text-muted-foreground">
                   <Loader2 className="h-3 w-3 animate-spin inline mr-1" />
@@ -367,10 +459,15 @@ export function PluginSettings() {
     installPlugin,
     uninstallPlugin,
     refreshPlugins,
+    checkForUpdate,
+    checkForAllUpdates,
+    updatePlugin,
   } = usePluginManager();
 
   const [processingId, setProcessingId] = React.useState<string | null>(null);
   const [isInstalling, setIsInstalling] = React.useState(false);
+  const [updateInfos, setUpdateInfos] = React.useState<Map<string, PluginUpdateInfo>>(new Map());
+  const [updateStates, setUpdateStates] = React.useState<Map<string, PluginUpdateState>>(new Map());
 
   const handleActivate = async (id: string) => {
     try {
@@ -416,6 +513,50 @@ export function PluginSettings() {
       setProcessingId(null);
     }
   };
+
+  const handleCheckUpdate = async (id: string) => {
+    try {
+      setUpdateStates((prev) => new Map(prev).set(id, "checking"));
+      const info = await checkForUpdate(id);
+      if (info) {
+        setUpdateInfos((prev) => new Map(prev).set(id, info));
+      }
+      setUpdateStates((prev) => new Map(prev).set(id, "idle"));
+    } catch (err) {
+      setUpdateStates((prev) => new Map(prev).set(id, "error"));
+      toast.error(t("plugins.checkUpdateFailed", { error: err instanceof Error ? err.message : String(err) }));
+    }
+  };
+
+  const handleUpdate = async (id: string) => {
+    try {
+      setUpdateStates((prev) => new Map(prev).set(id, "downloading"));
+      await updatePlugin(id);
+      setUpdateStates((prev) => new Map(prev).set(id, "updated"));
+      setUpdateInfos((prev) => {
+        const newMap = new Map(prev);
+        newMap.delete(id);
+        return newMap;
+      });
+      toast.success(t("plugins.updateSuccess"));
+      // Reset to idle after 3 seconds
+      setTimeout(() => {
+        setUpdateStates((prev) => new Map(prev).set(id, "idle"));
+      }, 3000);
+    } catch (err) {
+      setUpdateStates((prev) => new Map(prev).set(id, "error"));
+      toast.error(t("plugins.updateFailed", { error: err instanceof Error ? err.message : String(err) }));
+    }
+  };
+
+  // Check all updates on mount
+  React.useEffect(() => {
+    if (isInitialized) {
+      checkForAllUpdates().then((infos) => {
+        setUpdateInfos(infos);
+      }).catch(console.error);
+    }
+  }, [isInitialized, checkForAllUpdates]);
 
   if (isLoading) {
     return (
@@ -468,9 +609,13 @@ export function PluginSettings() {
             <PluginCard
               key={plugin.manifest.id}
               plugin={plugin}
+              updateInfo={updateInfos.get(plugin.manifest.id) ?? null}
+              updateState={updateStates.get(plugin.manifest.id) ?? "idle"}
               onActivate={() => handleActivate(plugin.manifest.id)}
               onDeactivate={() => handleDeactivate(plugin.manifest.id)}
               onUninstall={() => handleUninstall(plugin.manifest.id)}
+              onCheckUpdate={() => handleCheckUpdate(plugin.manifest.id)}
+              onUpdate={() => handleUpdate(plugin.manifest.id)}
               isProcessing={processingId === plugin.manifest.id}
             />
           ))}

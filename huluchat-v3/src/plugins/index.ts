@@ -32,6 +32,10 @@ export type {
   PluginManagerEventHandler,
   PluginManager,
 
+  // Update types
+  PluginUpdateInfo,
+  PluginUpdateState,
+
   // Utility types
   PluginInstallResult,
   PluginValidationResult,
