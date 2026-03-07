@@ -221,6 +221,8 @@
     "namePlaceholder": "Template name",
     "content": "Content",
     "contentPlaceholder": "Template content. Use {variable} for placeholders.",
+    "edit": "Edit template",
+    "delete": "Delete template",
     "categories": {
       "writing": "Writing",
       "coding": "Coding",

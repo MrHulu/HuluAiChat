@@ -218,6 +218,8 @@
     "namePlaceholder": "模板名称",
     "content": "内容",
     "contentPlaceholder": "模板内容。使用 {变量名} 作为占位符。",
+    "edit": "编辑模板",
+    "delete": "删除模板",
     "categories": {
       "writing": "写作",
       "coding": "编程",

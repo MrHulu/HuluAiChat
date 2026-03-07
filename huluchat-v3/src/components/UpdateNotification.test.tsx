@@ -161,7 +161,7 @@ describe("UpdateNotification", () => {
     it("should have dismiss button", () => {
       render(<UpdateNotification />)
 
-      const dismissButton = screen.getByRole("button", { name: "" }) // X button has no text
+      const dismissButton = screen.getByRole("button", { name: "common.close" })
       expect(dismissButton).toBeInTheDocument()
     })
 

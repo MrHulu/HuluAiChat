@@ -66,7 +66,8 @@ export function UpdateNotification() {
               </div>
               <button
                 onClick={dismissUpdate}
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                aria-label={t("common.close")}
+                className="text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -81,9 +82,11 @@ export function UpdateNotification() {
             <div className="flex gap-2">
               <button
                 onClick={downloadAndInstall}
+                aria-label={t("update.updateNow")}
                 className={cn(
                   "flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium",
-                  "bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                  "bg-primary text-primary-foreground hover:bg-primary/90 transition-colors",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 )}
               >
                 <Download className="h-4 w-4" />
@@ -91,7 +94,8 @@ export function UpdateNotification() {
               </button>
               <button
                 onClick={() => checkForUpdates(false)}
-                className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                aria-label={t("update.later")}
+                className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 {t("update.later")}
               </button>
