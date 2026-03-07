@@ -25,6 +25,20 @@ import type {
 import type { Message, Session } from "@/api/client";
 import { getSessionMessages, listSessions, getSession } from "@/api/client";
 
+// Detect if running in Tauri environment
+const isTauri = typeof window !== "undefined" && "__TAURI__" in window;
+
+// Lazy-load Tauri FS functions only when in Tauri environment
+let tauriFs: typeof import("@tauri-apps/plugin-fs") | null = null;
+
+async function getTauriFs() {
+  if (!isTauri) return null;
+  if (!tauriFs) {
+    tauriFs = await import("@tauri-apps/plugin-fs");
+  }
+  return tauriFs;
+}
+
 /**
  * Create a disposable that calls a callback when disposed
  */
@@ -37,9 +51,9 @@ function createDisposable(callback: () => void): Disposable {
  */
 class PluginStorageImpl implements PluginStorage {
   private data: Map<string, unknown> = new Map();
-  private persistFn: () => void;
+  private persistFn: () => Promise<void>;
 
-  constructor(_pluginId: string, persistFn: () => void) {
+  constructor(_pluginId: string, persistFn: () => Promise<void>) {
     this.persistFn = persistFn;
   }
 
@@ -285,25 +299,58 @@ class PluginManagerImpl implements PluginManager {
 
   // ============== Private Methods ==============
 
-  private async loadManifest(_path: string): Promise<PluginManifest> {
-    // In a real implementation, this would read from the file system
-    // For now, we'll use a placeholder that would be replaced by Tauri FS API
-    // TODO: Use Tauri FS API to read the file
-    // const manifestPath = `${path}/manifest.json`;
-    // const content = await readTextFile(manifestPath);
-    // return JSON.parse(content);
+  private async loadManifest(pluginPath: string): Promise<PluginManifest> {
+    const fs = await getTauriFs();
+    if (!fs) {
+      throw new Error("Plugin loading requires Tauri environment");
+    }
 
-    // Placeholder for testing
-    throw new Error("Plugin loading not yet implemented - requires Tauri FS API");
+    try {
+      const manifestPath = `${pluginPath}/manifest.json`;
+      const content = await fs.readTextFile(manifestPath, {
+        baseDir: fs.BaseDirectory.AppData,
+      });
+      return JSON.parse(content) as PluginManifest;
+    } catch (error) {
+      throw new Error(
+        `Failed to load plugin manifest: ${error instanceof Error ? error.message : String(error)}`
+      );
+    }
   }
 
-  private async loadPluginModule(_path: string): Promise<PluginModule> {
-    // In a real implementation, this would load the JS module
-    // For security, we'd use a sandboxed evaluation
-    // TODO: Use sandboxed module loading
-    // const mainPath = `${path}/main.js`;
+  private async loadPluginModule(pluginPath: string): Promise<PluginModule> {
+    const fs = await getTauriFs();
+    if (!fs) {
+      throw new Error("Plugin loading requires Tauri environment");
+    }
 
-    throw new Error("Plugin module loading not yet implemented");
+    try {
+      const mainPath = `${pluginPath}/main.js`;
+      const content = await fs.readTextFile(mainPath, {
+        baseDir: fs.BaseDirectory.AppData,
+      });
+
+      // Create a sandboxed evaluation context
+      // Using Function constructor for sandboxing
+      const sandboxedModule = new Function(
+        "exports",
+        "module",
+        `${content}\n return module.exports;`
+      )({}, { exports: {} });
+
+      // Support both default export and named export
+      const moduleExport = sandboxedModule.default || sandboxedModule;
+
+      if (typeof moduleExport.activate !== "function") {
+        throw new Error("Plugin module must export an activate function");
+      }
+
+      return moduleExport as PluginModule;
+    } catch (error) {
+      throw new Error(
+        `Failed to load plugin module: ${error instanceof Error ? error.message : String(error)}`
+      );
+    }
   }
 
   private validatePlugin(manifest: PluginManifest): PluginValidationResult {
@@ -519,12 +566,35 @@ class PluginManagerImpl implements PluginManager {
     // storage.load(savedData);
   }
 
-  private persistStorage(_pluginId: string): void {
-    // TODO: Persist storage to disk using Tauri FS API
-    // const storage = this.pluginStorages.get(pluginId);
-    // if (storage) {
-    //   await savePluginStorage(pluginId, storage.export());
-    // }
+  private async persistStorage(pluginId: string): Promise<void> {
+    const fs = await getTauriFs();
+    if (!fs) return;
+
+    try {
+      const storage = this.pluginStorages.get(pluginId);
+      if (storage) {
+        const storageData = JSON.stringify(storage.export());
+        const storagePath = `plugins/storage/${pluginId}.json`;
+
+        // Ensure storage directory exists
+        const storageDir = "plugins/storage";
+        const dirExists = await fs.exists(storageDir, {
+          baseDir: fs.BaseDirectory.AppData,
+        });
+        if (!dirExists) {
+          await fs.mkdir(storageDir, {
+            baseDir: fs.BaseDirectory.AppData,
+            recursive: true,
+          });
+        }
+
+        await fs.writeTextFile(storagePath, storageData, {
+          baseDir: fs.BaseDirectory.AppData,
+        });
+      }
+    } catch (error) {
+      console.error(`Failed to persist storage for plugin ${pluginId}:`, error);
+    }
   }
 
   private unregisterPluginComponents(pluginId: string): void {
@@ -575,20 +645,90 @@ export function getPluginManager(): PluginManager {
 }
 
 /**
+ * Get the plugins directory path
+ */
+export async function getPluginsDirectory(): Promise<string> {
+  return "plugins";
+}
+
+/**
+ * Discover all installed plugins
+ */
+async function discoverPlugins(pluginDir: string): Promise<string[]> {
+  const fs = await getTauriFs();
+  if (!fs) {
+    console.log("Plugin discovery skipped: not in Tauri environment");
+    return [];
+  }
+
+  try {
+    // Check if plugins directory exists
+    const pluginDirExists = await fs.exists(pluginDir, {
+      baseDir: fs.BaseDirectory.AppData,
+    });
+
+    if (!pluginDirExists) {
+      // Create plugins directory
+      await fs.mkdir(pluginDir, {
+        baseDir: fs.BaseDirectory.AppData,
+        recursive: true,
+      });
+      return [];
+    }
+
+    // Read plugin directories
+    const entries = await fs.readDir(pluginDir, {
+      baseDir: fs.BaseDirectory.AppData,
+    });
+
+    // Filter directories that contain manifest.json
+    const pluginPaths: string[] = [];
+    for (const entry of entries) {
+      if (entry.isDirectory) {
+        const manifestPath = `${pluginDir}/${entry.name}/manifest.json`;
+        const hasManifest = await fs.exists(manifestPath, {
+          baseDir: fs.BaseDirectory.AppData,
+        });
+        if (hasManifest) {
+          pluginPaths.push(`${pluginDir}/${entry.name}`);
+        }
+      }
+    }
+
+    return pluginPaths;
+  } catch (error) {
+    console.error("Failed to discover plugins:", error);
+    return [];
+  }
+}
+
+/**
  * Initialize the plugin system
  */
 export async function initializePluginSystem(): Promise<PluginManager> {
-  const manager = getPluginManager();
-  // TODO: Discover and load installed plugins
-  // const pluginDir = await getPluginDirectory();
-  // const plugins = await discoverPlugins(pluginDir);
-  // for (const plugin of plugins) {
-  //   await manager.loadPlugin(plugin);
-  //   if (plugin.autoActivate) {
-  //     await manager.activatePlugin(plugin.id);
-  //   }
-  // }
-  return manager;
+  const manager = getPluginManager() as PluginManagerImpl;
+
+  try {
+    // Get plugins directory
+    const pluginDir = await getPluginsDirectory();
+
+    // Discover installed plugins
+    const pluginPaths = await discoverPlugins(pluginDir);
+
+    // Load each plugin
+    for (const pluginPath of pluginPaths) {
+      try {
+        await manager.loadPlugin(pluginPath);
+      } catch (error) {
+        console.error(`Failed to load plugin from ${pluginPath}:`, error);
+      }
+    }
+
+    return manager;
+  } catch (error) {
+    console.error("Failed to initialize plugin system:", error);
+    return manager;
+  }
 }
 
 export { PluginManagerImpl };
