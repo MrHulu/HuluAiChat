@@ -1,6 +1,6 @@
 """Application configuration"""
 from pydantic_settings import BaseSettings
-from typing import Optional
+from typing import Optional, Literal
 
 
 class Settings(BaseSettings):
@@ -13,6 +13,14 @@ class Settings(BaseSettings):
     openai_api_key: Optional[str] = None
     openai_base_url: Optional[str] = None
     openai_model: str = "gpt-4o-mini"
+
+    # DeepSeek (Default Provider)
+    deepseek_api_key: Optional[str] = None
+    deepseek_base_url: str = "https://api.deepseek.com"
+    deepseek_model: str = "deepseek-chat"
+
+    # Default provider: "deepseek" | "openai" | "ollama"
+    default_provider: Literal["deepseek", "openai", "ollama"] = "deepseek"
 
     # Model parameters (can be overridden per-request)
     temperature: float = 0.7

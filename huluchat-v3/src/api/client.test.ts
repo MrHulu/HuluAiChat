@@ -22,6 +22,10 @@ import {
   deleteFolder,
   moveSessionToFolder,
   listSessionsByFolder,
+  uploadRAGDocument,
+  queryRAGDocuments,
+  listRAGDocuments,
+  deleteRAGDocument,
 } from "./client";
 
 // Mock fetch globally
@@ -580,6 +584,152 @@ describe("API Client", () => {
 
         expect(mockFetch).toHaveBeenCalledWith("http://127.0.0.1:8765/api/sessions/");
         expect(result).toEqual(mockSessions);
+      });
+    });
+  });
+
+  describe("RAG APIs", () => {
+    describe("uploadRAGDocument", () => {
+      it("should upload a document with FormData", async () => {
+        const mockResponse = {
+          success: true,
+          doc_id: "doc-123",
+          filename: "test.txt",
+          chunk_count: 5,
+        };
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve(mockResponse),
+        });
+
+        const file = new File(["test content"], "test.txt", { type: "text/plain" });
+        const result = await uploadRAGDocument(file);
+
+        expect(mockFetch).toHaveBeenCalledWith("http://127.0.0.1:8765/api/rag/upload", {
+          method: "POST",
+          body: expect.any(FormData),
+        });
+        expect(result).toEqual(mockResponse);
+      });
+
+      it("should throw error on upload failure", async () => {
+        mockFetch.mockResolvedValueOnce({
+          ok: false,
+          json: () => Promise.resolve({ detail: "File too large" }),
+        });
+
+        const file = new File(["test"], "test.txt", { type: "text/plain" });
+        await expect(uploadRAGDocument(file)).rejects.toThrow("File too large");
+      });
+
+      it("should handle upload error without detail", async () => {
+        mockFetch.mockResolvedValueOnce({
+          ok: false,
+          json: () => Promise.reject(new Error("Parse error")),
+        });
+
+        const file = new File(["test"], "test.txt", { type: "text/plain" });
+        await expect(uploadRAGDocument(file)).rejects.toThrow("Upload failed");
+      });
+    });
+
+    describe("queryRAGDocuments", () => {
+      it("should query documents with default n_results", async () => {
+        const mockResponse = {
+          success: true,
+          chunks: [
+            { content: "Test content", source: "test.txt", chunk_index: 0, score: 0.9 },
+          ],
+          context: "[1] Test content (source: test.txt)",
+        };
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve(mockResponse),
+        });
+
+        const result = await queryRAGDocuments("test query");
+
+        expect(mockFetch).toHaveBeenCalledWith("http://127.0.0.1:8765/api/rag/query", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: "test query", n_results: 5 }),
+        });
+        expect(result).toEqual(mockResponse);
+      });
+
+      it("should query documents with custom n_results", async () => {
+        const mockResponse = {
+          success: true,
+          chunks: [],
+          context: "",
+        };
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve(mockResponse),
+        });
+
+        await queryRAGDocuments("test", 10);
+
+        expect(mockFetch).toHaveBeenCalledWith("http://127.0.0.1:8765/api/rag/query", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: "test", n_results: 10 }),
+        });
+      });
+
+      it("should throw error on query failure", async () => {
+        mockFetch.mockResolvedValueOnce({
+          ok: false,
+        });
+
+        await expect(queryRAGDocuments("test")).rejects.toThrow("Query failed");
+      });
+    });
+
+    describe("listRAGDocuments", () => {
+      it("should list all indexed documents", async () => {
+        const mockResponse = {
+          documents: [
+            { doc_id: "doc-1", filename: "test1.txt", chunk_count: 5 },
+            { doc_id: "doc-2", filename: "test2.md", chunk_count: 3 },
+          ],
+        };
+        mockFetch.mockResolvedValueOnce({
+          json: () => Promise.resolve(mockResponse),
+        });
+
+        const result = await listRAGDocuments();
+
+        expect(mockFetch).toHaveBeenCalledWith("http://127.0.0.1:8765/api/rag/documents");
+        expect(result).toEqual(mockResponse);
+      });
+    });
+
+    describe("deleteRAGDocument", () => {
+      it("should delete a document", async () => {
+        const mockResponse = { success: true };
+        mockFetch.mockResolvedValueOnce({
+          json: () => Promise.resolve(mockResponse),
+        });
+
+        const result = await deleteRAGDocument("doc-123");
+
+        expect(mockFetch).toHaveBeenCalledWith("http://127.0.0.1:8765/api/rag/documents/doc-123", {
+          method: "DELETE",
+        });
+        expect(result).toEqual(mockResponse);
+      });
+
+      it("should return error on delete failure", async () => {
+        const mockResponse = { success: false, error: "Document not found" };
+        mockFetch.mockResolvedValueOnce({
+          json: () => Promise.resolve(mockResponse),
+        });
+
+        const result = await deleteRAGDocument("invalid-id");
+
+        expect(result.success).toBe(false);
+        expect(result.error).toBe("Document not found");
       });
     });
   });

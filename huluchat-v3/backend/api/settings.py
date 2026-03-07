@@ -43,16 +43,62 @@ class ModelInfo(BaseModel):
     id: str
     name: str
     description: str
+    provider: str = "openai"  # openai, deepseek, ollama
 
 
-# Available models
+# Available models - DeepSeek as default (first in list)
 AVAILABLE_MODELS: List[ModelInfo] = [
-    ModelInfo(id="gpt-4o", name="GPT-4o", description="Most capable model, best for complex tasks"),
-    ModelInfo(id="gpt-4o-mini", name="GPT-4o Mini", description="Fast and affordable, great for daily use"),
-    ModelInfo(id="gpt-4-turbo", name="GPT-4 Turbo", description="Previous generation flagship"),
-    ModelInfo(id="gpt-3.5-turbo", name="GPT-3.5 Turbo", description="Fast and economical"),
-    ModelInfo(id="claude-3-5-sonnet-20241022", name="Claude 3.5 Sonnet", description="Anthropic's latest"),
-    ModelInfo(id="claude-3-opus-20240229", name="Claude 3 Opus", description="Most powerful Claude"),
+    # DeepSeek Models (Recommended/Default)
+    ModelInfo(
+        id="deepseek-chat",
+        name="DeepSeek V3",
+        description="Recommended: Best value, high quality",
+        provider="deepseek"
+    ),
+    ModelInfo(
+        id="deepseek-reasoner",
+        name="DeepSeek R1",
+        description="Advanced reasoning model",
+        provider="deepseek"
+    ),
+    # OpenAI Models
+    ModelInfo(
+        id="gpt-4o",
+        name="GPT-4o",
+        description="Most capable model, best for complex tasks",
+        provider="openai"
+    ),
+    ModelInfo(
+        id="gpt-4o-mini",
+        name="GPT-4o Mini",
+        description="Fast and affordable, great for daily use",
+        provider="openai"
+    ),
+    ModelInfo(
+        id="gpt-4-turbo",
+        name="GPT-4 Turbo",
+        description="Previous generation flagship",
+        provider="openai"
+    ),
+    ModelInfo(
+        id="gpt-3.5-turbo",
+        name="GPT-3.5 Turbo",
+        description="Fast and economical",
+        provider="openai"
+    ),
+    # Claude Models (via OpenAI-compatible API)
+    ModelInfo(
+        id="claude-3-5-sonnet-20241022",
+        name="Claude 3.5 Sonnet",
+        description="Anthropic's latest",
+        provider="openai"
+    ),
+    ModelInfo(
+        id="claude-3-opus-20240229",
+        name="Claude 3 Opus",
+        description="Most powerful Claude",
+        provider="openai"
+    ),
 ]
 
 
