@@ -91,6 +91,7 @@ export const MermaidBlock = memo(function MermaidBlock({
       <div
         className={cn(
           "p-4 rounded-lg bg-error-muted/50 border border-error/30",
+          "animate-in fade-in-0 zoom-in-95 duration-200",
           className
         )}
       >
@@ -112,12 +113,13 @@ export const MermaidBlock = memo(function MermaidBlock({
       <div
         className={cn(
           "mermaid-container flex justify-center items-center p-4 rounded-lg",
-          "bg-muted",
+          "bg-muted animate-in fade-in-0 duration-150",
           className
         )}
       >
-        <div className="text-muted-foreground text-sm animate-pulse">
-          Loading chart...
+        <div className="flex items-center gap-2 text-muted-foreground text-sm">
+          <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+          <span>Loading chart...</span>
         </div>
       </div>
     );
@@ -128,6 +130,7 @@ export const MermaidBlock = memo(function MermaidBlock({
       className={cn(
         "mermaid-container flex justify-center p-4 rounded-lg",
         "bg-muted overflow-x-auto",
+        "animate-in fade-in-0 duration-300",
         className
       )}
       dangerouslySetInnerHTML={{ __html: svg }}
