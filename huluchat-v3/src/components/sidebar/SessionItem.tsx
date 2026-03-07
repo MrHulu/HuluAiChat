@@ -12,6 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { SessionTag } from "./SessionTag";
 
 export interface SessionItemProps {
   session: Session;
@@ -21,6 +22,8 @@ export interface SessionItemProps {
   onDelete?: () => void;
   onExport?: (sessionId: string, format: ExportFormat) => void;
   onMoveToFolder?: (sessionId: string, folderId: string | null) => void;
+  tags?: string[];
+  onTagClick?: (tag: string) => void;
 }
 
 export function SessionItem({
@@ -31,6 +34,8 @@ export function SessionItem({
   onDelete,
   onExport,
   onMoveToFolder,
+  tags = [],
+  onTagClick,
 }: SessionItemProps) {
   const { t } = useTranslation();
   const [isExporting, setIsExporting] = useState(false);
@@ -92,6 +97,22 @@ export function SessionItem({
         <div className="text-xs text-muted-foreground truncate">
           {formatDate(session.updated_at)}
         </div>
+        {/* Tags */}
+        {tags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-1" onClick={(e) => e.stopPropagation()}>
+            {tags.slice(0, 3).map((tag) => (
+              <SessionTag
+                key={tag}
+                name={tag}
+                size="xs"
+                onClick={() => onTagClick?.(tag)}
+              />
+            ))}
+            {tags.length > 3 && (
+              <span className="text-[10px] text-muted-foreground">+{tags.length - 3}</span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Action buttons */}
