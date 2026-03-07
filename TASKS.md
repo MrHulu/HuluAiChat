@@ -5,10 +5,19 @@
 
 ## 待开始
 <!-- 新任务添加到这里 -->
-- [ ] **TASK-117**: 🚀 开发 v3.48.0 - 智能引导系统（2-3 天）
-- [ ] **TASK-116**: 🎬 准备 Product Hunt 发布素材（截图、视频）
+- [ ] **TASK-116**: 🎬 准备 Product Hunt 发布素材（截图、视频）- 等待 Boss
 
 ## 已完成
+- [x] **TASK-118**: 🚀 发布 v3.48.0（GitHub Release + 桌面构建）✅ 2026-03-07
+  - 版本号更新：tauri.conf.json, Cargo.toml
+  - CHANGELOG.md 更新
+  - GitHub Release v3.48.0 已创建
+  - https://github.com/MrHulu/HuluAiChat/releases/tag/v3.48.0
+- [x] **TASK-117**: 🚀 开发 v3.48.0 - 智能引导系统 ✅ 2026-03-07
+  - WelcomeDialog 组件（3 步引导）
+  - i18n EN/ZH 翻译
+  - localStorage 首次启动检测
+  - PR #164 已合并
 - [x] **TASK-115**: 📝 优化 GitHub README（营销优化）✅ 2026-03-07
   - 添加 shields.io badges (release, license, platform)
   - 添加新功能：RAG 智能问答、插件系统
