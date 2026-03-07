@@ -166,6 +166,7 @@
     "search": "Search chats",
     "settings": "Open settings",
     "toggleSidebar": "Toggle sidebar",
+    "switchSession": "Switch to recent session",
     "send": "Send message",
     "newLine": "New line in message",
     "close": "Close dialog",
