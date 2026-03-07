@@ -72,11 +72,12 @@ export function BookmarkButton({
       aria-label={bookmarked ? t("chat.removeBookmark") : t("chat.addBookmark")}
       aria-pressed={bookmarked}
       className={cn(
-        "p-1.5 rounded-md transition-all",
+        "p-1.5 rounded-md transition-all duration-200 ease-out",
         "opacity-0 group-hover:opacity-100",
         bookmarked && "opacity-100",
         isLoading && "opacity-50 cursor-wait",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+        "active:scale-90",
         bookmarked
           ? "text-primary hover:bg-primary/10"
           : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
@@ -84,9 +85,15 @@ export function BookmarkButton({
       )}
     >
       {bookmarked ? (
-        <BookmarkCheck className="w-3.5 h-3.5" />
+        <BookmarkCheck
+          key="bookmarked"
+          className="w-3.5 h-3.5 animate-in zoom-in-50 duration-200"
+        />
       ) : (
-        <Bookmark className="w-3.5 h-3.5" />
+        <Bookmark
+          key="unbookmarked"
+          className="w-3.5 h-3.5 animate-in zoom-in-50 duration-200"
+        />
       )}
     </button>
   );

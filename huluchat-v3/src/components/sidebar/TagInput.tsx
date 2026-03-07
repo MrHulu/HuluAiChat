@@ -90,7 +90,7 @@ export function TagInput({
       {tags.length < maxTags && (
         <>
           {isInputVisible ? (
-            <div className="relative">
+            <div className="relative animate-in zoom-in-95 duration-150">
               <input
                 ref={inputRef}
                 type="text"
@@ -106,7 +106,9 @@ export function TagInput({
                 className={cn(
                   "w-20 px-1.5 py-0.5 text-[10px] rounded-full border",
                   "bg-transparent border-dashed border-muted-foreground/50",
-                  "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:border-primary"
+                  "transition-all duration-150",
+                  "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:border-primary",
+                  "hover:border-muted-foreground/70"
                 )}
               />
 
@@ -118,17 +120,22 @@ export function TagInput({
                   className={cn(
                     "absolute left-0 top-full mt-1 z-50",
                     "min-w-[100px] max-w-[150px] p-1",
-                    "bg-popover border rounded-md shadow-md"
+                    "bg-popover border rounded-md shadow-md",
+                    "animate-in fade-in-0 zoom-in-95 duration-150",
+                    "origin-top-left"
                   )}
                 >
-                  {filteredSuggestions.slice(0, 5).map((suggestion) => (
+                  {filteredSuggestions.slice(0, 5).map((suggestion, index) => (
                     <button
                       key={suggestion}
                       role="option"
                       onMouseDown={() => handleSubmit(suggestion)}
+                      style={{ animationDelay: `${index * 30}ms` }}
                       className={cn(
                         "w-full px-2 py-1 text-xs text-left rounded",
-                        "hover:bg-muted transition-colors",
+                        "hover:bg-muted transition-all duration-100",
+                        "active:scale-[0.98]",
+                        "animate-in fade-in-0 slide-in-from-left-1",
                         "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:bg-muted"
                       )}
                     >
@@ -148,8 +155,9 @@ export function TagInput({
               className={cn(
                 "px-1.5 py-0.5 text-[10px] rounded-full border border-dashed",
                 "border-muted-foreground/30 text-muted-foreground",
-                "hover:border-muted-foreground/50 hover:text-muted-foreground",
-                "transition-colors",
+                "hover:border-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/30",
+                "active:scale-95",
+                "transition-all duration-150 ease-out",
                 "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               )}
             >
