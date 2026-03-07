@@ -1,131 +1,65 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-07 - Cycle #150
+2026-03-07 - Cycle #151
 
 ## Current Phase
-⏳ **v3.50.0 发布完成** - 等待 Boss 指示（邮件发送失败，需配置 SMTP Secrets）
+⏳ **v3.51.0 发布完成** - 等待 Boss 下一步指示
 
 ---
 
-## v3.50.0 进度 (Cycle #149) ✅ 已发布
+## v3.51.0 进度 (Cycle #151) ✅ 已发布
 
-### Phase 1: 后端 API + 前端基础 ✅ 完成
-- `SessionTagModel` / `MessageBookmarkModel` 数据库模型
-- 标签 API: CRUD 操作、按标签筛选
-- 书签 API: CRUD 操作、按会话列表
-- 前端 API 客户端
-- 标签组件: SessionTag, TagInput, TagFilter
-- i18n 翻译 (EN/ZH)
+### 功能: 书签导出
+- **Backend**: GET /bookmarks/export/json, GET /bookmarks/export/markdown
+- **Frontend**: BookmarkPanel 添加导出下拉菜单
+- **i18n**: EN/ZH 翻译
 
-### Phase 2: 标签 UI 集成 ✅ 完成
-- ✅ SessionItem 显示标签
-- ✅ SessionList 支持标签筛选
-- ✅ TagFilter 组件集成
-- ✅ 点击标签触发筛选
-
-### Phase 3: 消息书签 UI ✅ 完成
-- ✅ BookmarkButton 组件（消息上显示书签按钮）
-- ✅ BookmarkPanel 组件（书签列表）
-- ✅ MessageItem 添加书签按钮（hover 显示）
-- ✅ MessageList 支持滚动到指定消息（带高亮效果）
-- ✅ ChatView 集成书签面板（顶部按钮切换）
-- ✅ i18n 翻译 (EN/ZH)
-
-### Phase 4: 发布 v3.50.0 ✅ 完成
-- ✅ 版本号已更新 (3.50.0)
-- ✅ CHANGELOG 已更新
-- ✅ PR #175 已合并
-- ✅ GitHub Release 已创建
-- ✅ https://github.com/MrHulu/HuluAiChat/releases/tag/v3.50.0
+### 发布状态
+- ✅ PR #181 合并（书签导出功能）
+- ✅ PR #180 合并（官网部署修复）
+- ✅ PR #182 合并（版本更新）
+- ✅ GitHub Release v3.51.0 已创建
+- ✅ https://github.com/MrHulu/HuluAiChat/releases/tag/v3.51.0
 
 ---
 
-## CEO 决策 (Cycle #145)
+## CEO 决策 (Cycle #151)
 
 ### 决策内容
-**v3.50.0 方向：B. 会话标签/消息书签**
+**v3.51.0 方向：B. 书签导出（采纳 CEO Bezos 建议）**
 
 ### 决策理由
-1. **解决高频痛点**：用户会话多、找不到重要内容
-2. **飞轮效应**：知识资产积累 → 用户粘性 → 口碑传播
-3. **符合隐私原则**：100% 本地存储，零数据上传
-4. **可逆决策**：双向门，可迭代
+1. **创造可分享内容**: 用户可以导出书签到 Markdown/JSON
+2. **病毒传播潜力**: 导出文件携带 HuluChat 品牌
+3. **飞轮效应**: 更多导出 = 更多曝光 = 更多用户
+4. **可逆决策**: 2-3 天开发，风险低
+
+### Critic 反对意见
+- Critic Munger 建议停止功能开发，专注增长
+- 理由：6 个版本 MAU 无变化（~100）
+- 但基础设施问题需要 Boss 参与，开发期间可保持迭代
 
 ### 详细决策文档
-`docs/ceo/v3.50.0-decision.md`
-
-### 风险评估
-| 风险 | 等级 | 应对 |
-|------|------|------|
-| 功能复杂度超预期 | 中 | MVP：先做标签，书签可推迟 |
-| 用户不买账 | 低 | Top 3 用户请求，需求已验证 |
-| 隐私问题 | 无 | 完全本地存储 |
-
-### 预期效果
-- 短期：现有用户活跃度 +15%
-- 中期：产品差异化显现
-- 长期：为 RAG 功能做铺垫
-
----
-
-## v3.50.0 MVP 范围
-
-### 已完成
-1. **会话标签**：给会话打标签，按标签筛选 ✅
-2. **消息书签**：标记重要消息，快速跳转 ✅
-
-### 不做（v3.51 再说）
-- 标签颜色自定义
-- 标签统计
-- 书签导出
-
----
-
-## 战略决策 (Cycle #133)
-### CEO vs Critic 分歧
-| Agent | 建议 | 理由 |
-|-------|------|------|
-| CEO Bezos | Command Palette 增强 | 功能连贯性 |
-| Critic Munger | PAUSE 功能开发 | MAU ~100，应专注增长 |
-
-### 最终决策：采纳 Critic 建议
-**核心问题**：5 天发布 5 个版本，但 MAU 仍 ~100（目标 50,000）
-**v3.50.0 方向**：
-1. ❌ 不做新功能
-2. ~~✅ 添加用户行为埋点~~ ❌ **Boss 决定取消** - 隐私优先原则
-3. ⏳ 等待 Boss 解决基础设施问题
-
-### Boss 最新决策 (Cycle #143)
-**隐私优先原则** - 明确禁止：
-- ❌ 用户行为埋点
-- ❌ 数据追踪
-- ❌ 遥测功能
-
-PROMPT.md 已更新，添加禁止事项列表
+`docs/ceo/v3.51.0-decision.md`
 
 ---
 
 ## 阻塞问题
-**1. 官网部署失败 - Cloudflare Pages 项目不存在**
-- Secrets 已配置 ✅ (CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID)
-- 错误: `Project not found. The specified project name does not match any of your existing projects.`
-- 项目名称: `huluchat-website`
-- 需要操作: Boss 需要先在 Cloudflare Dashboard 创建 Pages 项目
+**1. 官网部署 - 已修复（等待验证）**
+- PR #180 添加了明确的 projectName
+- Cloudflare Pages 可能仍需 Boss 手动创建项目
 
 **2. Product Hunt 发布素材**
 - 需要 Boss 手动准备：应用截图、演示视频
-- AI 无法代劳
 
-**3. 邮件发送失败 - SMTP Secrets 未配置** ⚠️ 新增
-- GitHub Actions 邮件工作流失败
-- 错误: `Server address must be specified`
-- 需要配置: SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD
+**3. 邮件发送 - SMTP Secrets 未配置**
+- 需要: SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD
 
 ---
 
-## Current Task (Cycle #150)
-**✅ v3.50.0 已发布** - 等待 Boss 指示（邮件发送失败）
+## Current Task (Cycle #151)
+**✅ v3.51.0 已发布** - 等待 Boss 下一步指示
 
 ### 任务状态更新
 | 任务 | 状态 | 说明 |
@@ -133,41 +67,39 @@ PROMPT.md 已更新，添加禁止事项列表
 | TASK-116 | ⏸️ 等待 | Product Hunt 素材需 Boss 准备 |
 | TASK-120 | ❌ 已取消 | Boss 决定不做埋点（隐私优先） |
 | TASK-121 | ✅ 已完成 | v3.50.0 会话标签/书签功能 |
+| TASK-122 | ✅ 已完成 | v3.51.0 书签导出功能 |
 
 ---
 
 ## Next Action
-1. ✅ CEO 决策完成 - 会话标签/消息书签
-2. ✅ Phase 1: 后端 API + 前端基础
-3. ✅ Phase 2: 标签 UI 集成
-4. ✅ Phase 3: 消息书签 UI
-5. ✅ Phase 4: 发布 v3.50.0
-6. ✅ PR #178 合并（文档更新）
-7. ⏳ 等待 Boss 下一步指示
-   - 邮件发送失败，需配置 SMTP Secrets
-   - Boss 可直接在此回复指示
+1. ✅ CEO 决策 - 书签导出功能
+2. ✅ 后端 API 开发
+3. ✅ 前端 UI 开发
+4. ✅ i18n 翻译
+5. ✅ 发布 v3.51.0
+6. ⏳ 等待 Boss 下一步指示
 
 ---
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
-- Latest Release: **v3.50.0** (2026-03-07)
+- Latest Release: **v3.51.0** (2026-03-07)
 - Current Task: **等待下一步指示**
 - Tech Stack: Tauri 2.0, React 19, TypeScript, FastAPI, Python 3.14
 - Tests: ✅ 686 passed (32 files)
-- Website: ⚠️ Cloudflare Pages 项目不存在
+- Website: ⏳ 等待 Cloudflare 验证
 
 ---
 
 ## Release History
 | Version | Date | Highlights |
 |---------|------|------------|
+| **v3.51.0** | 2026-03-07 | 📤 书签导出 (Markdown + JSON) |
 | **v3.50.0** | 2026-03-07 | 🏷️ Session Tags & 📑 Message Bookmarks |
 | **v3.49.0** | 2026-03-07 | ⌨️ 会话切换快捷键 |
 | **v3.48.0** | 2026-03-07 | 🎯 智能引导系统 |
 | **v3.47.0** | 2026-03-07 | 🎨 UX 优化 |
 | **v3.46.0** | 2026-03-07 | 🤖 DeepSeek + 📚 RAG |
-| **v3.45.0** | 2026-03-07 | 🔌 插件安装/卸载 UI |
 
 ---
 
@@ -178,7 +110,7 @@ PROMPT.md 已更新，添加禁止事项列表
 | 插件沙箱 | MAU 太低 | MAU > 10 万 |
 | MCP 支持 | 生态未成熟 | 用户明确要求 |
 | Agent 能力 | 复杂度高 | 核心功能稳定后 |
-| 命令面板增强 | MVP 范围控制 | v3.51 候选 |
+| 命令面板增强 | MVP 范围控制 | v3.52 候选 |
 
 ---
 
@@ -191,19 +123,11 @@ PROMPT.md 已更新，添加禁止事项列表
 ---
 
 ## 循环计数
-当前周期: 150
-上次发邮件: 149 (发送失败 - SMTP Secrets 未配置)
+当前周期: 151
+上次发邮件: 150 (发送失败 - SMTP Secrets 未配置)
 
 ---
 
 ## 邮件发送记录
+- **Cycle #151**: 📧 v3.51.0 发布完成 - 待发送（SMTP Secrets 未配置）
 - **Cycle #150**: 📧 v3.50.0 发布完成 - ⚠️ 发送失败 (SMTP Secrets 未配置)
-- **Cycle #149**: 📧 v3.50.0 发布完成 - 待发送
-- **Cycle #148**: 📧 Phase 3 完成邮件 - 已跳过（直接发布）
-- **Cycle #147**: 📧 Phase 2 完成邮件 - 已跳过（直接发布）
-- **Cycle #145**: ✅ CEO 决策邮件 - v3.50.0 方向确定 - 已发送
-- **Cycle #143**: ✅ 决策确认邮件 - 埋点取消，询问 v3.50.0 方向 - ✅ 邮件已发送
-- **Cycle #143**: ✅ Boss 决策收到 - 埋点功能取消（通过代码提交）
-- **Cycle #143**: ⚠️ 紧急提醒 - 第 9 个周期等待 - ✅ 邮件已发送
-- **Cycle #141**: 📧 第 7 个周期等待提醒 - ✅ 邮件已发送
-- **Cycle #140**: 📊 用户行为埋点方案设计完成 - ✅ 邮件已发送

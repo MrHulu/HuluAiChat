@@ -17,6 +17,14 @@
 - [x] ~~**TASK-120**: 📊 添加用户行为埋点~~ ❌ **Boss 决定取消** - 隐私优先原则
 
 ## 已完成
+- [x] **TASK-122**: 💻 开发 v3.51.0 - 书签导出功能 ✅ 2026-03-07
+  - Backend: GET /bookmarks/export/json, GET /bookmarks/export/markdown
+  - Frontend: BookmarkPanel 添加导出下拉菜单
+  - i18n: EN/ZH 翻译
+  - PR #181 已合并
+  - GitHub Release v3.51.0 已创建
+  - https://github.com/MrHulu/HuluAiChat/releases/tag/v3.51.0
+
 - [x] **TASK-121**: 💻 开发 v3.50.0 - 会话标签/消息书签功能 ✅ 2026-03-07
   - Phase 1: 数据库 Schema 设计（tags, bookmarks 表） ✅
   - Phase 2: 会话标签 UI（打标签、按标签筛选） ✅
