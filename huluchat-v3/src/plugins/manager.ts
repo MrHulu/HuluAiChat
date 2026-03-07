@@ -355,57 +355,56 @@ class PluginManagerImpl implements PluginManager {
   }
 
   private createPluginContext(plugin: PluginInstance): PluginContext {
-    const self = this;
     const pluginId = plugin.manifest.id;
     const disposeCallbacks: (() => void)[] = [];
-    self.disposeCallbacks.set(pluginId, disposeCallbacks);
+    this.disposeCallbacks.set(pluginId, disposeCallbacks);
 
     const context: PluginContext = {
       id: pluginId,
       version: plugin.manifest.version,
 
       registerCommand: (command: Command): Disposable => {
-        self.commands.set(command.id, command);
+        this.commands.set(command.id, command);
         return createDisposable(() => {
-          self.commands.delete(command.id);
+          this.commands.delete(command.id);
         });
       },
 
       executeCommand: async (id: string, ...args: unknown[]): Promise<void> => {
-        await self.executeCommand(id, ...args);
+        await this.executeCommand(id, ...args);
       },
 
       onBeforeSend: (handler: MessageHandler): Disposable => {
-        self.beforeSendHandlers.push(handler);
+        this.beforeSendHandlers.push(handler);
         return createDisposable(() => {
-          const index = self.beforeSendHandlers.indexOf(handler);
+          const index = this.beforeSendHandlers.indexOf(handler);
           if (index >= 0) {
-            self.beforeSendHandlers.splice(index, 1);
+            this.beforeSendHandlers.splice(index, 1);
           }
         });
       },
 
       onAfterReceive: (handler: MessageHandler): Disposable => {
-        self.afterReceiveHandlers.push(handler);
+        this.afterReceiveHandlers.push(handler);
         return createDisposable(() => {
-          const index = self.afterReceiveHandlers.indexOf(handler);
+          const index = this.afterReceiveHandlers.indexOf(handler);
           if (index >= 0) {
-            self.afterReceiveHandlers.splice(index, 1);
+            this.afterReceiveHandlers.splice(index, 1);
           }
         });
       },
 
       addToolbarButton: (button: ToolbarButton): Disposable => {
-        self.toolbarButtons.set(button.id, button);
+        this.toolbarButtons.set(button.id, button);
         return createDisposable(() => {
-          self.toolbarButtons.delete(button.id);
+          this.toolbarButtons.delete(button.id);
         });
       },
 
       addSettingsPanel: (panel: SettingsPanel): Disposable => {
-        self.settingsPanels.set(panel.id, panel);
+        this.settingsPanels.set(panel.id, panel);
         return createDisposable(() => {
-          self.settingsPanels.delete(panel.id);
+          this.settingsPanels.delete(panel.id);
         });
       },
 
@@ -428,9 +427,9 @@ class PluginManagerImpl implements PluginManager {
         }
       },
 
-      storage: self.getPluginStorage(pluginId),
+      storage: this.getPluginStorage(pluginId),
 
-      api: self.createPluginAPI(plugin),
+      api: this.createPluginAPI(plugin),
 
       readClipboard: async (): Promise<string> => {
         if (!plugin.manifest.permissions.includes("clipboard")) {
