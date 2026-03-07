@@ -41,6 +41,10 @@ export default defineConfig(async () => ({
           ) {
             return "vendor-markdown";
           }
+          // Mermaid 图表库（体积大，懒加载单独分割）
+          if (id.includes("node_modules/mermaid/")) {
+            return "vendor-mermaid";
+          }
           // Radix UI 组件
           if (id.includes("node_modules/@radix-ui/")) {
             return "vendor-radix";
