@@ -2,6 +2,29 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [3.49.0] - 2026-03-07
+
+### ✨ Features
+
+- **Session Switching Shortcuts**: Quick keyboard navigation between recent sessions
+  - `Ctrl/Cmd + 1`: Switch to most recent session
+  - `Ctrl/Cmd + 2`: Switch to second most recent session
+  - `Ctrl/Cmd + 3`: Switch to third most recent session
+  - Cross-platform support (Windows/macOS)
+  - Full i18n support (English/Chinese)
+
+### 🔧 Technical Details
+
+- **useKeyboardShortcuts Hook**:
+  - Extended with `onSwitchSession` callback
+  - 0-indexed session switching logic
+  - Added to `KEYBOARD_SHORTCUTS` constant for help display
+
+### 🧪 Testing
+
+- 8 new test cases for session switching shortcuts
+- All keyboard-related tests: 31 passed
+
 ## [3.48.0] - 2026-03-07
 
 ### ✨ Features
