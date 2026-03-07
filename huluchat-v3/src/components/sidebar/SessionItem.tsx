@@ -92,10 +92,12 @@ export function SessionItem({
       onClick={onClick}
       className={cn(
         "group flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer",
-        "transition-all duration-200",
+        "transition-all duration-200 ease-out",
+        "list-item-enter",
         isActive
           ? "bg-accent text-accent-foreground"
-          : "hover:bg-muted/50 text-foreground"
+          : "hover:bg-muted/50 text-foreground",
+        "active:scale-[0.98]"
       )}
     >
       <div className="flex-1 min-w-0">

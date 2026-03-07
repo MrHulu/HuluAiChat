@@ -27,7 +27,8 @@ export function SessionTag({
       }}
       className={cn(
         "inline-flex items-center gap-1 rounded-full border",
-        "transition-colors cursor-pointer",
+        "transition-all duration-150 ease-out cursor-pointer",
+        "active:scale-95",
         size === "xs" ? "px-1.5 py-0.5 text-[10px]" : "px-2 py-0.5 text-xs",
         isActive
           ? "bg-primary/20 border-primary/30 text-primary"
