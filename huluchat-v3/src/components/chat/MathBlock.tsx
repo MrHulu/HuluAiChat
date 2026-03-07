@@ -36,6 +36,8 @@ export const MathBlock = memo(function MathBlock({
   if (error && !inline) {
     return (
       <div
+        role="alert"
+        aria-label="Math formula error"
         className={cn(
           "p-4 rounded-lg bg-error-muted/50 border border-error/30",
           "animate-in fade-in-0 zoom-in-95 duration-200",
@@ -59,6 +61,8 @@ export const MathBlock = memo(function MathBlock({
   if (error && inline) {
     return (
       <span
+        role="alert"
+        aria-label={`Math formula error: ${error}`}
         className={cn("text-error", className)}
         title={error}
       >
@@ -72,6 +76,7 @@ export const MathBlock = memo(function MathBlock({
 
   return (
     <Wrapper
+      aria-label={`Math formula: ${math}`}
       className={inline ? className : cn("katex-display", className)}
       dangerouslySetInnerHTML={{ __html: html }}
     />
