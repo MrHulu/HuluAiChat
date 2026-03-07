@@ -4,11 +4,11 @@
 2026-03-07 - Cycle #146
 
 ## Current Phase
-🚀 **v3.50.0 开发** - Phase 1 完成，Phase 2 进行中
+🚀 **v3.50.0 开发** - Phase 2 完成
 
 ---
 
-## v3.50.0 进度 (Cycle #146)
+## v3.50.0 进度 (Cycle #147)
 
 ### Phase 1: 后端 API + 前端基础 ✅ 完成
 - `SessionTagModel` / `MessageBookmarkModel` 数据库模型
@@ -18,10 +18,17 @@
 - 标签组件: SessionTag, TagInput, TagFilter
 - i18n 翻译 (EN/ZH)
 
-### Phase 2: 标签 UI 集成 🔄 进行中
-- 修改 SessionItem 显示标签
-- 修改 SessionList 支持标签筛选
-- 标签管理（添加/删除）
+### Phase 2: 标签 UI 集成 ✅ 完成
+- ✅ SessionItem 显示标签
+- ✅ SessionList 支持标签筛选
+- ✅ TagFilter 组件集成
+- ✅ 点击标签触发筛选
+- ⏳ 标签管理（添加/删除）- 待 Phase 3
+
+### Phase 3: 消息书签 UI ⏳ 待开始
+- 书签按钮在消息上
+- 书签列表面板
+- 点击书签跳转到消息
 
 ### Phase 3: 消息书签 UI ⏳ 待开始
 - 书签按钮在消息上
