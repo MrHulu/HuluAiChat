@@ -564,3 +564,155 @@ export async function deleteRAGDocument(docId: string): Promise<{ success: boole
   });
   return response.json();
 }
+
+// ============== Session Tags APIs ==============
+
+/**
+ * Tag list for a session
+ */
+export interface TagList {
+  session_id: string;
+  tags: string[];
+}
+
+/**
+ * Tag response
+ */
+export interface TagResponse {
+  id: string;
+  session_id: string;
+  tag_name: string;
+  created_at: string;
+}
+
+/**
+ * Get all tags for a session
+ */
+export async function getSessionTags(sessionId: string): Promise<TagList> {
+  const response = await fetch(`${API_BASE}/sessions/${sessionId}/tags`);
+  return response.json();
+}
+
+/**
+ * Add a tag to a session
+ */
+export async function addSessionTag(sessionId: string, tagName: string): Promise<TagResponse> {
+  const response = await fetch(`${API_BASE}/sessions/${sessionId}/tags`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ session_id: sessionId, tag_name: tagName }),
+  });
+  return response.json();
+}
+
+/**
+ * Remove a tag from a session
+ */
+export async function removeSessionTag(sessionId: string, tagName: string): Promise<void> {
+  await fetch(`${API_BASE}/sessions/${sessionId}/tags/${encodeURIComponent(tagName)}`, {
+    method: "DELETE",
+  });
+}
+
+/**
+ * Get all unique tag names
+ */
+export async function listAllTags(): Promise<string[]> {
+  const response = await fetch(`${API_BASE}/tags`);
+  return response.json();
+}
+
+/**
+ * Session with tags
+ */
+export interface SessionWithTags extends Session {
+  tags: string[];
+}
+
+/**
+ * Get all sessions with a specific tag
+ */
+export async function getSessionsByTag(tagName: string): Promise<SessionWithTags[]> {
+  const response = await fetch(`${API_BASE}/tags/${encodeURIComponent(tagName)}/sessions`);
+  return response.json();
+}
+
+// ============== Message Bookmarks APIs ==============
+
+/**
+ * Bookmark response
+ */
+export interface BookmarkResponse {
+  id: string;
+  message_id: string;
+  session_id: string;
+  note: string | null;
+  created_at: string;
+}
+
+/**
+ * Bookmark with message content
+ */
+export interface BookmarkWithMessage extends BookmarkResponse {
+  message_content: string;
+  message_role: "user" | "assistant";
+}
+
+/**
+ * Create a bookmark for a message
+ */
+export async function createBookmark(
+  messageId: string,
+  sessionId: string,
+  note?: string
+): Promise<BookmarkResponse> {
+  const response = await fetch(`${API_BASE}/bookmarks`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message_id: messageId, session_id: sessionId, note }),
+  });
+  return response.json();
+}
+
+/**
+ * Delete a bookmark
+ */
+export async function deleteBookmark(bookmarkId: string): Promise<void> {
+  await fetch(`${API_BASE}/bookmarks/${bookmarkId}`, { method: "DELETE" });
+}
+
+/**
+ * Update bookmark note
+ */
+export async function updateBookmark(bookmarkId: string, note: string): Promise<BookmarkResponse> {
+  const response = await fetch(`${API_BASE}/bookmarks/${bookmarkId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ note }),
+  });
+  return response.json();
+}
+
+/**
+ * Get all bookmarks for a session
+ */
+export async function getSessionBookmarks(sessionId: string): Promise<BookmarkWithMessage[]> {
+  const response = await fetch(`${API_BASE}/sessions/${sessionId}/bookmarks`);
+  return response.json();
+}
+
+/**
+ * Get all bookmarks
+ */
+export async function listAllBookmarks(): Promise<BookmarkWithMessage[]> {
+  const response = await fetch(`${API_BASE}/bookmarks`);
+  return response.json();
+}
+
+/**
+ * Get bookmark for a specific message
+ */
+export async function getMessageBookmark(messageId: string): Promise<BookmarkResponse> {
+  const response = await fetch(`${API_BASE}/messages/${messageId}/bookmark`);
+  return response.json();
+}

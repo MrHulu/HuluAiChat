@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { Message } from "@/api/client";
 import { Button } from "@/components/ui/button";
-import { Pencil, Check, X } from "lucide-react";
+import { Pencil, Check, X, Bookmark, BookmarkCheck } from "lucide-react";
 import { CodeBlock } from "./CodeBlock";
 import { MermaidBlock } from "./MermaidBlock";
 import ReactMarkdown from "react-markdown";
@@ -47,6 +47,10 @@ export interface MessageItemProps {
   message: Message;
   isStreaming?: boolean;
   onEdit?: (messageId: string, newContent: string) => Promise<void>;
+  // Bookmark props
+  isBookmarked?: boolean;
+  bookmarkId?: string;
+  onBookmarkToggle?: (messageId: string, isBookmarked: boolean, bookmarkId?: string) => void;
 }
 
 // Stable plugin references (defined outside component to avoid recreation)
@@ -94,7 +98,14 @@ const StreamingCursor = memo(function StreamingCursor({ isStreaming }: { isStrea
   return <span className="inline-block w-2 h-4 ml-1 bg-current animate-pulse" aria-label="Streaming..." />;
 });
 
-export const MessageItem = memo(function MessageItem({ message, isStreaming, onEdit }: MessageItemProps) {
+export const MessageItem = memo(function MessageItem({
+  message,
+  isStreaming,
+  onEdit,
+  isBookmarked = false,
+  bookmarkId,
+  onBookmarkToggle,
+}: MessageItemProps) {
   const { t } = useTranslation();
   const isUser = message.role === "user";
   const hasImages = message.images && message.images.length > 0;
@@ -256,16 +267,44 @@ export const MessageItem = memo(function MessageItem({ message, isStreaming, onE
           )}
         >
           <span>{isUser ? t("chat.you") : t("chat.ai")}</span>
-          {/* Edit button for user messages */}
-          {isUser && onEdit && !isEditing && (
-            <button
-              onClick={handleStartEdit}
-              aria-label={t("chat.editMessage")}
-              className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-primary-foreground/10 rounded"
-            >
-              <Pencil className="w-3 h-3" />
-            </button>
-          )}
+          <div className="flex items-center gap-1">
+            {/* Bookmark button for all messages */}
+            {onBookmarkToggle && !isEditing && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onBookmarkToggle(message.id, isBookmarked, bookmarkId);
+                }}
+                aria-label={isBookmarked ? t("chat.removeBookmark") : t("chat.addBookmark")}
+                className={cn(
+                  "transition-all p-1 rounded",
+                  "opacity-0 group-hover:opacity-100",
+                  isBookmarked && "opacity-100",
+                  isBookmarked
+                    ? "text-primary hover:text-primary/80"
+                    : isUser
+                      ? "hover:bg-primary-foreground/10 text-primary-foreground/70"
+                      : "hover:bg-accent text-muted-foreground"
+                )}
+              >
+                {isBookmarked ? (
+                  <BookmarkCheck className="w-3 h-3" />
+                ) : (
+                  <Bookmark className="w-3 h-3" />
+                )}
+              </button>
+            )}
+            {/* Edit button for user messages */}
+            {isUser && onEdit && !isEditing && (
+              <button
+                onClick={handleStartEdit}
+                aria-label={t("chat.editMessage")}
+                className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-primary-foreground/10 rounded"
+              >
+                <Pencil className="w-3 h-3" />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* 图片显示（仅用户消息） */}

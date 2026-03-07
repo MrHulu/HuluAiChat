@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api import sessions, chat, health, settings, folders, templates
+from api import sessions, chat, health, settings, folders, templates, tags, bookmarks
 from core.database import init_db
 
 
@@ -42,3 +42,5 @@ app.include_router(sessions.router, prefix="/api/sessions", tags=["sessions"])
 app.include_router(chat.router, prefix="/api/chat", tags=["chat"])
 app.include_router(settings.router, prefix="/api/settings", tags=["settings"])
 app.include_router(templates.router, prefix="/api/templates", tags=["templates"])
+app.include_router(tags.router, prefix="/api", tags=["tags"])
+app.include_router(bookmarks.router, prefix="/api", tags=["bookmarks"])

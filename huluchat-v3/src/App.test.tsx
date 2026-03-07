@@ -155,6 +155,8 @@ describe("App", () => {
     mockIsLoading = false;
     mockError = null;
     mockFolders = [];
+    // Skip welcome dialog for all tests
+    localStorage.setItem("huluchat-welcome-shown", "true");
   });
 
   afterEach(() => {
@@ -875,6 +877,7 @@ describe("App", () => {
         onNewSession: expect.any(Function),
         onToggleSidebar: expect.any(Function),
         onOpenSettings: expect.any(Function),
+        onSwitchSession: expect.any(Function),
       });
     });
 
