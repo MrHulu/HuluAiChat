@@ -99,13 +99,19 @@ export const CodeBlock = memo(function CodeBlock({
             "bg-muted/80 dark:bg-muted/60 backdrop-blur-sm",
             "hover:bg-accent active:scale-95",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-            copied ? "text-primary" : "text-muted-foreground hover:text-foreground"
+            copied
+              ? "text-primary animate-in zoom-in-50 duration-150"
+              : "text-muted-foreground hover:text-foreground"
           )}
           aria-label={copied ? t("chat.codeCopied") : t("chat.copyCode")}
           aria-live="polite"
           title={copied ? t("chat.codeCopied") : t("chat.copyCode")}
         >
-          {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+          {copied ? (
+            <Check className="w-4 h-4 animate-in zoom-in-50 duration-150" />
+          ) : (
+            <Copy className="w-4 h-4" />
+          )}
         </button>
       </div>
       <pre
