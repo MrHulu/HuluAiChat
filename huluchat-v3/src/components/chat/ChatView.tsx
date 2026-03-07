@@ -247,9 +247,9 @@ export function ChatView({ sessionId }: ChatViewProps) {
         onBookmarkToggle={handleBookmarkToggle}
       />
 
-      {/* Bookmark Panel */}
+      {/* Bookmark Panel - with slide-in animation */}
       {isBookmarkPanelOpen && sessionId && (
-        <div className="border-t border-border bg-muted/30">
+        <div className="border-t border-border bg-muted/30 animate-in slide-in-from-top-2 duration-200">
           <BookmarkPanel
             sessionId={sessionId}
             onJumpToMessage={handleJumpToMessage}
@@ -257,9 +257,9 @@ export function ChatView({ sessionId }: ChatViewProps) {
         </div>
       )}
 
-      {/* RAG Panel（可展开） */}
+      {/* RAG Panel（可展开）- with slide-in animation */}
       {isRAGPanelOpen && sessionId && (
-        <div className="border-t border-border bg-muted/30 max-h-64 overflow-y-auto">
+        <div className="border-t border-border bg-muted/30 max-h-64 overflow-y-auto animate-in slide-in-from-top-2 duration-200">
           <RAGPanel
             disabled={isLoading}
             onDocumentChange={() => checkDocuments()}
