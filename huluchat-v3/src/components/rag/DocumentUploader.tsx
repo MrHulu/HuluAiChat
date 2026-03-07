@@ -142,8 +142,8 @@ export function DocumentUploader({
       <div className="flex flex-col items-center gap-2 text-center">
         {isUploading ? (
           <>
-            <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-            <span className="text-sm text-muted-foreground">{t("rag.uploading")}</span>
+            <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+            <span className="text-sm text-muted-foreground" role="status" aria-live="polite">{t("rag.uploading")}</span>
           </>
         ) : (
           <>
@@ -152,6 +152,7 @@ export function DocumentUploader({
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
