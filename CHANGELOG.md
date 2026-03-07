@@ -2,6 +2,22 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [3.51.0] - 2026-03-07
+
+### ✨ Features
+
+- **Bookmark Export**: Export bookmarks to shareable formats
+  - Export to JSON (structured data for processing)
+  - Export to Markdown (readable format for sharing)
+  - Include session name, model, and full message content
+  - Markdown grouped by session with HuluChat branding
+  - Export button in bookmark panel header
+
+### 🎯 Strategic Rationale
+
+This feature enables users to share their curated AI insights, creating viral
+potential for organic growth. Every exported file carries HuluChat branding.
+
 ## [3.50.0] - 2026-03-07
 
 ### ✨ Features
