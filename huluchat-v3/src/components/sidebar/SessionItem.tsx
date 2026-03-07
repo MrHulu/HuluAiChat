@@ -87,9 +87,21 @@ export function SessionItem({
     onMoveToFolder?.(session.id, folderId);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onClick();
+    }
+  };
+
   return (
     <div
+      role="button"
+      tabIndex={0}
       onClick={onClick}
+      onKeyDown={handleKeyDown}
+      aria-label={t("sessionItem.selectSession", { title: session.title || t("sessionItem.newChat") })}
+      aria-current={isActive ? "true" : undefined}
       className={cn(
         "group flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer",
         "transition-all duration-200 ease-out",
@@ -97,6 +109,7 @@ export function SessionItem({
         isActive
           ? "bg-accent text-accent-foreground"
           : "hover:bg-muted/50 text-foreground",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
         "active:scale-[0.98]"
       )}
     >
