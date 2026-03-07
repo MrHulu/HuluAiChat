@@ -2,6 +2,27 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [3.47.0] - 2026-03-07
+
+### ✨ Features
+
+- **用户体验优化**: 提升聊天交互流畅度
+  - **输入框自动聚焦**: 打开应用/发送消息后自动聚焦到输入框
+  - **发送按钮 Loading 状态**: 发送消息时显示旋转图标和 "Sending..." 提示
+
+### 🔧 Technical Details
+
+- **ChatInput 组件**:
+  - 添加 `useEffect` 实现自动聚焦逻辑
+  - 新增 `isLoading` prop 控制按钮状态
+  - 发送后保持输入焦点
+
+### 🧪 Testing
+
+- 前端：675 tests passed (31 files)
+- TypeScript 检查通过
+- ESLint 通过 (0 errors)
+
 ## [3.46.0] - 2026-03-07
 
 ### ✨ Features
