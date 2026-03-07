@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { KEYBOARD_SHORTCUTS } from "@/hooks/useKeyboardShortcuts";
+import { cn } from "@/lib/utils";
 
 interface KeyboardHelpDialogProps {
   open: boolean;
@@ -52,12 +53,18 @@ export function KeyboardHelpDialog({
             {KEYBOARD_SHORTCUTS.map((shortcut, index) => (
               <li
                 key={index}
-                className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+                className={cn(
+                  "flex items-center justify-between py-2 px-3 rounded-lg",
+                  "bg-muted/50 hover:bg-muted",
+                  "transition-all duration-200 ease-out",
+                  "list-item-enter"
+                )}
+                style={{ animationDelay: `${index * 30}ms` }}
               >
                 <span className="text-sm text-muted-foreground">
                   {t(shortcut.descriptionKey)}
                 </span>
-                <kbd className="px-2 py-1 text-xs font-mono bg-background rounded border shadow-sm">
+                <kbd className="px-2 py-1 text-xs font-mono bg-background rounded border shadow-sm transition-all duration-150 hover:border-primary/50">
                   {isMac ? shortcut.mac : shortcut.windows}
                 </kbd>
               </li>
