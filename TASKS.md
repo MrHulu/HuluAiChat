@@ -5,13 +5,16 @@
 
 ## 待开始
 <!-- 新任务添加到这里 -->
-- [ ] **TASK-119**: 💻 开发 v3.49.0 - 键盘快捷键优化 + 命令面板增强
-  - Phase 1: Ctrl+1/2/3 快速切换最近会话
-  - Phase 2: 命令面板增强（搜索会话、切换模型、执行模板）
-  - Phase 3: 发布 v3.49.0
 - [ ] **TASK-116**: 🎬 准备 Product Hunt 发布素材（截图、视频）- 等待 Boss
 
 ## 已完成
+- [x] **TASK-119**: 💻 开发 v3.49.0 - 键盘快捷键优化 ✅ 2026-03-07
+  - Phase 1: Ctrl+1/2/3 快速切换最近会话 ✅
+  - Phase 2: 发布 v3.49.0 ✅
+  - PR #170 已合并
+  - GitHub Release v3.49.0 已创建
+  - https://github.com/MrHulu/HuluAiChat/releases/tag/v3.49.0
+  - 注：命令面板增强推迟到后续版本（根据 Critic 建议）
 - [x] **TASK-118**: 🚀 发布 v3.48.0（GitHub Release + 桌面构建）✅ 2026-03-07
   - 版本号更新：tauri.conf.json, Cargo.toml
   - CHANGELOG.md 更新
