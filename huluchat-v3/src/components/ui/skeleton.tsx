@@ -31,13 +31,18 @@ export interface SkeletonProps {
 export function Skeleton({ className, animate = true }: SkeletonProps) {
   return (
     <div
+      role="status"
+      aria-busy="true"
+      aria-label="Loading"
       className={cn(
         "rounded-md bg-muted",
         animate && "animate-shimmer",
         "bg-gradient-to-r from-muted via-muted/70 to-muted bg-[length:200%_100%]",
         className
       )}
-    />
+    >
+      <span className="sr-only">Loading...</span>
+    </div>
   );
 }
 
