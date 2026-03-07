@@ -1,0 +1,38 @@
+{
+  "id": "com.huluchat.code-formatter",
+  "name": "Code Formatter",
+  "version": "1.0.0",
+  "description": "Format and beautify code blocks in your messages",
+  "author": "HuluChat Team",
+  "minAppVersion": "3.40.0",
+  "permissions": [
+    "chat.read",
+    "storage",
+    "api",
+    "clipboard"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "id": "codeFormatter.formatJSON",
+        "title": "Format JSON",
+        "category": "Code Formatter"
+      },
+      {
+        "id": "codeFormatter.formatCode",
+        "title": "Format Code Block",
+        "category": "Code Formatter"
+      },
+      {
+        "id": "codeFormatter.extractCode",
+        "title": "Extract Last Code Block",
+        "category": "Code Formatter"
+      },
+      {
+        "id": "codeFormatter.minifyJSON",
+        "title": "Minify JSON",
+        "category": "Code Formatter"
+      }
+    ]
+  }
+}
