@@ -314,5 +314,22 @@
       "tip2": "📄 上传文档与它对话",
       "tip3": "⚙️ 在设置中配置 API"
     }
+  },
+  "tags": {
+    "addTag": "添加标签...",
+    "tag": "标签",
+    "selected": "已选",
+    "filterByTag": "按标签筛选",
+    "clear": "清除",
+    "maxTagsReached": "每个会话最多 5 个标签"
+  },
+  "bookmarks": {
+    "title": "书签",
+    "add": "添加书签",
+    "remove": "移除书签",
+    "note": "备注",
+    "notePlaceholder": "添加备注...",
+    "noBookmarks": "暂无书签",
+    "bookmarked": "已添加书签"
   }
 }
