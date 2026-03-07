@@ -13,6 +13,7 @@ import { KeyboardHelpDialog } from "@/components/keyboard/KeyboardHelpDialog";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { CommandPalette } from "@/components/command";
 import { WelcomeDialog } from "@/components/WelcomeDialog";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { useSession, useKeyboardShortcuts, useFolders } from "@/hooks";
 import { exportSession, moveSessionToFolder, ExportFormat } from "@/api/client";
 
@@ -205,7 +206,7 @@ function App() {
   }, [handleHelpKeyDown, handleCommandPaletteKeyDown]);
 
   return (
-    <>
+    <TooltipProvider>
       <Toaster position="top-center" richColors closeButton />
       <UpdateNotification />
       <WelcomeDialog
@@ -268,7 +269,7 @@ function App() {
         </main>
       </div>
     </div>
-    </>
+    </TooltipProvider>
   );
 }
 
