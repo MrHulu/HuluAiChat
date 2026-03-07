@@ -72,12 +72,21 @@ export function WelcomeDialog({ open, onOpenChange, onComplete }: WelcomeDialogP
         </DialogHeader>
 
         {/* Step indicator */}
-        <div className="flex justify-center gap-2 py-4">
-          {steps.map((_, index) => (
+        <div
+          className="flex justify-center gap-2 py-4"
+          role="navigation"
+          aria-label={t("welcome.stepIndicator")}
+        >
+          {steps.map((s, index) => (
             <div
               key={index}
+              role="button"
+              tabIndex={0}
+              aria-current={index === currentStep ? "step" : undefined}
+              aria-label={t("welcome.stepLabel", { step: index + 1, title: t(s.titleKey) })}
               className={cn(
                 "w-2 h-2 rounded-full transition-colors",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                 index === currentStep
                   ? "bg-primary"
                   : index < currentStep
@@ -89,8 +98,13 @@ export function WelcomeDialog({ open, onOpenChange, onComplete }: WelcomeDialogP
         </div>
 
         {/* Icon display */}
-        <div className="flex justify-center py-6">
+        <div className="flex justify-center py-6" aria-hidden="true">
           <span className="text-6xl">{step.icon}</span>
+        </div>
+
+        {/* Progress info for screen readers */}
+        <div className="sr-only" aria-live="polite">
+          {t("welcome.stepProgress", { current: currentStep + 1, total: steps.length })}
         </div>
 
         {/* Action buttons */}
