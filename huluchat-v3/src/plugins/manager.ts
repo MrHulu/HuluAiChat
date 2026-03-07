@@ -179,8 +179,8 @@ class PluginManagerImpl implements PluginManager {
       const context = this.createPluginContext(plugin);
       plugin.context = context;
 
-      // Initialize storage
-      this.initPluginStorage(plugin);
+      // Initialize storage (load persisted data)
+      await this.initPluginStorageAsync(plugin);
 
       // Call activate
       await module.activate(context);
@@ -780,7 +780,7 @@ class PluginManagerImpl implements PluginManager {
     };
   }
 
-  private initPluginStorage(plugin: PluginInstance): void {
+  private async initPluginStorageAsync(plugin: PluginInstance): Promise<void> {
     const pluginId = plugin.manifest.id;
 
     // Check if storage permission is granted
@@ -795,9 +795,36 @@ class PluginManagerImpl implements PluginManager {
       this.pluginStorages.set(pluginId, storage);
     }
 
-    // TODO: Load persisted storage from disk
-    // const savedData = await loadPluginStorage(pluginId);
-    // storage.load(savedData);
+    // Load persisted storage from disk
+    const savedData = await this.loadPluginStorage(pluginId);
+    if (savedData) {
+      storage.load(savedData);
+    }
+  }
+
+  private async loadPluginStorage(pluginId: string): Promise<Record<string, unknown> | null> {
+    const fs = await getTauriFs();
+    if (!fs) return null;
+
+    try {
+      const storagePath = `plugins/storage/${pluginId}.json`;
+      const exists = await fs.exists(storagePath, {
+        baseDir: fs.BaseDirectory.AppData,
+      });
+
+      if (!exists) {
+        return null;
+      }
+
+      const data = await fs.readTextFile(storagePath, {
+        baseDir: fs.BaseDirectory.AppData,
+      });
+
+      return JSON.parse(data) as Record<string, unknown>;
+    } catch (error) {
+      console.error(`Failed to load storage for plugin ${pluginId}:`, error);
+      return null;
+    }
   }
 
   private async persistStorage(pluginId: string): Promise<void> {
