@@ -215,7 +215,7 @@ export const MessageItem = memo(function MessageItem({
             className={cn(
               isBlock
                 ? "block text-sm"
-                : "bg-zinc-200 dark:bg-zinc-700 px-1.5 py-0.5 rounded text-xs"
+                : "bg-muted px-1.5 py-0.5 rounded text-xs"
             )}
           >
             {children}
