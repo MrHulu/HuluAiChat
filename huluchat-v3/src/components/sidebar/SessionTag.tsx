@@ -57,7 +57,7 @@ export function SessionTag({
             onRemove();
           }}
           aria-label={`Remove tag ${name}`}
-          className="hover:text-destructive transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded"
+          className="hover:text-destructive transition-all duration-150 active:scale-90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

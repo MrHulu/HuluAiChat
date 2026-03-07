@@ -34,7 +34,7 @@ export function OllamaStatus({
 
   return (
     <div
-      className="flex items-center justify-between p-3 rounded-lg border bg-card"
+      className="flex items-center justify-between p-3 rounded-lg border bg-card transition-all duration-200 ease-out"
       role="status"
       aria-live="polite"
       aria-label={available ? t("ollama.online") : t("ollama.offline")}
@@ -43,14 +43,14 @@ export function OllamaStatus({
         {/* 状态指示器 */}
         <div
           className={cn(
-            "flex items-center justify-center w-8 h-8 rounded-full",
+            "flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300 ease-out",
             available
               ? "bg-success/20 text-success"
               : "bg-muted text-muted-foreground"
           )}
           aria-hidden="true"
         >
-          <Server className="h-4 w-4" />
+          <Server className="h-4 w-4 transition-transform duration-200 hover:scale-110" />
         </div>
 
         {/* 状态信息 */}

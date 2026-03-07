@@ -118,8 +118,9 @@ export function DocumentUploader({
       aria-label={t("rag.selectFile")}
       aria-disabled={disabled || isUploading}
       className={cn(
-        "border-2 border-dashed rounded-lg p-4 transition-colors cursor-pointer",
+        "border-2 border-dashed rounded-lg p-4 transition-all duration-200 ease-out cursor-pointer",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "hover:border-primary/50 hover:bg-muted/30",
         isDragging && "border-primary bg-primary/5",
         disabled && "opacity-50 cursor-not-allowed",
         className
