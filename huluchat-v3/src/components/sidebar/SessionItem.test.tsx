@@ -491,13 +491,13 @@ describe("SessionItem", () => {
     const moveButton = screen.getByTitle("Move to folder");
     await user.click(moveButton);
 
-    // Should show checkmark (polyline with points "20 6 9 17 4 12")
+    // Should show checkmark (lucide Check icon)
     const menuItems = document.querySelectorAll("[role='menuitem']");
     const workItem = Array.from(menuItems).find((item) =>
       item.textContent?.includes("Work")
     );
-    // Checkmark SVG should be present
-    expect(workItem?.querySelector("svg polyline[points='20 6 9 17 4 12']")).toBeInTheDocument();
+    // Checkmark SVG should be present (lucide-react Check icon has class containing "lucide-check")
+    expect(workItem?.querySelector("svg[class*='lucide-check']")).toBeInTheDocument();
   });
 
   it("should handle export button click with stopPropagation", async () => {

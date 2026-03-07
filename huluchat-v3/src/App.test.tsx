@@ -524,22 +524,24 @@ describe("App", () => {
   });
 
   describe("Loading State", () => {
-    it("should show loading spinner when sessions are loading", () => {
+    it("should show loading skeleton when sessions are loading", () => {
       mockIsLoading = true;
 
       render(<App />);
 
-      const spinner = document.querySelector(".animate-spin");
-      expect(spinner).toBeInTheDocument();
+      // Use skeleton animation class instead of spinner
+      const skeletons = document.querySelectorAll(".animate-shimmer");
+      expect(skeletons.length).toBeGreaterThan(0);
     });
 
-    it("should not show loading spinner when not loading", () => {
+    it("should not show loading skeleton when not loading", () => {
       mockIsLoading = false;
 
       render(<App />);
 
-      const spinner = document.querySelector(".animate-spin");
-      expect(spinner).not.toBeInTheDocument();
+      const skeletons = document.querySelectorAll(".animate-shimmer");
+      // Should have no loading skeletons (or very few from other parts)
+      expect(skeletons.length).toBe(0);
     });
   });
 
