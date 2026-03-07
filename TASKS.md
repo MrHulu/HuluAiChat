@@ -2,20 +2,18 @@
 
 ## 进行中
 <!-- 当前正在处理的任务 -->
-- [ ] **TASK-127**: 🎤 用户访谈招募 - Issue #190
-  - 状态：Week 1 招募期 Day 7
-  - 链接：https://github.com/MrHulu/HuluAiChat/issues/190
-  - 目标：招募 5-10 人进行用户访谈
-  - 暂无用户回复（正常，继续等待）
 
 ## 待开始
 <!-- 新任务添加到这里 -->
 - [ ] **TASK-122**: 🎨 UI/UX 美化优化（持续进行）
   - 状态：长期任务，持续进行
-  - 暂停：用户访谈暂停，只做视觉优化
   - 方向：界面美化、交互优化、视觉一致性
 
 - [ ] **TASK-116**: 🎬 准备 Product Hunt 发布素材（截图、视频）- 等待 Boss
+
+## 已取消
+- [x] ~~**TASK-127**: 🎤 用户访谈招募~~ ❌ **Boss 决定取消** - 暂停并删除相关内容
+- [x] ~~**TASK-120**: 📊 添加用户行为埋点~~ ❌ **Boss 决定取消** - 隐私优先原则
 
 ## ⚠️ 永久禁止事项（Boss 明确要求）
 - ❌ **禁止功能**：用户行为埋点、数据追踪、遥测功能、使用统计
@@ -42,7 +40,7 @@
   - 版本号更新：tauri.conf.json, Cargo.toml
   - CHANGELOG.md 更新
   - GitHub Release v3.48.0 已创建
-  - https://github.com/MrHulu/HuluAiChat/releases/tag/v3.48.0
+  - https://github.com/MrHuluAiChat/releases/tag/v3.48.0
 
 - [x] **TASK-117**: 🚀 开发 v3.48.0 - 智能引导系统 ✅ 2026-03-07
   - WelcomeDialog 组件（3 步引导）

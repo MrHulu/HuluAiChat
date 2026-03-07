@@ -215,8 +215,8 @@ export function SessionItem({
               <button
                 onClick={(e) => e.stopPropagation()}
                 className={cn(
-                  "opacity-0 group-hover:opacity-100 transition-opacity",
-                  "p-1 rounded hover:bg-primary/20 text-muted-foreground hover:text-primary"
+                  "opacity-0 group-hover:opacity-100 transition-all",
+                  "p-1.5 rounded-md hover:bg-primary/10 text-muted-foreground hover:text-primary"
                 )}
                 title={t("sessionItem.moveToFolder")}
               >
