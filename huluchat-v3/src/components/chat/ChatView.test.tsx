@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { ChatView } from "./ChatView";
 import type { Message, Model } from "@/api/client";
 import type { ConnectionStatus } from "@/hooks/useWebSocket";
@@ -79,6 +79,15 @@ vi.mock("highlight.js/lib/languages/css", () => ({ default: {} }));
 vi.mock("highlight.js/lib/languages/sql", () => ({ default: {} }));
 vi.mock("highlight.js/lib/languages/markdown", () => ({ default: {} }));
 vi.mock("highlight.js/lib/languages/xml", () => ({ default: {} }));
+
+// Mock RAG components
+vi.mock("@/components/rag", () => ({
+  RAGPanel: ({ disabled }: { disabled?: boolean }) => (
+    <div data-testid="rag-panel" data-disabled={disabled}>
+      Upload a document
+    </div>
+  ),
+}));
 
 const createMessage = (
   role: "user" | "assistant",
@@ -285,6 +294,57 @@ describe("ChatView", () => {
 
       rerender(<ChatView sessionId="session-1" />);
       expect(screen.getByText("Chat")).toBeInTheDocument();
+    });
+  });
+
+  describe("RAG Panel Integration", () => {
+    it("should show RAG toggle button when session is selected", () => {
+      render(<ChatView sessionId="session-1" />);
+
+      // Button text is "Document Chat (Experimental)" from i18n
+      expect(screen.getByRole("button", { name: /document chat/i })).toBeInTheDocument();
+    });
+
+    it("should not show RAG toggle button when no session", () => {
+      render(<ChatView sessionId={null} />);
+
+      expect(screen.queryByRole("button", { name: /document chat/i })).not.toBeInTheDocument();
+    });
+
+    it("should toggle RAG panel when RAG button clicked", () => {
+      render(<ChatView sessionId="session-1" />);
+
+      const ragButton = screen.getByRole("button", { name: /document chat/i });
+
+      // Initially RAG panel is hidden
+      expect(screen.queryByTestId("rag-panel")).not.toBeInTheDocument();
+
+      // Click to open
+      fireEvent.click(ragButton);
+
+      // RAG panel should be visible
+      expect(screen.getByTestId("rag-panel")).toBeInTheDocument();
+
+      // Click to close
+      fireEvent.click(ragButton);
+
+      // RAG panel should be hidden again
+      expect(screen.queryByTestId("rag-panel")).not.toBeInTheDocument();
+    });
+
+    it("should show RAG button as active when panel is open", () => {
+      render(<ChatView sessionId="session-1" />);
+
+      const ragButton = screen.getByRole("button", { name: /document chat/i });
+
+      // Initially not active
+      expect(ragButton).not.toHaveAttribute("aria-pressed", "true");
+
+      // Click to open
+      fireEvent.click(ragButton);
+
+      // Now active
+      expect(ragButton).toHaveAttribute("aria-pressed", "true");
     });
   });
 });

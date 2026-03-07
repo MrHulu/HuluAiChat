@@ -2,13 +2,15 @@
  * ChatView Component
  * 聊天主界面，整合消息列表和输入框
  */
+import { useState } from "react";
 import { MessageList } from "./MessageList";
 import { ChatInput } from "./ChatInput";
 import { ModelSelector } from "./ModelSelector";
+import { RAGPanel } from "@/components/rag";
 import { useChat, useModel } from "@/hooks";
 import { ConnectionStatus } from "@/hooks/useWebSocket";
 import { cn } from "@/lib/utils";
-import { updateMessage, ImageContent } from "@/api/client";
+import { updateMessage, ImageContent, queryRAGDocuments, listRAGDocuments } from "@/api/client";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
@@ -42,9 +44,49 @@ export function ChatView({ sessionId }: ChatViewProps) {
     useChat(sessionId);
   const { currentModel, models, setModel, isLoading: isLoadingModels, parameters } = useModel();
 
+  // RAG Panel state
+  const [isRAGPanelOpen, setIsRAGPanelOpen] = useState(false);
+  const [hasDocuments, setHasDocuments] = useState(false);
+
+  // Check for documents when RAG panel opens
+  const checkDocuments = async () => {
+    try {
+      const result = await listRAGDocuments();
+      setHasDocuments(result.documents.length > 0);
+    } catch (error) {
+      console.error("Failed to check documents:", error);
+      setHasDocuments(false);
+    }
+  };
+
+  // Update document status when panel state changes
+  const handleRAGPanelToggle = () => {
+    const newState = !isRAGPanelOpen;
+    setIsRAGPanelOpen(newState);
+    if (newState) {
+      checkDocuments();
+    }
+  };
+
   const isDisabled = connectionStatus !== "connected" || isLoading;
 
-  const handleSend = (content: string, images?: ImageContent[]) => {
+  const handleSend = async (content: string, images?: ImageContent[]) => {
+    // If RAG is enabled and we have documents, query for context
+    if (isRAGPanelOpen && hasDocuments) {
+      try {
+        const ragResult = await queryRAGDocuments(content, 3);
+        if (ragResult.success && ragResult.context) {
+          // Prepend RAG context to the message
+          const enhancedContent = `${t("rag.ragEnabled")}\n\n${ragResult.context}\n\n---\n\n${content}`;
+          sendMessage(enhancedContent, currentModel, parameters, images);
+          return;
+        }
+      } catch (error) {
+        console.error("RAG query failed:", error);
+        // Fall through to send without RAG context
+        toast.warning(t("rag.queryError"));
+      }
+    }
     sendMessage(content, currentModel, parameters, images);
   };
 
@@ -81,7 +123,24 @@ export function ChatView({ sessionId }: ChatViewProps) {
             />
           )}
         </div>
-        <ConnectionIndicator status={connectionStatus} />
+        <div className="flex items-center gap-2">
+          {/* RAG Toggle Button */}
+          {sessionId && (
+            <button
+              onClick={handleRAGPanelToggle}
+              aria-pressed={isRAGPanelOpen}
+              className={cn(
+                "px-2 py-1 text-xs rounded-md border transition-colors",
+                isRAGPanelOpen
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-background hover:bg-accent border-border"
+              )}
+            >
+              {t("rag.title")}
+            </button>
+          )}
+          <ConnectionIndicator status={connectionStatus} />
+        </div>
       </div>
 
       {/* 消息列表 */}
@@ -91,6 +150,16 @@ export function ChatView({ sessionId }: ChatViewProps) {
         isLoading={isLoading}
         onEditMessage={handleEditMessage}
       />
+
+      {/* RAG Panel（可展开） */}
+      {isRAGPanelOpen && sessionId && (
+        <div className="border-t border-border bg-muted/30 max-h-64 overflow-y-auto">
+          <RAGPanel
+            disabled={isLoading}
+            onDocumentChange={() => checkDocuments()}
+          />
+        </div>
+      )}
 
       {/* 输入框 */}
       <ChatInput

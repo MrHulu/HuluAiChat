@@ -264,5 +264,29 @@
     "settings": "设置",
     "showHelp": "键盘快捷键",
     "openCommandPalette": "打开命令面板"
+  },
+  "rag": {
+    "title": "文档对话（实验性）",
+    "description": "上传文档与其进行对话",
+    "uploadDocument": "上传文档",
+    "supportedFormats": "支持格式：TXT, MD, PDF",
+    "maxSize": "最大大小：5MB",
+    "uploading": "上传中...",
+    "uploadSuccess": "文档上传成功",
+    "uploadError": "上传失败",
+    "selectFile": "选择文件",
+    "dragDrop": "拖放文件到此处，或点击选择",
+    "documents": "文档",
+    "noDocuments": "未上传文档",
+    "chunks": "{{count}} 个片段",
+    "delete": "删除",
+    "deleteConfirm": "确定要删除此文档吗？",
+    "deleting": "删除中...",
+    "deleteError": "删除文档失败",
+    "queryError": "查询文档失败",
+    "enableRAG": "启用文档对话",
+    "disableRAG": "禁用文档对话",
+    "ragEnabled": "文档对话已启用",
+    "ragDisabled": "文档对话已禁用"
   }
 }
