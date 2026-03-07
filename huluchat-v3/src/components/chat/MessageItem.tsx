@@ -254,9 +254,10 @@ export const MessageItem = memo(function MessageItem({
       <div
         className={cn(
           "max-w-[80%] rounded-2xl px-4 py-3 relative",
+          "shadow-sm hover:shadow-md transition-all duration-200",
           isUser
-            ? "bg-primary text-primary-foreground ml-12"
-            : "bg-muted text-foreground mr-12"
+            ? "bg-primary text-primary-foreground ml-12 hover:bg-primary/90"
+            : "bg-muted text-foreground mr-12 border-l-4 border-primary/30 hover:bg-muted/80"
         )}
       >
         {/* 头像标识 */}
