@@ -242,6 +242,7 @@
     "today": "今天",
     "yesterday": "昨天",
     "daysAgo": "{{count}} 天前",
+    "selectSession": "选择会话：{{title}}",
     "exportSession": "导出会话",
     "moveToFolder": "移至文件夹",
     "uncategorized": "未分类",
@@ -332,7 +333,11 @@
     "tag": "标签",
     "selected": "已选",
     "filterByTag": "按标签筛选",
+    "filterActive": "已选 {{count}} 个标签",
     "clear": "清除",
+    "clearSelection": "清除所有已选标签",
+    "selectTag": "选择标签 {{tag}}",
+    "deselectTag": "取消选择标签 {{tag}}",
     "maxTagsReached": "每个会话最多 5 个标签"
   },
   "bookmarks": {

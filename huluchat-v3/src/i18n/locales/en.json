@@ -245,6 +245,7 @@
     "today": "Today",
     "yesterday": "Yesterday",
     "daysAgo": "{{count}} days ago",
+    "selectSession": "Select session: {{title}}",
     "exportSession": "Export session",
     "moveToFolder": "Move to folder",
     "uncategorized": "Uncategorized",
@@ -335,7 +336,11 @@
     "tag": "Tag",
     "selected": "selected",
     "filterByTag": "Filter by tag",
+    "filterActive": "{{count}} tags selected",
     "clear": "Clear",
+    "clearSelection": "Clear all selected tags",
+    "selectTag": "Select tag {{tag}}",
+    "deselectTag": "Deselect tag {{tag}}",
     "maxTagsReached": "Maximum 5 tags per session"
   },
   "bookmarks": {
