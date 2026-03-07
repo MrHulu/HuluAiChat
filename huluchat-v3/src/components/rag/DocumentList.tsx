@@ -109,9 +109,11 @@ export function DocumentList({
             <button
               onClick={() => handleDelete(doc)}
               disabled={disabled || deletingId === doc.doc_id}
+              aria-label={t("rag.deleteDocument", { filename: doc.filename })}
               className={cn(
                 "text-xs px-2 py-1 rounded-md transition-colors",
                 "text-destructive hover:bg-destructive/10",
+                "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
                 disabled && "opacity-50 cursor-not-allowed"
               )}
             >

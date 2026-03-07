@@ -50,6 +50,7 @@ export function LanguageSelector() {
               variant="ghost"
               size="icon"
               disabled={isLoading}
+              aria-label={t("languageSelector.changeLanguage")}
             >
               {isLoading ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
@@ -70,6 +71,7 @@ export function LanguageSelector() {
             key={lang.code}
             onClick={() => handleLanguageChange(lang.code)}
             disabled={isLoading}
+            aria-current={i18n.language === lang.code ? "true" : undefined}
             className={i18n.language === lang.code ? "bg-accent" : ""}
           >
             <span className="mr-2">{lang.nativeName}</span>
