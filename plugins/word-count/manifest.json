@@ -1,0 +1,32 @@
+{
+  "id": "com.huluchat.word-count",
+  "name": "Word Count",
+  "version": "1.0.0",
+  "description": "Count words and characters in your messages and AI responses",
+  "author": "HuluChat Team",
+  "minAppVersion": "3.40.0",
+  "permissions": [
+    "chat.read",
+    "storage",
+    "api"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "id": "wordCount.countSelection",
+        "title": "Count Words in Selection",
+        "category": "Word Count"
+      },
+      {
+        "id": "wordCount.countLastMessage",
+        "title": "Count Words in Last Message",
+        "category": "Word Count"
+      },
+      {
+        "id": "wordCount.showTotalStats",
+        "title": "Show Total Chat Stats",
+        "category": "Word Count"
+      }
+    ]
+  }
+}
