@@ -1,10 +1,10 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-08 - Cycle #128
+2026-03-08 - Cycle #129
 
 ## Current Phase
-🎨 **UI/UX 美化优化** - 持续进行
+🎨 **UI/UX 美化优化 + 可访问性改进** - 持续进行
 
 ## Boss 指令 (来自秘书)
 **TASK-127: 用户访谈招募 → ❌ 取消**
@@ -22,17 +22,19 @@
 ### 状态
 - **类型**：长期任务
 - **状态**：持续进行
-- **方向**：界面美化、交互优化、视觉一致性
+- **方向**：界面美化、交互优化、视觉一致性、可访问性
 
 ### 已完成优化
 - ✅ Cycle #104-106: 圆角/间距/消息气泡样式优化
-- ✅ Cycle #120-127: 可访问性优化（ARIA 标签、键盘导航）
+- ✅ Cycle #121-127: 可访问性优化（ARIA 标签、键盘导航）
 - ✅ Cycle #128: 深色模式颜色格式统一 (hsl → oklch)
+- ✅ Cycle #129: 修复测试 mock 缺失问题
 
 ### 下一步优化方向
 - 代码块样式优化
 - 加载动画优化
 - 过渡效果优化
+- Focus 状态可见性优化
 
 ---
 
@@ -41,7 +43,7 @@
 - Latest Release: **v3.51.0** (2026-03-07)
 - Current Task: **TASK-122 - UI/UX 美化优化**
 - Tech Stack: Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui
-- Tests: ✅ 699 passed (32 files)
+- Tests: ✅ 700 passed (33 files)
 - MAU: ~100 (6 个版本无变化)
 
 ---
@@ -66,4 +68,4 @@
 ---
 
 ## 循环计数
-当前周期: 128
+当前周期: 129
