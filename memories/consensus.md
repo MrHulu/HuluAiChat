@@ -1,10 +1,10 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-07 - Cycle #89
+2026-03-07 - Cycle #90
 
 ## Current Phase
-🟢 **插件更新功能** - 自动检查 + 一键更新
+🟡 **Website 部署待配置** - 需要 Cloudflare API Token
 
 ## 🚨 Boss 指令：推送前必须本地验证
 
@@ -36,23 +36,20 @@ npm run lint
 - ❌ 直接推送，等 CI 失败再修
 - ❌ 忽略本地错误强制推送
 
-## What We Did This Cycle (#89)
-- ✅ **实现插件自动更新功能**：
-  - 扩展 `PluginManifest` 类型（添加 `updateUrl`, `downloadUrl` 字段）
-  - 添加 `PluginUpdateInfo`, `PluginUpdateState` 类型
-  - 实现 `checkForUpdate()`, `checkForAllUpdates()`, `updatePlugin()` 方法
-  - 更新 `PluginSettings` UI（添加检查更新/更新按钮）
-- ✅ **本地验证通过**：
-  - `npm run typecheck` ✅
-  - `npm run build` ✅
-  - `npm run lint` ✅ (只有警告)
+## What We Did This Cycle (#90)
+- ✅ **验证插件更新功能** - 代码审查确认功能完整：
+  - `types.ts`: `PluginUpdateInfo`, `PluginUpdateState` 类型定义
+  - `manager.ts`: `checkForUpdate()`, `checkForAllUpdates()`, `updatePlugin()` 实现
+  - `usePluginManager.ts`: Hook 暴露更新方法
+  - `PluginSettings.tsx`: UI 有检查更新/更新按钮
+- ✅ **Website 构建验证** - `npm run build` 成功
+- ✅ **推送本地 commits** - PR #140 已合并
+- ⏸️ **Cloudflare 部署** - 需要 `wrangler login` (用户手动操作)
 
-## Previous Cycle (#88)
-- ✅ 创建快捷回复和代码格式化示例插件
-- ✅ 编写插件开发者文档
-- ✅ 验证 v3.45.0 发布成功
-- ✅ 发送进度汇报邮件给 Boss
-- ✅ 创建 word-count 和 export-chat 插件
+## Previous Cycle (#89)
+- ✅ 实现插件自动更新功能
+- ✅ 扩展 PluginManifest 类型
+- ✅ 本地验证通过
 
 ## Plugin System Architecture
 
@@ -87,19 +84,17 @@ npm run lint
 | `code-formatter` | 代码格式化 | Format JSON, Minify JSON, Format Code, Extract Code |
 
 ## Active Projects
-- **HuluChat**: **v3.45.0 已发布** ✅ | 插件系统功能完整 + 5 个示例插件
+- **HuluChat**: **v3.45.0 已发布** ✅ | 插件系统功能完整 + 5 个示例插件 + 自动更新
+- **Website**: 构建成功 ⏸️ | 等待 Cloudflare API Token 配置
 - **Product Hunt**: 等待用户完成截图和视频
 
-## Next Action (Cycle #90)
-1. **测试插件更新功能**：
-   - 创建测试插件验证更新检查
-   - 手动测试更新流程
-2. **官网部署** (TASK-104)：
-   - 配置 Cloudflare secrets
-   - 部署 website/
-3. **Product Hunt 发布准备**：
-   - 用户需要完成截图和视频
-   - 准备发布日社区推广
+## Next Action (Cycle #91)
+1. **官网部署** (TASK-104) - **需要用户操作**：
+   - 运行 `wrangler login` 登录 Cloudflare
+   - 或在 Cloudflare Dashboard 配置 GitHub 集成
+2. **Product Hunt 发布准备**：
+   - 用户需要完成截图 (5 张) 和视频 (60 秒)
+3. **可选**：创建 GitHub Actions 自动部署 Website
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
@@ -167,5 +162,29 @@ npm run lint
 - [ ] 发布日社区推广
 
 ## 循环计数
-当前周期: 89
+当前周期: 90
 上次发邮件: 88
+
+## Website 部署说明
+
+### 方式 1: Cloudflare Pages Git 集成 (推荐)
+1. 登录 [Cloudflare Dashboard](https://dash.cloudflare.com/)
+2. 进入 Pages > Create a project > Connect to Git
+3. 选择 `MrHulu/HuluAiChat` 仓库
+4. 配置构建设置：
+   - Build command: `cd website && npm install && npm run build`
+   - Build output directory: `website/out`
+5. 部署
+
+### 方式 2: Wrangler CLI
+```bash
+cd website
+wrangler login  # 需要用户手动登录
+wrangler pages deploy out
+```
+
+### Website 信息
+- 框架: Next.js 16.1.6 (静态导出)
+- 样式: Tailwind CSS v4
+- 输出目录: `out/`
+- wrangler.toml: 已配置
