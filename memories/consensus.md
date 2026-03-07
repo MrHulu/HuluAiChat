@@ -28,7 +28,7 @@
 - ✅ Cycle #104-106: 圆角/间距/消息气泡样式优化
 - ✅ Cycle #121-127: 可访问性优化（ARIA 标签、键盘导航）
 - ✅ Cycle #128: 深色模式颜色格式统一 (hsl → oklch)
-- ✅ Cycle #129: 修复测试 mock 缺失问题
+- ✅ Cycle #129: 修复测试 mock + RAG/PromptTemplate 可访问性优化
 
 ### 下一步优化方向
 - 代码块样式优化
