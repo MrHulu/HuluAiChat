@@ -69,13 +69,13 @@ function getStateBadgeVariant(state: PluginInstance["state"]): "default" | "seco
 function StateIcon({ state }: { state: PluginInstance["state"] }) {
   switch (state) {
     case "active":
-      return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+      return <CheckCircle2 className="h-4 w-4 text-green-500" aria-hidden="true" />;
     case "inactive":
-      return <Power className="h-4 w-4 text-muted-foreground" />;
+      return <Power className="h-4 w-4 text-muted-foreground" aria-hidden="true" />;
     case "activating":
-      return <Loader2 className="h-4 w-4 animate-spin text-primary" />;
+      return <Loader2 className="h-4 w-4 animate-spin text-primary" aria-hidden="true" />;
     case "error":
-      return <AlertCircle className="h-4 w-4 text-destructive" />;
+      return <AlertCircle className="h-4 w-4 text-destructive" aria-hidden="true" />;
     default:
       return null;
   }
@@ -409,20 +409,31 @@ function DropZone({
 
   return (
     <div
+      role="button"
+      tabIndex={0}
+      aria-label={t("plugins.dropToInstall")}
+      aria-busy={isInstalling}
+      aria-disabled={isInstalling}
       className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
         isDragOver
           ? "border-primary bg-primary/5"
           : "border-border hover:border-primary/50"
-      }`}
+      } ${isInstalling ? "opacity-50 cursor-wait" : ""}`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleBrowseClick();
+        }
+      }}
     >
       <div className="flex flex-col items-center gap-3">
         {isInstalling ? (
-          <Loader2 className="h-8 w-8 text-muted-foreground animate-spin" />
+          <Loader2 className="h-8 w-8 text-muted-foreground animate-spin" aria-hidden="true" />
         ) : (
-          <Upload className="h-8 w-8 text-muted-foreground" />
+          <Upload className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
         )}
         <div>
           <p className="text-sm font-medium">{t("plugins.dropToInstall")}</p>
@@ -436,7 +447,7 @@ function DropZone({
           onClick={handleBrowseClick}
           disabled={isInstalling}
         >
-          <FolderOpen className="h-4 w-4 mr-2" />
+          <FolderOpen className="h-4 w-4 mr-2" aria-hidden="true" />
           {t("plugins.browseFolder")}
         </Button>
       </div>

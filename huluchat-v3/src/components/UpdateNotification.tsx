@@ -25,17 +25,22 @@ export function UpdateNotification() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 max-w-sm animate-in slide-in-from-bottom-2">
+    <div
+      className="fixed bottom-4 right-4 z-50 max-w-sm animate-in slide-in-from-bottom-2"
+      role="status"
+      aria-live="polite"
+      aria-label={t("update.notificationLabel")}
+    >
       <div className="bg-card border border-border rounded-lg shadow-lg p-4">
         {isChecking ? (
           <div className="flex items-center gap-3">
-            <RefreshCw className="h-5 w-5 animate-spin text-muted-foreground" />
+            <RefreshCw className="h-5 w-5 animate-spin text-muted-foreground" aria-hidden="true" />
             <span className="text-sm">{t("update.checking")}</span>
           </div>
         ) : isDownloading ? (
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <Download className="h-5 w-5 text-primary animate-bounce" />
+              <Download className="h-5 w-5 text-primary animate-bounce" aria-hidden="true" />
               <div className="flex-1">
                 <p className="text-sm font-medium">{t("update.downloading")}</p>
                 <p className="text-xs text-muted-foreground">
@@ -43,7 +48,14 @@ export function UpdateNotification() {
                 </p>
               </div>
             </div>
-            <div className="w-full bg-muted rounded-full h-2">
+            <div
+              className="w-full bg-muted rounded-full h-2"
+              role="progressbar"
+              aria-valuenow={downloadProgress}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={t("update.downloadProgress")}
+            >
               <div
                 className="bg-primary h-2 rounded-full transition-all duration-300"
                 style={{ width: `${downloadProgress}%` }}
@@ -55,7 +67,7 @@ export function UpdateNotification() {
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-primary/10 rounded-lg">
-                  <RefreshCw className="h-4 w-4 text-primary" />
+                  <RefreshCw className="h-4 w-4 text-primary" aria-hidden="true" />
                 </div>
                 <div>
                   <p className="text-sm font-medium">{t("update.newVersion")}</p>
@@ -69,7 +81,7 @@ export function UpdateNotification() {
                 aria-label={t("common.close")}
                 className="text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
               >
-                <X className="h-4 w-4" />
+                <X className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
 
@@ -89,7 +101,7 @@ export function UpdateNotification() {
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 )}
               >
-                <Download className="h-4 w-4" />
+                <Download className="h-4 w-4" aria-hidden="true" />
                 {t("update.updateNow")}
               </button>
               <button
