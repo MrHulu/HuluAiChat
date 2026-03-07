@@ -56,7 +56,12 @@
     "connecting": "连接中...",
     "connected": "已连接",
     "disconnected": "已断开",
-    "connectionError": "连接错误"
+    "connectionError": "连接错误",
+    "voice": {
+      "startRecording": "开始语音输入",
+      "stopRecording": "停止录音",
+      "notSupported": "当前浏览器不支持语音输入"
+    }
   },
   "settings": {
     "title": "设置",

@@ -10,6 +10,7 @@ import { LayoutTemplate, Send } from "lucide-react";
 import {
   PromptTemplateSelector,
 } from "@/components/templates/PromptTemplateSelector";
+import { VoiceInputButton } from "@/components/chat/VoiceInputButton";
 
 // Constants
 const MAX_TEXTAREA_HEIGHT = 200;
@@ -26,7 +27,7 @@ export const ChatInput = memo(function ChatInput({
   disabled = false,
   placeholder,
 }: ChatInputProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [value, setValue] = useState("");
   const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -74,6 +75,15 @@ export const ChatInput = memo(function ChatInput({
     setValue(e.target.value);
   }, []);
 
+  // 处理语音输入
+  const handleVoiceTranscript = useCallback((text: string) => {
+    setValue(text);
+    // Focus textarea after voice input
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, []);
+
   const handleOpenTemplateSelector = useCallback(() => {
     setShowTemplateSelector(true);
   }, []);
@@ -93,6 +103,13 @@ export const ChatInput = memo(function ChatInput({
         >
           <LayoutTemplate className="w-[18px] h-[18px]" />
         </Button>
+
+        {/* Voice Input Button */}
+        <VoiceInputButton
+          onTranscript={handleVoiceTranscript}
+          disabled={disabled}
+          lang={i18n.language}
+        />
 
         <div className="flex-1 relative">
           <textarea

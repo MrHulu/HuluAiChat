@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [3.41.0] - 2026-03-07
+
+### Added
+- **Voice Input**: Speech-to-text for message input
+  - Web Speech API integration (browser native)
+  - Microphone button in chat input
+  - Auto-detects browser support
+  - Follows current language setting for recognition
+
+### Components
+- `VoiceInputButton`: Voice recording button component
+- `useVoiceRecognition`: Custom hook for Web Speech API
+
+### Technical
+- 4 new tests for VoiceInputButton component
+- i18n support for voice feature (EN/ZH)
+
 ## [3.9.0] - 2026-03-06
 
 ### Added
