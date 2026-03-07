@@ -9,6 +9,7 @@ import * as apiClient from "@/api/client";
 vi.mock("@/api/client", () => ({
   searchSessions: vi.fn().mockResolvedValue([]),
   moveSessionToFolder: vi.fn(),
+  listAllTags: vi.fn().mockResolvedValue([]),
 }));
 
 const createSession = (id: string, title: string, folderId?: string): Session => ({
@@ -921,7 +922,7 @@ describe("SessionList", () => {
       fireEvent.click(screen.getByText("Work"));
 
       // Find and click delete button
-      const deleteButton = screen.getByTitle("Delete session");
+      const deleteButton = screen.getByLabelText("Delete session");
       fireEvent.click(deleteButton);
       expect(onDeleteSession).toHaveBeenCalledWith("1");
     });
@@ -944,7 +945,7 @@ describe("SessionList", () => {
       await user.click(screen.getByText("Work"));
 
       // Find and click export button
-      const exportButton = screen.getByTitle("Export session");
+      const exportButton = screen.getByLabelText("Export session");
       await user.click(exportButton);
       await waitFor(() => {
         expect(screen.getByText("Markdown (.md)")).toBeInTheDocument();
@@ -972,7 +973,7 @@ describe("SessionList", () => {
       // Session should be visible in filtered view
       expect(screen.getByText("Work Session")).toBeInTheDocument();
       // Move button should be available (testing that props are passed)
-      expect(screen.getByTitle("Move to folder")).toBeInTheDocument();
+      expect(screen.getByLabelText("Move to folder")).toBeInTheDocument();
     });
   });
 
@@ -1002,7 +1003,7 @@ describe("SessionList", () => {
       // Now session should be visible
       expect(screen.getByText("Work Session")).toBeInTheDocument();
       // Move button should be available (testing that props are passed)
-      expect(screen.getByTitle("Move to folder")).toBeInTheDocument();
+      expect(screen.getByLabelText("Move to folder")).toBeInTheDocument();
     });
 
     it("should handle session export in expanded folder", async () => {
@@ -1029,7 +1030,7 @@ describe("SessionList", () => {
       }
 
       // Find export button and click
-      const exportButton = screen.getByTitle("Export session");
+      const exportButton = screen.getByLabelText("Export session");
       await user.click(exportButton);
       await waitFor(() => {
         expect(screen.getByText("JSON (.json)")).toBeInTheDocument();
@@ -1072,7 +1073,7 @@ describe("SessionList", () => {
       render(<SessionList {...defaultProps} sessions={sessions} onDeleteSession={onDeleteSession} />);
 
       // Find and click delete button
-      const deleteButton = screen.getByTitle("Delete session");
+      const deleteButton = screen.getByLabelText("Delete session");
       fireEvent.click(deleteButton);
       expect(onDeleteSession).toHaveBeenCalledWith("1");
     });
@@ -1129,7 +1130,7 @@ describe("SessionList", () => {
       }
 
       // Find and click delete button
-      const deleteButton = screen.getByTitle("Delete session");
+      const deleteButton = screen.getByLabelText("Delete session");
       fireEvent.click(deleteButton);
       expect(onDeleteSession).toHaveBeenCalledWith("1");
     });

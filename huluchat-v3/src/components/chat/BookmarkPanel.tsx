@@ -186,11 +186,16 @@ export function BookmarkPanel({
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
               <ChevronRight className="w-3 h-3 text-muted-foreground" />
               <button
                 onClick={(e) => handleDelete(bookmark.id, e)}
-                className="p-1 hover:bg-destructive/20 rounded text-muted-foreground hover:text-destructive transition-colors"
+                className={cn(
+                  "p-1 rounded",
+                  "text-muted-foreground hover:text-destructive hover:bg-destructive/20",
+                  "transition-colors duration-150",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+                )}
                 aria-label={t("chat.removeBookmark")}
               >
                 <X className="w-3 h-3" />
