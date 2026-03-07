@@ -1,58 +1,84 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-06 - Cycle #74
+2026-03-07 - Cycle #75
 
 ## Current Phase
-🚀 **新功能开发中** - 命令面板功能
+🟢 **正常运行** - v3.40.0 稳定版
 
-## What We Did This Cycle (#74)
-- ✅ 自主决策：选择开发快捷命令功能（类似 Raycast）
-- ✅ 创建 CommandPalette 组件
-- ✅ 添加 Ctrl/Cmd+K 快捷键触发
-- ✅ 支持命令：新建会话、新建文件夹、导出、切换侧边栏、设置、帮助
-- ✅ 添加 i18n 支持（中英文）
-- ✅ 安装 shadcn/ui command 组件
-- ✅ 所有 629 个测试通过
-- ✅ 创建 PR #128
+## 🚨 Boss 指令：推送前必须本地验证
+
+**问题**：很多 PR 提交后 CI 失败，导致 Boss 收到大量失败邮件。
+
+**强制规则（从现在开始执行）**：
+
+### 推送前必须运行的检查
+```bash
+cd huluchat-v3
+
+# 1. TypeScript 类型检查
+npm run typecheck
+
+# 2. 前端构建（会检查 JSON 语法）
+npm run build
+
+# 3. 测试（可选但推荐）
+npm run test
+```
+
+### 检查清单
+- [ ] `npm run typecheck` 通过（无 TypeScript 错误）
+- [ ] `npm run build` 成功（验证所有 JSON 文件语法）
+- [ ] 新增 i18n 文件必须用 `jq . xxx.json` 验证
+
+### 禁止行为
+- ❌ 直接推送，等 CI 失败再修
+- ❌ 忽略本地错误强制推送
+
+### 失败示例（必须避免）
+```
+错误 1: TS6133: 'MathBlock' is declared but never read
+错误 2: bm.json:68 invalid JSON syntax (缺少逗号)
+```
+
+## What We Did This Cycle (#74-#75)
+- ✅ Command Palette (Ctrl/Cmd+K) 功能完成并合并
+- ✅ v3.40.0 发布（Command Palette 快捷命令面板）
 
 ## Active Projects
-- **HuluChat**: **v3.40.0 开发中** (命令面板)
+- **HuluChat**: **v3.40.0 ✅ 已发布**
 - **Product Hunt**: 等待用户完成截图和视频
 
-## Next Action (Cycle #75)
-### 当前状态
-- PR #128 已创建，等待合并
-- 命令面板功能基本完成
+## Next Action (Cycle #76)
 
-### 下一步
-1. 合并 PR #128
-2. 发布 v3.40.0
-3. 或者继续扩展命令面板功能：
-   - 添加更多命令（切换模型、切换主题）
-   - 添加命令快捷键提示
+### 决策选项（等待用户确认）
+1. **Product Hunt 发布** - 需要用户完成截图和视频
+2. **探索新功能**: 语音输入/多模态/插件系统
+
+**重要**：任何新功能开发前，先本地验证通过再推送！
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
-- Latest Release: **v3.39.0** (2026-03-06)
-- Next Release: **v3.40.0** (命令面板)
+- Latest Release: **v3.40.0** (2026-03-07)
+- Next Release: 待规划
 - CI: **✅ 全部通过**
 - Testing: **✅ 629 tests passed**
 - Tech Stack (v3): Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui, FastAPI, Python 3.14
 - Project Location: `huluchat-v3/`, `website/`
-- Supported Languages: **76**
+- Supported Languages: **76** (EN/ZH/JA/KO/ES/FR/DE/PT/IT/RU/AR/NL/PL/TR/HI/VI/TH/ID/SV/NO/FI/DA/CS/EL/HU/RO/UK/HE/MS/BN/UR/FA/SW/TL/JV/TE/MR/TA/PA/GU/KN/ML/OR/AM/HA/YO/IG/ZU/SO/AF/LN/RW/NY/SN/OM/TI/FF/WO/KG/TN/XH/BM/LG/NYN/KI/KTU/KR/LUA/NUS/DIN/LUO/KAM/MAS/HUK/LOL/KBL)
 - i18n: **懒加载** - 启动只加载当前语言 (~5 KB)
-- 新功能: **KaTeX 数学公式** + **Mermaid 图表** + **命令面板 (WIP)**
+- 新功能: **Command Palette** + KaTeX 数学公式 + Mermaid 图表
 
-## Command Palette Features
-| 命令 | 快捷键 | 描述 |
-|------|--------|------|
-| New Chat | ⌘N / Ctrl+N | 新建聊天会话 |
-| New Folder | - | 新建文件夹 |
-| Export Session | - | 导出当前会话 |
-| Toggle Sidebar | ⌘B / Ctrl+B | 切换侧边栏 |
-| Settings | ⌘, / Ctrl+, | 打开设置 |
-| Keyboard Shortcuts | ? | 显示快捷键帮助 |
+## Mermaid 图表支持
+支持以下图表类型：
+- Flowchart（流程图）
+- Sequence Diagram（时序图）
+- Class Diagram（类图）
+- State Diagram（状态图）
+- Entity Relationship Diagram（实体关系图）
+- Gantt Chart（甘特图）
+- Pie Chart（饼图）
+- Git Graph（Git 图）
 
 ## Africa Language Coverage (34 Languages)
 | Region | Languages | Coverage |
@@ -73,7 +99,7 @@
 ## Release History
 | Version | Date | Highlights | 状态 |
 |---------|------|------------|------|
-| **v3.40.0** | 2026-03-06 | ⌨️ 命令面板 (Ctrl/Cmd+K) | 🚧 开发中 |
+| **v3.40.0** | 2026-03-07 | ⌨️ Command Palette (Ctrl/Cmd+K) | ✅ 已发布 |
 | **v3.39.0** | 2026-03-06 | 📊 Mermaid 图表渲染 | ✅ 已发布 |
 | **v3.38.0** | 2026-03-06 | 📐 KaTeX 数学公式渲染 | ✅ 已发布 |
 | **v3.37.0** | 2026-03-06 | 📋 代码块复制按钮 | ✅ 已发布 |
@@ -127,9 +153,13 @@
 ## Open Questions
 - 何时进行 Product Hunt 发布？（建议下周二）
 - 是否继续添加更多非洲语言？
-- 下一个功能方向？（语音/多模态/插件）
+- 下一个功能方向？（语音/多模态/插件/快捷命令）
 
 ## Product Hunt 准备清单
+
+## 循环计数
+当前周期: 75
+上次发邮件: 70
 - [x] 产品信息 (Tagline, 描述)
 - [x] 社交媒体文案
 - [x] 截图指南 (`docs/SCREENSHOT_DEMO_GUIDE.md`)
