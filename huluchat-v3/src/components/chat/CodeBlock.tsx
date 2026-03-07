@@ -71,19 +71,34 @@ export const CodeBlock = memo(function CodeBlock({
   }, [codeText]);
 
   return (
-    <div className="relative group/codeblock">
+    <div className="relative group/codeblock rounded-lg overflow-hidden">
       {/* Language badge and copy button */}
-      <div className="absolute right-2 top-2 flex items-center gap-2 opacity-0 group-hover/codeblock:opacity-100 transition-opacity">
+      <div
+        className={cn(
+          "absolute right-2 top-2 flex items-center gap-2 z-10",
+          "opacity-0 group-hover/codeblock:opacity-100 focus-within:opacity-100",
+          "transition-opacity duration-150"
+        )}
+      >
         {displayLanguage && (
-          <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">
+          <span
+            className={cn(
+              "text-xs text-muted-foreground",
+              "bg-muted/80 dark:bg-muted/60 backdrop-blur-sm",
+              "px-2 py-0.5 rounded-md"
+            )}
+          >
             {displayLanguage}
           </span>
         )}
         <button
           onClick={handleCopy}
           className={cn(
-            "p-1.5 rounded-md transition-colors",
-            "bg-muted hover:bg-accent",
+            "p-1.5 rounded-md",
+            "transition-all duration-150",
+            "bg-muted/80 dark:bg-muted/60 backdrop-blur-sm",
+            "hover:bg-accent active:scale-95",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
             copied ? "text-primary" : "text-muted-foreground hover:text-foreground"
           )}
           aria-label={copied ? t("chat.codeCopied") : t("chat.copyCode")}
@@ -93,7 +108,15 @@ export const CodeBlock = memo(function CodeBlock({
           {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
         </button>
       </div>
-      <pre className={cn("!bg-muted rounded-lg p-3 overflow-x-auto my-2 border border-border", className)}>
+      <pre
+        className={cn(
+          "!bg-muted dark:!bg-muted/40",
+          "rounded-lg p-3 overflow-x-auto my-2",
+          "border border-border dark:border-border/50",
+          "shadow-sm",
+          className
+        )}
+      >
         {children}
       </pre>
     </div>
