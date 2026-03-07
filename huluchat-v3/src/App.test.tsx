@@ -5,6 +5,7 @@ import App from "./App";
 import type { Session, Folder } from "@/api/client";
 import * as apiClient from "@/api/client";
 import { toast } from "sonner";
+import { version } from "../package.json";
 
 // Mock scrollIntoView
 beforeEach(() => {
@@ -170,8 +171,7 @@ describe("App", () => {
     it("should render version badge from package.json", () => {
       render(<App />);
 
-      // Version should be dynamically loaded from package.json
-      const { version } = require("../package.json");
+      // Version is imported from package.json at the top of the file
       expect(screen.getByText(`v${version}`)).toBeInTheDocument();
     });
 
