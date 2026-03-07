@@ -1,0 +1,45 @@
+name: Deploy Website
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'website/**'
+      - '.github/workflows/deploy-website.yml'
+  workflow_dispatch:
+
+# 需要在 GitHub Repository Settings > Secrets and variables > Actions 中配置:
+# - CLOUDFLARE_API_TOKEN: Cloudflare API Token (需要 Pages 编辑权限)
+# - CLOUDFLARE_ACCOUNT_ID: Cloudflare Account ID
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: website/package-lock.json
+
+      - name: Install dependencies
+        run: cd website && npm ci
+
+      - name: Build website
+        run: cd website && npm run build
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: huluchat-website
+          directory: website/out
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
