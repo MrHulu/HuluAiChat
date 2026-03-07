@@ -108,12 +108,11 @@ export function SessionItem({
         className={cn(
         "group flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer",
         "transition-all duration-200 ease-out",
-        "list-item-enter",
         isActive
-          ? "bg-accent text-accent-foreground"
-          : "hover:bg-muted/50 text-foreground",
+          ? "bg-accent text-accent-foreground shadow-sm"
+          : "hover:bg-muted/60 hover:shadow-sm text-foreground",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-        "active:scale-[0.98]"
+        "active:scale-[0.98] active:bg-accent/80"
       )}
     >
       <div className="flex-1 min-w-0">
@@ -158,11 +157,12 @@ export function SessionItem({
               disabled={isExporting}
               aria-label={t("sessionItem.exportSession")}
               className={cn(
-                "opacity-0 group-hover:opacity-100 transition-all duration-150",
+                "opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out",
                 "p-1.5 rounded-md",
                 "text-muted-foreground hover:text-primary hover:bg-primary/10",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
                 "focus-visible:opacity-100",
+                "active:scale-90",
                 isExporting && "opacity-50 cursor-wait"
               )}
             >
@@ -199,11 +199,12 @@ export function SessionItem({
                 onClick={(e) => e.stopPropagation()}
                 aria-label={t("sessionItem.moveToFolder")}
                 className={cn(
-                  "opacity-0 group-hover:opacity-100 transition-all duration-150",
+                  "opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out",
                   "p-1.5 rounded-md",
                   "text-muted-foreground hover:text-primary hover:bg-primary/10",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-                  "focus-visible:opacity-100"
+                  "focus-visible:opacity-100",
+                  "active:scale-90"
                 )}
               >
                 <FolderOpen className="w-3.5 h-3.5" aria-hidden="true" />
@@ -240,11 +241,12 @@ export function SessionItem({
           onClick={handleDelete}
           aria-label={t("sessionItem.deleteSession")}
           className={cn(
-            "opacity-0 group-hover:opacity-100 transition-all duration-150",
+            "opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out",
             "p-1.5 rounded-md",
             "text-muted-foreground hover:text-destructive hover:bg-destructive/10",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-            "focus-visible:opacity-100"
+            "focus-visible:opacity-100",
+            "active:scale-90"
           )}
         >
           <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
