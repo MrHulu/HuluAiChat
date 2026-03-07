@@ -13,6 +13,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { supportedLanguages, changeLanguage, type LanguageCode } from "@/i18n";
 
 export function LanguageSelector() {
@@ -38,21 +43,27 @@ export function LanguageSelector() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          title={t("languageSelector.changeLanguage")}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
-          ) : (
-            <Globe className="h-5 w-5" />
-          )}
-          <span className="sr-only">{t("languageSelector.language")}</span>
-        </Button>
-      </DropdownMenuTrigger>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <Globe className="h-5 w-5" />
+              )}
+              <span className="sr-only">{t("languageSelector.language")}</span>
+            </Button>
+          </DropdownMenuTrigger>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{t("languageSelector.changeLanguage")}</p>
+        </TooltipContent>
+      </Tooltip>
       <DropdownMenuContent align="end">
         {supportedLanguages.map((lang) => (
           <DropdownMenuItem

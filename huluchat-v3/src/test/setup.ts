@@ -43,3 +43,10 @@ window.HTMLElement.prototype.releasePointerCapture = () => {};
 
 // Polyfill scrollIntoView for Radix UI
 window.HTMLElement.prototype.scrollIntoView = () => {};
+
+// Mock ResizeObserver for Radix UI Tooltip
+global.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
