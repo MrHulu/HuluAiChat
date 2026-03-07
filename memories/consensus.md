@@ -1,10 +1,10 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-07 - Cycle #90
+2026-03-07 - Cycle #92
 
 ## Current Phase
-🟡 **Website 部署待配置** - 需要 Cloudflare API Token
+🟢 **Website 自动部署就绪** - GitHub Actions 已配置，等待 Cloudflare Secrets
 
 ## 🚨 Boss 指令：推送前必须本地验证
 
@@ -36,15 +36,20 @@ npm run lint
 - ❌ 直接推送，等 CI 失败再修
 - ❌ 忽略本地错误强制推送
 
-## What We Did This Cycle (#90)
-- ✅ **验证插件更新功能** - 代码审查确认功能完整：
-  - `types.ts`: `PluginUpdateInfo`, `PluginUpdateState` 类型定义
-  - `manager.ts`: `checkForUpdate()`, `checkForAllUpdates()`, `updatePlugin()` 实现
-  - `usePluginManager.ts`: Hook 暴露更新方法
-  - `PluginSettings.tsx`: UI 有检查更新/更新按钮
+## What We Did This Cycle (#92)
+- ✅ **本地验证通过** - typecheck, lint (仅警告), build
+- ✅ **创建 PR #142** - GitHub Actions 自动部署工作流
+- ✅ **等待用户操作** - 官网部署需要配置 Cloudflare
+
+## Previous Cycle (#91)
+- ✅ **创建 GitHub Actions 自动部署** - `.github/workflows/deploy-website.yml`
+- ✅ **Website 构建验证** - `npm run build` 成功
+- ✅ **更新部署文档** - 添加 GitHub Actions 方式
+
+## Previous Cycle (#90)
+- ✅ **验证插件更新功能** - 代码审查确认功能完整
 - ✅ **Website 构建验证** - `npm run build` 成功
 - ✅ **推送本地 commits** - PR #140 已合并
-- ⏸️ **Cloudflare 部署** - 需要 `wrangler login` (用户手动操作)
 
 ## Previous Cycle (#89)
 - ✅ 实现插件自动更新功能
@@ -85,16 +90,24 @@ npm run lint
 
 ## Active Projects
 - **HuluChat**: **v3.45.0 已发布** ✅ | 插件系统功能完整 + 5 个示例插件 + 自动更新
-- **Website**: 构建成功 ⏸️ | 等待 Cloudflare API Token 配置
+- **Website**: GitHub Actions 已配置 ✅ | 等待 Cloudflare Secrets 配置
 - **Product Hunt**: 等待用户完成截图和视频
 
-## Next Action (Cycle #91)
-1. **官网部署** (TASK-104) - **需要用户操作**：
-   - 运行 `wrangler login` 登录 Cloudflare
-   - 或在 Cloudflare Dashboard 配置 GitHub 集成
-2. **Product Hunt 发布准备**：
+## Next Action (Cycle #93)
+1. **合并 PR #142** - GitHub Actions 工作流
+2. **官网部署** - **需要用户操作**：
+   - **方式 1 (推荐)**: Cloudflare Pages Git 集成
+     1. 登录 Cloudflare Dashboard > Pages > Connect to Git
+     2. 选择 MrHulu/HuluAiChat 仓库
+     3. Build command: `cd website && npm install && npm run build`
+     4. Output directory: `website/out`
+   - **方式 2**: GitHub Actions (需配置 Secrets)
+     1. 在 GitHub Repo > Settings > Secrets 添加：
+        - `CLOUDFLARE_API_TOKEN` (需要 Pages 编辑权限)
+        - `CLOUDFLARE_ACCOUNT_ID`
+     2. 推送代码后自动部署
+3. **Product Hunt 发布准备**：
    - 用户需要完成截图 (5 张) 和视频 (60 秒)
-3. **可选**：创建 GitHub Actions 自动部署 Website
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
@@ -162,7 +175,7 @@ npm run lint
 - [ ] 发布日社区推广
 
 ## 循环计数
-当前周期: 90
+当前周期: 92
 上次发邮件: 88
 
 ## Website 部署说明
@@ -176,7 +189,14 @@ npm run lint
    - Build output directory: `website/out`
 5. 部署
 
-### 方式 2: Wrangler CLI
+### 方式 2: GitHub Actions 自动部署
+1. 在 GitHub Repo > Settings > Secrets and variables > Actions 添加：
+   - `CLOUDFLARE_API_TOKEN` - 在 Cloudflare > My Profile > API Tokens 创建 (需要 Pages 编辑权限)
+   - `CLOUDFLARE_ACCOUNT_ID` - 在 Cloudflare Dashboard 右侧边栏查看
+2. 推送到 master 分支，GitHub Actions 自动构建和部署
+3. 工作流文件: `.github/workflows/deploy-website.yml`
+
+### 方式 3: Wrangler CLI
 ```bash
 cd website
 wrangler login  # 需要用户手动登录
@@ -188,3 +208,4 @@ wrangler pages deploy out
 - 样式: Tailwind CSS v4
 - 输出目录: `out/`
 - wrangler.toml: 已配置
+- GitHub Actions: ✅ 已配置
