@@ -2,6 +2,9 @@
 
 ## 进行中
 <!-- 当前正在处理的任务 -->
+- [ ] **TASK-127**: 🎤 执行用户访谈招募（GitHub Issue #190 已创建）
+  - 目标：5-10 人访谈，验证 PMF
+  - Issue: https://github.com/MrHulu/HuluAiChat/issues/190
 
 ## 待开始
 <!-- 新任务添加到这里 -->
