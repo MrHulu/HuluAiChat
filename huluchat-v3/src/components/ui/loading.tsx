@@ -5,7 +5,7 @@
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 
-export type LoadingVariant = "spinner" | "dots" | "pulse" | "ring";
+export type LoadingVariant = "spinner" | "dots" | "pulse" | "ring" | "wave";
 export type LoadingSize = "sm" | "md" | "lg";
 
 export interface LoadingProps {
@@ -21,10 +21,10 @@ export interface LoadingProps {
   center?: boolean;
 }
 
-const sizeMap: Record<LoadingSize, { spinner: string; dots: string; gap: string }> = {
-  sm: { spinner: "w-4 h-4", dots: "w-1.5 h-1.5", gap: "gap-0.5" },
-  md: { spinner: "w-5 h-5", dots: "w-2 h-2", gap: "gap-1" },
-  lg: { spinner: "w-8 h-8", dots: "w-3 h-3", gap: "gap-1.5" },
+const sizeMap: Record<LoadingSize, { spinner: string; dots: string; gap: string; wave: string }> = {
+  sm: { spinner: "w-4 h-4", dots: "w-1.5 h-1.5", gap: "gap-0.5", wave: "w-1 h-3" },
+  md: { spinner: "w-5 h-5", dots: "w-2 h-2", gap: "gap-1", wave: "w-1.5 h-4" },
+  lg: { spinner: "w-8 h-8", dots: "w-3 h-3", gap: "gap-1.5", wave: "w-2 h-6" },
 };
 
 /**
@@ -43,7 +43,8 @@ function SpinnerLoader({ size, className }: { size: LoadingSize; className?: str
 }
 
 /**
- * 三个跳动点加载器
+ * 三个跳动点加载器（优化版）
+ * 使用 scale + opacity 动画，更加流畅优雅
  */
 function DotsLoader({ size, className }: { size: LoadingSize; className?: string }) {
   const dotSize = sizeMap[size].dots;
@@ -53,25 +54,52 @@ function DotsLoader({ size, className }: { size: LoadingSize; className?: string
     <div className={cn("flex items-center", gap, className)}>
       <span
         className={cn(
-          "bg-current rounded-full animate-bounce text-muted-foreground",
+          "rounded-full bg-primary",
+          "animate-[dotPulse_1.2s_ease-in-out_infinite]",
           dotSize
         )}
-        style={{ animationDelay: "0ms", animationDuration: "600ms" }}
+        style={{ animationDelay: "0ms" }}
       />
       <span
         className={cn(
-          "bg-current rounded-full animate-bounce text-muted-foreground",
+          "rounded-full bg-primary",
+          "animate-[dotPulse_1.2s_ease-in-out_infinite]",
           dotSize
         )}
-        style={{ animationDelay: "150ms", animationDuration: "600ms" }}
+        style={{ animationDelay: "150ms" }}
       />
       <span
         className={cn(
-          "bg-current rounded-full animate-bounce text-muted-foreground",
+          "rounded-full bg-primary",
+          "animate-[dotPulse_1.2s_ease-in-out_infinite]",
           dotSize
         )}
-        style={{ animationDelay: "300ms", animationDuration: "600ms" }}
+        style={{ animationDelay: "300ms" }}
       />
+    </div>
+  );
+}
+
+/**
+ * 波浪加载器
+ */
+function WaveLoader({ size, className }: { size: LoadingSize; className?: string }) {
+  const waveSize = sizeMap[size].wave;
+  const gap = sizeMap[size].gap;
+
+  return (
+    <div className={cn("flex items-end", gap, className)}>
+      {[0, 1, 2, 3, 4].map((i) => (
+        <span
+          key={i}
+          className={cn(
+            "rounded-full bg-primary",
+            "animate-[wave_1.2s_ease-in-out_infinite]",
+            waveSize
+          )}
+          style={{ animationDelay: `${i * 100}ms` }}
+        />
+      ))}
     </div>
   );
 }
@@ -142,6 +170,8 @@ export function Loading({
         return <PulseLoader size={size} />;
       case "ring":
         return <RingLoader size={size} />;
+      case "wave":
+        return <WaveLoader size={size} />;
       default:
         return <SpinnerLoader size={size} />;
     }

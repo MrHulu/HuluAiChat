@@ -5,6 +5,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { listRAGDocuments, deleteRAGDocument, RAGDocument } from "@/api/client";
+import { Loading } from "@/components/ui/loading";
 import { cn } from "@/lib/utils";
 
 export interface DocumentListProps {
@@ -62,11 +63,8 @@ export function DocumentList({
 
   if (isLoading) {
     return (
-      <div className={cn("flex items-center justify-center py-4", className)}>
-        <div
-          role="status"
-          className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"
-        />
+      <div className={cn("flex items-center justify-center py-4 animate-fade-in", className)}>
+        <Loading variant="ring" size="md" />
       </div>
     );
   }
