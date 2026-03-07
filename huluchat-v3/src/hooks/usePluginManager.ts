@@ -27,6 +27,10 @@ export interface UsePluginManagerReturn {
   activatePlugin: (id: string) => Promise<void>;
   /** Deactivate a plugin */
   deactivatePlugin: (id: string) => Promise<void>;
+  /** Install a plugin from directory path */
+  installPlugin: (sourcePath: string) => Promise<void>;
+  /** Uninstall a plugin */
+  uninstallPlugin: (id: string) => Promise<void>;
   /** Refresh plugin list */
   refreshPlugins: () => void;
 }
@@ -107,6 +111,24 @@ export function usePluginManager(): UsePluginManagerReturn {
     [manager]
   );
 
+  const installPlugin = useCallback(
+    async (sourcePath: string) => {
+      if (!manager) throw new Error("Plugin manager not initialized");
+      await manager.installPlugin(sourcePath);
+      setPlugins(manager.getPlugins());
+    },
+    [manager]
+  );
+
+  const uninstallPlugin = useCallback(
+    async (id: string) => {
+      if (!manager) throw new Error("Plugin manager not initialized");
+      await manager.uninstallPlugin(id);
+      setPlugins(manager.getPlugins());
+    },
+    [manager]
+  );
+
   const refreshPlugins = useCallback(() => {
     if (manager) {
       setPlugins(manager.getPlugins());
@@ -121,6 +143,8 @@ export function usePluginManager(): UsePluginManagerReturn {
     error,
     activatePlugin,
     deactivatePlugin,
+    installPlugin,
+    uninstallPlugin,
     refreshPlugins,
   };
 }
