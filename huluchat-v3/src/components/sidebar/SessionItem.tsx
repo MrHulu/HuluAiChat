@@ -4,6 +4,14 @@
  */
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import {
+  Download,
+  FileText,
+  FolderOpen,
+  ChevronLeft,
+  Check,
+  Trash2,
+} from "lucide-react";
 import { Session, Folder, ExportFormat } from "@/api/client";
 import { cn } from "@/lib/utils";
 import {
@@ -130,78 +138,25 @@ export function SessionItem({
               )}
               title={t("sessionItem.exportSession")}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <polyline points="7 10 12 15 17 10" />
-                <line x1="12" x2="12" y1="15" y2="3" />
-              </svg>
+              <Download className="w-3.5 h-3.5" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
             <DropdownMenuItem onClick={handleExport("markdown")}>
               <span className="flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-                  <path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z" />
-                </svg>
+                <FileText className="w-3.5 h-3.5" />
                 {t("sessionItem.markdown")}
               </span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleExport("json")}>
               <span className="flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-                  <path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z" />
-                </svg>
+                <FileText className="w-3.5 h-3.5" />
                 {t("sessionItem.json")}
               </span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleExport("txt")}>
               <span className="flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-                  <path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z" />
-                </svg>
+                <FileText className="w-3.5 h-3.5" />
                 {t("sessionItem.plainText")}
               </span>
             </DropdownMenuItem>
@@ -220,37 +175,13 @@ export function SessionItem({
                 )}
                 title={t("sessionItem.moveToFolder")}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" />
-                </svg>
+                <FolderOpen className="w-3.5 h-3.5" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
               <DropdownMenuItem onClick={handleMoveToFolder(null)}>
                 <span className="flex items-center gap-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="m15 18-6-6 6-6" />
-                  </svg>
+                  <ChevronLeft className="w-3.5 h-3.5" />
                   {t("sessionItem.uncategorized")}
                 </span>
               </DropdownMenuItem>
@@ -261,35 +192,10 @@ export function SessionItem({
                   className={session.folder_id === folder.id ? "bg-muted" : ""}
                 >
                   <span className="flex items-center gap-2">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" />
-                    </svg>
+                    <FolderOpen className="w-3.5 h-3.5" />
                     {folder.name}
                     {session.folder_id === folder.id && (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="ml-auto text-primary"
-                      >
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
+                      <Check className="w-3 h-3 ml-auto text-primary" />
                     )}
                   </span>
                 </DropdownMenuItem>
@@ -307,21 +213,7 @@ export function SessionItem({
           )}
           title={t("sessionItem.deleteSession")}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M3 6h18" />
-            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-          </svg>
+          <Trash2 className="w-3.5 h-3.5" />
         </button>
       </div>
     </div>

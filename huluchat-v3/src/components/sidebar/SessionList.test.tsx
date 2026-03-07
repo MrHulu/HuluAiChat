@@ -154,11 +154,12 @@ describe("SessionList", () => {
   });
 
   describe("Session List", () => {
-    it("should show loading spinner when isLoading is true", () => {
+    it("should show loading skeleton when isLoading is true", () => {
       render(<SessionList {...defaultProps} isLoading={true} />);
 
-      const spinner = document.querySelector(".animate-spin");
-      expect(spinner).toBeInTheDocument();
+      // Skeleton items have animate-shimmer class (custom animation)
+      const skeletons = document.querySelectorAll(".animate-shimmer");
+      expect(skeletons.length).toBeGreaterThan(0);
     });
 
     it("should render sessions", () => {
@@ -370,10 +371,10 @@ describe("SessionList", () => {
       const sessions = [createSession("1", "Work Session", "f1")];
       render(<SessionList {...defaultProps} folders={folders} sessions={sessions} />);
 
-      // Find the chevron button and click it
+      // Find the chevron button and click it (lucide ChevronRight icon)
       const chevronButtons = document.querySelectorAll("button");
       const chevronButton = Array.from(chevronButtons).find(
-        (btn) => btn.querySelector("svg path[d*='m9 18 6-6-6-6']")
+        (btn) => btn.querySelector("svg[class*='lucide-chevron-right']")
       );
 
       if (chevronButton) {
