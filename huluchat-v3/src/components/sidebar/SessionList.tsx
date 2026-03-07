@@ -755,9 +755,12 @@ function FolderItem({
         </div>
       </div>
 
-      {/* Sessions in Folder */}
+      {/* Sessions in Folder - with slide-in animation */}
       {isExpanded && sessions.length > 0 && (
-        <div className="ml-4 border-l border-border pl-2 space-y-1" role="list">
+        <div
+          className="ml-4 border-l border-border pl-2 space-y-1 animate-in slide-in-from-top-1 duration-150"
+          role="list"
+        >
           {sessions.map((session) => (
             <SessionItem
               key={session.id}
