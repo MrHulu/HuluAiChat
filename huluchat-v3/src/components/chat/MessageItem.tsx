@@ -255,6 +255,7 @@ export const MessageItem = memo(function MessageItem({
         className={cn(
           "max-w-[80%] rounded-2xl px-4 py-3 relative",
           "shadow-sm hover:shadow-md transition-all duration-200 ease-out",
+          "hover:scale-[1.005] active:scale-[0.995]",
           isUser
             ? "bg-primary text-primary-foreground ml-12 hover:bg-primary/90"
             : "bg-muted text-foreground mr-12 border-l-4 border-primary/30 hover:bg-muted/80"
