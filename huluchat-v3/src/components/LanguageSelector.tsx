@@ -6,6 +6,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Globe, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -51,12 +52,17 @@ export function LanguageSelector() {
               size="icon"
               disabled={isLoading}
               aria-label={t("languageSelector.changeLanguage")}
+              className="relative"
             >
-              {isLoading ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                <Globe className="h-5 w-5" />
-              )}
+              <Globe className={cn(
+                "h-5 w-5 transition-all duration-200",
+                isLoading && "opacity-0 scale-75"
+              )} />
+              <Loader2 className={cn(
+                "absolute h-5 w-5 animate-spin transition-all duration-200",
+                !isLoading && "opacity-0 scale-75",
+                isLoading && "opacity-100 scale-100"
+              )} />
               <span className="sr-only">{t("languageSelector.language")}</span>
             </Button>
           </DropdownMenuTrigger>
@@ -72,14 +78,17 @@ export function LanguageSelector() {
             onClick={() => handleLanguageChange(lang.code)}
             disabled={isLoading}
             aria-current={i18n.language === lang.code ? "true" : undefined}
-            className={i18n.language === lang.code ? "bg-accent" : ""}
+            className={cn(
+              "transition-colors duration-150",
+              i18n.language === lang.code && "bg-accent"
+            )}
           >
             <span className="mr-2">{lang.nativeName}</span>
             {loadingLang === lang.code && (
               <Loader2 className="ml-auto h-3 w-3 animate-spin" />
             )}
             {i18n.language === lang.code && loadingLang !== lang.code && (
-              <span className="ml-auto text-xs text-muted-foreground">✓</span>
+              <span className="ml-auto text-xs text-muted-foreground animate-in zoom-in-50 duration-150">✓</span>
             )}
           </DropdownMenuItem>
         ))}

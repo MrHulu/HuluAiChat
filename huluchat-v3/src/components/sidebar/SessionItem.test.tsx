@@ -168,7 +168,7 @@ describe("SessionItem", () => {
     // Get the button element (nested due to listitem wrapper)
     const buttonElement = container.querySelector('[role="button"]');
     expect(buttonElement).not.toHaveClass("bg-accent");
-    expect(buttonElement).toHaveClass("hover:bg-muted/50");
+    expect(buttonElement).toHaveClass("hover:bg-muted/60");
   });
 
   it("should call onDelete when delete button is clicked", async () => {

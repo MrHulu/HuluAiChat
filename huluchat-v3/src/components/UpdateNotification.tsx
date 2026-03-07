@@ -26,12 +26,12 @@ export function UpdateNotification() {
 
   return (
     <div
-      className="fixed bottom-4 right-4 z-50 max-w-sm animate-in slide-in-from-bottom-2"
+      className="fixed bottom-4 right-4 z-50 max-w-sm animate-in slide-in-from-bottom-4 fade-in-0 duration-300"
       role="status"
       aria-live="polite"
       aria-label={t("update.notificationLabel")}
     >
-      <div className="bg-card border border-border rounded-lg shadow-lg p-4">
+      <div className="bg-card border border-border rounded-xl shadow-lg dark:shadow-xl dark:shadow-black/20 p-4 backdrop-blur-sm">
         {isChecking ? (
           <div className="flex items-center gap-3">
             <RefreshCw className="h-5 w-5 animate-spin text-muted-foreground" aria-hidden="true" />
@@ -49,7 +49,7 @@ export function UpdateNotification() {
               </div>
             </div>
             <div
-              className="w-full bg-muted rounded-full h-2"
+              className="w-full bg-muted rounded-full h-2 overflow-hidden"
               role="progressbar"
               aria-valuenow={downloadProgress}
               aria-valuemin={0}
@@ -57,16 +57,18 @@ export function UpdateNotification() {
               aria-label={t("update.downloadProgress")}
             >
               <div
-                className="bg-primary h-2 rounded-full transition-all duration-300"
+                className="bg-primary h-full rounded-full transition-all duration-300 ease-out relative overflow-hidden"
                 style={{ width: `${downloadProgress}%` }}
-              />
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+              </div>
             </div>
           </div>
         ) : (
           <div className="space-y-3">
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-primary/10 rounded-lg">
+                <div className="p-2 bg-primary/10 rounded-lg transition-transform duration-200 hover:scale-105">
                   <RefreshCw className="h-4 w-4 text-primary" aria-hidden="true" />
                 </div>
                 <div>
@@ -79,7 +81,12 @@ export function UpdateNotification() {
               <button
                 onClick={dismissUpdate}
                 aria-label={t("common.close")}
-                className="text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+                className={cn(
+                  "text-muted-foreground transition-all duration-150 rounded-md p-1",
+                  "hover:text-foreground hover:bg-muted",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                  "active:scale-95"
+                )}
               >
                 <X className="h-4 w-4" aria-hidden="true" />
               </button>
@@ -96,9 +103,12 @@ export function UpdateNotification() {
                 onClick={downloadAndInstall}
                 aria-label={t("update.updateNow")}
                 className={cn(
-                  "flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium",
-                  "bg-primary text-primary-foreground hover:bg-primary/90 transition-colors",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  "flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium",
+                  "bg-primary text-primary-foreground",
+                  "transition-all duration-200 ease-out",
+                  "hover:bg-primary/90 hover:shadow-md",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                  "active:scale-[0.98]"
                 )}
               >
                 <Download className="h-4 w-4" aria-hidden="true" />
@@ -107,7 +117,14 @@ export function UpdateNotification() {
               <button
                 onClick={() => checkForUpdates(false)}
                 aria-label={t("update.later")}
-                className="px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className={cn(
+                  "px-3 py-2 rounded-lg text-sm font-medium",
+                  "text-muted-foreground",
+                  "transition-all duration-200 ease-out",
+                  "hover:text-foreground hover:bg-muted",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                  "active:scale-[0.98]"
+                )}
               >
                 {t("update.later")}
               </button>
