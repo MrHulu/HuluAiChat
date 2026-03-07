@@ -112,7 +112,7 @@ export function DocumentList({
               onClick={() => handleDelete(doc)}
               disabled={disabled || deletingId === doc.doc_id}
               className={cn(
-                "text-xs px-2 py-1 rounded transition-colors",
+                "text-xs px-2 py-1 rounded-md transition-colors",
                 "text-destructive hover:bg-destructive/10",
                 disabled && "opacity-50 cursor-not-allowed"
               )}
