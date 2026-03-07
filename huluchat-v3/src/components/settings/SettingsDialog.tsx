@@ -395,16 +395,16 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
               {/* Test Result */}
               {testResult && (
                 <div
-                  className={`flex items-center gap-2 p-3 rounded-md ${
+                  className={`flex items-center gap-2 p-3 rounded-md animate-in fade-in-0 slide-in-from-top-2 duration-200 ${
                     testResult.success
                       ? "bg-success-muted text-success-foreground"
                       : "bg-error-muted text-error-foreground"
                   }`}
                 >
                   {testResult.success ? (
-                    <Check className="h-4 w-4" />
+                    <Check className="h-4 w-4 animate-in zoom-in-50 duration-200" />
                   ) : (
-                    <AlertCircle className="h-4 w-4" />
+                    <AlertCircle className="h-4 w-4 animate-in zoom-in-50 duration-200" />
                   )}
                   <span className="text-sm">{testResult.message}</span>
                 </div>
