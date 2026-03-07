@@ -1,0 +1,39 @@
+{
+  "id": "com.huluchat.quick-reply",
+  "name": "Quick Reply",
+  "version": "1.0.0",
+  "description": "Manage and use quick reply templates for common responses",
+  "author": "HuluChat Team",
+  "minAppVersion": "3.40.0",
+  "permissions": [
+    "chat.read",
+    "chat.write",
+    "storage",
+    "api",
+    "clipboard"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "id": "quickReply.addTemplate",
+        "title": "Add Quick Reply Template",
+        "category": "Quick Reply"
+      },
+      {
+        "id": "quickReply.listTemplates",
+        "title": "List All Templates",
+        "category": "Quick Reply"
+      },
+      {
+        "id": "quickReply.insertTemplate",
+        "title": "Insert Template to Input",
+        "category": "Quick Reply"
+      },
+      {
+        "id": "quickReply.clearTemplates",
+        "title": "Clear All Templates",
+        "category": "Quick Reply"
+      }
+    ]
+  }
+}
