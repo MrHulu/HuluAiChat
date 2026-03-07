@@ -5,7 +5,7 @@
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 
-export type LoadingVariant = "spinner" | "dots" | "pulse" | "ring" | "wave";
+export type LoadingVariant = "spinner" | "dots" | "pulse" | "ring" | "wave" | "thinking";
 export type LoadingSize = "sm" | "md" | "lg";
 
 export interface LoadingProps {
@@ -105,6 +105,45 @@ function WaveLoader({ size, className }: { size: LoadingSize; className?: string
 }
 
 /**
+ * AI 思考加载器
+ * 模拟 AI 思考时的脉冲效果，更有科技感
+ */
+function ThinkingLoader({ size, className }: { size: LoadingSize; className?: string }) {
+  const dotSize = sizeMap[size].dots;
+  const gap = sizeMap[size].gap;
+
+  return (
+    <div className={cn("flex items-center", gap, className)}>
+      {/* 中心脉冲点 */}
+      <span
+        className={cn(
+          "rounded-full bg-primary",
+          "animate-[thinkingPulse_1.5s_ease-in-out_infinite]",
+          dotSize
+        )}
+      />
+      {/* 两个较小的跟随点 */}
+      <span
+        className={cn(
+          "rounded-full bg-primary/60",
+          "animate-[thinkingPulse_1.5s_ease-in-out_infinite]",
+          size === "sm" ? "w-1 h-1" : size === "md" ? "w-1.5 h-1.5" : "w-2 h-2"
+        )}
+        style={{ animationDelay: "200ms" }}
+      />
+      <span
+        className={cn(
+          "rounded-full bg-primary/40",
+          "animate-[thinkingPulse_1.5s_ease-in-out_infinite]",
+          size === "sm" ? "w-1 h-1" : size === "md" ? "w-1.5 h-1.5" : "w-2 h-2"
+        )}
+        style={{ animationDelay: "400ms" }}
+      />
+    </div>
+  );
+}
+
+/**
  * 脉冲加载器
  */
 function PulseLoader({ size, className }: { size: LoadingSize; className?: string }) {
@@ -172,6 +211,8 @@ export function Loading({
         return <RingLoader size={size} />;
       case "wave":
         return <WaveLoader size={size} />;
+      case "thinking":
+        return <ThinkingLoader size={size} />;
       default:
         return <SpinnerLoader size={size} />;
     }

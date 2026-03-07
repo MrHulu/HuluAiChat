@@ -18,7 +18,6 @@ import { SessionItem } from "./SessionItem";
 import { TagFilter } from "./TagFilter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loading } from "@/components/ui/loading";
 import { SkeletonSessionItem } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 

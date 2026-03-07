@@ -36,6 +36,13 @@ describe("Loading", () => {
     expect(document.querySelector(".animate-spin")).toBeInTheDocument();
   });
 
+  it("should render thinking variant", () => {
+    render(<Loading variant="thinking" />);
+    // Check for thinking animation
+    const thinkingDots = document.querySelectorAll(".animate-\\[thinkingPulse_1\\.5s_ease-in-out_infinite\\]");
+    expect(thinkingDots.length).toBeGreaterThan(0);
+  });
+
   it("should render text when provided", () => {
     render(<Loading text="Loading..." />);
     expect(screen.getByText("Loading...")).toBeInTheDocument();
