@@ -6,10 +6,10 @@
 ## 待开始
 <!-- 新任务添加到这里 -->
 - [ ] **TASK-121**: 💻 开发 v3.50.0 - 会话标签/消息书签功能
-  - Phase 1: 数据库 Schema 设计（tags, bookmarks 表）
-  - Phase 2: 会话标签 UI（打标签、按标签筛选）
-  - Phase 3: 消息书签 UI（标记重要消息、快速跳转）
-  - Phase 4: 发布 v3.50.0
+  - Phase 1: 数据库 Schema 设计（tags, bookmarks 表） ✅
+  - Phase 2: 会话标签 UI（打标签、按标签筛选） ✅
+  - Phase 3: 消息书签 UI（标记重要消息、快速跳转） ✅
+  - Phase 4: 发布 v3.50.0 ⏳ 下一步
 - [ ] **TASK-116**: 🎬 准备 Product Hunt 发布素材（截图、视频）- 等待 Boss
 
 ## ⚠️ 永久禁止事项（Boss 明确要求）
