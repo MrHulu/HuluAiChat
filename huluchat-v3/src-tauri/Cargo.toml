@@ -28,3 +28,11 @@ tauri-plugin-dialog = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
+# Release 优化配置 - 减小二进制体积
+[profile.release]
+lto = true              # Link Time Optimization
+codegen-units = 1       # 单代码生成单元，更好优化
+strip = true            # 移除符号表
+opt-level = "z"         # 优化体积（比 "s" 更激进）
+panic = "abort"         # panic 时直接终止，减小体积
+
