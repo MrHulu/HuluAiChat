@@ -102,16 +102,19 @@ export function TagInput({
                 onKeyDown={handleKeyDown}
                 onBlur={handleBlur}
                 placeholder={t("tags.addTag")}
+                aria-label={t("tags.addTag")}
                 className={cn(
                   "w-20 px-1.5 py-0.5 text-[10px] rounded-full border",
                   "bg-transparent border-dashed border-muted-foreground/50",
-                  "focus:outline-none focus:border-primary"
+                  "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:border-primary"
                 )}
               />
 
               {/* Suggestions dropdown */}
               {showSuggestions && filteredSuggestions.length > 0 && (
                 <div
+                  role="listbox"
+                  aria-label={t("tags.suggestions")}
                   className={cn(
                     "absolute left-0 top-full mt-1 z-50",
                     "min-w-[100px] max-w-[150px] p-1",
@@ -121,10 +124,12 @@ export function TagInput({
                   {filteredSuggestions.slice(0, 5).map((suggestion) => (
                     <button
                       key={suggestion}
+                      role="option"
                       onMouseDown={() => handleSubmit(suggestion)}
                       className={cn(
                         "w-full px-2 py-1 text-xs text-left rounded",
-                        "hover:bg-muted transition-colors"
+                        "hover:bg-muted transition-colors",
+                        "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:bg-muted"
                       )}
                     >
                       #{suggestion}
@@ -139,11 +144,13 @@ export function TagInput({
                 e.stopPropagation();
                 setIsInputVisible(true);
               }}
+              aria-label={t("tags.addTag")}
               className={cn(
                 "px-1.5 py-0.5 text-[10px] rounded-full border border-dashed",
                 "border-muted-foreground/30 text-muted-foreground",
                 "hover:border-muted-foreground/50 hover:text-muted-foreground",
-                "transition-colors"
+                "transition-colors",
+                "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               )}
             >
               + {t("tags.tag")}

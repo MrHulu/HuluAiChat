@@ -135,6 +135,7 @@ export function BookmarkPanel({
               size="sm"
               className="h-6 w-6 p-0"
               disabled={isExporting || bookmarks.length === 0}
+              aria-label={t("chat.exportBookmarks")}
             >
               <Download className="h-3 w-3" />
             </Button>
@@ -153,14 +154,24 @@ export function BookmarkPanel({
       </div>
 
       {/* Bookmark List */}
-      <div className="flex-1 overflow-y-auto max-h-48">
+      <div className="flex-1 overflow-y-auto max-h-48" role="list" aria-label={t("chat.bookmarks")}>
         {bookmarks.map((bookmark) => (
           <div
             key={bookmark.id}
+            role="listitem"
             onClick={() => handleJump(bookmark.message_id)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                handleJump(bookmark.message_id);
+              }
+            }}
+            tabIndex={0}
+            aria-label={t("chat.jumpToBookmark", { content: bookmark.message_content.slice(0, 50) })}
             className={cn(
               "group flex items-start gap-2 px-3 py-2 cursor-pointer",
-              "hover:bg-accent/50 transition-colors border-b border-border/50 last:border-b-0"
+              "hover:bg-accent/50 transition-colors border-b border-border/50 last:border-b-0",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
             )}
           >
             {/* Role indicator */}

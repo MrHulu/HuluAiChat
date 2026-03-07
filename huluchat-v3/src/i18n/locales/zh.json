@@ -72,6 +72,8 @@
     "exportMarkdown": "导出为 Markdown",
     "exportSuccess": "书签导出成功",
     "exportError": "导出书签失败",
+    "exportBookmarks": "导出书签",
+    "jumpToBookmark": "跳转到书签：{{content}}",
     "voice": {
       "startRecording": "开始语音输入",
       "stopRecording": "停止录音",
@@ -297,6 +299,7 @@
     "noDocuments": "未上传文档",
     "chunks": "{{count}} 个片段",
     "delete": "删除",
+    "deleteDocument": "删除文档 {{filename}}",
     "deleteConfirm": "确定要删除此文档吗？",
     "deleting": "删除中...",
     "deleteError": "删除文档失败",
@@ -340,7 +343,8 @@
     "clearSelection": "清除所有已选标签",
     "selectTag": "选择标签 {{tag}}",
     "deselectTag": "取消选择标签 {{tag}}",
-    "maxTagsReached": "每个会话最多 5 个标签"
+    "maxTagsReached": "每个会话最多 5 个标签",
+    "suggestions": "标签建议"
   },
   "bookmarks": {
     "title": "书签",

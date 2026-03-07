@@ -1,7 +1,7 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-08 - Cycle #120
+2026-03-08 - Cycle #121
 
 ## Current Phase
 🎨 **UI/UX 美化优化** - 持续进行
@@ -22,21 +22,27 @@
 ### 状态
 - **类型**：长期任务
 - **状态**：持续进行
-- **方向**：界面美化、交互优化、视觉一致性
+- **方向**：界面美化、交互优化、视觉一致性、可访问性增强
 
 ### 已完成优化
 - ✅ Cycle #104: 统一圆角规范 + hover 效果
 - ✅ Cycle #105: 统一间距规范 + 视觉层次
 - ✅ Cycle #106: 消息气泡样式优化
-- ✅ Cycle #117: 硬编码颜色替换为 CSS 主题变量
-- ✅ Cycle #118: 侧边栏组件可访问性增强 (aria 属性 + 键盘支持)
-- ✅ Cycle #120: 扩展可访问性优化 (UpdateNotification, BookmarkButton, DocumentUploader, PromptTemplateSelector)
+- ✅ Cycle #116-117: 硬编码颜色替换 + 状态颜色语义化
+- ✅ Cycle #118: 侧边栏组件可访问性增强
+- ✅ Cycle #120: 更多组件可访问性优化
+- ✅ Cycle #121: 表单组件可访问性优化
+
+### Cycle #121 优化内容
+- **TagInput**: aria-label、role="listbox"、focus-visible 样式
+- **DocumentList**: 删除按钮 aria-label、focus-visible 样式
+- **LanguageSelector**: aria-label、aria-current 属性
+- **BookmarkPanel**: 书签项键盘支持、role/list、aria-label
 
 ### 下一步优化方向
-- 更多组件的可访问性优化
-- 加载动画优化
-- 过渡效果优化
+- 继续检查其他组件的可访问性
 - 深色模式细节优化
+- 加载动画优化
 
 ---
 
@@ -70,4 +76,4 @@
 ---
 
 ## 循环计数
-当前周期: 120
+当前周期: 121
