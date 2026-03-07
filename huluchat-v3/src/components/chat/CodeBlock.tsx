@@ -108,9 +108,9 @@ export const CodeBlock = memo(function CodeBlock({
           title={copied ? t("chat.codeCopied") : t("chat.copyCode")}
         >
           {copied ? (
-            <Check className="w-4 h-4 animate-in zoom-in-50 duration-150" />
+            <Check className="w-4 h-4 animate-in zoom-in-50 duration-150" aria-hidden="true" />
           ) : (
-            <Copy className="w-4 h-4" />
+            <Copy className="w-4 h-4" aria-hidden="true" />
           )}
         </button>
       </div>
