@@ -1,135 +1,199 @@
-# HuluChat — AI 自主开发助手
+# HuluChat - AI Chat Desktop Application
 
-## 🎯 使命
+## 🎯 Project Mission
 
-**自动开发 HuluChat 项目**。这是一个 AI 聊天应用，需要持续开发和优化。使用 AI Agent 团队来自动完成开发任务。
+Build a **privacy-first** AI chat desktop application with multi-model support, RAG capabilities, and plugin system.
 
-## ⚡ 运行模式
+### Core Principles
 
-**统一工作循环**：TASKS 驱动 + 长期任务自主决策 + 团队协作
+1. **Privacy First** - No telemetry, no analytics, no user tracking
+2. **User Control** - Local-first, user owns their data
+3. **Multi-Model** - Support OpenAI, DeepSeek, local models (Ollama)
+4. **Extensible** - Plugin system for custom functionality
+5. **Cross-Platform** - Windows, macOS, Linux (Tauri 2.0)
+
+---
+
+## 🚫 Prohibited Features
+
+**BOSS REQUIREMENT**: The following features are **explicitly prohibited**:
+
+| Feature | Status | Reason |
+|---------|--------|--------|
+| **User Analytics/Tracking** | ❌ **PROHIBITED** | Boss explicitly requested no analytics |
+| **Telemetry** | ❌ **PROHIBITED** | Privacy-first principle |
+| **Data Collection** | ❌ **PROHIBITED** | No user data collection without explicit consent |
+
+**Important**: Any feature involving user data collection or behavior tracking requires **explicit Boss approval**!
+
+---
+
+## 🏗️ Architecture
+
+### Tech Stack (v3.x)
+
+| Layer | Technology |
+|-------|-----------|
+| **Frontend** | Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui |
+| **Backend** | FastAPI, Python 3.14, SQLite |
+| **Build** | Tauri CLI, GitHub Actions CI/CD |
+| **Testing** | Vitest, Playwright (E2E) |
+
+### Project Structure
 
 ```
-每次循环：
-1. 读取 TASKS.md → 有未完成任务？
-   ├─ 是 → 取一个到 consensus.md → 组队执行
-   └─ 否 → 检查 PROMPT.md 长期任务
-       ├─ 有 → 自主决策 → 更新共识 → 执行
-       └─ 无 → 等待新 TASK
-2. 更新 consensus.md（产出、决策、下一步）
-3. 检查邮件 / 完成 TASK
+HuluChat/
+├── huluchat-v3/              # Main application
+│   ├── src/                  # Frontend source
+│   │   ├── api/              # API client
+│   │   ├── components/       # React components
+│   │   ├── hooks/            # Custom hooks
+│   │   ├── plugins/          # Plugin system
+│   │   ├── stores/           # State management
+│   │   └── utils/            # Utilities
+│   ├── src-tauri/            # Tauri Rust backend
+│   └── backend/              # Python FastAPI backend
+│       ├── api/              # REST API endpoints
+│       ├── services/         # Business logic
+│       └── tests/            # Backend tests
+├── website/                  # Official website (Next.js)
+├── docs/                     # Documentation
+├── tests/                    # E2E tests
+└── plugins/                  # Example plugins
 ```
 
-## 📋 控制接口
+---
 
-| 文件 | 作用 |
-|------|------|
-| `CLAUDE.md` | 使命、原则、架构 |
-| `PROMPT.md` | 工作流程 + 长期任务 |
-| `TASKS.md` | 任务清单（优先执行） |
-| `memories/consensus.md` | 当前状态（核心） |
+## 🤖 AI Agent Team (14 Agents)
 
-## ✉️ 邮件通知
+### Decision Layer
+| Agent | Role |
+|-------|------|
+| `ceo-bezos` | Strategic decisions, priorities |
+| `cfo-campbell` | Pricing, financial models |
+| `critic-munger` | **Critical thinking** (must consult for major decisions) |
 
-| 触发条件 | 邮件类型 |
-|----------|----------|
-| 每 5 个周期 | 进度汇报 |
-| 完成 TASK | 任务完成 |
-| 无长期任务且 TASK 全部完成 | 不发邮件 |
+### Technical Layer
+| Agent | Role |
+|-------|------|
+| `cto-vogels` | Architecture, technology selection |
+| `fullstack-dhh` | Implementation, main developer |
+| `qa-bach` | Testing, quality assurance |
+| `devops-hightower` | CI/CD, deployment |
 
-## 🧪 TDD 工作流（强制）
+### Product Layer
+| Agent | Role |
+|-------|------|
+| `product-norman` | Product definition, UX |
+| `ui-duarte` | Visual design, UI |
+| `interaction-cooper` | Interaction flow, user journey |
 
-| 规则 | 描述 |
-|------|------|
-| **测试优先** | 写任何代码前先写测试 |
-| **80%+ 覆盖率** | 最低覆盖率要求 |
-| **红-绿-重构** | 失败测试 → 通过 → 优化 |
+### Growth Layer
+| Agent | Role |
+|-------|------|
+| `marketing-godin` | Brand, acquisition, content |
+| `operations-pg` | User operations, growth |
+| `sales-ross` | Sales, conversion |
+| `research-thompson` | Market research, competitive analysis |
 
-### 测试目录结构
-```
-tests/
-├── unit/           # 单元测试
-├── integration/    # 集成测试
-└── e2e/            # E2E 测试
-```
+---
 
-## 🚨 安全红线
+## 📋 Workflow
 
-| 禁止 | 具体 |
-|------|------|
-| 删除 GitHub 仓库 | `gh repo delete` |
-| 删除系统文件 | `rm -rf /`, `~/.ssh/`, `~/.config/` |
-| 非法活动 | 欺诈、侵权、数据窃取 |
-| 泄露凭证 | API keys 不进公开仓库 |
-| 跳过测试 | 没有测试的代码禁止提交 |
-| 先写实现 | 测试必须先于实现代码 |
+### Auto Company Pattern
 
-## 团队架构
+This project uses the **Auto Company** pattern with autonomous AI agents:
 
-从 `.claude/agents/` 加载的 AI Agent：
+1. **Boss (User)**: Gives directions, approves plans
+2. **Secretary (This AI)**: Reports status, conveys orders
+3. **Agents (Autonomous)**: Execute tasks independently
 
-### 核心开发层
+### Control Interface
 
-| Agent | 专长 | 触发场景 |
-|-------|------|----------|
-| `fullstack-dhh` | 代码实现、技术方案 | 写功能、重构、代码审查 |
-| `cto-vogels` | 技术架构、选型 | 架构设计、技术决策 |
-| `qa-bach` | 测试、质量把控 | 测试策略、Bug 分析 |
-| `devops-hightower` | 部署、CI/CD | 部署配置、流水线 |
+| File | Purpose |
+|------|---------|
+| `CLAUDE.md` | Mission, team, principles (this file) |
+| `PROMPT.md` | Workflow instructions, cycle rules |
+| `TASKS.md` | Task list |
+| `memories/consensus.md` | Cross-cycle memory (main control) |
+| `.claude/agents/` | Agent role definitions |
+| `.claude/skills/team/SKILL.md` | Dynamic team assembly |
 
-### 产品设计层
+### Cycle Rules
 
-| Agent | 专长 | 触发场景 |
-|-------|------|----------|
-| `product-norman` | 产品定义、用户体验 | 功能设计、可用性 |
-| `ui-duarte` | 视觉设计、界面 | UI 设计、配色 |
-| `interaction-cooper` | 交互流程 | 用户体验设计 |
+**Every cycle must**:
+1. ✅ Read consensus.md
+2. ✅ Read TASKS.md
+3. ✅ Execute one task (or complete a phase)
+4. ✅ Update consensus.md
+5. ✅ Update TASKS.md (if task completed)
+6. ✅ Commit code (if changes)
+7. ✅ **Check if phase completed** → Send email if yes
+8. ✅ Check for remaining tasks
+9. ⚠️ **If none** → Send email to Boss
 
-### 决策支持层
+---
 
-| Agent | 专长 | 触发场景 |
-|-------|------|----------|
-| `ceo-bezos` | 战略、优先级 | 功能优先级决策 |
-| `critic-munger` | 质疑、反向思考 | 重大决策前必须咨询 |
+## 🚫 Feature Restrictions
 
-## 决策原则
+### No Analytics
 
-1. **Ship > Plan > Discuss** — 能实现就去做
-2. **简单优先** — 能一个人搞定的不拆分
-3. **Boring Technology** — 用成熟稳定的技术
-4. **测试驱动** — 没有测试的功能等于没有功能
+**DO NOT** add any of the following without **explicit Boss approval**:
+- User behavior tracking
+- Usage analytics
+- Telemetry
+- Crash reporting (with data collection)
+- A/B testing
+- Funnel analysis
 
-## 标准开发流程
+**Allowed**:
+- Anonymous error logging (local only)
+- Performance metrics (local only)
+- User-initiated feedback
 
-1. **新功能开发**: `interaction-cooper` → `ui-duarte` → `fullstack-dhh` → `qa-bach`
-2. **Bug 修复**: `qa-bach` → `fullstack-dhh`
-3. **架构升级**: `cto-vogels` → `fullstack-dhh` → `qa-bach`
-4. **代码审查**: `fullstack-dhh` + `critic-munger`
+### Decision Process
 
-## 技能武器库
+If planning a feature that **might** involve data collection:
 
-位于 `.claude/skills/`，核心技能：
+1. **Stop immediately**
+2. **Consult Boss first**
+3. **Get explicit approval** before proceeding
 
-| 技能 | 用途 |
-|------|------|
-| `team` | 组建临时团队 |
-| `code-review-security` | 代码审查 |
-| `deep-research` | 深度研究 |
-| `senior-qa` | QA 测试策略 |
+---
 
-## 共识记忆
+## 📊 Current Status
 
-- **`memories/consensus.md`** — 跨周期接力棒，记录进展和下一步
-- **`docs/<role>/`** — 各 Agent 工作产出
+- **Version**: v3.48.0
+- **Tech Stack**: Tauri 2.0, React 19, FastAPI, Python 3.14
+- **Tests**: 760+ passing
+- **Platform**: Windows, macOS, Linux
+- **License**: Open Source
 
-## 使用 team 技能
+---
 
-```bash
-/team 为 HuluChat 添加多语言切换功能
-```
+## 🎯 Success Metrics
 
-这会自动：
-1. 分析任务需求
-2. 选择合适的 Agent
-3. 组建团队
-4. 协作完成
-5. 产出文档
+**Privacy-First Metrics**:
+- Zero user data collection
+- Zero telemetry
+- Zero analytics
+- 100% local-first
+- User data remains on device
+
+**Quality Metrics**:
+- Test coverage > 80%
+- Zero critical bugs
+- Fast startup time (< 2s)
+- Low memory footprint (< 200MB)
+
+---
+
+## 📞 Contact
+
+**Boss**: 491849417@qq.com
+**Project**: https://github.com/MrHulu/HuluAiChat
+**Website**: https://huluchat-website.pages.dev
+
+---
+
+*Remember: Privacy First, No Analytics, User Data Stays Local!*
