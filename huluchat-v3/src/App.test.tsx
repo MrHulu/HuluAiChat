@@ -84,6 +84,12 @@ vi.mock("@/hooks", () => ({
 vi.mock("@/api/client", () => ({
   exportSession: vi.fn(),
   moveSessionToFolder: vi.fn(),
+  listAllTags: vi.fn().mockResolvedValue([]),
+  getSessionTags: vi.fn().mockResolvedValue([]),
+  getSessionBookmarks: vi.fn().mockResolvedValue([]),
+  getSettings: vi.fn().mockResolvedValue({}),
+  getModels: vi.fn().mockResolvedValue([]),
+  getOllamaStatus: vi.fn().mockResolvedValue({ running: false }),
 }));
 
 // Mock @tanstack/react-virtual
@@ -1566,11 +1572,15 @@ describe("App", () => {
 
       // 应该出现输入框
       const input = screen.getByDisplayValue("Original Name");
-      await user.clear(input);
-      await user.type(input, "Renamed Folder");
 
-      // 按下 Enter 提交
-      await user.keyboard("{Enter}");
+      // 使用 fireEvent.change 来设置完整的值（包含空格）
+      fireEvent.change(input, { target: { value: "Renamed Folder" } });
+
+      // 直接提交表单，避免 blur 事件干扰
+      const form = input.closest("form");
+      if (form) {
+        fireEvent.submit(form);
+      }
 
       // Assert - 验证 toast.success 被调用
       await waitFor(() => {
