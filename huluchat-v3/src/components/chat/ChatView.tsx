@@ -178,7 +178,7 @@ export function ChatView({ sessionId }: ChatViewProps) {
   return (
     <div className="flex flex-col h-full">
       {/* 顶部状态栏 */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-background/50 backdrop-blur-sm">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-background/50 backdrop-blur-sm">
         <div className="flex items-center gap-3">
           <div className="text-sm font-medium text-foreground">
             {sessionId ? t("chat.title") : t("chat.selectSession")}
