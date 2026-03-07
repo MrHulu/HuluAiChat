@@ -85,6 +85,8 @@ export function ModelSelector({
           size="sm"
           disabled={disabled}
           className="gap-2 max-w-[180px]"
+          aria-label={t("modelSelector.selectModel")}
+          aria-haspopup="listbox"
         >
           {currentModel?.provider && <ProviderIcon provider={currentModel.provider} />}
           <span className="truncate">{currentModel?.name || value}</span>
@@ -156,8 +158,12 @@ export function ModelSelector({
                   </DropdownMenuItem>
                 ))
               ) : (
-                <div className="px-2 py-3 text-sm text-muted-foreground text-center">
-                  <Server className="h-4 w-4 mx-auto mb-1 opacity-50" />
+                <div
+                  className="px-2 py-3 text-sm text-muted-foreground text-center"
+                  role="status"
+                  aria-live="polite"
+                >
+                  <Server className="h-4 w-4 mx-auto mb-1 opacity-50" aria-hidden="true" />
                   <p className="mb-1">{t("modelSelector.ollamaOffline")}</p>
                   <p className="text-xs">{t("modelSelector.ollamaHint")}</p>
                 </div>
