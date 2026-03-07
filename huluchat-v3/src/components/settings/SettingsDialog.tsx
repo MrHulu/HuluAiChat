@@ -434,7 +434,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                 className={`flex items-center justify-between p-3 rounded-lg border mb-3 ${
                   ollamaAvailable
                     ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800"
-                    : "bg-gray-50 dark:bg-gray-900/20"
+                    : "bg-muted"
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -442,7 +442,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                     className={`flex items-center justify-center w-8 h-8 rounded-full ${
                       ollamaAvailable
                         ? "bg-green-100 text-green-600 dark:bg-green-900/50 dark:text-green-400"
-                        : "bg-gray-200 text-gray-400 dark:bg-gray-800 dark:text-gray-500"
+                        : "bg-muted text-muted-foreground"
                     }`}
                   >
                     <Server className="h-4 w-4" />

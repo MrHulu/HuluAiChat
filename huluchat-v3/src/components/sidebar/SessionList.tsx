@@ -396,7 +396,7 @@ export function SessionList({
                             <span
                               className={cn(
                                 "font-medium",
-                                msg.role === "user" ? "text-blue-500" : "text-green-500"
+                                msg.role === "user" ? "text-primary" : "text-chart-2"
                               )}
                             >
                               {msg.role === "user" ? t("chat.you") : t("chat.ai")}:
@@ -754,7 +754,7 @@ function HighlightText({ text, query }: { text: string; query: string }) {
         part.toLowerCase() === query.toLowerCase() ? (
           <mark
             key={i}
-            className="bg-yellow-200 dark:bg-yellow-500/30 text-inherit rounded px-0.5"
+            className="bg-primary/20 text-inherit rounded px-0.5"
           >
             {part}
           </mark>
