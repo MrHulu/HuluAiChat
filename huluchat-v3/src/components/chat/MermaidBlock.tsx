@@ -89,6 +89,8 @@ export const MermaidBlock = memo(function MermaidBlock({
   if (error) {
     return (
       <div
+        role="alert"
+        aria-label="Chart rendering error"
         className={cn(
           "p-4 rounded-lg bg-error-muted/50 border border-error/30",
           "animate-in fade-in-0 zoom-in-95 duration-200",
@@ -111,6 +113,9 @@ export const MermaidBlock = memo(function MermaidBlock({
   if (loading) {
     return (
       <div
+        aria-busy="true"
+        aria-live="polite"
+        aria-label="Loading chart"
         className={cn(
           "mermaid-container flex justify-center items-center p-4 rounded-lg",
           "bg-muted animate-in fade-in-0 duration-150",
@@ -118,7 +123,7 @@ export const MermaidBlock = memo(function MermaidBlock({
         )}
       >
         <div className="flex items-center gap-2 text-muted-foreground text-sm">
-          <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+          <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" aria-hidden="true" />
           <span>Loading chart...</span>
         </div>
       </div>
@@ -127,6 +132,8 @@ export const MermaidBlock = memo(function MermaidBlock({
 
   return (
     <div
+      role="img"
+      aria-label={`Chart diagram: ${chart.substring(0, 50)}...`}
       className={cn(
         "mermaid-container flex justify-center p-4 rounded-lg",
         "bg-muted overflow-x-auto",
