@@ -88,11 +88,13 @@ export function BookmarkButton({
         <BookmarkCheck
           key="bookmarked"
           className="w-3.5 h-3.5 animate-in zoom-in-50 duration-200"
+          aria-hidden="true"
         />
       ) : (
         <Bookmark
           key="unbookmarked"
           className="w-3.5 h-3.5 animate-in zoom-in-50 duration-200"
+          aria-hidden="true"
         />
       )}
     </button>
