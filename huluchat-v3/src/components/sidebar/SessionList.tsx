@@ -5,6 +5,19 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  PanelLeftClose,
+  PanelLeft,
+  Plus,
+  Search,
+  X,
+  ChevronRight,
+  FolderOpen,
+  MoreVertical,
+  ArrowLeft,
+  Pencil,
+  Trash2,
+} from "lucide-react";
+import {
   Session,
   Folder,
   SessionSearchResult,
@@ -255,21 +268,7 @@ export function SessionList({
           className="p-2 rounded-lg hover:bg-muted transition-colors"
           title={t("sidebar.expandSidebar")}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <rect width="18" height="18" x="3" y="3" rx="2" />
-            <path d="M9 3v18" />
-            <path d="m14 9 3 3-3 3" />
-          </svg>
+          <PanelLeft className="w-5 h-5" />
         </button>
 
         <button
@@ -277,20 +276,7 @@ export function SessionList({
           className="mt-4 p-2 rounded-lg hover:bg-muted transition-colors"
           title={t("sidebar.newChat")}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M12 5v14" />
-            <path d="M5 12h14" />
-          </svg>
+          <Plus className="w-5 h-5" />
         </button>
       </div>
     );
@@ -312,21 +298,7 @@ export function SessionList({
             className="p-1.5 rounded-md hover:bg-muted transition-all"
             title={t("sidebar.collapseSidebar")}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <rect width="18" height="18" x="3" y="3" rx="2" />
-              <path d="M9 3v18" />
-              <path d="m14 15-3-3 3-3" />
-            </svg>
+            <PanelLeftClose className="w-4 h-4" />
           </button>
         </div>
       </div>
@@ -338,20 +310,7 @@ export function SessionList({
           className="w-full justify-start gap-2"
           variant="outline"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M12 5v14" />
-            <path d="M5 12h14" />
-          </svg>
+          <Plus className="w-4 h-4" />
           {t("sidebar.newChat")}
         </Button>
       </div>
@@ -359,21 +318,7 @@ export function SessionList({
       {/* Search Box */}
       <div className="p-3">
         <div className="relative">
-          <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-            xmlns="http://www.w3.org/2000/svg"
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="11" cy="11" r="8" />
-            <path d="m21 21-4.3-4.3" />
-          </svg>
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
           <Input
             type="text"
             placeholder={t("sidebar.searchChats")}
@@ -386,20 +331,7 @@ export function SessionList({
               onClick={() => setSearchQuery("")}
               className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-muted transition-colors"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M18 6 6 18" />
-                <path d="m6 6 12 12" />
-              </svg>
+              <X className="w-3 h-3" />
             </button>
           )}
         </div>
@@ -496,20 +428,7 @@ export function SessionList({
                   className="p-1 rounded-md hover:bg-background/50 transition-all text-muted-foreground hover:text-foreground"
                   title={t("sidebar.newFolder")}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M12 5v14" />
-                    <path d="M5 12h14" />
-                  </svg>
+                  <Plus className="w-3.5 h-3.5" />
                 </button>
               </div>
 
@@ -609,19 +528,7 @@ export function SessionList({
                   onClick={() => setActiveFolderFilter(null)}
                   className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="m15 18-6-6 6-6" />
-                  </svg>
+                  <ArrowLeft className="w-3 h-3" />
                   {t("sidebar.backToAll")}
                 </button>
                 <div className="space-y-1 mt-1">
@@ -723,37 +630,21 @@ function FolderItem({
           }}
           className="p-1 rounded-md hover:bg-background/50 transition-all"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="12"
-            height="12"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={cn("transition-transform", isExpanded ? "rotate-90" : "")}
-          >
-            <path d="m9 18 6-6-6-6" />
-          </svg>
+          <ChevronRight
+            className={cn(
+              "w-3 h-3 transition-transform",
+              isExpanded && "rotate-90"
+            )}
+          />
         </button>
 
         {/* Folder Icon */}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className={isExpanded ? "text-primary" : "text-muted-foreground"}
-        >
-          <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" />
-        </svg>
+        <FolderOpen
+          className={cn(
+            "w-4 h-4",
+            isExpanded ? "text-primary" : "text-muted-foreground"
+          )}
+        />
 
         {/* Folder Name */}
         {isEditing ? (
@@ -792,21 +683,7 @@ function FolderItem({
               "opacity-0 group-hover:opacity-100"
             )}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="12" cy="12" r="1" />
-              <circle cx="12" cy="5" r="1" />
-              <circle cx="12" cy="19" r="1" />
-            </svg>
+            <MoreVertical className="w-3.5 h-3.5" />
           </button>
 
           {/* Dropdown Menu */}
@@ -818,8 +695,9 @@ function FolderItem({
                   setShowMenu(false);
                   onStartEdit();
                 }}
-                className="w-full px-3 py-1.5 text-sm text-left hover:bg-muted transition-colors"
+                className="w-full px-3 py-1.5 text-sm text-left hover:bg-muted transition-colors flex items-center gap-2"
               >
+                <Pencil className="w-3.5 h-3.5" />
                 {t("common.rename")}
               </button>
               <button
@@ -828,8 +706,9 @@ function FolderItem({
                   setShowMenu(false);
                   onDelete();
                 }}
-                className="w-full px-3 py-1.5 text-sm text-left hover:bg-muted text-destructive transition-colors"
+                className="w-full px-3 py-1.5 text-sm text-left hover:bg-muted text-destructive transition-colors flex items-center gap-2"
               >
+                <Trash2 className="w-3.5 h-3.5" />
                 {t("common.delete")}
               </button>
             </div>
