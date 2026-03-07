@@ -68,6 +68,10 @@
     "bookmarkError": "Failed to update bookmark",
     "bookmarkLoadError": "Failed to load bookmarks",
     "noBookmarks": "No bookmarks in this chat",
+    "exportJSON": "Export as JSON",
+    "exportMarkdown": "Export as Markdown",
+    "exportSuccess": "Bookmarks exported successfully",
+    "exportError": "Failed to export bookmarks",
     "voice": {
       "startRecording": "Start voice input",
       "stopRecording": "Stop recording",
