@@ -32,10 +32,10 @@ function ConnectionIndicator({ status }: { status: ConnectionStatus }) {
   const { t } = useTranslation();
 
   const statusConfig = {
-    connecting: { color: "bg-yellow-500", text: t("chat.connecting") },
-    connected: { color: "bg-green-500", text: t("chat.connected") },
-    disconnected: { color: "bg-red-500", text: t("chat.disconnected") },
-    error: { color: "bg-red-500", text: t("chat.connectionError") },
+    connecting: { color: "bg-warning", text: t("chat.connecting") },
+    connected: { color: "bg-success", text: t("chat.connected") },
+    disconnected: { color: "bg-error", text: t("chat.disconnected") },
+    error: { color: "bg-error", text: t("chat.connectionError") },
   };
 
   const config = statusConfig[status];
