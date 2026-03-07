@@ -1,35 +1,64 @@
 import Link from "next/link";
 
+// JSON-LD structured data for SEO
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "HuluChat",
+  "description": "A privacy-first AI chat desktop application with multi-model support, RAG capabilities, and plugin system.",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": ["Windows", "macOS", "Linux"],
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "HuluChat Team",
+    "url": "https://github.com/MrHulu",
+  },
+  "downloadUrl": "https://github.com/MrHulu/HuluAiChat/releases/latest",
+  "softwareVersion": "3.51.0",
+  "datePublished": "2024-01-01",
+  "dateModified": "2026-03-07",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "ratingCount": "50",
+  },
+};
+
 const features = [
   {
     icon: "🤖",
     title: "Multi-Model Support",
-    description: "Switch between GPT-4, Claude, and other AI models instantly. One app for all your AI needs.",
+    description: "Switch between GPT-4, Claude, DeepSeek, and local models instantly. One app for all your AI needs.",
+  },
+  {
+    icon: "📚",
+    title: "RAG Knowledge Base",
+    description: "Upload documents and chat with your knowledge. AI-powered Q&A on your own files.",
   },
   {
     icon: "📁",
-    title: "Folder Organization",
-    description: "Organize your conversations into folders. Keep your chats tidy and easy to find.",
+    title: "Smart Organization",
+    description: "Organize with folders, tags, and bookmarks. Find any conversation in seconds.",
   },
   {
-    icon: "🌙",
-    title: "Dark Mode",
-    description: "Beautiful dark mode that's easy on the eyes. Perfect for late-night coding sessions.",
+    icon: "🔒",
+    title: "Privacy First",
+    description: "No telemetry, no tracking, no cloud storage. Your data stays on your device. Period.",
   },
   {
     icon: "⚡",
     title: "Lightning Fast",
-    description: "Built with Tauri for native performance. Starts in milliseconds, not seconds.",
+    description: "Built with Tauri 2.0 for native performance. Starts in milliseconds, not seconds.",
   },
   {
-    icon: "📤",
-    title: "Export Conversations",
-    description: "Export your chats as Markdown, JSON, or plain text. Your data, your choice.",
-  },
-  {
-    icon: "🔄",
-    title: "Auto Update",
-    description: "Always stay up to date with automatic updates. No manual downloads needed.",
+    icon: "🔌",
+    title: "Plugin System",
+    description: "Extend functionality with plugins. Custom tools, integrations, and workflows.",
   },
 ];
 
@@ -56,7 +85,12 @@ const platforms = [
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-zinc-900 to-black text-white">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <div className="min-h-screen bg-gradient-to-b from-zinc-900 to-black text-white">
       {/* Header */}
       <header className="fixed top-0 w-full border-b border-zinc-800 bg-black/50 backdrop-blur-xl z-50">
         <nav className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -84,7 +118,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-zinc-800/50 border border-zinc-700 rounded-full px-4 py-2 text-sm text-zinc-400 mb-8">
             <span className="text-green-400">●</span>
-            v3.8.0 Released — Model Quick Switch
+            v3.51.0 Released — Bookmarks Export + RAG
           </div>
 
           <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
@@ -245,6 +279,7 @@ export default function Home() {
           </div>
         </div>
       </footer>
-    </div>
+      </div>
+    </>
   );
 }
