@@ -373,17 +373,16 @@ export const MessageItem = memo(function MessageItem({
               "text-sm leading-relaxed break-words",
               // Markdown 样式
               "prose prose-sm dark:prose-invert max-w-none",
-              // 代码块样式
+              // 代码块样式 - 使用主题变量
               "[&_.hljs]:bg-transparent [&_.hljs]:p-0",
-              "[&_pre]:bg-zinc-900 [&_pre]:rounded-lg [&_pre]:p-3 [&_pre]:overflow-x-auto",
-              "[&_code:not(.hljs)]:bg-zinc-200 [&_code:not(.hljs)]:dark:bg-zinc-700",
-              "[&_code:not(.hljs)]:px-1.5 [&_code:not(.hljs)]:py-0.5",
+              "[&_pre]:bg-muted [&_pre]:rounded-lg [&_pre]:p-3 [&_pre]:overflow-x-auto [&_pre]:border [&_pre]:border-border",
+              "[&_code:not(.hljs)]:bg-muted [&_code:not(.hljs)]:px-1.5 [&_code:not(.hljs)]:py-0.5",
               "[&_code:not(.hljs)]:rounded [&_code:not(.hljs)]:text-xs",
-              // 表格样式
+              // 表格样式 - 使用主题变量
               "[&_table]:w-full [&_table]:border-collapse",
-              "[&_th]:border [&_th]:border-zinc-300 [&_th]:dark:border-zinc-600",
-              "[&_th]:px-2 [&_th]:py-1 [&_th]:bg-zinc-100 [&_th]:dark:bg-zinc-800",
-              "[&_td]:border [&_td]:border-zinc-300 [&_td]:dark:border-zinc-600",
+              "[&_th]:border [&_th]:border-border",
+              "[&_th]:px-2 [&_th]:py-1 [&_th]:bg-muted",
+              "[&_td]:border [&_td]:border-border",
               "[&_td]:px-2 [&_td]:py-1",
               // 用户消息样式覆盖
               isUser && "[&_code:not(.hljs)]:bg-primary-foreground/20"
