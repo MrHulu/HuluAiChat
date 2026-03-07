@@ -1,11 +1,20 @@
 /**
  * Settings Dialog Component
- * API Key configuration, model selection, Ollama settings, and other settings
+ * API Key configuration, model selection, Ollama settings, and plugin management
  */
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Settings, Check, AlertCircle, Loader2, Server, ExternalLink, Sliders } from "lucide-react";
+import {
+  Settings,
+  Check,
+  AlertCircle,
+  Loader2,
+  Server,
+  ExternalLink,
+  Sliders,
+  Puzzle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   getSettings,
   updateSettings,
@@ -36,6 +46,7 @@ import {
   type ModelInfo,
   type OllamaModel,
 } from "@/api/client";
+import { PluginSettings } from "./PluginSettings";
 
 interface SettingsDialogProps {
   onSettingsChange?: () => void;
@@ -230,7 +241,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
           <span className="sr-only">{t("settings.title")}</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
           <DialogTitle>{t("settings.title")}</DialogTitle>
           <DialogDescription>
@@ -243,135 +254,165 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
             <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
           </div>
         ) : (
-          <div className="grid gap-4 py-4">
-            {/* API Key */}
-            <div className="grid gap-2">
-              <Label htmlFor="apiKey">{t("settings.apiKey")}</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="apiKey"
-                  type="password"
-                  placeholder={hasApiKey ? "••••••••••••••••" : t("settings.apiKeyPlaceholder")}
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  className="flex-1"
-                />
-              </div>
-              {hasApiKey && !apiKey && (
-                <p className="text-xs text-muted-foreground">
-                  {t("settings.apiKeySet")}
-                </p>
-              )}
-            </div>
+          <Tabs defaultValue="api" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="api">{t("settings.tabApi")}</TabsTrigger>
+              <TabsTrigger value="ollama">{t("settings.tabOllama")}</TabsTrigger>
+              <TabsTrigger value="plugins">
+                <Puzzle className="h-4 w-4 mr-1" />
+                {t("settings.tabPlugins")}
+              </TabsTrigger>
+            </TabsList>
 
-            {/* Base URL */}
-            <div className="grid gap-2">
-              <Label htmlFor="baseUrl">{t("settings.baseUrl")}</Label>
-              <Input
-                id="baseUrl"
-                type="url"
-                placeholder={t("settings.baseUrlPlaceholder")}
-                value={baseUrl}
-                onChange={(e) => setBaseUrl(e.target.value)}
-              />
-              <p className="text-xs text-muted-foreground">
-                {t("settings.baseUrlHint")}
-              </p>
-            </div>
-
-            {/* Model Selection */}
-            <div className="grid gap-2">
-              <Label htmlFor="model">{t("settings.model")}</Label>
-              <Select value={model} onValueChange={setModel}>
-                <SelectTrigger>
-                  <SelectValue placeholder={t("settings.selectModel")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {models.map((m) => (
-                    <SelectItem key={m.id} value={m.id}>
-                      <div className="flex flex-col">
-                        <span>{m.name}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {model && (
-                <p className="text-xs text-muted-foreground">
-                  {models.find((m) => m.id === model)?.description}
-                </p>
-              )}
-            </div>
-
-            {/* Model Parameters */}
-            <div className="border-t pt-4 mt-2">
-              <Label className="flex items-center gap-2 mb-3">
-                <Sliders className="h-4 w-4" />
-                {t("settings.modelParameters")}
-              </Label>
-
-              {/* Temperature */}
-              <div className="grid gap-2 mb-4">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="temperature" className="text-sm">{t("settings.temperature")}</Label>
-                  <span className="text-xs text-muted-foreground">{temperature.toFixed(2)}</span>
-                </div>
-                <Input
-                  id="temperature"
-                  type="range"
-                  min="0"
-                  max="2"
-                  step="0.1"
-                  value={temperature}
-                  onChange={(e) => setTemperature(parseFloat(e.target.value))}
-                  className="h-2 w-full cursor-pointer"
-                />
-                <p className="text-xs text-muted-foreground">
-                  {t("settings.temperatureHint")}
-                </p>
-              </div>
-
-              {/* Top P */}
-              <div className="grid gap-2 mb-4">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="topP" className="text-sm">{t("settings.topP")}</Label>
-                  <span className="text-xs text-muted-foreground">{topP.toFixed(2)}</span>
-                </div>
-                <Input
-                  id="topP"
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.05"
-                  value={topP}
-                  onChange={(e) => setTopP(parseFloat(e.target.value))}
-                  className="h-2 w-full cursor-pointer"
-                />
-                <p className="text-xs text-muted-foreground">
-                  {t("settings.topPHint")}
-                </p>
-              </div>
-
-              {/* Max Tokens */}
+            {/* API Settings Tab */}
+            <TabsContent value="api" className="space-y-4 py-4">
+              {/* API Key */}
               <div className="grid gap-2">
-                <Label htmlFor="maxTokens" className="text-sm">{t("settings.maxTokens")}</Label>
+                <Label htmlFor="apiKey">{t("settings.apiKey")}</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="apiKey"
+                    type="password"
+                    placeholder={hasApiKey ? "••••••••••••••••" : t("settings.apiKeyPlaceholder")}
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    className="flex-1"
+                  />
+                </div>
+                {hasApiKey && !apiKey && (
+                  <p className="text-xs text-muted-foreground">
+                    {t("settings.apiKeySet")}
+                  </p>
+                )}
+              </div>
+
+              {/* Base URL */}
+              <div className="grid gap-2">
+                <Label htmlFor="baseUrl">{t("settings.baseUrl")}</Label>
                 <Input
-                  id="maxTokens"
-                  type="number"
-                  min="256"
-                  max="128000"
-                  step="256"
-                  value={maxTokens}
-                  onChange={(e) => setMaxTokens(parseInt(e.target.value) || 4096)}
+                  id="baseUrl"
+                  type="url"
+                  placeholder={t("settings.baseUrlPlaceholder")}
+                  value={baseUrl}
+                  onChange={(e) => setBaseUrl(e.target.value)}
                 />
                 <p className="text-xs text-muted-foreground">
-                  {t("settings.maxTokensHint")}
+                  {t("settings.baseUrlHint")}
                 </p>
               </div>
-            </div>
 
-            {/* Ollama Section */}
-            <div className="border-t pt-4 mt-2">
+              {/* Model Selection */}
+              <div className="grid gap-2">
+                <Label htmlFor="model">{t("settings.model")}</Label>
+                <Select value={model} onValueChange={setModel}>
+                  <SelectTrigger>
+                    <SelectValue placeholder={t("settings.selectModel")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {models.map((m) => (
+                      <SelectItem key={m.id} value={m.id}>
+                        <div className="flex flex-col">
+                          <span>{m.name}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {model && (
+                  <p className="text-xs text-muted-foreground">
+                    {models.find((m) => m.id === model)?.description}
+                  </p>
+                )}
+              </div>
+
+              {/* Model Parameters */}
+              <div className="border-t pt-4 mt-2">
+                <Label className="flex items-center gap-2 mb-3">
+                  <Sliders className="h-4 w-4" />
+                  {t("settings.modelParameters")}
+                </Label>
+
+                {/* Temperature */}
+                <div className="grid gap-2 mb-4">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="temperature" className="text-sm">{t("settings.temperature")}</Label>
+                    <span className="text-xs text-muted-foreground">{temperature.toFixed(2)}</span>
+                  </div>
+                  <Input
+                    id="temperature"
+                    type="range"
+                    min="0"
+                    max="2"
+                    step="0.1"
+                    value={temperature}
+                    onChange={(e) => setTemperature(parseFloat(e.target.value))}
+                    className="h-2 w-full cursor-pointer"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {t("settings.temperatureHint")}
+                  </p>
+                </div>
+
+                {/* Top P */}
+                <div className="grid gap-2 mb-4">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="topP" className="text-sm">{t("settings.topP")}</Label>
+                    <span className="text-xs text-muted-foreground">{topP.toFixed(2)}</span>
+                  </div>
+                  <Input
+                    id="topP"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.05"
+                    value={topP}
+                    onChange={(e) => setTopP(parseFloat(e.target.value))}
+                    className="h-2 w-full cursor-pointer"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {t("settings.topPHint")}
+                  </p>
+                </div>
+
+                {/* Max Tokens */}
+                <div className="grid gap-2">
+                  <Label htmlFor="maxTokens" className="text-sm">{t("settings.maxTokens")}</Label>
+                  <Input
+                    id="maxTokens"
+                    type="number"
+                    min="256"
+                    max="128000"
+                    step="256"
+                    value={maxTokens}
+                    onChange={(e) => setMaxTokens(parseInt(e.target.value) || 4096)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {t("settings.maxTokensHint")}
+                  </p>
+                </div>
+              </div>
+
+              {/* Test Result */}
+              {testResult && (
+                <div
+                  className={`flex items-center gap-2 p-3 rounded-md ${
+                    testResult.success
+                      ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                      : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                  }`}
+                >
+                  {testResult.success ? (
+                    <Check className="h-4 w-4" />
+                  ) : (
+                    <AlertCircle className="h-4 w-4" />
+                  )}
+                  <span className="text-sm">{testResult.message}</span>
+                </div>
+              )}
+            </TabsContent>
+
+            {/* Ollama Settings Tab */}
+            <TabsContent value="ollama" className="space-y-4 py-4">
               <div className="flex items-center justify-between mb-3">
                 <Label className="flex items-center gap-2">
                   <Server className="h-4 w-4" />
@@ -482,29 +523,16 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                 ) : null}
                 {t("ollama.testConnection")}
               </Button>
-            </div>
+            </TabsContent>
 
-            {/* Test Result */}
-            {testResult && (
-              <div
-                className={`flex items-center gap-2 p-3 rounded-md ${
-                  testResult.success
-                    ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-                    : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
-                }`}
-              >
-                {testResult.success ? (
-                  <Check className="h-4 w-4" />
-                ) : (
-                  <AlertCircle className="h-4 w-4" />
-                )}
-                <span className="text-sm">{testResult.message}</span>
-              </div>
-            )}
-          </div>
+            {/* Plugins Tab */}
+            <TabsContent value="plugins" className="py-4">
+              <PluginSettings />
+            </TabsContent>
+          </Tabs>
         )}
 
-        <DialogFooter>
+        <DialogFooter className="flex gap-2">
           <Button variant="outline" onClick={handleTest} disabled={testing || !hasApiKey}>
             {testing ? (
               <Loader2 className="h-4 w-4 animate-spin mr-2" />

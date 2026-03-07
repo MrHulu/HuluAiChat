@@ -68,6 +68,9 @@
   "settings": {
     "title": "Settings",
     "description": "Configure your API settings and preferences.",
+    "tabApi": "API",
+    "tabOllama": "Ollama",
+    "tabPlugins": "Plugins",
     "apiKey": "API Key",
     "apiKeyPlaceholder": "sk-...",
     "apiKeySet": "API key is set. Enter a new key to update.",
@@ -87,6 +90,29 @@
     "connectionFailed": "Connection failed",
     "settingsSaved": "Settings saved successfully",
     "settingsSaveFailed": "Failed to save settings"
+  },
+  "plugins": {
+    "title": "Plugins",
+    "loading": "Loading plugins...",
+    "refresh": "Refresh plugins",
+    "installed": "{{count}} installed",
+    "noPlugins": "No plugins installed",
+    "installHint": "Place plugin folders in the plugins directory",
+    "togglePlugin": "Toggle plugin",
+    "activating": "Activating...",
+    "activateSuccess": "Plugin activated",
+    "activateFailed": "Failed to activate plugin: {{error}}",
+    "deactivateSuccess": "Plugin deactivated",
+    "deactivateFailed": "Failed to deactivate plugin: {{error}}",
+    "initFailed": "Plugin system initialization failed",
+    "byAuthor": "by {{author}}",
+    "homepage": "Homepage",
+    "state": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "activating": "Activating",
+      "error": "Error"
+    }
   },
   "ollama": {
     "title": "Ollama (Local Models)",
