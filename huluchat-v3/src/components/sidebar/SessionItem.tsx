@@ -172,19 +172,19 @@ export function SessionItem({
           <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
             <DropdownMenuItem onClick={handleExport("markdown")}>
               <span className="flex items-center gap-2">
-                <FileText className="w-3.5 h-3.5" />
+                <FileText className="w-3.5 h-3.5" aria-hidden="true" />
                 {t("sessionItem.markdown")}
               </span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleExport("json")}>
               <span className="flex items-center gap-2">
-                <FileText className="w-3.5 h-3.5" />
+                <FileText className="w-3.5 h-3.5" aria-hidden="true" />
                 {t("sessionItem.json")}
               </span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleExport("txt")}>
               <span className="flex items-center gap-2">
-                <FileText className="w-3.5 h-3.5" />
+                <FileText className="w-3.5 h-3.5" aria-hidden="true" />
                 {t("sessionItem.plainText")}
               </span>
             </DropdownMenuItem>
@@ -213,7 +213,7 @@ export function SessionItem({
             <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
               <DropdownMenuItem onClick={handleMoveToFolder(null)}>
                 <span className="flex items-center gap-2">
-                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <ChevronLeft className="w-3.5 h-3.5" aria-hidden="true" />
                   {t("sessionItem.uncategorized")}
                 </span>
               </DropdownMenuItem>
@@ -224,10 +224,10 @@ export function SessionItem({
                   className={session.folder_id === folder.id ? "bg-muted" : ""}
                 >
                   <span className="flex items-center gap-2">
-                    <FolderOpen className="w-3.5 h-3.5" />
+                    <FolderOpen className="w-3.5 h-3.5" aria-hidden="true" />
                     {folder.name}
                     {session.folder_id === folder.id && (
-                      <Check className="w-3 h-3 ml-auto text-primary" />
+                      <Check className="w-3 h-3 ml-auto text-primary" aria-hidden="true" />
                     )}
                   </span>
                 </DropdownMenuItem>
