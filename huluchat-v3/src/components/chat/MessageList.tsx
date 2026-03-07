@@ -164,7 +164,7 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
       {isLoading && !streamingMessage && (
         <div className="flex justify-start mb-4 animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
           <div className="bg-muted rounded-2xl px-4 py-3 shadow-sm">
-            <Loading variant="wave" size="sm" text={t("chat.thinking")} />
+            <Loading variant="thinking" size="sm" text={t("chat.thinking")} />
           </div>
         </div>
       )}

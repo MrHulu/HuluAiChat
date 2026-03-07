@@ -251,4 +251,26 @@
       opacity: 1;
     }
   }
+
+  /* AI Thinking pulse animation - smooth breathing effect */
+  @keyframes thinkingPulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.4;
+    }
+    50% {
+      transform: scale(1.2);
+      opacity: 1;
+    }
+  }
+
+  /* AI typing cursor animation */
+  @keyframes typingCursor {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
 }
