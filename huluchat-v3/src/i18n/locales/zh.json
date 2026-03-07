@@ -68,6 +68,10 @@
     "bookmarkError": "书签操作失败",
     "bookmarkLoadError": "加载书签失败",
     "noBookmarks": "当前对话暂无书签",
+    "exportJSON": "导出为 JSON",
+    "exportMarkdown": "导出为 Markdown",
+    "exportSuccess": "书签导出成功",
+    "exportError": "导出书签失败",
     "voice": {
       "startRecording": "开始语音输入",
       "stopRecording": "停止录音",

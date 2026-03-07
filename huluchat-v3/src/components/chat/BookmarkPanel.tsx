@@ -4,14 +4,24 @@
  */
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Bookmark, MessageSquare, X, ChevronRight } from "lucide-react";
+import { Bookmark, MessageSquare, X, ChevronRight, Download, FileJson, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   getSessionBookmarks,
   deleteBookmark,
+  exportBookmarksJSON,
+  exportBookmarksMarkdown,
+  downloadBlob,
   BookmarkWithMessage,
 } from "@/api/client";
 import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 export interface BookmarkPanelProps {
   sessionId: string;
@@ -27,6 +37,7 @@ export function BookmarkPanel({
   const { t } = useTranslation();
   const [bookmarks, setBookmarks] = useState<BookmarkWithMessage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isExporting, setIsExporting] = useState(false);
 
   const loadBookmarks = useCallback(async () => {
     try {
@@ -61,6 +72,34 @@ export function BookmarkPanel({
     onJumpToMessage?.(messageId);
   };
 
+  const handleExportJSON = async () => {
+    try {
+      setIsExporting(true);
+      const { blob, filename } = await exportBookmarksJSON();
+      downloadBlob(blob, filename);
+      toast.success(t("chat.exportSuccess"));
+    } catch (error) {
+      console.error("Failed to export bookmarks:", error);
+      toast.error(t("chat.exportError"));
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleExportMarkdown = async () => {
+    try {
+      setIsExporting(true);
+      const { blob, filename } = await exportBookmarksMarkdown();
+      downloadBlob(blob, filename);
+      toast.success(t("chat.exportSuccess"));
+    } catch (error) {
+      console.error("Failed to export bookmarks:", error);
+      toast.error(t("chat.exportError"));
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className={cn("p-3 text-center text-muted-foreground text-sm", className)}>
@@ -87,6 +126,30 @@ export function BookmarkPanel({
           <span>{t("chat.bookmarks")}</span>
           <span className="text-xs text-muted-foreground">({bookmarks.length})</span>
         </div>
+
+        {/* Export Button */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 w-6 p-0"
+              disabled={isExporting || bookmarks.length === 0}
+            >
+              <Download className="h-3 w-3" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={handleExportJSON}>
+              <FileJson className="h-4 w-4 mr-2" />
+              {t("chat.exportJSON")}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleExportMarkdown}>
+              <FileText className="h-4 w-4 mr-2" />
+              {t("chat.exportMarkdown")}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Bookmark List */}
