@@ -2,12 +2,17 @@
 
 ## 进行中
 <!-- 当前正在处理的任务 -->
+- [~] **TASK-110**: 💻 开发 v3.46.0 - DeepSeek 默认模型 + RAG 单文档对话
+  - [x] Phase 1: DeepSeek 默认模型 ✅ 2026-03-07
+  - [x] Phase 2: RAG 后端 Pipeline ✅ 2026-03-07 (PR #147)
+  - [x] Phase 2.5: RAG 前端 UI ✅ 2026-03-07 (Cycle #114)
+  - [~] Phase 3: 发布 + 用户反馈收集 ✅ 2026-03-07 (Cycle #115 - 集成完成)
 
 ## 待开始
 <!-- 新任务添加到这里 -->
+- [ ] TASK-104: 官网部署配置（Cloudflare secrets）
 
 ## 已完成
-- [x] **TASK-104**: 🌐 官网部署配置（Cloudflare secrets 指南）✅ 2026-03-07 (Cycle #105)
 - [x] **TASK-109**: 🚀 规划 v3.46.0 新功能（自主决策）✅ 2026-03-07 (Cycle #104)
 - [x] **TASK-105**: ⚡ 性能优化 - Rust LTO + Mermaid 懒加载 ✅ 2026-03-07 (Cycle #98)
 - [x] **TASK-108**: 🧹 清理项目目录结构 - 删除旧 Python 架构遗留文件 ✅ 2026-03-07 (Cycle #97)
