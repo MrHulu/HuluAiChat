@@ -18,6 +18,7 @@ import { SessionItem } from "./SessionItem";
 import { TagFilter } from "./TagFilter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Loading } from "@/components/ui/loading";
 import { cn } from "@/lib/utils";
 
 export interface SessionListProps {
@@ -419,8 +420,8 @@ export function SessionList({
       {/* Session List */}
       <div className="flex-1 overflow-y-auto p-2">
         {isLoading || isSearching ? (
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin w-5 h-5 border-2 border-primary border-t-transparent rounded-full" />
+          <div className="flex items-center justify-center py-8 animate-fade-in">
+            <Loading variant="ring" size="md" />
           </div>
         ) : searchQuery ? (
           // Search Results
