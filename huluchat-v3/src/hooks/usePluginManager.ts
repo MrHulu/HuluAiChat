@@ -10,6 +10,7 @@ import {
   type PluginInstance,
   type PluginManager,
   type PluginManagerEvent,
+  type PluginUpdateInfo,
 } from "@/plugins";
 
 export interface UsePluginManagerReturn {
@@ -33,6 +34,12 @@ export interface UsePluginManagerReturn {
   uninstallPlugin: (id: string) => Promise<void>;
   /** Refresh plugin list */
   refreshPlugins: () => void;
+  /** Check for updates for a specific plugin */
+  checkForUpdate: (id: string) => Promise<PluginUpdateInfo | null>;
+  /** Check for updates for all plugins */
+  checkForAllUpdates: () => Promise<Map<string, PluginUpdateInfo>>;
+  /** Update a plugin to the latest version */
+  updatePlugin: (id: string) => Promise<void>;
 }
 
 /**
@@ -135,6 +142,28 @@ export function usePluginManager(): UsePluginManagerReturn {
     }
   }, [manager]);
 
+  const checkForUpdate = useCallback(
+    async (id: string): Promise<PluginUpdateInfo | null> => {
+      if (!manager) throw new Error("Plugin manager not initialized");
+      return manager.checkForUpdate(id);
+    },
+    [manager]
+  );
+
+  const checkForAllUpdates = useCallback(async (): Promise<Map<string, PluginUpdateInfo>> => {
+    if (!manager) throw new Error("Plugin manager not initialized");
+    return manager.checkForAllUpdates();
+  }, [manager]);
+
+  const updatePlugin = useCallback(
+    async (id: string) => {
+      if (!manager) throw new Error("Plugin manager not initialized");
+      await manager.updatePlugin(id);
+      setPlugins(manager.getPlugins());
+    },
+    [manager]
+  );
+
   return {
     manager,
     plugins,
@@ -146,6 +175,9 @@ export function usePluginManager(): UsePluginManagerReturn {
     installPlugin,
     uninstallPlugin,
     refreshPlugins,
+    checkForUpdate,
+    checkForAllUpdates,
+    updatePlugin,
   };
 }
 

@@ -21,6 +21,7 @@ import type {
   PluginManagerEventHandler,
   PluginManagerEvent,
   PluginValidationResult,
+  PluginUpdateInfo,
 } from "./types";
 import type { Message, Session } from "@/api/client";
 import { getSessionMessages, listSessions, getSession } from "@/api/client";
@@ -389,6 +390,147 @@ class PluginManagerImpl implements PluginManager {
     return storage;
   }
 
+  // ============== Updates ==============
+
+  async checkForUpdate(id: string): Promise<PluginUpdateInfo | null> {
+    const plugin = this.plugins.get(id);
+    if (!plugin) {
+      throw new Error(`Plugin not found: ${id}`);
+    }
+
+    const { updateUrl } = plugin.manifest;
+    if (!updateUrl) {
+      // No update URL configured
+      return null;
+    }
+
+    try {
+      // Fetch the latest manifest from updateUrl
+      const response = await fetch(updateUrl, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch update info: ${response.status}`);
+      }
+
+      const remoteManifest = (await response.json()) as PluginManifest;
+
+      // Compare versions
+      const hasUpdate = this.compareVersions(
+        remoteManifest.version,
+        plugin.manifest.version
+      ) > 0;
+
+      return {
+        id: plugin.manifest.id,
+        currentVersion: plugin.manifest.version,
+        latestVersion: remoteManifest.version,
+        hasUpdate,
+        downloadUrl: remoteManifest.downloadUrl,
+        manifest: remoteManifest,
+      };
+    } catch (error) {
+      console.error(`Failed to check for update for ${id}:`, error);
+      return null;
+    }
+  }
+
+  async checkForAllUpdates(): Promise<Map<string, PluginUpdateInfo>> {
+    const updates = new Map<string, PluginUpdateInfo>();
+
+    for (const plugin of this.plugins.values()) {
+      if (plugin.manifest.updateUrl) {
+        const updateInfo = await this.checkForUpdate(plugin.manifest.id);
+        if (updateInfo) {
+          updates.set(plugin.manifest.id, updateInfo);
+        }
+      }
+    }
+
+    return updates;
+  }
+
+  async updatePlugin(id: string): Promise<void> {
+    const plugin = this.plugins.get(id);
+    if (!plugin) {
+      throw new Error(`Plugin not found: ${id}`);
+    }
+
+    const updateInfo = await this.checkForUpdate(id);
+    if (!updateInfo || !updateInfo.hasUpdate) {
+      throw new Error("No update available");
+    }
+
+    if (!updateInfo.downloadUrl) {
+      throw new Error("No download URL available for update");
+    }
+
+    const fs = await getTauriFs();
+    if (!fs) {
+      throw new Error("Plugin update requires Tauri environment");
+    }
+
+    try {
+      // Download the plugin package
+      const response = await fetch(updateInfo.downloadUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to download plugin: ${response.status}`);
+      }
+
+      // For now, we'll support downloading a .zip or direct files
+      // This is a simplified implementation
+      const contentType = response.headers.get("content-type") || "";
+
+      if (contentType.includes("application/zip")) {
+        // Handle zip file - would need JSZip or similar library
+        throw new Error("ZIP update not yet supported. Please update manually.");
+      } else if (contentType.includes("application/json")) {
+        // Direct manifest update (for simple plugins)
+        const newManifest = await response.json();
+
+        // Backup current plugin
+        const backupPath = `${plugin.path}.backup`;
+
+        // Update manifest
+        const manifestPath = `${plugin.path}/manifest.json`;
+        await fs.writeTextFile(manifestPath, JSON.stringify(newManifest, null, 2), {
+          baseDir: fs.BaseDirectory.AppData,
+        });
+
+        // If there's a main.js URL, download that too
+        if (newManifest.mainUrl) {
+          const mainResponse = await fetch(newManifest.mainUrl);
+          const mainContent = await mainResponse.text();
+          const mainPath = `${plugin.path}/main.js`;
+          await fs.writeTextFile(mainPath, mainContent, {
+            baseDir: fs.BaseDirectory.AppData,
+          });
+        }
+
+        // Reload the plugin
+        await this.unloadPlugin(id);
+        await this.loadPlugin(plugin.path);
+
+        // Clean up backup
+        try {
+          await fs.remove(backupPath, { baseDir: fs.BaseDirectory.AppData });
+        } catch {
+          // Ignore cleanup errors
+        }
+      } else {
+        throw new Error("Unsupported update format");
+      }
+    } catch (error) {
+      throw new Error(
+        `Failed to update plugin: ${error instanceof Error ? error.message : String(error)}`
+      );
+    }
+  }
+
   // ============== Private Methods ==============
 
   private async loadManifest(pluginPath: string): Promise<PluginManifest> {
@@ -720,6 +862,32 @@ class PluginManagerImpl implements PluginManager {
         console.error("Plugin event handler error:", error);
       }
     }
+  }
+
+  /**
+   * Compare two semver version strings
+   * Returns: positive if a > b, negative if a < b, 0 if equal
+   */
+  private compareVersions(a: string, b: string): number {
+    const parseVersion = (v: string): number[] => {
+      return v.split(".").map((part) => {
+        const num = parseInt(part, 10);
+        return isNaN(num) ? 0 : num;
+      });
+    };
+
+    const partsA = parseVersion(a);
+    const partsB = parseVersion(b);
+    const maxLength = Math.max(partsA.length, partsB.length);
+
+    for (let i = 0; i < maxLength; i++) {
+      const numA = partsA[i] || 0;
+      const numB = partsB[i] || 0;
+      if (numA > numB) return 1;
+      if (numA < numB) return -1;
+    }
+
+    return 0;
   }
 
   private async copyPluginFiles(sourcePath: string, targetPath: string): Promise<void> {
