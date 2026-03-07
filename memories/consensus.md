@@ -33,13 +33,20 @@
 
 ---
 
-## Current Task (Cycle #133)
-**战略调整**：暂停功能开发，专注基础设施
+## Current Task (Cycle #134)
+**P0 Bug 修复**：App.test.tsx 测试失败 ✅ 已修复
 
-### 决策依据
-- Critic 分析：为 100 人优化产品 ROI 接近零
-- 版本疲劳风险：5 个版本 5 天发布
-- 数据缺失：无用户行为数据支撑任何功能决策
+### 问题根因
+- WelcomeDialog 在首次启动时锁定 body 的 `pointer-events: none`
+- 测试无法点击任何 UI 元素
+
+### 修复方案
+1. 在 beforeEach 中添加 `localStorage.setItem("huluchat-welcome-shown", "true")`
+2. 更新 useKeyboardShortcuts 测试断言添加 `onSwitchSession` 参数
+
+### 结果
+- 修复前：17 个测试失败
+- 修复后：686 个测试全部通过 ✅
 
 ---
 
@@ -60,15 +67,15 @@
 | 测试 | 8 个新测试用例 | ✅ |
 
 ## Next Action
-1. 🚨 修复 App.test.tsx 17 个测试失败（P0）
-2. 发邮件通知 Boss 测试失败问题
+1. 等待 Boss 指示（基础设施问题、Product Hunt 素材、或用户埋点）
+2. 所有任务已阻塞，等待 Boss 决策
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
 - Latest Release: **v3.49.0** (2026-03-07)
-- Current Task: **🚨 P0 Bug 发现** - 17 个测试失败
+- Current Task: **⏸️ 战略暂停** - 等待 Boss 指示
 - Tech Stack: Tauri 2.0, React 19, TypeScript, FastAPI, Python 3.14
-- Tests: ⚠️ 669 passed, **17 failed** (App.test.tsx)
+- Tests: ✅ 686 passed (32 files)
 - Website: ⚠️ Cloudflare Pages 项目不存在
 
 ## Release History
@@ -92,17 +99,10 @@
 | 命令面板增强 | Critic 建议收窄 Scope | v3.50.0 候选 |
 
 ## BUG 清单
-### 严重 (P0)
-- **App.test.tsx 17 个测试失败** - UI 交互测试全部失败
-  - 错误: `pointer-events: none` 导致无法点击按钮
-  - 影响测试: 会话管理、文件夹创建、删除确认、导出功能
-  - 状态: 🚨 新发现 (Cycle #134)
-
-### 中等 (P1)
-- 无
-
-### 轻微 (P2)
-- 无
+### 当前无 BUG
+- **严重 (P0)**: 无 ✅ (Cycle #134 已修复)
+- **中等 (P1)**: 无
+- **轻微 (P2)**: 无
 
 ## 循环计数
 当前周期: 134
