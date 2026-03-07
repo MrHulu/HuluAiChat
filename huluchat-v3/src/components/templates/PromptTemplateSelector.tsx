@@ -174,7 +174,7 @@ export function PromptTemplateSelector({
           <nav className="w-48 border-r border-border pr-2 overflow-y-auto" aria-label={t("templates.categoriesLabel")}>
             <Button
               variant={selectedCategory === null ? "secondary" : "ghost"}
-              className="w-full justify-start mb-1"
+              className="w-full justify-start mb-1 transition-all duration-150"
               onClick={() => setSelectedCategory(null)}
               aria-pressed={selectedCategory === null}
             >
@@ -184,7 +184,7 @@ export function PromptTemplateSelector({
               <Button
                 key={category}
                 variant={selectedCategory === category ? "secondary" : "ghost"}
-                className="w-full justify-start mb-1"
+                className="w-full justify-start mb-1 transition-all duration-150"
                 onClick={() => setSelectedCategory(category)}
                 aria-pressed={selectedCategory === category}
               >
@@ -197,11 +197,11 @@ export function PromptTemplateSelector({
           {/* Template List / Editor */}
           <div className="flex-1 overflow-y-auto p-4">
             {loading ? (
-              <div className="flex items-center justify-center h-32" role="status" aria-live="polite">
+              <div className="flex items-center justify-center h-32 animate-in fade-in-0 duration-200" role="status" aria-live="polite">
                 <span className="text-muted-foreground">{t("common.loading")}</span>
               </div>
             ) : editingTemplate ? (
-              <div className="space-y-4">
+              <div className="space-y-4 animate-in fade-in-0 slide-in-from-right-2 duration-200">
                 <div>
                   <label htmlFor="template-name" className="text-sm font-medium mb-1 block">{t("templates.name")}</label>
                   <input
@@ -260,8 +260,9 @@ export function PromptTemplateSelector({
                           role="listitem"
                           tabIndex={0}
                           className={cn(
-                            "p-3 rounded-lg border cursor-pointer transition-colors",
-                            "hover:bg-accent hover:border-accent-foreground",
+                            "p-3 rounded-lg border cursor-pointer transition-all duration-200",
+                            "hover:bg-accent hover:border-primary/30 hover:shadow-sm hover:scale-[1.01]",
+                            "active:scale-[0.99]",
                             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                             template.is_builtin
                               ? "border-border"

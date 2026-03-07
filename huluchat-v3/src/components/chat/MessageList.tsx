@@ -87,10 +87,10 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
   if (messages.length === 0 && !streamingMessage) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <div className="text-center text-muted-foreground">
-          <div className="text-4xl mb-4">💬</div>
+        <div className="text-center text-muted-foreground animate-in fade-in-0 zoom-in-95 duration-300">
+          <div className="text-5xl mb-4 animate-bounce">💬</div>
           <p className="text-lg font-medium">{t("chat.startConversation")}</p>
-          <p className="text-sm">{t("chat.startConversationHint")}</p>
+          <p className="text-sm mt-1 opacity-70">{t("chat.startConversationHint")}</p>
         </div>
       </div>
     );
@@ -162,8 +162,8 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
 
       {/* 加载指示器 */}
       {isLoading && !streamingMessage && (
-        <div className="flex justify-start mb-4 animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
-          <div className="bg-muted rounded-2xl px-4 py-3 shadow-sm">
+        <div className="flex justify-start mb-4 animate-in fade-in-0 slide-in-from-bottom-2 duration-200">
+          <div className="bg-muted/80 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm transition-all duration-200 hover:shadow-md">
             <Loading variant="thinking" size="sm" text={t("chat.thinking")} />
           </div>
         </div>
