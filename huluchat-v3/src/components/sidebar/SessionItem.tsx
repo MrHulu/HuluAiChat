@@ -84,7 +84,7 @@ export function SessionItem({
       onClick={onClick}
       className={cn(
         "group flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer",
-        "transition-colors duration-150",
+        "transition-all duration-200",
         isActive
           ? "bg-accent text-accent-foreground"
           : "hover:bg-muted/50 text-foreground"
@@ -124,8 +124,8 @@ export function SessionItem({
               onClick={(e) => e.stopPropagation()}
               disabled={isExporting}
               className={cn(
-                "opacity-0 group-hover:opacity-100 transition-opacity",
-                "p-1 rounded hover:bg-primary/20 text-muted-foreground hover:text-primary",
+                "opacity-0 group-hover:opacity-100 transition-all",
+                "p-1.5 rounded-md hover:bg-primary/10 text-muted-foreground hover:text-primary",
                 isExporting && "opacity-50 cursor-wait"
               )}
               title={t("sessionItem.exportSession")}
@@ -302,8 +302,8 @@ export function SessionItem({
         <button
           onClick={handleDelete}
           className={cn(
-            "opacity-0 group-hover:opacity-100 transition-opacity",
-            "p-1 rounded hover:bg-destructive/20 text-muted-foreground hover:text-destructive"
+            "opacity-0 group-hover:opacity-100 transition-all",
+            "p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
           )}
           title={t("sessionItem.deleteSession")}
         >

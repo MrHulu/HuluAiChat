@@ -61,7 +61,7 @@ export const VoiceInputButton = memo(function VoiceInputButton({
       onClick={handleClick}
       disabled={disabled}
       className={cn(
-        "rounded-xl px-3 h-12",
+        "px-3 h-12",
         isListening && "bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50",
         className
       )}
