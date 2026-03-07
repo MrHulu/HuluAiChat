@@ -155,7 +155,7 @@ export function BookmarkPanel({
 
       {/* Bookmark List */}
       <div className="flex-1 overflow-y-auto max-h-48" role="list" aria-label={t("chat.bookmarks")}>
-        {bookmarks.map((bookmark) => (
+        {bookmarks.map((bookmark, index) => (
           <div
             key={bookmark.id}
             role="listitem"
@@ -168,9 +168,14 @@ export function BookmarkPanel({
             }}
             tabIndex={0}
             aria-label={t("chat.jumpToBookmark", { content: bookmark.message_content.slice(0, 50) })}
+            style={{ animationDelay: `${index * 50}ms` }}
             className={cn(
               "group flex items-start gap-2 px-3 py-2 cursor-pointer",
-              "hover:bg-accent/50 transition-colors border-b border-border/50 last:border-b-0",
+              "border-b border-border/50 last:border-b-0",
+              "transition-all duration-200 ease-out",
+              "hover:bg-accent/50 hover:translate-x-0.5",
+              "active:scale-[0.99]",
+              "animate-in fade-in-0 slide-in-from-left-1",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
             )}
           >
