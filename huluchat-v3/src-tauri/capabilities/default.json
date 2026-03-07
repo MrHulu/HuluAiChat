@@ -41,6 +41,28 @@
         { "path": "$APPCONFIG/plugins/**" },
         { "path": "$RESOURCE/plugins/**" }
       ]
-    }
+    },
+    {
+      "identifier": "fs:allow-write-text-file",
+      "allow": [
+        { "path": "$APPDATA/plugins/**" },
+        { "path": "$APPCONFIG/plugins/**" }
+      ]
+    },
+    {
+      "identifier": "fs:allow-mkdir",
+      "allow": [
+        { "path": "$APPDATA/plugins/**" },
+        { "path": "$APPCONFIG/plugins/**" }
+      ]
+    },
+    {
+      "identifier": "fs:allow-remove",
+      "allow": [
+        { "path": "$APPDATA/plugins/**" },
+        { "path": "$APPCONFIG/plugins/**" }
+      ]
+    },
+    "dialog:default"
   ]
 }
