@@ -30,12 +30,13 @@
 - ✅ Cycle #106: 消息气泡样式优化
 - ✅ Cycle #117: 硬编码颜色替换为 CSS 主题变量
 - ✅ Cycle #118: 侧边栏组件可访问性增强 (aria 属性 + 键盘支持)
+- ✅ Cycle #120: 扩展可访问性优化 (UpdateNotification, BookmarkButton, DocumentUploader, PromptTemplateSelector)
 
 ### 下一步优化方向
-- 深色模式细节优化
 - 更多组件的可访问性优化
 - 加载动画优化
 - 过渡效果优化
+- 深色模式细节优化
 
 ---
 
@@ -44,7 +45,7 @@
 - Latest Release: **v3.51.0** (2026-03-07)
 - Current Task: **TASK-122 - UI/UX 美化优化**
 - Tech Stack: Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui
-- Tests: ✅ 686 passed (32 files)
+- Tests: ✅ 700 passed (33 files)
 - MAU: ~100 (6 个版本无变化)
 
 ---
