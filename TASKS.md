@@ -2,34 +2,20 @@
 
 ## 进行中
 <!-- 当前正在处理的任务 -->
-- [ ] **TASK-127**: 🎤 执行用户访谈招募（GitHub Issue #190 已创建）
-  - 目标：5-10 人访谈，验证 PMF
-  - Issue: https://github.com/MrHulu/HuluAiChat/issues/190
+- [ ] **TASK-127**: 🎤 用户访谈招募 - Issue #190
+  - 状态：Week 1 招募期 Day 5
+  - 链接：https://github.com/MrHulu/HuluAiChat/issues/190
+  - 目标：招募 5-10 人进行用户访谈
+  - 暂无用户回复（正常，继续等待）
 
 ## 待开始
 <!-- 新任务添加到这里 -->
-- [ ] **TASK-123**: 🔧 修复官网部署 - 创建 Cloudflare Pages 项目（等待 Boss 操作）
-- [ ] **TASK-116**: 🎬 准备 Product Hunt 发布素材（截图、视频）- 等待 Boss
+- [ ] **TASK-122**: 🎨 UI/UX 美化优化（持续进行）
+  - 状态：长期任务，持续进行
+  - 暂停：用户访谈暂停，只做视觉优化
+  - 方向：界面美化、交互优化、视觉一致性
 
-## v3.52.0 计划 - 增长验证版本
-> **决策**: CEO Bezos + Critic Munger 共识 - 暂停功能开发，专注增长
-- [x] **TASK-124**: 📊 建立 GitHub 指标 Dashboard（Stars, Downloads, Issues）✅ 2026-03-07
-  - PR #186 已合并
-  - 添加 Shields.io 徽章（Stars, Downloads, Issues）
-  - 添加 Star History 趋势图
-  - 添加贡献者展示区域
-  - 创建 CONTRIBUTING.md
-- [x] **TASK-125**: 💬 用户访谈计划（5-10 人，验证 PMF）✅ 2026-03-07
-  - 访谈目标、问题设计、流程规划
-  - 招募模板和成功标准
-  - 文档: docs/user-interview-plan.md
-- [x] **TASK-126**: 📝 官网 SEO 优化 ✅ 2026-03-08
-  - 更新版本号到 v3.51.0
-  - 更新 Features 列表（RAG、隐私、插件）
-  - 添加 sitemap.xml 和 robots.txt
-  - 添加 JSON-LD structured data
-  - 优化 metadata（DeepSeek 关键词）
-  - **注意**: 官网部署仍需 Boss 创建 Cloudflare Pages 项目
+- [ ] **TASK-116**: 🎬 准备 Product Hunt 发布素材（截图、视频）- 等待 Boss
 
 ## ⚠️ 永久禁止事项（Boss 明确要求）
 - ❌ **禁止功能**：用户行为埋点、数据追踪、遥测功能、使用统计
@@ -37,26 +23,12 @@
 - 🚫 **执行**：任何版本规划或开发都不得包含上述功能
 - 📄 **文档**：CLAUDE.md 和 PROMPT.md 已明确记录此要求
 
-## 已取消
-- [x] ~~**TASK-120**: 📊 添加用户行为埋点~~ ❌ **Boss 决定取消** - 隐私优先原则
-
 ## 已完成
-- [x] **TASK-122**: 💻 开发 v3.51.0 - 书签导出功能 ✅ 2026-03-07
-  - Backend: GET /bookmarks/export/json, GET /bookmarks/export/markdown
-  - Frontend: BookmarkPanel 添加导出下拉菜单
-  - i18n: EN/ZH 翻译
-  - PR #181 已合并
-  - GitHub Release v3.51.0 已创建
-  - https://github.com/MrHulu/HuluAiChat/releases/tag/v3.51.0
-
 - [x] **TASK-121**: 💻 开发 v3.50.0 - 会话标签/消息书签功能 ✅ 2026-03-07
-  - Phase 1: 数据库 Schema 设计（tags, bookmarks 表） ✅
-  - Phase 2: 会话标签 UI（打标签、按标签筛选） ✅
-  - Phase 3: 消息书签 UI（标记重要消息、快速跳转） ✅
+  - Phase 1: 数据库 Schema 设计（tags, bookmarks 表）✅
+  - Phase 2: 会话标签 UI（打标签、按标签筛选）✅
+  - Phase 3: 消息书签 UI（标记重要消息、快速跳转）✅
   - Phase 4: 发布 v3.50.0 ✅
-  - PR #175 已合并
-  - GitHub Release v3.50.0 已创建
-  - https://github.com/MrHulu/HuluAiChat/releases/tag/v3.50.0
 
 - [x] **TASK-119**: 💻 开发 v3.49.0 - 键盘快捷键优化 ✅ 2026-03-07
   - Phase 1: Ctrl+1/2/3 快速切换最近会话 ✅
@@ -108,7 +80,7 @@
 - [x] **TASK-104**: 🌐 官网部署配置（Cloudflare secrets）✅ 2026-03-07
   - GitHub Secrets 已配置:
     - CLOUDFLARE_API_TOKEN ✅
-    - CLOUDFLARE_ACCOUNT_ID ✅
+    CLOUDFLARE_ACCOUNT_ID ✅
   - GitHub Actions workflow 已就绪
   - 下次推送将自动部署
 
