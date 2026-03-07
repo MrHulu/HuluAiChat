@@ -36,7 +36,7 @@ function SpinnerLoader({ size, className }: { size: LoadingSize; className?: str
   return (
     <Loader2
       className={cn(
-        "animate-spin text-primary",
+        "animate-spin text-primary transition-opacity duration-200",
         sizeMap[size].spinner,
         className
       )}
@@ -56,7 +56,7 @@ function DotsLoader({ size, className }: { size: LoadingSize; className?: string
     <div className={cn("flex items-center", gap, className)}>
       <span
         className={cn(
-          "rounded-full bg-primary",
+          "rounded-full bg-primary transition-all duration-200",
           "animate-[dotPulse_1.2s_ease-in-out_infinite]",
           dotSize
         )}
@@ -64,7 +64,7 @@ function DotsLoader({ size, className }: { size: LoadingSize; className?: string
       />
       <span
         className={cn(
-          "rounded-full bg-primary",
+          "rounded-full bg-primary transition-all duration-200",
           "animate-[dotPulse_1.2s_ease-in-out_infinite]",
           dotSize
         )}
@@ -72,7 +72,7 @@ function DotsLoader({ size, className }: { size: LoadingSize; className?: string
       />
       <span
         className={cn(
-          "rounded-full bg-primary",
+          "rounded-full bg-primary transition-all duration-200",
           "animate-[dotPulse_1.2s_ease-in-out_infinite]",
           dotSize
         )}
@@ -95,7 +95,7 @@ function WaveLoader({ size, className }: { size: LoadingSize; className?: string
         <span
           key={i}
           className={cn(
-            "rounded-full bg-primary",
+            "rounded-full bg-primary transition-all duration-200",
             "animate-[wave_1.2s_ease-in-out_infinite]",
             waveSize
           )}
@@ -119,7 +119,7 @@ function ThinkingLoader({ size, className }: { size: LoadingSize; className?: st
       {/* 中心脉冲点 */}
       <span
         className={cn(
-          "rounded-full bg-primary",
+          "rounded-full bg-primary transition-all duration-200",
           "animate-[thinkingPulse_1.5s_ease-in-out_infinite]",
           dotSize
         )}
@@ -127,7 +127,7 @@ function ThinkingLoader({ size, className }: { size: LoadingSize; className?: st
       {/* 两个较小的跟随点 */}
       <span
         className={cn(
-          "rounded-full bg-primary/60",
+          "rounded-full bg-primary/60 transition-all duration-200",
           "animate-[thinkingPulse_1.5s_ease-in-out_infinite]",
           size === "sm" ? "w-1 h-1" : size === "md" ? "w-1.5 h-1.5" : "w-2 h-2"
         )}
@@ -135,7 +135,7 @@ function ThinkingLoader({ size, className }: { size: LoadingSize; className?: st
       />
       <span
         className={cn(
-          "rounded-full bg-primary/40",
+          "rounded-full bg-primary/40 transition-all duration-200",
           "animate-[thinkingPulse_1.5s_ease-in-out_infinite]",
           size === "sm" ? "w-1 h-1" : size === "md" ? "w-1.5 h-1.5" : "w-2 h-2"
         )}
@@ -153,8 +153,8 @@ function PulseLoader({ size, className }: { size: LoadingSize; className?: strin
 
   return (
     <div className={cn("relative", sizeClass, className)}>
-      <div className="absolute inset-0 rounded-full bg-primary/30 animate-ping" />
-      <div className="absolute inset-1 rounded-full bg-primary/50 animate-pulse" />
+      <div className="absolute inset-0 rounded-full bg-primary/30 animate-ping transition-opacity duration-200" />
+      <div className="absolute inset-1 rounded-full bg-primary/50 animate-pulse transition-opacity duration-200" />
     </div>
   );
 }
@@ -168,7 +168,7 @@ function RingLoader({ size, className }: { size: LoadingSize; className?: string
   return (
     <div
       className={cn(
-        "animate-spin rounded-full border-2 border-primary/30 border-t-primary",
+        "animate-spin rounded-full border-2 border-primary/30 border-t-primary transition-opacity duration-200",
         sizeClass,
         className
       )}
@@ -253,7 +253,7 @@ export function Loading({
 export function LoadingOverlay({ text, ariaLabel }: { text?: string; ariaLabel?: string }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm animate-in fade-in zoom-in-95 duration-200"
       role="alertdialog"
       aria-busy="true"
       aria-label={ariaLabel || text || "Loading"}
