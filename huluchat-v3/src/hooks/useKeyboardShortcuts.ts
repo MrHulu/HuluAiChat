@@ -18,6 +18,7 @@ export interface UseKeyboardShortcutsOptions {
   onNewSession?: () => void;
   onToggleSidebar?: () => void;
   onOpenSettings?: () => void;
+  onSwitchSession?: (index: number) => void;
   enabled?: boolean;
 }
 
@@ -36,6 +37,7 @@ export function useKeyboardShortcuts(options: UseKeyboardShortcutsOptions): void
     onNewSession,
     onToggleSidebar,
     onOpenSettings,
+    onSwitchSession,
     enabled = true,
   } = options;
 
@@ -89,8 +91,20 @@ export function useKeyboardShortcuts(options: UseKeyboardShortcutsOptions): void
         onOpenSettings?.();
         return;
       }
+
+      // Ctrl/Cmd + 1/2/3: 切换最近 3 个会话
+      const numKey = parseInt(event.key);
+      if (
+        numKey >= 1 &&
+        numKey <= 3 &&
+        ((isMacOS() && event.metaKey) || (!isMacOS() && event.ctrlKey))
+      ) {
+        event.preventDefault();
+        onSwitchSession?.(numKey - 1); // 0-indexed
+        return;
+      }
     },
-    [enabled, onNewSession, onToggleSidebar, onOpenSettings]
+    [enabled, onNewSession, onToggleSidebar, onOpenSettings, onSwitchSession]
   );
 
   useEffect(() => {
@@ -116,6 +130,12 @@ export const KEYBOARD_SHORTCUTS = [
     descriptionKey: "keyboard.toggleSidebar",
     mac: "⌘B",
     windows: "Ctrl+B",
+  },
+  {
+    key: "Ctrl/Cmd + 1/2/3",
+    descriptionKey: "keyboard.switchSession",
+    mac: "⌘1/2/3",
+    windows: "Ctrl+1/2/3",
   },
   {
     key: "Ctrl/Cmd + ,",

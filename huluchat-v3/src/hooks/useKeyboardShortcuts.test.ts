@@ -388,4 +388,145 @@ describe("useKeyboardShortcuts hook", () => {
       expect(onNewSession).toHaveBeenCalled();
     });
   });
+
+  describe("session switching shortcuts (Ctrl+1/2/3)", () => {
+    let onSwitchSession: (index: number) => void;
+
+    beforeEach(() => {
+      onSwitchSession = vi.fn() as (index: number) => void;
+    });
+
+    describe("with non-macOS platform", () => {
+      beforeEach(() => {
+        Object.defineProperty(window.navigator, "platform", {
+          value: "Win32",
+          writable: true,
+          configurable: true,
+        });
+      });
+
+      it("should call onSwitchSession with index 0 on Ctrl+1", () => {
+        renderHook(() =>
+          useKeyboardShortcuts({
+            onNewSession,
+            onToggleSidebar,
+            onOpenSettings,
+            onSwitchSession,
+          })
+        );
+
+        const event = new KeyboardEvent("keydown", {
+          key: "1",
+          ctrlKey: true,
+          bubbles: true,
+        });
+        const preventDefaultSpy = vi.spyOn(event, "preventDefault");
+
+        window.dispatchEvent(event);
+
+        expect(preventDefaultSpy).toHaveBeenCalled();
+        expect(onSwitchSession).toHaveBeenCalledWith(0);
+      });
+
+      it("should call onSwitchSession with index 1 on Ctrl+2", () => {
+        renderHook(() =>
+          useKeyboardShortcuts({
+            onNewSession,
+            onToggleSidebar,
+            onOpenSettings,
+            onSwitchSession,
+          })
+        );
+
+        const event = new KeyboardEvent("keydown", {
+          key: "2",
+          ctrlKey: true,
+          bubbles: true,
+        });
+        const preventDefaultSpy = vi.spyOn(event, "preventDefault");
+
+        window.dispatchEvent(event);
+
+        expect(preventDefaultSpy).toHaveBeenCalled();
+        expect(onSwitchSession).toHaveBeenCalledWith(1);
+      });
+
+      it("should call onSwitchSession with index 2 on Ctrl+3", () => {
+        renderHook(() =>
+          useKeyboardShortcuts({
+            onNewSession,
+            onToggleSidebar,
+            onOpenSettings,
+            onSwitchSession,
+          })
+        );
+
+        const event = new KeyboardEvent("keydown", {
+          key: "3",
+          ctrlKey: true,
+          bubbles: true,
+        });
+        const preventDefaultSpy = vi.spyOn(event, "preventDefault");
+
+        window.dispatchEvent(event);
+
+        expect(preventDefaultSpy).toHaveBeenCalled();
+        expect(onSwitchSession).toHaveBeenCalledWith(2);
+      });
+
+      it("should NOT respond to Ctrl+4 (only 1-3 supported)", () => {
+        renderHook(() =>
+          useKeyboardShortcuts({
+            onNewSession,
+            onToggleSidebar,
+            onOpenSettings,
+            onSwitchSession,
+          })
+        );
+
+        const event = new KeyboardEvent("keydown", {
+          key: "4",
+          ctrlKey: true,
+          bubbles: true,
+        });
+
+        window.dispatchEvent(event);
+
+        expect(onSwitchSession).not.toHaveBeenCalled();
+      });
+    });
+
+    describe("with macOS platform", () => {
+      beforeEach(() => {
+        Object.defineProperty(window.navigator, "platform", {
+          value: "MacIntel",
+          writable: true,
+          configurable: true,
+        });
+      });
+
+      it("should call onSwitchSession on Cmd+1", () => {
+        renderHook(() =>
+          useKeyboardShortcuts({
+            onNewSession,
+            onToggleSidebar,
+            onOpenSettings,
+            onSwitchSession,
+          })
+        );
+
+        const event = new KeyboardEvent("keydown", {
+          key: "1",
+          metaKey: true,
+          bubbles: true,
+        });
+        const preventDefaultSpy = vi.spyOn(event, "preventDefault");
+
+        window.dispatchEvent(event);
+
+        expect(preventDefaultSpy).toHaveBeenCalled();
+        expect(onSwitchSession).toHaveBeenCalledWith(0);
+      });
+    });
+  });
 });

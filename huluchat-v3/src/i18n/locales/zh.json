@@ -163,6 +163,7 @@
     "search": "搜索聊天",
     "settings": "打开设置",
     "toggleSidebar": "切换侧边栏",
+    "switchSession": "切换到最近会话",
     "send": "发送消息",
     "newLine": "消息换行",
     "close": "关闭对话框",
