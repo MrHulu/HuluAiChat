@@ -1280,7 +1280,7 @@ describe("App", () => {
         await user.hover(sessionElement);
       }
 
-      const deleteButton = screen.getByTitle("Delete session");
+      const deleteButton = screen.getByLabelText("Delete session");
       await user.click(deleteButton);
 
       // Assert - 验证确认对话框和删除调用
@@ -1308,7 +1308,7 @@ describe("App", () => {
         await user.hover(sessionElement);
       }
 
-      const deleteButton = screen.getByTitle("Delete session");
+      const deleteButton = screen.getByLabelText("Delete session");
       await user.click(deleteButton);
 
       // Assert
@@ -1363,7 +1363,7 @@ describe("App", () => {
       }
 
       // 点击导出按钮
-      const exportButton = screen.getByTitle("Export session");
+      const exportButton = screen.getByLabelText("Export session");
       await user.click(exportButton);
 
       // 选择 Markdown 格式
@@ -1403,7 +1403,7 @@ describe("App", () => {
         await user.hover(sessionElement);
       }
 
-      const exportButton = screen.getByTitle("Export session");
+      const exportButton = screen.getByLabelText("Export session");
       await user.click(exportButton);
 
       const markdownOption = await screen.findByText("Markdown (.md)");
@@ -1439,7 +1439,7 @@ describe("App", () => {
         await user.hover(sessionElement);
       }
 
-      const exportButton = screen.getByTitle("Export session");
+      const exportButton = screen.getByLabelText("Export session");
       await user.click(exportButton);
 
       const jsonOption = await screen.findByText("JSON (.json)");
@@ -1472,7 +1472,7 @@ describe("App", () => {
         await user.hover(sessionElement);
       }
 
-      const exportButton = screen.getByTitle("Export session");
+      const exportButton = screen.getByLabelText("Export session");
       await user.click(exportButton);
 
       const txtOption = await screen.findByText("Plain Text (.txt)");
@@ -1594,7 +1594,7 @@ describe("App", () => {
       });
 
       // Find and click the move to folder button (by title)
-      const moveButton = screen.getByTitle("Move to folder");
+      const moveButton = screen.getByLabelText("Move to folder");
       await user.click(moveButton);
 
       // Wait for dropdown to open and find the folder option in the menu
@@ -1642,7 +1642,7 @@ describe("App", () => {
         expect(screen.getByText("Test Session")).toBeInTheDocument();
       });
 
-      const moveButton = screen.getByTitle("Move to folder");
+      const moveButton = screen.getByLabelText("Move to folder");
       await user.click(moveButton);
 
       // Select "Uncategorized" option
@@ -1676,7 +1676,7 @@ describe("App", () => {
         expect(screen.getByText("Test Session")).toBeInTheDocument();
       });
 
-      const moveButton = screen.getByTitle("Move to folder");
+      const moveButton = screen.getByLabelText("Move to folder");
       await user.click(moveButton);
 
       // Wait for dropdown to open - Work folder should appear in the dropdown

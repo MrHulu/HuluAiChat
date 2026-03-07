@@ -180,7 +180,7 @@ describe("SessionItem", () => {
     );
 
     // Find the delete button (it has a trash icon)
-    const deleteButton = screen.getByTitle("Delete session");
+    const deleteButton = screen.getByLabelText("Delete session");
     await user.click(deleteButton);
 
     expect(mockOnDelete).toHaveBeenCalledTimes(1);
@@ -200,7 +200,7 @@ describe("SessionItem", () => {
     );
 
     // Click the export button
-    const exportButton = screen.getByTitle("Export session");
+    const exportButton = screen.getByLabelText("Export session");
     await user.click(exportButton);
 
     // Click the markdown option
@@ -223,7 +223,7 @@ describe("SessionItem", () => {
       />
     );
 
-    const exportButton = screen.getByTitle("Export session");
+    const exportButton = screen.getByLabelText("Export session");
     await user.click(exportButton);
 
     const jsonOption = screen.getByText("JSON (.json)");
@@ -244,7 +244,7 @@ describe("SessionItem", () => {
       />
     );
 
-    const exportButton = screen.getByTitle("Export session");
+    const exportButton = screen.getByLabelText("Export session");
     await user.click(exportButton);
 
     const txtOption = screen.getByText("Plain Text (.txt)");
@@ -269,7 +269,7 @@ describe("SessionItem", () => {
     );
 
     // Click the move to folder button
-    const moveButton = screen.getByTitle("Move to folder");
+    const moveButton = screen.getByLabelText("Move to folder");
     await user.click(moveButton);
 
     // Should show the folder option
@@ -292,7 +292,7 @@ describe("SessionItem", () => {
       />
     );
 
-    const moveButton = screen.getByTitle("Move to folder");
+    const moveButton = screen.getByLabelText("Move to folder");
     await user.click(moveButton);
 
     const workFolder = screen.getByText("Work");
@@ -317,7 +317,7 @@ describe("SessionItem", () => {
       />
     );
 
-    const moveButton = screen.getByTitle("Move to folder");
+    const moveButton = screen.getByLabelText("Move to folder");
     await user.click(moveButton);
 
     const uncategorized = screen.getByText("Uncategorized");
@@ -338,7 +338,7 @@ describe("SessionItem", () => {
       />
     );
 
-    expect(screen.queryByTitle("Move to folder")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Move to folder")).not.toBeInTheDocument();
   });
 
   it("should not show move to folder button when onMoveToFolder is not provided", () => {
@@ -354,7 +354,7 @@ describe("SessionItem", () => {
       />
     );
 
-    expect(screen.queryByTitle("Move to folder")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Move to folder")).not.toBeInTheDocument();
   });
 
   it("should handle long titles with truncation", () => {
@@ -411,7 +411,7 @@ describe("SessionItem", () => {
     );
 
     // Open export dropdown
-    const exportButton = screen.getByTitle("Export session");
+    const exportButton = screen.getByLabelText("Export session");
     await user.click(exportButton);
 
     // Click on the dropdown content area (not a menu item)
@@ -439,7 +439,7 @@ describe("SessionItem", () => {
     );
 
     // Open move to folder dropdown
-    const moveButton = screen.getByTitle("Move to folder");
+    const moveButton = screen.getByLabelText("Move to folder");
     await user.click(moveButton);
 
     // Click on the dropdown content area (not a menu item)
@@ -466,7 +466,7 @@ describe("SessionItem", () => {
       />
     );
 
-    const moveButton = screen.getByTitle("Move to folder");
+    const moveButton = screen.getByLabelText("Move to folder");
     await user.click(moveButton);
 
     // The current folder should have bg-muted class (highlighted)
@@ -488,7 +488,7 @@ describe("SessionItem", () => {
       />
     );
 
-    const moveButton = screen.getByTitle("Move to folder");
+    const moveButton = screen.getByLabelText("Move to folder");
     await user.click(moveButton);
 
     // Should show checkmark (lucide Check icon)
@@ -513,7 +513,7 @@ describe("SessionItem", () => {
     );
 
     // Click the export button itself (not the menu item)
-    const exportButton = screen.getByTitle("Export session");
+    const exportButton = screen.getByLabelText("Export session");
     await user.click(exportButton);
 
     // onClick should not be called because of stopPropagation on button
@@ -535,7 +535,7 @@ describe("SessionItem", () => {
     );
 
     // Click the move button itself
-    const moveButton = screen.getByTitle("Move to folder");
+    const moveButton = screen.getByLabelText("Move to folder");
     await user.click(moveButton);
 
     // onClick should not be called because of stopPropagation on button
@@ -555,7 +555,7 @@ describe("SessionItem", () => {
     );
 
     // Click export button and then quickly click a format option
-    const exportButton = screen.getByTitle("Export session");
+    const exportButton = screen.getByLabelText("Export session");
     await user.click(exportButton);
     await user.click(screen.getByText("Markdown (.md)"));
 

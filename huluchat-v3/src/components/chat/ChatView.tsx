@@ -200,8 +200,10 @@ export function ChatView({ sessionId }: ChatViewProps) {
             <button
               onClick={() => setIsBookmarkPanelOpen(!isBookmarkPanelOpen)}
               aria-pressed={isBookmarkPanelOpen}
+              aria-label={t("chat.bookmarks")}
               className={cn(
-                "px-2 py-1 text-xs rounded-md border transition-colors flex items-center gap-1",
+                "px-2 py-1 text-xs rounded-md border transition-all duration-150 flex items-center gap-1",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
                 isBookmarkPanelOpen
                   ? "bg-primary text-primary-foreground border-primary"
                   : "bg-background hover:bg-accent border-border"
@@ -218,8 +220,10 @@ export function ChatView({ sessionId }: ChatViewProps) {
             <button
               onClick={handleRAGPanelToggle}
               aria-pressed={isRAGPanelOpen}
+              aria-label={t("rag.documents")}
               className={cn(
-                "px-2 py-1 text-xs rounded-md border transition-colors",
+                "px-2 py-1 text-xs rounded-md border transition-all duration-150",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
                 isRAGPanelOpen
                   ? "bg-primary text-primary-foreground border-primary"
                   : "bg-background hover:bg-accent border-border"

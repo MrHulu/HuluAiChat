@@ -133,12 +133,14 @@ export function SessionItem({
             <button
               onClick={(e) => e.stopPropagation()}
               disabled={isExporting}
+              aria-label={t("sessionItem.exportSession")}
               className={cn(
-                "opacity-0 group-hover:opacity-100 transition-all",
-                "p-1.5 rounded-md hover:bg-primary/10 text-muted-foreground hover:text-primary",
+                "opacity-0 group-hover:opacity-100 transition-all duration-150",
+                "p-1.5 rounded-md",
+                "text-muted-foreground hover:text-primary hover:bg-primary/10",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
                 isExporting && "opacity-50 cursor-wait"
               )}
-              title={t("sessionItem.exportSession")}
             >
               <Download className="w-3.5 h-3.5" />
             </button>
@@ -171,11 +173,13 @@ export function SessionItem({
             <DropdownMenuTrigger asChild>
               <button
                 onClick={(e) => e.stopPropagation()}
+                aria-label={t("sessionItem.moveToFolder")}
                 className={cn(
-                  "opacity-0 group-hover:opacity-100 transition-all",
-                  "p-1.5 rounded-md hover:bg-primary/10 text-muted-foreground hover:text-primary"
+                  "opacity-0 group-hover:opacity-100 transition-all duration-150",
+                  "p-1.5 rounded-md",
+                  "text-muted-foreground hover:text-primary hover:bg-primary/10",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
                 )}
-                title={t("sessionItem.moveToFolder")}
               >
                 <FolderOpen className="w-3.5 h-3.5" />
               </button>
@@ -209,11 +213,13 @@ export function SessionItem({
         {/* Delete button */}
         <button
           onClick={handleDelete}
+          aria-label={t("sessionItem.deleteSession")}
           className={cn(
-            "opacity-0 group-hover:opacity-100 transition-all",
-            "p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
+            "opacity-0 group-hover:opacity-100 transition-all duration-150",
+            "p-1.5 rounded-md",
+            "text-muted-foreground hover:text-destructive hover:bg-destructive/10",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
           )}
-          title={t("sessionItem.deleteSession")}
         >
           <Trash2 className="w-3.5 h-3.5" />
         </button>
