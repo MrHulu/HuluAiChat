@@ -1,8 +1,9 @@
 """Message models and schemas."""
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel
 from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Text
 
 from core.database import Base
 
@@ -15,6 +16,8 @@ class MessageModel(Base):
     session_id: Mapped[str] = mapped_column(index=True)
     role: Mapped[str] = mapped_column()  # 'user' or 'assistant'
     content: Mapped[str] = mapped_column()
+    # Store images as JSON string: [{"type": "image_url", "image_url": {"url": "data:..."}}]
+    images: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
 
 

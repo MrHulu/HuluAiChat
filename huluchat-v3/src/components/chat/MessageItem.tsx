@@ -97,6 +97,7 @@ const StreamingCursor = memo(function StreamingCursor({ isStreaming }: { isStrea
 export const MessageItem = memo(function MessageItem({ message, isStreaming, onEdit }: MessageItemProps) {
   const { t } = useTranslation();
   const isUser = message.role === "user";
+  const hasImages = message.images && message.images.length > 0;
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(message.content);
   const [isSaving, setIsSaving] = useState(false);
@@ -266,6 +267,20 @@ export const MessageItem = memo(function MessageItem({ message, isStreaming, onE
             </button>
           )}
         </div>
+
+        {/* 图片显示（仅用户消息） */}
+        {isUser && hasImages && (
+          <div className="flex flex-wrap gap-2 mb-2">
+            {message.images!.map((image, index) => (
+              <img
+                key={index}
+                src={image.image_url.url}
+                alt={`Upload ${index + 1}`}
+                className="max-w-[200px] max-h-[200px] object-cover rounded-lg"
+              />
+            ))}
+          </div>
+        )}
 
         {/* 消息内容 */}
         {isEditing ? (

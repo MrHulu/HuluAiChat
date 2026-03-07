@@ -3,7 +3,7 @@ import uuid
 import json
 import logging
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -62,7 +62,12 @@ async def get_session_messages(
     session_id: str,
     limit: int = 50
 ) -> list[dict]:
-    """Get message history for a session."""
+    """Get message history for a session.
+
+    Returns messages in OpenAI format:
+    - Text only: {"role": "user", "content": "text"}
+    - With images: {"role": "user", "content": [{"type": "text", ...}, {"type": "image_url", ...}]}
+    """
     result = await db.execute(
         select(MessageModel)
         .where(MessageModel.session_id == session_id)
@@ -70,21 +75,47 @@ async def get_session_messages(
         .limit(limit)
     )
     messages = result.scalars().all()
-    return [{"role": m.role, "content": m.content} for m in messages]
+
+    formatted = []
+    for m in messages:
+        msg = {"role": m.role}
+        if m.images:
+            # Multimodal message with images
+            try:
+                images = json.loads(m.images)
+                msg["content"] = [{"type": "text", "text": m.content}] + images
+            except json.JSONDecodeError:
+                msg["content"] = m.content
+        else:
+            # Text only message
+            msg["content"] = m.content
+        formatted.append(msg)
+
+    return formatted
 
 
 async def save_message(
     db: AsyncSession,
     session_id: str,
     role: str,
-    content: str
+    content: str,
+    images: Optional[str] = None
 ) -> MessageModel:
-    """Save a message to the database."""
+    """Save a message to the database.
+
+    Args:
+        db: Database session
+        session_id: Session ID
+        role: 'user' or 'assistant'
+        content: Text content
+        images: Optional JSON string of image data
+    """
     message = MessageModel(
         id=str(uuid.uuid4()),
         session_id=session_id,
         role=role,
         content=content,
+        images=images,
         created_at=datetime.utcnow(),
     )
     db.add(message)
@@ -107,6 +138,8 @@ async def chat_websocket(
             # Receive message from client
             data = await websocket.receive_json()
             user_content = data.get("content", "")
+            # Get images from client (list of base64 data URLs)
+            images = data.get("images", [])
             # Get model from client, or use default
             request_model = data.get("model")
             # Get optional parameters from client
@@ -114,11 +147,15 @@ async def chat_websocket(
             top_p = data.get("top_p")  # None means use default
             max_tokens = data.get("max_tokens")  # None means use default
 
-            if not user_content.strip():
+            # Allow empty content if images are provided
+            if not user_content.strip() and not images:
                 continue
 
+            # Prepare images for storage (JSON string)
+            images_json = json.dumps(images) if images else None
+
             # Save user message
-            await save_message(db, session_id, "user", user_content)
+            await save_message(db, session_id, "user", user_content, images_json)
 
             # Notify client that streaming is starting
             await manager.send_json(session_id, {
@@ -242,6 +279,7 @@ async def get_messages(
                 "id": m.id,
                 "role": m.role,
                 "content": m.content,
+                "images": json.loads(m.images) if m.images else None,
                 "created_at": m.created_at.isoformat(),
             }
             for m in messages

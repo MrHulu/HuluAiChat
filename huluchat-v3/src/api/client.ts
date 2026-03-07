@@ -46,11 +46,20 @@ export interface Folder {
   updated_at: string;
 }
 
+// Image content type for multimodal messages
+export interface ImageContent {
+  type: "image_url";
+  image_url: {
+    url: string;  // data:image/xxx;base64,xxx
+  };
+}
+
 export interface Message {
   id: string;
   session_id: string;
   role: "user" | "assistant";
   content: string;
+  images?: ImageContent[];  // Optional images for multimodal messages
   created_at: string;
 }
 
