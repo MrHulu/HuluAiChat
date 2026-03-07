@@ -1,0 +1,329 @@
+/**
+ * HuluChat Plugin System Types
+ * @module plugins/types
+ */
+
+import type { Message, Session } from "@/api/client";
+
+// ============== Plugin Manifest ==============
+
+/**
+ * Plugin permission types
+ */
+export type PluginPermission =
+  | "chat.read"
+  | "chat.write"
+  | "storage"
+  | "api"
+  | "clipboard"
+  | "network"
+  | "files";
+
+/**
+ * Command contribution definition
+ */
+export interface CommandContribution {
+  id: string;
+  title: string;
+  category?: string;
+  icon?: string;
+  shortcut?: string;
+}
+
+/**
+ * Plugin contributions (what the plugin adds to the app)
+ */
+export interface PluginContributes {
+  commands?: CommandContribution[];
+  toolbar?: string[];
+  settings?: string;
+}
+
+/**
+ * Plugin manifest (manifest.json)
+ */
+export interface PluginManifest {
+  /** Unique plugin ID (reverse domain format: com.example.plugin-name) */
+  id: string;
+  /** Display name */
+  name: string;
+  /** Plugin version (semver) */
+  version: string;
+  /** Description */
+  description: string;
+  /** Author name */
+  author: string;
+  /** Minimum HuluChat version required */
+  minAppVersion: string;
+  /** Required permissions */
+  permissions: PluginPermission[];
+  /** Optional homepage URL */
+  homepage?: string;
+  /** Optional repository URL */
+  repository?: string;
+  /** What the plugin contributes */
+  contributes?: PluginContributes;
+}
+
+// ============== Plugin Instance ==============
+
+/**
+ * Plugin state
+ */
+export type PluginState =
+  | "inactive" // Not loaded
+  | "activating" // Currently activating
+  | "active" // Running
+  | "error"; // Failed to activate
+
+/**
+ * Loaded plugin instance
+ */
+export interface PluginInstance {
+  /** Plugin manifest */
+  manifest: PluginManifest;
+  /** Current state */
+  state: PluginState;
+  /** Error message if state is 'error' */
+  error?: string;
+  /** Plugin context (API provided to plugin) */
+  context?: PluginContext;
+  /** Plugin module exports */
+  module?: PluginModule;
+  /** Installation path */
+  path: string;
+}
+
+// ============== Plugin Module ==============
+
+/**
+ * Command definition
+ */
+export interface Command {
+  id: string;
+  title: string;
+  icon?: string;
+  handler: (...args: unknown[]) => void | Promise<void>;
+}
+
+/**
+ * Toolbar button definition
+ */
+export interface ToolbarButton {
+  id: string;
+  icon: string;
+  tooltip: string;
+  onClick: () => void | Promise<void>;
+}
+
+/**
+ * Settings panel definition
+ */
+export interface SettingsPanel {
+  id: string;
+  title: string;
+  icon?: string;
+  render: (container: HTMLElement) => void;
+  onSave?: () => void | Promise<void>;
+}
+
+/**
+ * Message handler for hooks
+ */
+export type MessageHandler = (
+  message: Message
+) => Message | null | Promise<Message | null>;
+
+/**
+ * Disposable resource
+ */
+export interface Disposable {
+  dispose: () => void;
+}
+
+/**
+ * Plugin module interface (main.js exports)
+ */
+export interface PluginModule {
+  /**
+   * Called when plugin is activated
+   * @param context Plugin context with APIs
+   */
+  activate: (context: PluginContext) => void | Promise<void>;
+
+  /**
+   * Called when plugin is deactivated
+   */
+  deactivate?: () => void | Promise<void>;
+}
+
+// ============== Plugin Context API ==============
+
+/**
+ * Plugin storage API
+ */
+export interface PluginStorage {
+  /** Get a value from storage */
+  get: <T>(key: string) => T | null;
+  /** Set a value in storage */
+  set: <T>(key: string, value: T) => void;
+  /** Delete a value from storage */
+  delete: (key: string) => void;
+  /** Clear all plugin storage */
+  clear: () => void;
+  /** Get all keys */
+  keys: () => string[];
+}
+
+/**
+ * Plugin API access (requires 'api' permission)
+ */
+export interface PluginAPI {
+  /** Get all sessions */
+  getSessions: () => Promise<Session[]>;
+  /** Get a session by ID */
+  getSession: (id: string) => Promise<Session | null>;
+  /** Get messages for a session */
+  getMessages: (sessionId: string) => Promise<Message[]>;
+  /** Send a message */
+  sendMessage: (sessionId: string, content: string) => Promise<void>;
+}
+
+/**
+ * Plugin context - API provided to plugins
+ */
+export interface PluginContext {
+  // ============== Metadata ==============
+  /** Plugin ID */
+  readonly id: string;
+  /** Plugin version */
+  readonly version: string;
+
+  // ============== Commands ==============
+  /** Register a command */
+  registerCommand: (command: Command) => Disposable;
+  /** Execute a command by ID */
+  executeCommand: (id: string, ...args: unknown[]) => void | Promise<void>;
+
+  // ============== Hooks ==============
+  /** Hook called before a message is sent */
+  onBeforeSend: (handler: MessageHandler) => Disposable;
+  /** Hook called after a message is received */
+  onAfterReceive: (handler: MessageHandler) => Disposable;
+
+  // ============== UI ==============
+  /** Add a toolbar button */
+  addToolbarButton: (button: ToolbarButton) => Disposable;
+  /** Add a settings panel */
+  addSettingsPanel: (panel: SettingsPanel) => Disposable;
+  /** Show a notification toast */
+  showNotification: (
+    message: string,
+    type?: "info" | "success" | "error" | "warning"
+  ) => void;
+
+  // ============== Storage (requires 'storage' permission) ==============
+  /** Plugin persistent storage */
+  readonly storage: PluginStorage;
+
+  // ============== API (requires 'api' permission) ==============
+  /** HuluChat API access */
+  readonly api: PluginAPI;
+
+  // ============== Clipboard (requires 'clipboard' permission) ==============
+  /** Read clipboard text */
+  readClipboard?: () => Promise<string>;
+  /** Write to clipboard */
+  writeClipboard?: (text: string) => Promise<void>;
+
+  // ============== Network (requires 'network' permission) ==============
+  /** Make HTTP requests */
+  fetch?: (url: string, options?: RequestInit) => Promise<Response>;
+
+  // ============== Lifecycle ==============
+  /** Register a cleanup function */
+  onDispose: (callback: () => void) => void;
+}
+
+// ============== Plugin Manager Events ==============
+
+/**
+ * Plugin manager event types
+ */
+export type PluginManagerEvent =
+  | "plugin:loaded"
+  | "plugin:activated"
+  | "plugin:deactivated"
+  | "plugin:unloaded"
+  | "plugin:error";
+
+/**
+ * Plugin manager event handler
+ */
+export type PluginManagerEventHandler = (
+  event: PluginManagerEvent,
+  plugin: PluginInstance
+) => void;
+
+// ============== Plugin Manager Interface ==============
+
+/**
+ * Plugin manager - manages all plugins
+ */
+export interface PluginManager {
+  // ============== Discovery ==============
+  /** Get all discovered plugins */
+  getPlugins: () => PluginInstance[];
+  /** Get a specific plugin */
+  getPlugin: (id: string) => PluginInstance | undefined;
+
+  // ============== Lifecycle ==============
+  /** Load a plugin from directory */
+  loadPlugin: (path: string) => Promise<PluginInstance>;
+  /** Unload a plugin */
+  unloadPlugin: (id: string) => Promise<void>;
+  /** Activate a plugin */
+  activatePlugin: (id: string) => Promise<void>;
+  /** Deactivate a plugin */
+  deactivatePlugin: (id: string) => Promise<void>;
+
+  // ============== Commands ==============
+  /** Get all registered commands */
+  getCommands: () => Command[];
+  /** Execute a command */
+  executeCommand: (id: string, ...args: unknown[]) => void | Promise<void>;
+
+  // ============== Hooks ==============
+  /** Process message through beforeSend hooks */
+  processBeforeSend: (message: Message) => Message;
+  /** Process message through afterReceive hooks */
+  processAfterReceive: (message: Message) => Message;
+
+  // ============== Events ==============
+  /** Subscribe to plugin events */
+  on: (handler: PluginManagerEventHandler) => Disposable;
+
+  // ============== Storage ==============
+  /** Get plugin storage */
+  getPluginStorage: (pluginId: string) => PluginStorage;
+}
+
+// ============== Utility Types ==============
+
+/**
+ * Plugin installation result
+ */
+export interface PluginInstallResult {
+  success: boolean;
+  plugin?: PluginInstance;
+  error?: string;
+}
+
+/**
+ * Plugin validation result
+ */
+export interface PluginValidationResult {
+  valid: boolean;
+  errors: string[];
+  warnings: string[];
+}
