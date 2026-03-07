@@ -1,102 +1,59 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-07 - Cycle #97
+2026-03-07 - Cycle #108
 
 ## Current Phase
-🟢 **TASK-108 已完成** + **PR #144 已合并** ✅
+⚪ **等待任务** - 无待处理 TASK
 
-## What We Did This Cycle (#97)
-- ✅ **TASK-108 完成** - 清理旧架构遗留文件
-  - 删除 51 个文件，共 16,548 行代码
-  - 验证构建通过：typecheck ✅, lint ✅ (0 errors), build ✅
-- ✅ **PR #144 合并** - CI 全部通过
-  - test-backend ✅, test-frontend ✅, build-tauri ✅
+## What We Did This Cycle (#108)
+**代码库维护** - 推送未同步提交
 
-### 删除清单 (TASK-108)
-| 文件/目录 | 删除原因 |
-|-----------|----------|
-| `main.py` (root) | 旧 Python 入口，已迁移到 `huluchat-v3/backend/` |
-| `HuluChat.spec` | PyInstaller 配置，已改用 Tauri |
-| `monitor.py` | Auto Company 监控脚本 |
-| `AUTO_COMPANY_README.md` | Auto Company 文档 |
-| `openspec/` | 旧设计文档目录 |
-| `.agents/` | 旧 agent 配置目录 |
-| `src/` | 旧 Python 源码目录 |
+### 完成项
+- ✅ 推送 perf/task105-bundle-optimization 分支（3个提交）
+- ✅ 验证测试通过（633 passed）
+- ✅ 检查代码库状态健康
 
-## Previous Cycle (#96)
-- 🐛 **修复插件存储 BUG** - 插件数据现在会从磁盘正确加载
-- ✅ **本地验证通过** - typecheck ✅, lint ✅ (0 errors), build ✅
+### 分支状态
+- `perf/task105-bundle-optimization`：已推送到远程，待合并到 master
+  - 包含：TASK-105 性能优化 + 测试修复 + 文档更新
 
-## Previous Cycle (#95)
-- ✅ **同步本地 commits** - 发现 15 个未推送的 commits，创建 PR #144
-- ✅ **本地验证通过** - typecheck ✅, lint ✅ (0 errors)
-- 📧 **发送进度邮件** - 已发送
+### 状态
+- TASKS.md：进行中 0，待开始 0
+- v3.46.0 规划：暂停，等待 Boss 决定
+- 官网部署：等待 Boss 配置 Cloudflare Secrets
 
-## Plugin System Architecture
+### 可执行项（待 Boss 决定）
+1. **合并 perf 分支** - 将性能优化合并到 master
+2. **官网部署** - 配置 GitHub Secrets 后可部署
+3. **v3.46.0 开发** - 8 天工作量（DeepSeek 默认 + RAG 单文档对话）
+4. **长期任务** - UI 重构、UI/UX 优化
 
-### 核心组件
-- **PluginManifest** - 插件元数据 (manifest.json)
-- **PluginManager** - 插件生命周期管理
-- **PluginContext** - 提供给插件的 API
-- **PluginStorage** - 插件持久化存储
+## v3.46.0 规划（已暂停）
+上期规划完成，等待 Boss 决定是否执行开发。
 
-### 扩展点
-- **Commands** - 命令面板扩展
-- **Message Hooks** - 消息发送/接收钩子
-- **Toolbar Buttons** - 工具栏按钮
-- **Settings Panels** - 设置面板
+| 功能 | 工作量 | 状态 |
+|------|--------|------|
+| DeepSeek 默认模型 | 1d | 待开发 |
+| RAG 单文档对话 | 5d | 待开发 |
+| 发布 + 反馈收集 | 2d | 待开发 |
+| **总计** | **8d** | 等待启动 |
 
-### 权限系统
-- `chat.read` - 读取聊天消息
-- `chat.write` - 发送消息
-- `storage` - 插件存储
-- `api` - HuluChat API 访问
-- `clipboard` - 剪贴板访问
-- `network` - 网络请求
-- `files` - 文件系统访问
+## Next Action (Cycle #109)
+**等待新任务**
 
-### 示例插件
-| Plugin | 功能 | Commands |
-|--------|------|----------|
-| `sample-hello` | 基础示例 | Say Hello, Show Stats, Insert Timestamp |
-| `word-count` | 字数统计 | Count Selection, Count Last Message, Show Total Stats |
-| `export-chat` | 导出聊天 | Export Markdown, Export JSON, Copy as Markdown |
-| `quick-reply` | 快捷回复 | Add Template, List Templates, Insert Template, Clear |
-| `code-formatter` | 代码格式化 | Format JSON, Minify JSON, Format Code, Extract Code |
-
-## Active Projects
-- **HuluChat**: **v3.45.0 已发布** ✅ | 插件系统功能完整 + 5 个示例插件 + 自动更新
-- **Website**: GitHub Actions 已合并 ✅ | 等待 Cloudflare 配置
-- **Product Hunt**: 等待用户完成截图和视频
-
-## Next Action (Cycle #98)
-**需要用户决策** - 以下任务需要用户手动操作：
-
-### 选项 A: Website 部署
-- **方式 1 (推荐)**: Cloudflare Pages Git 集成
-  1. 登录 Cloudflare Dashboard > Pages > Connect to Git
-  2. 选择 MrHulu/HuluAiChat 仓库
-  3. Build command: `cd website && npm install && npm run build`
-  4. Output directory: `website/out`
-- **方式 2**: GitHub Actions (需配置 Secrets)
-  - 在 GitHub Repo > Settings > Secrets 添加 `CLOUDFLARE_API_TOKEN` 和 `CLOUDFLARE_ACCOUNT_ID`
-
-### 选项 B: Product Hunt 准备
-- 用户需要完成截图 (5 张) 和视频 (60 秒)
-
-### 选项 C: 规划下一版本
-- 可以开始讨论 v3.46.0 的新功能
-
-### 选项 D: 执行 TASK-105
-- 性能优化 - 减少包体积
+可选行动：
+1. 合并 `perf/task105-bundle-optimization` 到 master（需 PR 或直接合并）
+2. Boss 配置好 Cloudflare Secrets 后触发网站部署
+3. 开始执行 v3.46.0 开发（需要确认）
+4. 等待新 TASK
 
 ## Company State
 - Project: HuluChat - AI Chat Desktop Application
 - Latest Release: **v3.45.0** (2026-03-07)
-- Current Task: **TASK-108 ✅ 已完成** | PR #144 ✅ 已合并
+- Current Task: **无** - 等待新任务
 - Tech Stack: Tauri 2.0, React 19, TypeScript, FastAPI, Python 3.14
-- CI: ✅ 全部通过
+- Tests: ✅ 633 passed (28 files) | SettingsDialog: 40 passed
 
 ## Release History
 | Version | Date | Highlights |
@@ -112,5 +69,5 @@
 - **轻微**: 无
 
 ## 循环计数
-当前周期: 97
-上次发邮件: 95
+当前周期: 108
+上次发邮件: 101 (已取消，Boss 直接指示)
