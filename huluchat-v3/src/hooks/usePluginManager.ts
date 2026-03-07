@@ -1,0 +1,129 @@
+/**
+ * Plugin Manager Hook
+ * Provides access to the plugin system from React components
+ * @module hooks/usePluginManager
+ */
+
+import { useState, useEffect, useCallback } from "react";
+import {
+  initializePluginSystem,
+  type PluginInstance,
+  type PluginManager,
+  type PluginManagerEvent,
+} from "@/plugins";
+
+export interface UsePluginManagerReturn {
+  /** Plugin manager instance */
+  manager: PluginManager | null;
+  /** All discovered plugins */
+  plugins: PluginInstance[];
+  /** Is the plugin system initialized */
+  isInitialized: boolean;
+  /** Loading state */
+  isLoading: boolean;
+  /** Error message if initialization failed */
+  error: string | null;
+  /** Activate a plugin */
+  activatePlugin: (id: string) => Promise<void>;
+  /** Deactivate a plugin */
+  deactivatePlugin: (id: string) => Promise<void>;
+  /** Refresh plugin list */
+  refreshPlugins: () => void;
+}
+
+/**
+ * Hook to access the plugin manager
+ */
+export function usePluginManager(): UsePluginManagerReturn {
+  const [manager, setManager] = useState<PluginManager | null>(null);
+  const [plugins, setPlugins] = useState<PluginInstance[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Initialize plugin system on mount
+  useEffect(() => {
+    let mounted = true;
+
+    const init = async () => {
+      try {
+        setIsLoading(true);
+        const pm = await initializePluginSystem();
+        if (mounted) {
+          setManager(pm);
+          setPlugins(pm.getPlugins());
+          setIsInitialized(true);
+          setError(null);
+        }
+      } catch (err) {
+        if (mounted) {
+          setError(err instanceof Error ? err.message : "Failed to initialize plugin system");
+        }
+      } finally {
+        if (mounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    init();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  // Subscribe to plugin events
+  useEffect(() => {
+    if (!manager) return;
+
+    const handlePluginEvent = (
+      _event: PluginManagerEvent,
+      _plugin: PluginInstance
+    ) => {
+      // Refresh plugin list on any event
+      setPlugins(manager.getPlugins());
+    };
+
+    const disposable = manager.on(handlePluginEvent);
+    return () => disposable.dispose();
+  }, [manager]);
+
+  const activatePlugin = useCallback(
+    async (id: string) => {
+      if (!manager) throw new Error("Plugin manager not initialized");
+      await manager.activatePlugin(id);
+      setPlugins(manager.getPlugins());
+    },
+    [manager]
+  );
+
+  const deactivatePlugin = useCallback(
+    async (id: string) => {
+      if (!manager) throw new Error("Plugin manager not initialized");
+      await manager.deactivatePlugin(id);
+      setPlugins(manager.getPlugins());
+    },
+    [manager]
+  );
+
+  const refreshPlugins = useCallback(() => {
+    if (manager) {
+      setPlugins(manager.getPlugins());
+    }
+  }, [manager]);
+
+  return {
+    manager,
+    plugins,
+    isInitialized,
+    isLoading,
+    error,
+    activatePlugin,
+    deactivatePlugin,
+    refreshPlugins,
+  };
+}
+
+// Re-export types for convenience
+export type { PluginInstance, PluginState } from "@/plugins";
