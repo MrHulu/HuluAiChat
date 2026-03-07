@@ -1,0 +1,32 @@
+{
+  "id": "com.huluchat.sample-hello",
+  "name": "Hello World Sample",
+  "version": "1.0.0",
+  "description": "A sample plugin demonstrating the HuluChat plugin API",
+  "author": "HuluChat Team",
+  "minAppVersion": "3.40.0",
+  "permissions": [
+    "chat.read",
+    "storage",
+    "api"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "id": "sampleHello.sayHello",
+        "title": "Say Hello",
+        "category": "Sample Plugin"
+      },
+      {
+        "id": "sampleHello.showStats",
+        "title": "Show Session Stats",
+        "category": "Sample Plugin"
+      },
+      {
+        "id": "sampleHello.insertTimestamp",
+        "title": "Insert Timestamp",
+        "category": "Sample Plugin"
+      }
+    ]
+  }
+}
