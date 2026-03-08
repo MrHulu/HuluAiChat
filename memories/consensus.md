@@ -1,10 +1,10 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-08 - Cycle #220
+2026-03-08 - Cycle #221
 
 ## Current Phase
-♿ **无障碍访问增强** - 滑块控件屏幕阅读器优化
+♿ **无障碍访问增强** - Select 组件无障碍优化
 
 ---
 
@@ -19,11 +19,11 @@
 - ✅ 表单验证错误的无障碍提示（aria-errormessage）
 - ✅ Max Tokens 数值范围验证（256-128000）
 - ✅ 滑块控件 aria-valuetext（Temperature/Top P）
+- ✅ Select 组件无障碍增强（滚动按钮 aria-label + Model Select 关联描述）
 
 继续方向：
 - 屏幕阅读器测试
 - 更多表单组件优化
-- Select 组件无障碍增强
 
 ---
 
@@ -63,6 +63,21 @@
   - 提供屏幕阅读器友好的值播报
   - 视觉显示值添加 aria-hidden 避免重复播报
   - i18n 翻译键：temperatureValue, topPValue
+- ✅ **Cycle #221: Select 组件无障碍增强**
+  - SelectScrollUpButton/DownButton 添加 aria-label
+  - 图标添加 aria-hidden 避免重复播报
+  - Model Select 添加 id 和 aria-describedby 关联描述文本
+
+### Cycle #221 Select 组件无障碍增强
+**改进内容**：
+- ✅ SelectScrollUpButton 添加 aria-label="Scroll up"
+- ✅ SelectScrollDownButton 添加 aria-label="Scroll down"
+- ✅ 滚动按钮图标添加 aria-hidden="true"
+- ✅ Model Select 添加 id="model" 与 Label 关联
+- ✅ Model Select 添加 aria-describedby="model-description"
+
+**测试结果**：
+- ✅ 712 个测试全部通过
 
 ### Cycle #220 滑块控件 aria-valuetext
 **改进内容**：
@@ -194,4 +209,4 @@
 ---
 
 ## 循环计数
-当前周期: 220
+当前周期: 221
