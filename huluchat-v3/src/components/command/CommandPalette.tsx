@@ -81,7 +81,7 @@ export function CommandPalette({
     if (onNewSession) {
       cmds.push({
         id: "new-session",
-        icon: <Plus className="size-4" aria-hidden="true" />,
+        icon: <Plus className="size-4 transition-transform duration-200 data-[selected=true]:scale-110" aria-hidden="true" />,
         labelKey: "command.newSession",
         shortcut: isMac ? "⌘N" : "Ctrl+N",
         action: onNewSession,
@@ -92,7 +92,7 @@ export function CommandPalette({
     if (onNewFolder) {
       cmds.push({
         id: "new-folder",
-        icon: <FolderPlus className="size-4" aria-hidden="true" />,
+        icon: <FolderPlus className="size-4 transition-transform duration-200 data-[selected=true]:scale-110" aria-hidden="true" />,
         labelKey: "command.newFolder",
         action: onNewFolder,
         group: "actions",
@@ -102,7 +102,7 @@ export function CommandPalette({
     if (onExportSession) {
       cmds.push({
         id: "export",
-        icon: <Download className="size-4" aria-hidden="true" />,
+        icon: <Download className="size-4 transition-transform duration-200 data-[selected=true]:translate-y-0.5" aria-hidden="true" />,
         labelKey: "command.exportSession",
         action: onExportSession,
         group: "actions",
@@ -112,7 +112,7 @@ export function CommandPalette({
     if (onSearch) {
       cmds.push({
         id: "search",
-        icon: <Search className="size-4" aria-hidden="true" />,
+        icon: <Search className="size-4 transition-transform duration-200 data-[selected=true]:scale-110" aria-hidden="true" />,
         labelKey: "command.search",
         shortcut: isMac ? "⌘F" : "Ctrl+F",
         action: onSearch,
@@ -124,7 +124,7 @@ export function CommandPalette({
     if (onToggleSidebar) {
       cmds.push({
         id: "toggle-sidebar",
-        icon: <PanelLeft className="size-4" aria-hidden="true" />,
+        icon: <PanelLeft className="size-4 transition-transform duration-200 data-[selected=true]:translate-x-0.5" aria-hidden="true" />,
         labelKey: "command.toggleSidebar",
         shortcut: isMac ? "⌘B" : "Ctrl+B",
         action: onToggleSidebar,
@@ -136,7 +136,7 @@ export function CommandPalette({
     if (onChangeLanguage) {
       cmds.push({
         id: "change-language",
-        icon: <Globe className="size-4" aria-hidden="true" />,
+        icon: <Globe className="size-4 transition-transform duration-200 data-[selected=true]:rotate-12" aria-hidden="true" />,
         labelKey: "command.changeLanguage",
         action: onChangeLanguage,
         group: "settings",
@@ -146,7 +146,7 @@ export function CommandPalette({
     if (onToggleTheme) {
       cmds.push({
         id: "toggle-theme",
-        icon: <Moon className="size-4" aria-hidden="true" />,
+        icon: <Moon className="size-4 transition-transform duration-200 data-[selected=true]:-rotate-12" aria-hidden="true" />,
         labelKey: "command.toggleTheme",
         action: onToggleTheme,
         group: "settings",
@@ -156,7 +156,7 @@ export function CommandPalette({
     if (onOpenSettings) {
       cmds.push({
         id: "settings",
-        icon: <Settings className="size-4" aria-hidden="true" />,
+        icon: <Settings className="size-4 transition-transform duration-200 data-[selected=true]:rotate-45" aria-hidden="true" />,
         labelKey: "command.settings",
         shortcut: isMac ? "⌘," : "Ctrl+,",
         action: onOpenSettings,
@@ -167,7 +167,7 @@ export function CommandPalette({
     if (onShowHelp) {
       cmds.push({
         id: "help",
-        icon: <HelpCircle className="size-4" aria-hidden="true" />,
+        icon: <HelpCircle className="size-4 transition-transform duration-200 data-[selected=true]:scale-110" aria-hidden="true" />,
         labelKey: "command.showHelp",
         shortcut: isMac ? "?" : "?",
         action: onShowHelp,
