@@ -222,6 +222,31 @@
 /* Step 5: Animation System - Unified Standards */
 @layer utilities {
   /* ═══════════════════════════════════════════════════════════════
+   * ♿ Reduced Motion Support - Accessibility First
+   * ═══════════════════════════════════════════════════════════════ */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+
+    .animate-shimmer {
+      animation: none !important;
+      background: var(--muted);
+    }
+
+    .animate-spin,
+    .animate-pulse,
+    .animate-ping {
+      animation: none !important;
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
    * 🚀 Animation Performance - Hardware Acceleration
    * ═══════════════════════════════════════════════════════════════ */
   .animate-spin {
@@ -329,19 +354,46 @@
     }
   }
 
-  /* Shimmer effect for loading placeholders */
+  /* Shimmer effect for loading placeholders - GPU Accelerated */
   .animate-shimmer {
-    animation: shimmer 2s infinite linear;
-    background-size: 200% 100%;
-    will-change: background-position;
+    position: relative;
+    overflow: hidden;
+    will-change: transform;
+    transform: translateZ(0);
   }
 
-  @keyframes shimmer {
+  .animate-shimmer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      oklch(1 0 0 / 0.08) 50%,
+      transparent 100%
+    );
+    animation: shimmerSlide 1.8s ease-in-out infinite;
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  /* Dark mode shimmer - more visible */
+  .dark .animate-shimmer::after {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      oklch(1 0 0 / 0.06) 50%,
+      transparent 100%
+    );
+  }
+
+  @keyframes shimmerSlide {
     0% {
-      background-position: -200% 0;
+      transform: translateX(-100%);
     }
     100% {
-      background-position: 200% 0;
+      transform: translateX(100%);
     }
   }
 

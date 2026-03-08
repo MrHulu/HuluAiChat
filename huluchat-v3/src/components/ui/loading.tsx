@@ -56,24 +56,27 @@ function DotsLoader({ size, className }: { size: LoadingSize; className?: string
     <div className={cn("flex items-center", gap, className)}>
       <span
         className={cn(
-          "rounded-full bg-primary transition-all duration-200",
+          "rounded-full bg-primary",
           "animate-[dotPulse_1.2s_ease-in-out_infinite]",
+          "will-change-transform",
           dotSize
         )}
         style={{ animationDelay: "0ms" }}
       />
       <span
         className={cn(
-          "rounded-full bg-primary transition-all duration-200",
+          "rounded-full bg-primary",
           "animate-[dotPulse_1.2s_ease-in-out_infinite]",
+          "will-change-transform",
           dotSize
         )}
         style={{ animationDelay: "150ms" }}
       />
       <span
         className={cn(
-          "rounded-full bg-primary transition-all duration-200",
+          "rounded-full bg-primary",
           "animate-[dotPulse_1.2s_ease-in-out_infinite]",
+          "will-change-transform",
           dotSize
         )}
         style={{ animationDelay: "300ms" }}
@@ -95,8 +98,9 @@ function WaveLoader({ size, className }: { size: LoadingSize; className?: string
         <span
           key={i}
           className={cn(
-            "rounded-full bg-primary transition-all duration-200",
+            "rounded-full bg-primary",
             "animate-[wave_1.2s_ease-in-out_infinite]",
+            "will-change-transform",
             waveSize
           )}
           style={{ animationDelay: `${i * 100}ms` }}
@@ -119,24 +123,27 @@ function ThinkingLoader({ size, className }: { size: LoadingSize; className?: st
       {/* 中心脉冲点 */}
       <span
         className={cn(
-          "rounded-full bg-primary transition-all duration-200",
+          "rounded-full bg-primary",
           "animate-[thinkingPulse_1.5s_ease-in-out_infinite]",
+          "will-change-transform",
           dotSize
         )}
       />
       {/* 两个较小的跟随点 */}
       <span
         className={cn(
-          "rounded-full bg-primary/60 transition-all duration-200",
+          "rounded-full bg-primary/60",
           "animate-[thinkingPulse_1.5s_ease-in-out_infinite]",
+          "will-change-transform",
           size === "sm" ? "w-1 h-1" : size === "md" ? "w-1.5 h-1.5" : "w-2 h-2"
         )}
         style={{ animationDelay: "200ms" }}
       />
       <span
         className={cn(
-          "rounded-full bg-primary/40 transition-all duration-200",
+          "rounded-full bg-primary/40",
           "animate-[thinkingPulse_1.5s_ease-in-out_infinite]",
+          "will-change-transform",
           size === "sm" ? "w-1 h-1" : size === "md" ? "w-1.5 h-1.5" : "w-2 h-2"
         )}
         style={{ animationDelay: "400ms" }}
@@ -153,8 +160,8 @@ function PulseLoader({ size, className }: { size: LoadingSize; className?: strin
 
   return (
     <div className={cn("relative", sizeClass, className)}>
-      <div className="absolute inset-0 rounded-full bg-primary/30 animate-ping transition-opacity duration-200" />
-      <div className="absolute inset-1 rounded-full bg-primary/50 animate-pulse transition-opacity duration-200" />
+      <div className="absolute inset-0 rounded-full bg-primary/30 animate-ping" />
+      <div className="absolute inset-1 rounded-full bg-primary/50 animate-pulse" />
     </div>
   );
 }
