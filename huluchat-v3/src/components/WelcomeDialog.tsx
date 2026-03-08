@@ -111,7 +111,7 @@ export function WelcomeDialog({ open, onOpenChange, onComplete }: WelcomeDialogP
           <div className="w-24 h-24 flex items-center justify-center rounded-2xl bg-muted/50 dark:bg-muted/30 dark:border dark:border-white/10 dark:shadow-lg dark:shadow-black/20">
             <span
               key={step.key}
-              className="text-6xl animate-in zoom-in-50 duration-300"
+              className="text-6xl animate-bounce-in"
             >
               {step.icon}
             </span>

@@ -1,29 +1,36 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-08 - Cycle #234
+2026-03-08 - Cycle #235
 
 ## Current Phase
-🎨 **UI/UX 交互优化** - 勾选动画统一
+🎨 **UI/UX 交互优化** - 动画一致性增强
 
 ---
 
 ## Next Action
 **继续 UI/UX 优化方向**
 
-本轮完成（Cycle #234）：
-- ✅ 统一勾选标记动画为 `animate-bounce-in`
-- ✅ DropdownMenuCheckboxItem：对勾图标弹跳动画
-- ✅ SelectItem：对勾图标弹跳动画
-- ✅ ThemeToggle：主题选项勾选弹跳动画
+本轮完成（Cycle #235）：
+- ✅ 统一动画效果到核心动画库
+- ✅ SettingsDialog：API 测试结果使用 `animate-bounce-in` + `animate-shake-subtle`
+- ✅ LanguageSelector：语言选择勾选使用 `animate-bounce-in`
+- ✅ WelcomeDialog：欢迎图标使用 `animate-bounce-in`
 - ✅ 712 个测试通过
 
 **改进的组件**：
 | 组件 | 之前 | 之后 |
 |------|------|------|
-| DropdownMenuCheckboxItem | `animate-in zoom-in-50` | `animate-bounce-in` |
-| SelectItem | `animate-in zoom-in-50` | `animate-bounce-in` |
-| ThemeToggle | `animate-in zoom-in-50` | `animate-bounce-in` |
+| SettingsDialog 测试结果 | `animate-in zoom-in-50` | `animate-bounce-in` / `animate-shake-subtle` |
+| LanguageSelector | `animate-in zoom-in-50 duration-150` | `animate-bounce-in` |
+| WelcomeDialog | `animate-in zoom-in-50 duration-300` | `animate-bounce-in` |
+
+上轮完成（Cycle #234）：
+- ✅ 统一勾选标记动画为 `animate-bounce-in`
+- ✅ DropdownMenuCheckboxItem：对勾图标弹跳动画
+- ✅ SelectItem：对勾图标弹跳动画
+- ✅ ThemeToggle：主题选项勾选弹跳动画
+- ✅ 712 个测试通过
 
 上轮完成（Cycle #233）：
 - ✅ 将动画库应用到关键交互组件
@@ -442,4 +449,4 @@
 ---
 
 ## 循环计数
-当前周期: 234
+当前周期: 235
