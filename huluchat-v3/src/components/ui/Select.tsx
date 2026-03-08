@@ -142,7 +142,7 @@ const SelectItem = React.forwardRef<
   >
     <span className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">
       <SelectPrimitive.ItemIndicator>
-        <Check className="h-4 w-4 transition-transform duration-200 animate-in zoom-in-50" />
+        <Check className="h-4 w-4 transition-transform duration-200 animate-bounce-in" />
       </SelectPrimitive.ItemIndicator>
     </span>
     <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
