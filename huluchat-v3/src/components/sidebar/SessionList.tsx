@@ -317,10 +317,10 @@ export function SessionList({
         <div className="flex items-center gap-1">
           <button
             onClick={onToggleCollapse}
-            className="p-1.5 rounded-md hover:bg-muted transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+            className="group/collapse p-1.5 rounded-md hover:bg-muted transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
             aria-label={t("sidebar.collapseSidebar")}
           >
-            <PanelLeftClose className="w-4 h-4" aria-hidden="true" />
+            <PanelLeftClose className="w-4 h-4 transition-transform duration-200 ease-out group-hover/collapse:-translate-x-0.5" aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -352,10 +352,10 @@ export function SessionList({
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-muted transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="group/clear absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-muted transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               aria-label={t("common.clear")}
             >
-              <X className="w-3 h-3" aria-hidden="true" />
+              <X className="w-3 h-3 transition-transform duration-200 ease-out group-hover/clear:rotate-90" aria-hidden="true" />
             </button>
           )}
         </div>
@@ -560,10 +560,10 @@ export function SessionList({
               <div className="mt-2">
                 <button
                   onClick={() => setActiveFolderFilter(null)}
-                  className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+                  className="group/back flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
                   aria-label={t("sidebar.backToAll")}
                 >
-                  <ArrowLeft className="w-3 h-3" aria-hidden="true" />
+                  <ArrowLeft className="w-3 h-3 transition-transform duration-200 ease-out group-hover/back:-translate-x-0.5" aria-hidden="true" />
                   {t("sidebar.backToAll")}
                 </button>
                 <div className="space-y-1 mt-1" role="list">
@@ -753,10 +753,10 @@ function FolderItem({
                   setShowMenu(false);
                   onStartEdit();
                 }}
-                className="w-full px-3 py-1.5 text-sm text-left hover:bg-muted transition-colors flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                className="group/edit w-full px-3 py-1.5 text-sm text-left hover:bg-muted transition-colors flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
                 role="menuitem"
               >
-                <Pencil className="w-3.5 h-3.5" aria-hidden="true" />
+                <Pencil className="w-3.5 h-3.5 transition-transform duration-200 ease-out group-hover/edit:scale-110" aria-hidden="true" />
                 {t("common.rename")}
               </button>
               <button
@@ -765,10 +765,10 @@ function FolderItem({
                   setShowMenu(false);
                   onDelete();
                 }}
-                className="w-full px-3 py-1.5 text-sm text-left hover:bg-muted text-destructive transition-colors flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                className="group/delete w-full px-3 py-1.5 text-sm text-left hover:bg-muted text-destructive transition-colors flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
                 role="menuitem"
               >
-                <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
+                <Trash2 className="w-3.5 h-3.5 transition-transform duration-200 ease-out group-hover/delete:scale-110" aria-hidden="true" />
                 {t("common.delete")}
               </button>
             </div>

@@ -157,10 +157,10 @@ function PluginCard({
               href={plugin.manifest.homepage}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary"
+              className="group/link flex items-center gap-1 text-xs text-muted-foreground hover:text-primary"
             >
               {t("plugins.homepage")}
-              <ExternalLink className="h-3 w-3" />
+              <ExternalLink className="h-3 w-3 transition-transform duration-200 ease-out group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />
             </a>
           )}
 
@@ -239,12 +239,12 @@ function PluginCard({
                   size="sm"
                   onClick={onUpdate}
                   disabled={isProcessing || updateState === "downloading" || updateState === "installing"}
-                  className="h-8"
+                  className="group/update h-8"
                 >
                   {updateState === "downloading" || updateState === "installing" ? (
                     <Loader2 className="h-3 w-3 animate-spin mr-1" />
                   ) : (
-                    <Download className="h-3 w-3 mr-1" />
+                    <Download className="h-3 w-3 mr-1 transition-transform duration-200 ease-out group-hover/update:translate-y-0.5" />
                   )}
                   {t("plugins.update")}
                 </Button>
@@ -256,12 +256,12 @@ function PluginCard({
                   size="sm"
                   onClick={onCheckUpdate}
                   disabled={isProcessing || updateState === "checking"}
-                  className="h-8"
+                  className="group/check h-8"
                 >
                   {updateState === "checking" ? (
                     <Loader2 className="h-3 w-3 animate-spin" />
                   ) : (
-                    <RefreshCw className="h-3 w-3" />
+                    <RefreshCw className="h-3 w-3 transition-transform duration-300 ease-out group-hover/check:rotate-180" />
                   )}
                   <span className="sr-only">{t("plugins.checkUpdate")}</span>
                 </Button>
@@ -277,11 +277,11 @@ function PluginCard({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                    className="group/trash h-8 w-8 text-muted-foreground hover:text-destructive"
                     disabled={isProcessing || isActive}
                     aria-label={t("plugins.uninstall")}
                   >
-                    <Trash2 className="h-4 w-4" aria-hidden="true" />
+                    <Trash2 className="h-4 w-4 transition-transform duration-200 ease-out group-hover/trash:scale-110" aria-hidden="true" />
                     <span className="sr-only">{t("plugins.uninstall")}</span>
                   </Button>
                 </AlertDialogTrigger>
@@ -434,7 +434,7 @@ function DropZone({
         {isInstalling ? (
           <Loader2 className="h-8 w-8 text-muted-foreground animate-spin" aria-hidden="true" />
         ) : (
-          <Upload className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
+          <Upload className="h-8 w-8 text-muted-foreground transition-transform duration-200 ease-out group-hover:scale-105" aria-hidden="true" />
         )}
         <div>
           <p className="text-sm font-medium">{t("plugins.dropToInstall")}</p>
@@ -447,8 +447,9 @@ function DropZone({
           size="sm"
           onClick={handleBrowseClick}
           disabled={isInstalling}
+          className="group/browse"
         >
-          <FolderOpen className="h-4 w-4 mr-2" aria-hidden="true" />
+          <FolderOpen className="h-4 w-4 mr-2 transition-transform duration-200 ease-out group-hover/browse:scale-110" aria-hidden="true" />
           {t("plugins.browseFolder")}
         </Button>
       </div>
@@ -599,8 +600,8 @@ export function PluginSettings() {
             {t("plugins.installed", { count: plugins.length })}
           </Badge>
         </div>
-        <Button variant="ghost" size="sm" onClick={refreshPlugins}>
-          <RefreshCw className="h-4 w-4" />
+        <Button variant="ghost" size="sm" onClick={refreshPlugins} className="group/refresh">
+          <RefreshCw className="h-4 w-4 transition-transform duration-300 ease-out group-hover/refresh:rotate-180" />
           <span className="sr-only">{t("plugins.refresh")}</span>
         </Button>
       </div>

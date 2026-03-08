@@ -236,8 +236,8 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label={t("settings.title")}>
-          <Settings className="h-5 w-5" aria-hidden="true" />
+        <Button variant="ghost" size="icon" aria-label={t("settings.title")} className="group/settings">
+          <Settings className="h-5 w-5 transition-transform duration-300 ease-out group-hover/settings:rotate-45" aria-hidden="true" />
           <span className="sr-only">{t("settings.title")}</span>
         </Button>
       </DialogTrigger>
@@ -425,10 +425,10 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                   href="https://ollama.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1"
+                  className="group/link text-xs text-muted-foreground hover:text-primary flex items-center gap-1"
                 >
                   {t("ollama.download")}
-                  <ExternalLink className="h-3 w-3" />
+                  <ExternalLink className="h-3 w-3 transition-transform duration-200 ease-out group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />
                 </a>
               </div>
 
@@ -475,10 +475,10 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                   onClick={handleRefreshOllama}
                   aria-label={t("ollama.refreshStatus")}
                   aria-busy={refreshingOllama}
-                  className="h-8 w-8"
+                  className="group/refresh h-8 w-8"
                 >
                   <Loader2
-                    className={`h-4 w-4 ${refreshingOllama ? "animate-spin" : ""}`}
+                    className={`h-4 w-4 transition-transform duration-300 ease-out ${refreshingOllama ? "animate-spin" : "group-hover/refresh:rotate-180"}`}
                     aria-hidden="true"
                   />
                   <span className="sr-only">{t("ollama.refreshStatus")}</span>
