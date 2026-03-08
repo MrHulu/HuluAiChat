@@ -419,11 +419,12 @@ export function SessionList({
                       onTagClick={handleTagClick}
                     />
                     {matchedMessages.length > 0 && (
-                      <div className="ml-4 mt-1 mb-2 space-y-1">
-                        {matchedMessages.map((msg) => (
+                      <div className="ml-4 mt-1 mb-2 space-y-1 animate-slide-down">
+                        {matchedMessages.map((msg, index) => (
                           <div
                             key={msg.id}
-                            className="text-xs p-2 rounded bg-muted/50 cursor-pointer hover:bg-muted transition-all duration-200 ease-out"
+                            className="text-xs p-2 rounded bg-muted/50 cursor-pointer hover:bg-muted transition-all duration-200 ease-out animate-slide-right"
+                            style={{ animationDelay: `${index * 50}ms` }}
                             onClick={() => onSelectSession(session.id)}
                           >
                             <span
