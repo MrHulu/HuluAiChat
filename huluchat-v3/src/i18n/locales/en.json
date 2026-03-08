@@ -195,10 +195,15 @@
     "refreshStatus": "Refresh status"
   },
   "update": {
-    "available": "Update Available",
-    "newVersion": "A new version ({{version}}) is available!",
-    "download": "Download",
+    "notificationLabel": "Update notification",
+    "checking": "Checking for updates...",
+    "downloading": "Downloading update...",
+    "downloadProgress": "Download progress",
+    "available": "v{{version}} available",
+    "newVersion": "New version available",
+    "updateNow": "Update Now",
     "later": "Later",
+    "download": "Download",
     "installing": "Installing update...",
     "installed": "Update installed! Restarting..."
   },
@@ -217,14 +222,6 @@
     "close": "Close dialog",
     "showHelp": "Show keyboard shortcuts",
     "pressToOpen": "Press {{key1}} or {{key2}} to open this help anytime"
-  },
-  "update": {
-    "checking": "Checking for updates...",
-    "downloading": "Downloading update...",
-    "newVersion": "New version available",
-    "available": "v{{version}} available",
-    "updateNow": "Update Now",
-    "later": "Later"
   },
   "export": {
     "title": "Export Chat",
