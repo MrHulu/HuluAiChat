@@ -115,7 +115,7 @@ function DropdownMenuCheckboxItem({
     >
       <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
         <DropdownMenuPrimitive.ItemIndicator>
-          <CheckIcon className="size-4 transition-transform duration-200 animate-in zoom-in-50" aria-hidden="true" />
+          <CheckIcon className="size-4 transition-transform duration-200 animate-bounce-in" aria-hidden="true" />
         </DropdownMenuPrimitive.ItemIndicator>
       </span>
       {children}

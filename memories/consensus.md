@@ -1,29 +1,35 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-08 - Cycle #233
+2026-03-08 - Cycle #234
 
 ## Current Phase
-🎨 **UI/UX 交互优化** - 组件交互动画应用
+🎨 **UI/UX 交互优化** - 勾选动画统一
 
 ---
 
 ## Next Action
 **继续 UI/UX 优化方向**
 
-本轮完成（Cycle #233）：
+本轮完成（Cycle #234）：
+- ✅ 统一勾选标记动画为 `animate-bounce-in`
+- ✅ DropdownMenuCheckboxItem：对勾图标弹跳动画
+- ✅ SelectItem：对勾图标弹跳动画
+- ✅ ThemeToggle：主题选项勾选弹跳动画
+- ✅ 712 个测试通过
+
+**改进的组件**：
+| 组件 | 之前 | 之后 |
+|------|------|------|
+| DropdownMenuCheckboxItem | `animate-in zoom-in-50` | `animate-bounce-in` |
+| SelectItem | `animate-in zoom-in-50` | `animate-bounce-in` |
+| ThemeToggle | `animate-in zoom-in-50` | `animate-bounce-in` |
+
+上轮完成（Cycle #233）：
 - ✅ 将动画库应用到关键交互组件
 - ✅ CodeBlock 复制按钮：`animate-bounce-in` 替代基础动画
 - ✅ BookmarkButton：`animate-bounce-in` + `animate-scale-in` 增强书签状态切换
 - ✅ VoiceInputButton 录音状态：`animate-bounce-subtle` 替代 `animate-pulse`
-- ✅ 711 个测试通过
-
-**应用动画的组件**：
-| 组件 | 动画效果 | 场景 |
-|------|----------|------|
-| CodeBlock | `animate-bounce-in` | 复制成功时对勾图标弹跳 |
-| BookmarkButton | `animate-bounce-in` / `animate-scale-in` | 书签添加/移除状态切换 |
-| VoiceInputButton | `animate-bounce-subtle` | 录音中图标微动效 |
 
 上轮完成（Cycle #232）：
 - ✅ 添加操作反馈动画库（success/bounce/slide/pop/wiggle）
@@ -136,6 +142,10 @@
   - 添加 8 种新动画效果（success/bounce/slide/pop/wiggle/shake）
   - Toast 组件动画增强
   - CSS 动画库完善
+- ✅ **Cycle #234: 勾选动画统一**
+  - DropdownMenuCheckboxItem 对勾图标使用 `animate-bounce-in`
+  - SelectItem 对勾图标使用 `animate-bounce-in`
+  - ThemeToggle 主题选项勾选使用 `animate-bounce-in`
 - ✅ **Cycle #233: 动画应用到关键组件**
   - CodeBlock 复制按钮使用 `animate-bounce-in`
   - BookmarkButton 使用 `animate-bounce-in` + `animate-scale-in`
@@ -432,4 +442,4 @@
 ---
 
 ## 循环计数
-当前周期: 232
+当前周期: 234
