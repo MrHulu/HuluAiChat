@@ -41,7 +41,12 @@ function ConnectionIndicator({ status }: { status: ConnectionStatus }) {
   const config = statusConfig[status];
 
   return (
-    <div className="flex items-center gap-2 text-xs text-muted-foreground transition-colors duration-200">
+    <div
+      className="flex items-center gap-2 text-xs text-muted-foreground transition-colors duration-200"
+      role="status"
+      aria-live="polite"
+      aria-label={config.text}
+    >
       <span className="relative flex h-2 w-2">
         {/* Pulse ring for connecting/error states */}
         {config.animate && (

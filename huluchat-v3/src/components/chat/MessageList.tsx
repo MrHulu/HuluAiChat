@@ -168,7 +168,12 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
 
       {/* 加载指示器 */}
       {isLoading && !streamingMessage && (
-        <div className="flex justify-start mb-4 animate-in fade-in-0 slide-in-from-bottom-2 duration-200">
+        <div
+          className="flex justify-start mb-4 animate-in fade-in-0 slide-in-from-bottom-2 duration-200"
+          role="status"
+          aria-live="polite"
+          aria-label={t("chat.thinking")}
+        >
           <div className="bg-muted/80 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm transition-all duration-200 hover:shadow-md">
             <Loading variant="thinking" size="sm" text={t("chat.thinking")} />
           </div>
