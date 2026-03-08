@@ -102,11 +102,13 @@ describe("MessageItem", () => {
   it("should show streaming indicator when isStreaming is true", () => {
     const message = createMessage("assistant", "Thinking...");
 
-    render(<MessageItem message={message} isStreaming={true} />);
+    const { container } = render(<MessageItem message={message} isStreaming={true} />);
 
-    // The streaming indicator is a span with animate-pulse class
-    const container = screen.getByText("Thinking...").parentElement;
-    expect(container?.querySelector(".animate-pulse")).toBeInTheDocument();
+    // The streaming indicator uses custom typingCursor animation (Cycle #194)
+    const indicator = container.querySelector("[aria-label='Streaming...']");
+    expect(indicator).toBeInTheDocument();
+    expect(indicator).toHaveClass("w-2");
+    expect(indicator).toHaveClass("h-4");
   });
 
   it("should not show streaming indicator when isStreaming is false", () => {
@@ -304,11 +306,12 @@ describe("MessageItem", () => {
     const message = createMessage("assistant", "Streaming...");
     const { container } = render(<MessageItem message={message} isStreaming={true} />);
 
-    const indicator = container.querySelector(".animate-pulse");
+    // Updated for Cycle #194: uses custom typingCursor animation and aria-label
+    const indicator = container.querySelector("[aria-label='Streaming...']");
     expect(indicator).toHaveClass("w-2");
     expect(indicator).toHaveClass("h-4");
     expect(indicator).toHaveClass("ml-1");
-    expect(indicator).toHaveClass("bg-current");
+    expect(indicator).toHaveClass("rounded-sm");
   });
 
   // User message whitespace handling
