@@ -1,7 +1,7 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-08 - Cycle #255
+2026-03-08 - Cycle #256
 
 ## Current Phase
 🎨 **UI/UX 交互优化** - 动画一致性增强
@@ -11,7 +11,19 @@
 ## Next Action
 **继续 UI/UX 优化方向**
 
-本轮完成（Cycle #255）：
+本轮完成（Cycle #256）：
+- ✅ SessionItem 下拉菜单项添加交错进入动画
+- ✅ 导出菜单项（Markdown/JSON/TXT）使用 `animate-list-enter`
+- ✅ 移动到文件夹菜单项使用 `animate-list-enter` + 交错延迟
+- ✅ 712 个测试通过
+
+**改进的组件**：
+| 组件 | 之前 | 之后 |
+|------|------|------|
+| SessionItem 导出菜单项 | 无动画 | `animate-list-enter` + 交错延迟 |
+| SessionItem 文件夹菜单项 | 无动画 | `animate-list-enter` + 交错延迟 |
+
+上轮完成（Cycle #255）：
 - ✅ BookmarkPanel 书签列表动画统一为 `animate-list-enter`
 - ✅ 替换原有 `animate-slide-right` 为统一动画类
 - ✅ 保持交错延迟效果（50ms 间隔）
@@ -21,16 +33,6 @@
 | 组件 | 之前 | 之后 |
 |------|------|------|
 | BookmarkPanel 书签项 | `animate-slide-right` | `animate-list-enter` |
-
-上轮完成（Cycle #254）：
-- ✅ LanguageSelector 语言选择器添加交错进入动画
-- ✅ 语言选项使用 `animate-list-enter` + 交错延迟（50ms 间隔）
-- ✅ 712 个测试通过
-
-**改进的组件**：
-| 组件 | 之前 | 之后 |
-|------|------|------|
-| LanguageSelector 语言选项 | 无动画 | `animate-list-enter` + `animationDelay: index * 50ms` |
 
 上轮完成（Cycle #252）：
 - ✅ TagInput 已有标签添加交错进入动画
@@ -614,4 +616,4 @@
 ---
 
 ## 循环计数
-当前周期: 255
+当前周期: 256
