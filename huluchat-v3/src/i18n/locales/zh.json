@@ -113,7 +113,9 @@
     "connectionSuccessful": "连接成功",
     "connectionFailed": "连接失败",
     "settingsSaved": "设置已保存",
-    "settingsSaveFailed": "保存设置失败"
+    "settingsSaveFailed": "保存设置失败",
+    "invalidUrl": "请输入有效的 URL",
+    "invalidUrlProtocol": "URL 必须以 http:// 或 https:// 开头"
   },
   "plugins": {
     "title": "插件",

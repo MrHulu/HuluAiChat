@@ -3,11 +3,12 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
-  ({ className, type, "aria-invalid": ariaInvalid, ...props }, ref) => {
+  ({ className, type, "aria-invalid": ariaInvalid, "aria-errormessage": ariaErrormessage, ...props }, ref) => {
     return (
       <input
         type={type}
         aria-invalid={ariaInvalid}
+        aria-errormessage={ariaInvalid ? ariaErrormessage : undefined}
         className={cn(
           "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm",
           "transition-all duration-200 ease-out",
