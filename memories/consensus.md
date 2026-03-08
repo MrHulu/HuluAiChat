@@ -1,7 +1,7 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-08 - Cycle #204
+2026-03-08 - Cycle #205
 
 ## Current Phase
 🎨 **UI/UX 美化优化** - 细节打磨阶段
@@ -43,20 +43,37 @@
 - ✅ Cycle #200: 深色模式增强阶段完成总结
 - ✅ Cycle #201-202: ChatInput 按钮图标交互反馈效果
 - ✅ Cycle #203: 深色模式表单细节优化
-- ✅ **Cycle #204: MessageItem 和 SessionItem 图标交互动画** (当前)
+- ✅ Cycle #204: MessageItem 和 SessionItem 图标交互动画
+- ✅ **Cycle #205: 更多组件图标交互动画扩展** (当前)
 
-### Cycle #204 图标交互动画扩展
-**MessageItem.tsx** 消息操作按钮：
-- Bookmark 图标：悬停放大 110% (`group-hover/bookmark:scale-110`)
-- Edit 图标：悬停旋转 12° (`group-hover/edit:rotate-12`)
+### Cycle #205 图标交互动画扩展
+**CodeBlock.tsx** 代码块复制按钮：
+- Copy 图标：悬停上浮 (`group-hover/copy:-translate-y-0.5`)
+- Check 图标：悬停放大 (`group-hover/copy:scale-110`)
 
-**SessionItem.tsx** 会话操作按钮：
+**SessionTag.tsx** 标签删除按钮：
+- X 图标：悬停旋转 90° (`group-hover/remove:rotate-90`)
+
+**DocumentList.tsx** 文档列表：
+- 文件图标：悬停放大 105% (`group-hover:scale-105`)
+
+**TagFilter.tsx** 标签筛选：
+- 标签图标：悬停旋转 12° (`group-hover:rotate-12`)
+
+**BookmarkButton.tsx** 书签按钮：
+- Bookmark 图标：悬停放大 105% (`group-hover/btn:scale-105`)
+- BookmarkCheck 图标：悬停放大 110% (`group-hover/btn:scale-110`)
+
+**UpdateNotification.tsx** 更新通知：
+- X 关闭图标：悬停旋转 90° (`group-hover/close:rotate-90`)
+
+**BookmarkPanel.tsx** 书签面板：
+- ChevronRight 箭头：悬停右移 (`group-hover:translate-x-0.5`)
+- X 删除图标：悬停旋转 90° (`group-hover/remove:rotate-90`)
 - Download 图标：悬停下移 (`group-hover/export:translate-y-0.5`)
-- FolderOpen 图标：悬停放大 110% (`group-hover/folder:scale-110`)
-- Trash2 图标：悬停旋转 6° (`group-hover/delete:rotate-6`)
 
-**index.css** 动画扩展：
-- 添加 `shake-once` 一次性抖动动画（备用）
+**OllamaStatus.tsx** Ollama 状态：
+- RefreshCw 图标：悬停旋转 180° (`group-hover/refresh:rotate-180`)
 
 ### 深色模式增强覆盖率
 - 📊 **组件覆盖率**: 100% (所有主要组件)
@@ -100,4 +117,4 @@
 ---
 
 ## 循环计数
-当前周期: 204
+当前周期: 205

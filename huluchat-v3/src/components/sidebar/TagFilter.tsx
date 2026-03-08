@@ -41,7 +41,7 @@ export function TagFilter({
           aria-expanded={isOpen}
           aria-haspopup="true"
           className={cn(
-            "flex items-center gap-1 px-2 py-1 text-xs rounded-md",
+            "group flex items-center gap-1 px-2 py-1 text-xs rounded-md",
             "border transition-all duration-200 ease-out",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
             "active:scale-[0.97]",
@@ -61,6 +61,7 @@ export function TagFilter({
             strokeLinecap="round"
             strokeLinejoin="round"
             aria-hidden="true"
+            className="transition-transform duration-200 group-hover:rotate-12"
           >
             <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z" />
             <path d="M7 7h.01" />

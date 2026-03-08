@@ -82,13 +82,13 @@ export function UpdateNotification() {
                 onClick={dismissUpdate}
                 aria-label={t("common.close")}
                 className={cn(
-                  "text-muted-foreground transition-all duration-150 rounded-md p-1",
+                  "group/close text-muted-foreground transition-all duration-150 rounded-md p-1",
                   "hover:text-foreground hover:bg-muted",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                   "active:scale-95"
                 )}
               >
-                <X className="h-4 w-4" aria-hidden="true" />
+                <X className="h-4 w-4 transition-transform duration-200 group-hover/close:rotate-90" aria-hidden="true" />
               </button>
             </div>
 

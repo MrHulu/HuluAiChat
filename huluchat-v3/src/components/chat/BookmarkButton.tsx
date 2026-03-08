@@ -73,7 +73,7 @@ export function BookmarkButton({
       aria-pressed={bookmarked}
       aria-busy={isLoading}
       className={cn(
-        "p-1.5 rounded-md transition-all duration-200 ease-out",
+        "group/btn p-1.5 rounded-md transition-all duration-200 ease-out",
         "opacity-0 group-hover:opacity-100",
         bookmarked && "opacity-100",
         isLoading && "opacity-50 cursor-wait",
@@ -90,13 +90,13 @@ export function BookmarkButton({
       {bookmarked ? (
         <BookmarkCheck
           key="bookmarked"
-          className="w-3.5 h-3.5 animate-in zoom-in-50 duration-200"
+          className="w-3.5 h-3.5 animate-in zoom-in-50 duration-200 group-hover/btn:scale-110"
           aria-hidden="true"
         />
       ) : (
         <Bookmark
           key="unbookmarked"
-          className="w-3.5 h-3.5 animate-in zoom-in-50 duration-200"
+          className="w-3.5 h-3.5 animate-in zoom-in-50 duration-200 group-hover/btn:scale-105"
           aria-hidden="true"
         />
       )}
