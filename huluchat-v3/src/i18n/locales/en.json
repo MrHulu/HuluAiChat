@@ -82,6 +82,7 @@
     "removeImage": "Remove image",
     "uploadedImages": "Uploaded images",
     "uploadedImage": "Uploaded image {{index}}",
+    "dropImage": "Drop image here",
     "bookmarks": "Bookmarks",
     "addBookmark": "Add bookmark",
     "removeBookmark": "Remove bookmark",

@@ -82,6 +82,7 @@
     "removeImage": "移除图片",
     "uploadedImages": "已上传图片",
     "uploadedImage": "已上传图片 {{index}}",
+    "dropImage": "拖放图片到这里",
     "bookmarks": "书签",
     "addBookmark": "添加书签",
     "removeBookmark": "移除书签",
