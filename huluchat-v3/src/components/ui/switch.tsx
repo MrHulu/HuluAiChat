@@ -16,6 +16,11 @@ const Switch = React.forwardRef<
       "hover:scale-[1.02] active:scale-[0.98]",
       "disabled:cursor-not-allowed disabled:opacity-50",
       "data-[state=checked]:bg-primary data-[state=unchecked]:bg-input",
+      // Dark mode enhancements
+      "dark:shadow-none",
+      "dark:data-[state=checked]:shadow-[0_0_8px_oklch(0.55_0.2_264/0.4)]",
+      "dark:data-[state=unchecked]:bg-muted/60 dark:hover:data-[state=unchecked]:bg-muted/80",
+      "dark:focus-visible:ring-offset-background dark:focus-visible:ring-ring",
       className
     )}
     {...props}
@@ -26,7 +31,10 @@ const Switch = React.forwardRef<
         "pointer-events-none block h-4 w-4 rounded-full bg-background shadow-lg ring-0",
         "transition-all duration-200 ease-out",
         "data-[state=checked]:translate-x-4 data-[state=checked]:scale-100",
-        "data-[state=unchecked]:translate-x-0 data-[state=unchecked]:scale-90"
+        "data-[state=unchecked]:translate-x-0 data-[state=unchecked]:scale-90",
+        // Dark mode enhancements
+        "dark:shadow-[0_2px_4px_oklch(0_0_0/0.3)]",
+        "dark:data-[state=checked]:shadow-[0_2px_8px_oklch(0_0_0/0.4)]"
       )}
     />
   </SwitchPrimitives.Root>

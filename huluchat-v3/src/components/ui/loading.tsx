@@ -260,7 +260,12 @@ export function Loading({
 export function LoadingOverlay({ text, ariaLabel }: { text?: string; ariaLabel?: string }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm animate-in fade-in zoom-in-95 duration-200"
+      className={cn(
+        "fixed inset-0 z-50 flex items-center justify-center",
+        "bg-background/80 backdrop-blur-sm",
+        "dark:bg-background/90 dark:backdrop-blur-md",
+        "animate-in fade-in zoom-in-95 duration-200"
+      )}
       role="alertdialog"
       aria-busy="true"
       aria-label={ariaLabel || text || "Loading"}
