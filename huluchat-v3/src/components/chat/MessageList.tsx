@@ -8,6 +8,7 @@ import { Message } from "@/api/client";
 import { MessageItem } from "./MessageItem";
 import { StreamingMessage } from "@/hooks/useChat";
 import { Loading } from "@/components/ui/loading";
+import { EmptyState } from "@/components/ui/empty-state";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 
@@ -88,11 +89,13 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
   if (messages.length === 0 && !streamingMessage) {
     return (
       <div className="flex-1 flex items-center justify-center" role="status">
-        <div className="text-center text-muted-foreground animate-in fade-in-0 zoom-in-95 duration-300 p-8 rounded-2xl dark:bg-muted/20 dark:border dark:border-white/5 dark:shadow-lg dark:shadow-black/10">
-          <div className="text-5xl mb-4 animate-bounce" aria-hidden="true">💬</div>
-          <p className="text-lg font-medium dark:text-foreground/90">{t("chat.startConversation")}</p>
-          <p className="text-sm mt-1 opacity-70">{t("chat.startConversationHint")}</p>
-        </div>
+        <EmptyState
+          icon="💬"
+          title={t("chat.startConversation")}
+          description={t("chat.startConversationHint")}
+          size="lg"
+          animated={true}
+        />
       </div>
     );
   }
