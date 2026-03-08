@@ -344,7 +344,8 @@ export const MessageItem = memo(function MessageItem({
                 key={index}
                 src={image.image_url.url}
                 alt={t("chat.uploadedImage", { index: index + 1 })}
-                className="max-w-[200px] max-h-[200px] object-cover rounded-lg"
+                className="max-w-[200px] max-h-[200px] object-cover rounded-lg animate-list-enter"
+                style={{ animationDelay: `${index * 50}ms` }}
               />
             ))}
           </div>
