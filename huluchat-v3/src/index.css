@@ -69,17 +69,18 @@
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
   --destructive-foreground: oklch(0.98 0.01 264);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  /* Enhanced border and input visibility for dark mode */
+  --border: oklch(1 0 0 / 15%);
+  --input: oklch(1 0 0 / 18%);
+  --ring: oklch(0.6 0.15 264);
   --sidebar-background: oklch(0.18 0.01 264);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.269 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-border: oklch(1 0 0 / 12%);
+  --sidebar-ring: oklch(0.6 0.15 264);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
@@ -193,18 +194,18 @@
     opacity: 0.8;
   }
 
-  /* Dark mode scrollbar - softer and more subtle */
+  /* Dark mode scrollbar - enhanced visibility */
   .dark .scrollbar-thin {
-    scrollbar-color: oklch(0.5 0 0 / 0.3) transparent;
+    scrollbar-color: oklch(0.5 0 0 / 0.5) transparent;
   }
 
   .dark .scrollbar-thin::-webkit-scrollbar-thumb {
-    background-color: oklch(0.5 0 0 / 0.3);
+    background-color: oklch(0.5 0 0 / 0.5);
     border-radius: 3px;
   }
 
   .dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background-color: oklch(0.6 0 0 / 0.5);
+    background-color: oklch(0.6 0 0 / 0.7);
   }
 
   /* Hide scrollbar but keep functionality */
@@ -392,9 +393,10 @@
     color: oklch(0.98 0 0);
   }
 
-  /* Dark mode focus ring - more visible */
+  /* Dark mode focus ring - enhanced visibility */
   .dark *:focus-visible {
-    outline-color: oklch(0.556 0.15 264);
+    outline-color: oklch(0.6 0.15 264);
+    outline-width: 2px;
     outline-offset: 2px;
   }
 
@@ -413,18 +415,18 @@
 
   /* Dark mode border enhancement */
   .dark .border-subtle {
-    border-color: oklch(1 0 0 / 8%);
+    border-color: oklch(1 0 0 / 12%);
   }
 
   .dark .border-hover:hover {
-    border-color: oklch(1 0 0 / 15%);
+    border-color: oklch(1 0 0 / 20%);
   }
 
   /* Dark mode input enhancement */
   .dark input:focus,
   .dark textarea:focus {
-    border-color: oklch(0.556 0.15 264);
-    box-shadow: 0 0 0 2px oklch(0.556 0.15 264 / 0.2);
+    border-color: oklch(0.6 0.15 264);
+    box-shadow: 0 0 0 2px oklch(0.6 0.15 264 / 0.25);
   }
 
   /* Dark mode shadow depth */
