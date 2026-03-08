@@ -113,7 +113,7 @@ export const CodeBlock = memo(function CodeBlock({
           title={copied ? t("chat.codeCopied") : t("chat.copyCode")}
         >
           {copied ? (
-            <Check className="w-4 h-4 animate-in zoom-in-50 duration-150 group-hover/copy:scale-110" aria-hidden="true" />
+            <Check className="w-4 h-4 animate-bounce-in duration-300 group-hover/copy:scale-110" aria-hidden="true" />
           ) : (
             <Copy className="w-4 h-4 transition-transform duration-200 group-hover/copy:-translate-y-0.5" aria-hidden="true" />
           )}

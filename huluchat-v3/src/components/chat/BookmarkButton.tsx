@@ -90,13 +90,13 @@ export function BookmarkButton({
       {bookmarked ? (
         <BookmarkCheck
           key="bookmarked"
-          className="w-3.5 h-3.5 animate-in zoom-in-50 duration-200 group-hover/btn:scale-110"
+          className="w-3.5 h-3.5 animate-bounce-in duration-300 group-hover/btn:scale-110"
           aria-hidden="true"
         />
       ) : (
         <Bookmark
           key="unbookmarked"
-          className="w-3.5 h-3.5 animate-in zoom-in-50 duration-200 group-hover/btn:scale-105"
+          className="w-3.5 h-3.5 animate-scale-in duration-200 group-hover/btn:scale-105"
           aria-hidden="true"
         />
       )}
