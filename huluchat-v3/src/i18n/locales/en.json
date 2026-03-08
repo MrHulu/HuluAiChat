@@ -320,7 +320,8 @@
     "toggleTheme": "Toggle Theme",
     "settings": "Settings",
     "showHelp": "Keyboard Shortcuts",
-    "openCommandPalette": "Open Command Palette"
+    "openCommandPalette": "Open Command Palette",
+    "searchInput": "Search commands"
   },
   "rag": {
     "title": "Document Chat (Experimental)",
