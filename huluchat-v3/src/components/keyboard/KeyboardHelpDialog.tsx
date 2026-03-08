@@ -57,7 +57,7 @@ export function KeyboardHelpDialog({
                   "flex items-center justify-between py-2 px-3 rounded-lg",
                   "bg-muted/50 hover:bg-muted",
                   "transition-all duration-200 ease-out",
-                  "list-item-enter",
+                  "animate-list-enter",
                   "dark:bg-muted/30 dark:hover:bg-muted/50 dark:border dark:border-white/5"
                 )}
                 style={{ animationDelay: `${index * 30}ms` }}

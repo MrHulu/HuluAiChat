@@ -93,7 +93,7 @@ export function DocumentList({
               "bg-muted/50 hover:bg-muted",
               "dark:bg-white/[0.03] dark:hover:bg-white/[0.06] dark:border dark:border-transparent dark:hover:border-white/10",
               "transition-all duration-200 ease-out",
-              "list-item-enter"
+              "animate-list-enter"
             )}
             style={{ animationDelay: `${index * 50}ms` }}
           >

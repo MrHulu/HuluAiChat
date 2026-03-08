@@ -1,7 +1,7 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-08 - Cycle #239
+2026-03-08 - Cycle #240
 
 ## Current Phase
 🎨 **UI/UX 交互优化** - 动画一致性增强
@@ -11,17 +11,24 @@
 ## Next Action
 **继续 UI/UX 优化方向**
 
-本轮完成（Cycle #239）：
-- ✅ ChatInput 拖拽图标动画优化
-- ✅ ImagePlus 图标：`animate-bounce` → `animate-bounce-subtle`（更细腻）
-- ✅ 图片预览项进入动画：`list-item-enter` → `animate-scale-in`（更生动）
+本轮完成（Cycle #240）：
+- ✅ 统一列表项动画类名到核心动画库
+- ✅ `list-item-enter` → `animate-list-enter`（命名一致性）
+- ✅ 更新 4 个组件：index.css, KeyboardHelpDialog, MessageItem, DocumentList
 - ✅ 712 个测试通过
 
 **改进的组件**：
 | 组件 | 之前 | 之后 |
 |------|------|------|
-| ChatInput 拖拽图标 | `animate-bounce` | `animate-bounce-subtle` |
-| ChatInput 图片预览 | `list-item-enter` | `animate-scale-in` |
+| KeyboardHelpDialog 快捷键列表 | `list-item-enter` | `animate-list-enter` |
+| MessageItem 消息项 | `list-item-enter` | `animate-list-enter` |
+| DocumentList 文档列表项 | `list-item-enter` | `animate-list-enter` |
+
+上轮完成（Cycle #239）：
+- ✅ ChatInput 拖拽图标动画优化
+- ✅ ImagePlus 图标：`animate-bounce` → `animate-bounce-subtle`（更细腻）
+- ✅ 图片预览项进入动画：`list-item-enter` → `animate-scale-in`（更生动）
+- ✅ 712 个测试通过
 
 上轮完成（Cycle #238）：
 - ✅ Switch 组件 thumb 添加弹跳动画效果
@@ -474,4 +481,4 @@
 ---
 
 ## 循环计数
-当前周期: 239
+当前周期: 240
