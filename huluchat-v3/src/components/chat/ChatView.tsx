@@ -42,7 +42,7 @@ function ConnectionIndicator({ status }: { status: ConnectionStatus }) {
 
   return (
     <div
-      className="flex items-center gap-2 text-xs text-muted-foreground transition-colors duration-200"
+      className="flex items-center gap-2 text-xs text-muted-foreground transition-all duration-200 ease-out"
       role="status"
       aria-live="polite"
       aria-label={config.text}

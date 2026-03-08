@@ -40,7 +40,7 @@ export function SessionTag({
       aria-pressed={isActive}
       className={cn(
         "inline-flex items-center gap-1 rounded-full border",
-        "transition-all duration-150 ease-out",
+        "transition-all duration-200 ease-out",
         onClick && "cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
         onClick && "active:scale-95",
         size === "xs" ? "px-1.5 py-0.5 text-[10px]" : "px-2 py-0.5 text-xs",
@@ -57,7 +57,7 @@ export function SessionTag({
             onRemove();
           }}
           aria-label={`Remove tag ${name}`}
-          className="hover:text-destructive transition-all duration-150 active:scale-90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded"
+          className="hover:text-destructive transition-all duration-200 ease-out active:scale-90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

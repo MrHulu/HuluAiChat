@@ -77,7 +77,7 @@ export const CodeBlock = memo(function CodeBlock({
         className={cn(
           "absolute right-2 top-2 flex items-center gap-2 z-10",
           "opacity-0 group-hover/codeblock:opacity-100 focus-within:opacity-100",
-          "transition-opacity duration-150"
+          "transition-all duration-200 ease-out"
         )}
       >
         {displayLanguage && (
@@ -95,7 +95,7 @@ export const CodeBlock = memo(function CodeBlock({
           onClick={handleCopy}
           className={cn(
             "p-1.5 rounded-md",
-            "transition-all duration-150",
+            "transition-all duration-200 ease-out",
             "bg-muted/80 dark:bg-muted/60 backdrop-blur-sm",
             "hover:bg-accent active:scale-95",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",

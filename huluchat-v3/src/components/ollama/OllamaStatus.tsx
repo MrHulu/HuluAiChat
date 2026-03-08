@@ -43,7 +43,7 @@ export function OllamaStatus({
         {/* 状态指示器 */}
         <div
           className={cn(
-            "flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300 ease-out",
+            "flex items-center justify-center w-8 h-8 rounded-full transition-all duration-200 ease-out",
             available
               ? "bg-success/20 text-success"
               : "bg-muted text-muted-foreground"

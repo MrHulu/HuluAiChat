@@ -145,7 +145,7 @@ function CommandItem({
       data-slot="command-item"
       className={cn(
         "relative flex cursor-default items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-hidden select-none",
-        "transition-all duration-150 ease-out",
+        "transition-all duration-200 ease-out",
         "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50",
         "data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground",
         "data-[selected=true]:scale-[1.01]",

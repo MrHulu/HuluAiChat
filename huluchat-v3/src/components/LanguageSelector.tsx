@@ -79,7 +79,7 @@ export function LanguageSelector() {
             disabled={isLoading}
             aria-current={i18n.language === lang.code ? "true" : undefined}
             className={cn(
-              "transition-colors duration-150",
+              "transition-all duration-200 ease-out",
               i18n.language === lang.code && "bg-accent"
             )}
           >

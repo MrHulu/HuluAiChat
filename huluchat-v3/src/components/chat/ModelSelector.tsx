@@ -108,7 +108,7 @@ export function ModelSelector({
                   key={model.id}
                   onClick={() => onChange(model.id)}
                   className={cn(
-                    "flex items-center justify-between gap-2 transition-all duration-150",
+                    "flex items-center justify-between gap-2 transition-all duration-200 ease-out",
                     "hover:bg-accent/50 hover:translate-x-0.5",
                     value === model.id && "bg-accent"
                   )}
