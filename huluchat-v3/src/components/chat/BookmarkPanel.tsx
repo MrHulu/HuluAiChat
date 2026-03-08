@@ -143,11 +143,11 @@ export function BookmarkPanel({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={handleExportJSON} className="group/json">
+            <DropdownMenuItem onClick={handleExportJSON} className="group/json animate-list-enter" style={{ animationDelay: '0ms' }}>
               <FileJson className="h-4 w-4 mr-2 transition-transform duration-200 group-hover/json:scale-110" aria-hidden="true" />
               {t("chat.exportJSON")}
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleExportMarkdown} className="group/markdown">
+            <DropdownMenuItem onClick={handleExportMarkdown} className="group/markdown animate-list-enter" style={{ animationDelay: '50ms' }}>
               <FileText className="h-4 w-4 mr-2 transition-transform duration-200 group-hover/markdown:scale-105" aria-hidden="true" />
               {t("chat.exportMarkdown")}
             </DropdownMenuItem>
