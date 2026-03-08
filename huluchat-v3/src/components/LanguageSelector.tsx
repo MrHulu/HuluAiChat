@@ -52,7 +52,7 @@ export function LanguageSelector() {
               size="icon"
               disabled={isLoading}
               aria-label={t("languageSelector.changeLanguage")}
-              className="relative"
+              className="relative dark:hover:shadow-[0_0_12px_oklch(0.5_0.15_264/0.2)] dark:hover:bg-primary/10 dark:active:shadow-[0_0_8px_oklch(0.5_0.15_264/0.15)]"
             >
               <Globe className={cn(
                 "h-5 w-5 transition-all duration-200",
