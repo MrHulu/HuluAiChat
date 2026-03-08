@@ -1,10 +1,10 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-08 - Cycle #224
+2026-03-08 - Cycle #225
 
 ## Current Phase
-♿ **无障碍访问增强** - KeyboardHelpDialog kbd 元素无障碍改进
+♿ **无障碍访问增强** - ChatInput textarea 无障碍改进
 
 ---
 
@@ -24,6 +24,7 @@
 - ✅ MathBlock 块级模式添加 role="img" 无障碍属性
 - ✅ MermaidBlock/MathBlock i18n 翻译支持（加载/错误状态）
 - ✅ KeyboardHelpDialog kbd 元素添加 aria-label（屏幕阅读器友好播报）
+- ✅ ChatInput textarea 添加 aria-describedby 关联提示文本
 
 继续方向：
 - 屏幕阅读器测试
@@ -80,6 +81,15 @@
   - MermaidBlock 添加 i18n 翻译支持
   - MathBlock 添加 i18n 翻译支持
   - i18n 翻译键：mermaid.loading, mermaid.error, mermaid.label, math.formula, math.error
+
+### Cycle #225 ChatInput textarea 无障碍改进
+**改进内容**：
+- ✅ ChatInput textarea 添加 aria-describedby="chat-input-hint"
+- ✅ 提示文本 div 添加 id="chat-input-hint"
+- ✅ 屏幕阅读器可以播报"按 Enter 发送，Shift+Enter 换行"提示
+
+**测试结果**：
+- ✅ 712 个测试全部通过
 
 ### Cycle #224 KeyboardHelpDialog kbd 无障碍改进
 **改进内容**：
@@ -260,4 +270,4 @@
 ---
 
 ## 循环计数
-当前周期: 224
+当前周期: 225

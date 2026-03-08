@@ -234,6 +234,7 @@ export const ChatInput = memo(function ChatInput({
             disabled={disabled}
             rows={1}
             aria-label={actualPlaceholder}
+            aria-describedby="chat-input-hint"
             className={cn(
               "w-full resize-none rounded-lg border border-input bg-background",
               "px-4 py-3 text-sm",
@@ -266,7 +267,7 @@ export const ChatInput = memo(function ChatInput({
           )}
         </Button>
       </div>
-      <div className="text-xs text-muted-foreground mt-2 text-center" aria-live="polite">
+      <div id="chat-input-hint" className="text-xs text-muted-foreground mt-2 text-center" aria-live="polite">
         {t("chat.enterToSend")}
       </div>
 
