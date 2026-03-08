@@ -115,7 +115,7 @@ function DropdownMenuCheckboxItem({
     >
       <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
         <DropdownMenuPrimitive.ItemIndicator>
-          <CheckIcon className="size-4" aria-hidden="true" />
+          <CheckIcon className="size-4 transition-transform duration-200 animate-in zoom-in-50" aria-hidden="true" />
         </DropdownMenuPrimitive.ItemIndicator>
       </span>
       {children}
@@ -240,7 +240,7 @@ function DropdownMenuSubTrigger({
       {...props}
     >
       {children}
-      <ChevronRightIcon className="ml-auto size-4" aria-hidden="true" />
+      <ChevronRightIcon className="ml-auto size-4 transition-transform duration-200 data-[state=open]:rotate-90" aria-hidden="true" />
     </DropdownMenuPrimitive.SubTrigger>
   )
 }
