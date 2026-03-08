@@ -187,7 +187,8 @@ describe("MessageList", () => {
         />
       );
 
-      expect(container.querySelector(".animate-pulse")).toBeInTheDocument();
+      // Check for streaming cursor with typing animation (updated in Cycle #194)
+      expect(container.querySelector("[class*='typingCursor']")).toBeInTheDocument();
     });
   });
 

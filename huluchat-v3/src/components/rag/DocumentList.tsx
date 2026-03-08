@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { listRAGDocuments, deleteRAGDocument, RAGDocument } from "@/api/client";
 import { Loading } from "@/components/ui/loading";
+import { EmptyStateCompact } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
 
 export interface DocumentListProps {
@@ -72,9 +73,11 @@ export function DocumentList({
 
   if (documents.length === 0) {
     return (
-      <div className={cn("text-center py-4 text-muted-foreground", className)} role="status">
-        {t("rag.noDocuments")}
-      </div>
+      <EmptyStateCompact
+        icon="📄"
+        title={t("rag.noDocuments")}
+        className={className}
+      />
     );
   }
 
