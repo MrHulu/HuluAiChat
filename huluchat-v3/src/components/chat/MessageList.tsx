@@ -87,9 +87,9 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
   if (messages.length === 0 && !streamingMessage) {
     return (
       <div className="flex-1 flex items-center justify-center" role="status">
-        <div className="text-center text-muted-foreground animate-in fade-in-0 zoom-in-95 duration-300">
+        <div className="text-center text-muted-foreground animate-in fade-in-0 zoom-in-95 duration-300 p-8 rounded-2xl dark:bg-muted/20 dark:border dark:border-white/5 dark:shadow-lg dark:shadow-black/10">
           <div className="text-5xl mb-4 animate-bounce" aria-hidden="true">💬</div>
-          <p className="text-lg font-medium">{t("chat.startConversation")}</p>
+          <p className="text-lg font-medium dark:text-foreground/90">{t("chat.startConversation")}</p>
           <p className="text-sm mt-1 opacity-70">{t("chat.startConversationHint")}</p>
         </div>
       </div>
@@ -174,7 +174,7 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
           aria-live="polite"
           aria-label={t("chat.thinking")}
         >
-          <div className="bg-muted/80 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm transition-all duration-200 hover:shadow-md">
+          <div className="bg-muted/80 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm transition-all duration-200 hover:shadow-md dark:bg-muted/60 dark:border dark:border-white/10 dark:shadow-lg dark:shadow-black/20">
             <Loading variant="thinking" size="sm" text={t("chat.thinking")} />
           </div>
         </div>

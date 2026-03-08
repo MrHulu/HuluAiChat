@@ -248,12 +248,12 @@ function App() {
       <div className="flex-1 flex flex-col min-w-0">
         {/* 顶部导航栏 */}
         <header
-          className="flex items-center justify-between px-4 py-3 border-b border-border bg-background/50 dark:bg-background/70 dark:shadow-[0_4px_20px_-10px_rgba(0,0,0,0.3)] backdrop-blur-sm"
+          className="flex items-center justify-between px-4 py-3 border-b border-border bg-background/50 dark:bg-background/80 dark:backdrop-blur-md dark:shadow-[0_4px_24px_-8px_rgba(0,0,0,0.4)] backdrop-blur-sm"
           role="banner"
         >
           <div className="flex items-center gap-3">
-            <h1 className="text-lg font-bold">HuluChat</h1>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary dark:shadow-sm dark:shadow-primary/20">
+            <h1 className="text-lg font-bold dark:text-foreground/95">HuluChat</h1>
+            <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium dark:bg-primary/20 dark:text-primary dark:shadow-[0_0_12px_rgba(var(--primary),0.15)] dark:border dark:border-primary/20">
               v{version}
             </span>
           </div>
