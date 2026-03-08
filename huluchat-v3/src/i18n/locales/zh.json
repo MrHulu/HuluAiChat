@@ -192,10 +192,15 @@
     "refreshStatus": "刷新状态"
   },
   "update": {
-    "available": "有可用更新",
-    "newVersion": "新版本（{{version}}）可用！",
-    "download": "下载",
+    "notificationLabel": "更新通知",
+    "checking": "检查更新中...",
+    "downloading": "下载更新中...",
+    "downloadProgress": "下载进度",
+    "available": "v{{version}} 可用",
+    "newVersion": "发现新版本",
+    "updateNow": "立即更新",
     "later": "稍后",
+    "download": "下载",
     "installing": "正在安装更新...",
     "installed": "更新已安装！正在重启..."
   },
@@ -214,14 +219,6 @@
     "close": "关闭对话框",
     "showHelp": "显示快捷键帮助",
     "pressToOpen": "按 {{key1}} 或 {{key2}} 随时打开此帮助"
-  },
-  "update": {
-    "checking": "检查更新中...",
-    "downloading": "下载更新中...",
-    "newVersion": "发现新版本",
-    "available": "v{{version}} 可用",
-    "updateNow": "立即更新",
-    "later": "稍后"
   },
   "export": {
     "title": "导出聊天",
