@@ -279,8 +279,9 @@ function PluginCard({
                     size="icon"
                     className="h-8 w-8 text-muted-foreground hover:text-destructive"
                     disabled={isProcessing || isActive}
+                    aria-label={t("plugins.uninstall")}
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-4 w-4" aria-hidden="true" />
                     <span className="sr-only">{t("plugins.uninstall")}</span>
                   </Button>
                 </AlertDialogTrigger>

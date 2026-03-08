@@ -102,7 +102,7 @@ export function BookmarkPanel({
 
   if (isLoading) {
     return (
-      <div className={cn("p-3 text-center text-muted-foreground text-sm", className)}>
+      <div className={cn("p-3 text-center text-muted-foreground text-sm", className)} role="status" aria-live="polite">
         {t("common.loading")}
       </div>
     );

@@ -156,6 +156,7 @@ export function SessionItem({
               onClick={(e) => e.stopPropagation()}
               disabled={isExporting}
               aria-label={t("sessionItem.exportSession")}
+              aria-busy={isExporting}
               className={cn(
                 "opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out",
                 "p-1.5 rounded-md",
