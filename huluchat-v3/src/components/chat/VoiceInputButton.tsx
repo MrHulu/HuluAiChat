@@ -61,7 +61,7 @@ export const VoiceInputButton = memo(function VoiceInputButton({
       onClick={handleClick}
       disabled={disabled}
       className={cn(
-        "px-3 h-12 transition-all duration-200",
+        "px-3 h-12 transition-all duration-200 group",
         "hover:bg-accent hover:scale-105 active:scale-95",
         isListening && "bg-error-muted hover:bg-error-muted/80 hover:scale-105",
         // Dark mode enhancements - Cycle #182
@@ -76,7 +76,7 @@ export const VoiceInputButton = memo(function VoiceInputButton({
       {isListening ? (
         <MicOff className="w-[18px] h-[18px] text-error animate-pulse transition-all duration-200" aria-hidden="true" />
       ) : (
-        <Mic className="w-[18px] h-[18px] transition-transform duration-200 hover:scale-110" aria-hidden="true" />
+        <Mic className="w-[18px] h-[18px] transition-transform duration-200 group-hover:scale-110" aria-hidden="true" />
       )}
     </Button>
   );
