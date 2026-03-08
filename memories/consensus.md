@@ -1,7 +1,7 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-08 - Cycle #210
+2026-03-08 - Cycle #211
 
 ## Current Phase
 🎨 **UI/UX 美化优化** - 细节打磨阶段
@@ -48,7 +48,8 @@
 - ✅ **Cycle #207: 设置和侧边栏组件图标交互动画**
 - ✅ **Cycle #208: 更多组件图标交互动画扩展**
 - ✅ **Cycle #209: 模板和文档上传组件图标交互动画**
-- ✅ **Cycle #210: UI 基础组件图标交互动画** (当前)
+- ✅ **Cycle #210: UI 基础组件图标交互动画**
+- ✅ **Cycle #211: ChatView 书签按钮图标交互动画** (当前)
 
 ### Cycle #207 图标交互动画扩展
 **PluginSettings.tsx** 插件设置：
@@ -112,6 +113,10 @@
 - CheckIcon：选中时缩放动画 (`animate-in zoom-in-50`)
 - ChevronRightIcon：子菜单展开时旋转 90° (`data-[state=open]:rotate-90`)
 
+### Cycle #211 图标交互动画扩展
+**ChatView.tsx** 聊天视图：
+- Bookmark：悬停放大 110% (`group-hover/bookmark:scale-110`)
+
 ### 深色模式增强覆盖率
 - 📊 **组件覆盖率**: 100% (所有主要组件)
 - 🎨 **视觉效果**: 发光效果、阴影层次、过渡动画
@@ -155,4 +160,4 @@
 ---
 
 ## 循环计数
-当前周期: 210
+当前周期: 211
