@@ -798,4 +798,110 @@
     background: oklch(0.25 0 0);
     border: 1px solid oklch(1 0 0 / 5%);
   }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 📁 Dark Mode - Upload/Drop Zone Enhancement (Cycle #175)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Drag and drop zone */
+  .dark [role="button"][aria-label*="select"],
+  .dark [role="button"][aria-label*="upload"] {
+    border-color: oklch(1 0 0 / 15%);
+    background: oklch(0.18 0 0 / 0.5);
+  }
+
+  .dark [role="button"][aria-label*="select"]:hover,
+  .dark [role="button"][aria-label*="upload"]:hover {
+    border-color: oklch(0.55 0.2 264 / 0.5);
+    background: oklch(0.2 0 0 / 0.6);
+  }
+
+  .dark [role="button"][aria-label*="select"]:focus-visible,
+  .dark [role="button"][aria-label*="upload"]:focus-visible {
+    border-color: oklch(0.55 0.2 264);
+    box-shadow: 0 0 0 2px oklch(0.55 0.2 264 / 0.25);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🔍 Dark Mode - Command Palette Enhancement (Cycle #175)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Command input */
+  .dark [data-slot="command-input-wrapper"] {
+    border-color: oklch(1 0 0 / 8%);
+    background: oklch(0.18 0 0);
+  }
+
+  /* Command items - enhanced hover */
+  .dark [data-slot="command-item"] {
+    border-radius: 0.5rem;
+  }
+
+  .dark [data-slot="command-item"][data-selected="true"] {
+    background: oklch(0.28 0.05 264 / 0.6);
+    box-shadow: inset 0 0 0 1px oklch(0.5 0.15 264 / 0.3);
+  }
+
+  /* Command separator */
+  .dark [data-slot="command-separator"] {
+    background: oklch(1 0 0 / 8%);
+  }
+
+  /* Command group heading */
+  .dark [data-slot="command-group"] [cmdk-group-heading] {
+    color: oklch(0.6 0 0);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 📋 Dark Mode - Document List Enhancement (Cycle #175)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Document list items */
+  .dark [aria-labelledby*="document"] li,
+  .dark [aria-labelledby="rag-documents-heading"] li {
+    background: oklch(0.2 0 0 / 0.4);
+    border: 1px solid transparent;
+  }
+
+  .dark [aria-labelledby*="document"] li:hover,
+  .dark [aria-labelledby="rag-documents-heading"] li:hover {
+    background: oklch(0.25 0 0 / 0.6);
+    border-color: oklch(1 0 0 / 8%);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🎯 Dark Mode - Empty State Enhancement (Cycle #175)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Empty state text */
+  .dark [role="status"]:not([aria-busy="true"]) {
+    color: oklch(0.55 0 0);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🔘 Dark Mode - Toggle Button Enhancement (Cycle #175)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Icon toggle buttons */
+  .dark button[variant="ghost"]:hover:not(:disabled) {
+    background: oklch(0.25 0 0 / 0.6);
+  }
+
+  .dark button[size="icon"]:active:not(:disabled) {
+    transform: scale(0.95);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 📊 Dark Mode - Skeleton/Loading Enhancement (Cycle #175)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Skeleton shimmer in dark mode */
+  .dark [aria-busy="true"][role="status"] {
+    background: oklch(0.22 0 0);
+  }
+
+  /* Loading overlay backdrop */
+  .dark .fixed.inset-0.z-50 {
+    background: oklch(0.1 0 0 / 0.85);
+  }
 }

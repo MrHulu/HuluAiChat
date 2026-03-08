@@ -88,6 +88,7 @@ export function DocumentList({
             className={cn(
               "flex items-center justify-between p-2 rounded-lg",
               "bg-muted/50 hover:bg-muted",
+              "dark:bg-white/[0.03] dark:hover:bg-white/[0.06] dark:border dark:border-transparent dark:hover:border-white/10",
               "transition-all duration-200 ease-out",
               "list-item-enter"
             )}
@@ -121,6 +122,7 @@ export function DocumentList({
               className={cn(
                 "text-xs px-2 py-1 rounded-md transition-all duration-200",
                 "text-destructive hover:bg-destructive/10 active:scale-95",
+                "dark:text-destructive/90 dark:hover:bg-destructive/15 dark:hover:text-destructive",
                 "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
                 disabled && "opacity-50 cursor-not-allowed"
               )}
