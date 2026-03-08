@@ -9,6 +9,7 @@ import { MessageItem } from "./MessageItem";
 import { StreamingMessage } from "@/hooks/useChat";
 import { Loading } from "@/components/ui/loading";
 import { useTranslation } from "react-i18next";
+import { cn } from "@/lib/utils";
 
 export interface MessageListRef {
   scrollToMessage: (messageId: string) => void;
@@ -174,7 +175,16 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
           aria-live="polite"
           aria-label={t("chat.thinking")}
         >
-          <div className="bg-muted/80 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm transition-all duration-200 hover:shadow-md dark:bg-muted/60 dark:border dark:border-white/10 dark:shadow-lg dark:shadow-black/20">
+          <div className={cn(
+            "bg-muted/80 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm transition-all duration-200",
+            "hover:shadow-md",
+            // Dark mode enhancements - Cycle #194
+            "dark:bg-muted/70",
+            "dark:border dark:border-white/10",
+            "dark:shadow-[0_4px_16px_oklch(0_0_0/0.25),0_0_24px_oklch(0.488_0.243_264.376/0.08)]",
+            "dark:hover:shadow-[0_6px_20px_oklch(0_0_0/0.3),0_0_32px_oklch(0.488_0.243_264.376/0.12)]",
+            "dark:hover:border-primary/20"
+          )}>
             <Loading variant="thinking" size="sm" text={t("chat.thinking")} />
           </div>
         </div>

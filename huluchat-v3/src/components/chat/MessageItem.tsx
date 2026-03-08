@@ -92,10 +92,24 @@ function extractCodeInfo(children: React.ReactNode): { language: string; codeCon
 
 /**
  * Streaming cursor component - separated to avoid unnecessary re-renders
+ * Enhanced with smooth breathing animation (Cycle #194)
  */
 const StreamingCursor = memo(function StreamingCursor({ isStreaming }: { isStreaming?: boolean }) {
   if (!isStreaming) return null;
-  return <span className="inline-block w-2 h-4 ml-1 bg-current animate-pulse" aria-label="Streaming..." />;
+  return (
+    <span
+      className={cn(
+        "inline-block w-2 h-4 ml-1 rounded-sm",
+        "bg-primary/80",
+        "animate-[typingCursor_1s_ease-in-out_infinite]",
+        "will-change-opacity",
+        // Dark mode glow effect
+        "dark:bg-primary/90",
+        "dark:shadow-[0_0_8px_oklch(0.488_0.243_264.376/0.5)]"
+      )}
+      aria-label="Streaming..."
+    />
+  );
 });
 
 export const MessageItem = memo(function MessageItem({
