@@ -621,8 +621,8 @@ export function PluginSettings() {
           {plugins.map((plugin, index) => (
             <div
               key={plugin.manifest.id}
-              className="animate-slide-up"
-              style={{ animationDelay: `${index * 50}ms`, animationFillMode: "both" }}
+              className="animate-list-enter"
+              style={{ animationDelay: `${index * 50}ms` }}
             >
               <PluginCard
                 plugin={plugin}
