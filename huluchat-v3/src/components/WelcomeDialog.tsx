@@ -97,12 +97,14 @@ export function WelcomeDialog({ open, onOpenChange, onComplete }: WelcomeDialogP
                 "w-2 h-2 rounded-full transition-all duration-200 ease-out",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                 "hover:scale-125 active:scale-110",
+                "animate-bounce-in",
                 index === currentStep
                   ? "bg-primary w-6 dark:shadow-lg dark:shadow-primary/30"
                   : index < currentStep
                     ? "bg-primary/50 hover:bg-primary/70 dark:bg-primary/40 dark:hover:bg-primary/60"
                     : "bg-muted hover:bg-muted-foreground/30 dark:bg-muted/60 dark:hover:bg-muted-foreground/40"
               )}
+              style={{ animationDelay: `${index * 100}ms` }}
             />
           ))}
         </div>
