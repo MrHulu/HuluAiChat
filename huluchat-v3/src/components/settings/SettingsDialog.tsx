@@ -551,10 +551,11 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                 <div className="mb-3">
                   <p className="text-xs text-muted-foreground mb-2">{t("ollama.installedModels")}</p>
                   <div className="flex flex-wrap gap-1.5">
-                    {ollamaModels.map((m) => (
+                    {ollamaModels.map((m, index) => (
                       <span
                         key={m.name}
-                        className="inline-flex items-center px-2 py-1 rounded-md bg-muted dark:bg-muted/60 dark:border dark:border-white/10 text-xs"
+                        className="inline-flex items-center px-2 py-1 rounded-md bg-muted dark:bg-muted/60 dark:border dark:border-white/10 text-xs animate-list-enter"
+                        style={{ animationDelay: `${index * 50}ms` }}
                       >
                         {m.name}
                       </span>
