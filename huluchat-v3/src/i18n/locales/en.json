@@ -71,6 +71,7 @@
     "startConversation": "Start a conversation",
     "startConversationHint": "Send a message to begin chatting with AI",
     "thinking": "Thinking...",
+    "messageList": "Chat messages",
     "messageUpdated": "Message updated",
     "messageUpdateFailed": "Failed to update message",
     "connecting": "Connecting...",
@@ -362,6 +363,9 @@
     "skip": "Skip",
     "next": "Next",
     "getStarted": "Get Started",
+    "stepIndicator": "Step navigation",
+    "stepLabel": "Step {{step}}: {{title}}",
+    "stepProgress": "Step {{current}} of {{total}}",
     "emptyState": {
       "title": "Start a conversation",
       "hint": "Type a message below to begin chatting with AI",
