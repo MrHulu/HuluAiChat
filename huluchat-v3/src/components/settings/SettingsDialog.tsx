@@ -33,7 +33,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui/Select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   getSettings,
@@ -236,8 +236,8 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <Settings className="h-5 w-5" />
+        <Button variant="ghost" size="icon" aria-label={t("settings.title")}>
+          <Settings className="h-5 w-5" aria-hidden="true" />
           <span className="sr-only">{t("settings.title")}</span>
         </Button>
       </DialogTrigger>
@@ -250,8 +250,9 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
         </DialogHeader>
 
         {loading ? (
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          <div className="flex items-center justify-center py-8" role="status" aria-live="polite">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" aria-hidden="true" />
+            <span className="sr-only">{t("common.loading")}</span>
           </div>
         ) : (
           <Tabs defaultValue="api" className="w-full">
@@ -395,16 +396,18 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
               {/* Test Result */}
               {testResult && (
                 <div
-                  className={`flex items-center gap-2 p-3 rounded-md ${
+                  role="status"
+                  aria-live="polite"
+                  className={`flex items-center gap-2 p-3 rounded-md animate-in fade-in-0 slide-in-from-top-2 duration-200 ${
                     testResult.success
-                      ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-                      : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                      ? "bg-success-muted text-success-foreground"
+                      : "bg-error-muted text-error-foreground"
                   }`}
                 >
                   {testResult.success ? (
-                    <Check className="h-4 w-4" />
+                    <Check className="h-4 w-4 animate-in zoom-in-50 duration-200" aria-hidden="true" />
                   ) : (
-                    <AlertCircle className="h-4 w-4" />
+                    <AlertCircle className="h-4 w-4 animate-in zoom-in-50 duration-200" aria-hidden="true" />
                   )}
                   <span className="text-sm">{testResult.message}</span>
                 </div>
@@ -431,9 +434,12 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
 
               {/* Ollama Status Card */}
               <div
+                role="status"
+                aria-live="polite"
+                aria-label={ollamaAvailable ? t("ollama.online") : t("ollama.offline")}
                 className={`flex items-center justify-between p-3 rounded-lg border mb-3 ${
                   ollamaAvailable
-                    ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800"
+                    ? "bg-success-muted/50 border-success/30"
                     : "bg-muted"
                 }`}
               >
@@ -441,9 +447,10 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                   <div
                     className={`flex items-center justify-center w-8 h-8 rounded-full ${
                       ollamaAvailable
-                        ? "bg-green-100 text-green-600 dark:bg-green-900/50 dark:text-green-400"
+                        ? "bg-success/20 text-success"
                         : "bg-muted text-muted-foreground"
                     }`}
+                    aria-hidden="true"
                   >
                     <Server className="h-4 w-4" />
                   </div>
@@ -466,10 +473,13 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                   variant="ghost"
                   size="icon"
                   onClick={handleRefreshOllama}
+                  aria-label={t("ollama.refreshStatus")}
+                  aria-busy={refreshingOllama}
                   className="h-8 w-8"
                 >
                   <Loader2
                     className={`h-4 w-4 ${refreshingOllama ? "animate-spin" : ""}`}
+                    aria-hidden="true"
                   />
                   <span className="sr-only">{t("ollama.refreshStatus")}</span>
                 </Button>
@@ -495,16 +505,18 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
               {/* Ollama Test Result */}
               {ollamaTestResult && (
                 <div
+                  role="status"
+                  aria-live="polite"
                   className={`flex items-center gap-2 p-3 rounded-md mb-3 ${
                     ollamaTestResult.success
-                      ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-                      : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                      ? "bg-success-muted text-success-foreground"
+                      : "bg-error-muted text-error-foreground"
                   }`}
                 >
                   {ollamaTestResult.success ? (
-                    <Check className="h-4 w-4" />
+                    <Check className="h-4 w-4" aria-hidden="true" />
                   ) : (
-                    <AlertCircle className="h-4 w-4" />
+                    <AlertCircle className="h-4 w-4" aria-hidden="true" />
                   )}
                   <span className="text-sm">{ollamaTestResult.message}</span>
                 </div>
@@ -516,10 +528,11 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                 size="sm"
                 onClick={handleTestOllama}
                 disabled={testingOllama}
+                aria-busy={testingOllama}
                 className="w-full"
               >
                 {testingOllama ? (
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" aria-hidden="true" />
                 ) : null}
                 {t("ollama.testConnection")}
               </Button>
@@ -533,15 +546,15 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
         )}
 
         <DialogFooter className="flex gap-2">
-          <Button variant="outline" onClick={handleTest} disabled={testing || !hasApiKey}>
+          <Button variant="outline" onClick={handleTest} disabled={testing || !hasApiKey} aria-busy={testing}>
             {testing ? (
-              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              <Loader2 className="h-4 w-4 animate-spin mr-2" aria-hidden="true" />
             ) : null}
             {t("common.test")}
           </Button>
-          <Button onClick={handleSave} disabled={saving}>
+          <Button onClick={handleSave} disabled={saving} aria-busy={saving}>
             {saving ? (
-              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              <Loader2 className="h-4 w-4 animate-spin mr-2" aria-hidden="true" />
             ) : null}
             {t("common.save")}
           </Button>

@@ -255,6 +255,7 @@ export const MessageItem = memo(function MessageItem({
         className={cn(
           "max-w-[80%] rounded-2xl px-4 py-3 relative",
           "shadow-sm hover:shadow-md transition-all duration-200 ease-out",
+          "hover:scale-[1.005] active:scale-[0.995]",
           isUser
             ? "bg-primary text-primary-foreground ml-12 hover:bg-primary/90"
             : "bg-muted text-foreground mr-12 border-l-4 border-primary/30 hover:bg-muted/80"
@@ -277,9 +278,11 @@ export const MessageItem = memo(function MessageItem({
                   onBookmarkToggle(message.id, isBookmarked, bookmarkId);
                 }}
                 aria-label={isBookmarked ? t("chat.removeBookmark") : t("chat.addBookmark")}
+                aria-pressed={isBookmarked}
                 className={cn(
                   "transition-all p-1 rounded",
-                  "opacity-0 group-hover:opacity-100",
+                  "opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
                   isBookmarked && "opacity-100",
                   isBookmarked
                     ? "text-primary hover:text-primary/80"
@@ -289,9 +292,9 @@ export const MessageItem = memo(function MessageItem({
                 )}
               >
                 {isBookmarked ? (
-                  <BookmarkCheck className="w-3 h-3" />
+                  <BookmarkCheck className="w-3 h-3" aria-hidden="true" />
                 ) : (
-                  <Bookmark className="w-3 h-3" />
+                  <Bookmark className="w-3 h-3" aria-hidden="true" />
                 )}
               </button>
             )}
@@ -300,9 +303,13 @@ export const MessageItem = memo(function MessageItem({
               <button
                 onClick={handleStartEdit}
                 aria-label={t("chat.editMessage")}
-                className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-primary-foreground/10 rounded"
+                className={cn(
+                  "opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity p-1 rounded",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  "hover:bg-primary-foreground/10"
+                )}
               >
-                <Pencil className="w-3 h-3" />
+                <Pencil className="w-3 h-3" aria-hidden="true" />
               </button>
             )}
           </div>
@@ -310,12 +317,16 @@ export const MessageItem = memo(function MessageItem({
 
         {/* 图片显示（仅用户消息） */}
         {isUser && hasImages && (
-          <div className="flex flex-wrap gap-2 mb-2">
+          <div
+            className="flex flex-wrap gap-2 mb-2"
+            role="group"
+            aria-label={t("chat.uploadedImages")}
+          >
             {message.images!.map((image, index) => (
               <img
                 key={index}
                 src={image.image_url.url}
-                alt={`Upload ${index + 1}`}
+                alt={t("chat.uploadedImage", { index: index + 1 })}
                 className="max-w-[200px] max-h-[200px] object-cover rounded-lg"
               />
             ))}

@@ -23,7 +23,11 @@
     "expandSidebar": "Expand sidebar",
     "collapseSidebar": "Collapse sidebar",
     "deleteFolder": "Delete folder",
-    "deleteFolderConfirm": "Are you sure you want to delete this folder? Sessions will be moved to Uncategorized."
+    "deleteFolderConfirm": "Are you sure you want to delete this folder? Sessions will be moved to Uncategorized.",
+    "folderWithName": "{{name}} ({{count}} sessions)",
+    "expandFolder": "Expand folder",
+    "collapseFolder": "Collapse folder",
+    "sessionCount": "{{count}} sessions"
   },
   "chat": {
     "you": "You",
@@ -60,6 +64,8 @@
     "connectionError": "Connection Error",
     "uploadImage": "Upload image",
     "removeImage": "Remove image",
+    "uploadedImages": "Uploaded images",
+    "uploadedImage": "Uploaded image {{index}}",
     "bookmarks": "Bookmarks",
     "addBookmark": "Add bookmark",
     "removeBookmark": "Remove bookmark",
@@ -72,6 +78,8 @@
     "exportMarkdown": "Export as Markdown",
     "exportSuccess": "Bookmarks exported successfully",
     "exportError": "Failed to export bookmarks",
+    "exportBookmarks": "Export bookmarks",
+    "jumpToBookmark": "Jump to bookmark: {{content}}",
     "voice": {
       "startRecording": "Start voice input",
       "stopRecording": "Stop recording",
@@ -174,6 +182,8 @@
   },
   "keyboard": {
     "title": "Keyboard Shortcuts",
+    "description": "View all available keyboard shortcuts to navigate the app efficiently",
+    "shortcutsList": "List of keyboard shortcuts",
     "newChat": "New chat",
     "search": "Search chats",
     "settings": "Open settings",
@@ -215,12 +225,18 @@
   },
   "templates": {
     "title": "Prompt Templates",
+    "description": "Select a template to quickly start a conversation with a predefined prompt",
     "newTemplate": "+ New Template",
     "all": "All",
     "name": "Name",
     "namePlaceholder": "Template name",
     "content": "Content",
     "contentPlaceholder": "Template content. Use {variable} for placeholders.",
+    "edit": "Edit template",
+    "delete": "Delete template",
+    "categoriesLabel": "Template categories",
+    "templateList": "Available templates",
+    "selectTemplate": "Select {{name}} template",
     "categories": {
       "writing": "Writing",
       "coding": "Coding",
@@ -245,13 +261,16 @@
     "today": "Today",
     "yesterday": "Yesterday",
     "daysAgo": "{{count}} days ago",
+    "selectSession": "Select session: {{title}}",
     "exportSession": "Export session",
     "moveToFolder": "Move to folder",
     "uncategorized": "Uncategorized",
     "deleteSession": "Delete session",
     "markdown": "Markdown (.md)",
     "json": "JSON (.json)",
-    "plainText": "Plain Text (.txt)"
+    "plainText": "Plain Text (.txt)",
+    "tags": "Tags",
+    "moreTags": "+{{count}} more tags"
   },
   "theme": {
     "toggle": "Toggle theme",
@@ -297,6 +316,7 @@
     "noDocuments": "No documents uploaded",
     "chunks": "{{count}} chunks",
     "delete": "Delete",
+    "deleteDocument": "Delete document {{filename}}",
     "deleteConfirm": "Are you sure you want to delete this document?",
     "deleting": "Deleting...",
     "deleteError": "Failed to delete document",
@@ -335,8 +355,13 @@
     "tag": "Tag",
     "selected": "selected",
     "filterByTag": "Filter by tag",
+    "filterActive": "{{count}} tags selected",
     "clear": "Clear",
-    "maxTagsReached": "Maximum 5 tags per session"
+    "clearSelection": "Clear all selected tags",
+    "selectTag": "Select tag {{tag}}",
+    "deselectTag": "Deselect tag {{tag}}",
+    "maxTagsReached": "Maximum 5 tags per session",
+    "suggestions": "Tag suggestions"
   },
   "bookmarks": {
     "title": "Bookmarks",

@@ -19,6 +19,8 @@ export interface LoadingProps {
   text?: string;
   /** 居中显示 */
   center?: boolean;
+  /** 无障碍标签 */
+  ariaLabel?: string;
 }
 
 const sizeMap: Record<LoadingSize, { spinner: string; dots: string; gap: string; wave: string }> = {
@@ -34,7 +36,7 @@ function SpinnerLoader({ size, className }: { size: LoadingSize; className?: str
   return (
     <Loader2
       className={cn(
-        "animate-spin text-primary",
+        "animate-spin text-primary transition-opacity duration-200",
         sizeMap[size].spinner,
         className
       )}
@@ -56,6 +58,7 @@ function DotsLoader({ size, className }: { size: LoadingSize; className?: string
         className={cn(
           "rounded-full bg-primary",
           "animate-[dotPulse_1.2s_ease-in-out_infinite]",
+          "will-change-transform",
           dotSize
         )}
         style={{ animationDelay: "0ms" }}
@@ -64,6 +67,7 @@ function DotsLoader({ size, className }: { size: LoadingSize; className?: string
         className={cn(
           "rounded-full bg-primary",
           "animate-[dotPulse_1.2s_ease-in-out_infinite]",
+          "will-change-transform",
           dotSize
         )}
         style={{ animationDelay: "150ms" }}
@@ -72,6 +76,7 @@ function DotsLoader({ size, className }: { size: LoadingSize; className?: string
         className={cn(
           "rounded-full bg-primary",
           "animate-[dotPulse_1.2s_ease-in-out_infinite]",
+          "will-change-transform",
           dotSize
         )}
         style={{ animationDelay: "300ms" }}
@@ -95,6 +100,7 @@ function WaveLoader({ size, className }: { size: LoadingSize; className?: string
           className={cn(
             "rounded-full bg-primary",
             "animate-[wave_1.2s_ease-in-out_infinite]",
+            "will-change-transform",
             waveSize
           )}
           style={{ animationDelay: `${i * 100}ms` }}
@@ -119,6 +125,7 @@ function ThinkingLoader({ size, className }: { size: LoadingSize; className?: st
         className={cn(
           "rounded-full bg-primary",
           "animate-[thinkingPulse_1.5s_ease-in-out_infinite]",
+          "will-change-transform",
           dotSize
         )}
       />
@@ -127,6 +134,7 @@ function ThinkingLoader({ size, className }: { size: LoadingSize; className?: st
         className={cn(
           "rounded-full bg-primary/60",
           "animate-[thinkingPulse_1.5s_ease-in-out_infinite]",
+          "will-change-transform",
           size === "sm" ? "w-1 h-1" : size === "md" ? "w-1.5 h-1.5" : "w-2 h-2"
         )}
         style={{ animationDelay: "200ms" }}
@@ -135,6 +143,7 @@ function ThinkingLoader({ size, className }: { size: LoadingSize; className?: st
         className={cn(
           "rounded-full bg-primary/40",
           "animate-[thinkingPulse_1.5s_ease-in-out_infinite]",
+          "will-change-transform",
           size === "sm" ? "w-1 h-1" : size === "md" ? "w-1.5 h-1.5" : "w-2 h-2"
         )}
         style={{ animationDelay: "400ms" }}
@@ -166,7 +175,7 @@ function RingLoader({ size, className }: { size: LoadingSize; className?: string
   return (
     <div
       className={cn(
-        "animate-spin rounded-full border-2 border-primary/30 border-t-primary",
+        "animate-spin rounded-full border-2 border-primary/30 border-t-primary transition-opacity duration-200",
         sizeClass,
         className
       )}
@@ -198,6 +207,7 @@ export function Loading({
   className,
   text,
   center = false,
+  ariaLabel,
 }: LoadingProps) {
   const renderLoader = () => {
     switch (variant) {
@@ -219,9 +229,17 @@ export function Loading({
   };
 
   const content = (
-    <div className={cn("flex items-center gap-2", center && "justify-center", className)}>
+    <div
+      className={cn("flex items-center gap-2", center && "justify-center", className)}
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      aria-label={ariaLabel || text || "Loading"}
+    >
       {renderLoader()}
       {text && <span className="text-sm text-muted-foreground">{text}</span>}
+      {/* Screen reader only text for components without visible text */}
+      {!text && <span className="sr-only">{ariaLabel || "Loading"}</span>}
     </div>
   );
 
@@ -239,10 +257,16 @@ export function Loading({
 /**
  * 全屏加载遮罩
  */
-export function LoadingOverlay({ text }: { text?: string }) {
+export function LoadingOverlay({ text, ariaLabel }: { text?: string; ariaLabel?: string }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <Loading variant="dots" size="lg" text={text} />
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm animate-in fade-in zoom-in-95 duration-200"
+      role="alertdialog"
+      aria-busy="true"
+      aria-label={ariaLabel || text || "Loading"}
+      aria-modal="true"
+    >
+      <Loading variant="dots" size="lg" text={text} ariaLabel={ariaLabel} />
     </div>
   );
 }
@@ -250,8 +274,15 @@ export function LoadingOverlay({ text }: { text?: string }) {
 /**
  * 行内加载指示器（用于按钮等）
  */
-export function LoadingInline({ className }: { className?: string }) {
-  return <Loading variant="spinner" size="sm" className={className} />;
+export function LoadingInline({ className, ariaLabel }: { className?: string; ariaLabel?: string }) {
+  return (
+    <Loading
+      variant="spinner"
+      size="sm"
+      className={className}
+      ariaLabel={ariaLabel || "Processing"}
+    />
+  );
 }
 
 export default Loading;

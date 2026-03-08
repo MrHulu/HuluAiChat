@@ -23,7 +23,11 @@
     "expandSidebar": "展开侧边栏",
     "collapseSidebar": "收起侧边栏",
     "deleteFolder": "删除文件夹",
-    "deleteFolderConfirm": "确定要删除此文件夹吗？聊天将移至未分类。"
+    "deleteFolderConfirm": "确定要删除此文件夹吗？聊天将移至未分类。",
+    "folderWithName": "{{name}}（{{count}} 个会话）",
+    "expandFolder": "展开文件夹",
+    "collapseFolder": "折叠文件夹",
+    "sessionCount": "{{count}} 个会话"
   },
   "chat": {
     "you": "你",
@@ -60,6 +64,8 @@
     "connectionError": "连接错误",
     "uploadImage": "上传图片",
     "removeImage": "移除图片",
+    "uploadedImages": "已上传图片",
+    "uploadedImage": "已上传图片 {{index}}",
     "bookmarks": "书签",
     "addBookmark": "添加书签",
     "removeBookmark": "移除书签",
@@ -72,6 +78,8 @@
     "exportMarkdown": "导出为 Markdown",
     "exportSuccess": "书签导出成功",
     "exportError": "导出书签失败",
+    "exportBookmarks": "导出书签",
+    "jumpToBookmark": "跳转到书签：{{content}}",
     "voice": {
       "startRecording": "开始语音输入",
       "stopRecording": "停止录音",
@@ -171,6 +179,8 @@
   },
   "keyboard": {
     "title": "键盘快捷键",
+    "description": "查看所有可用的键盘快捷键，高效导航应用程序",
+    "shortcutsList": "快捷键列表",
     "newChat": "新建聊天",
     "search": "搜索聊天",
     "settings": "打开设置",
@@ -212,12 +222,18 @@
   },
   "templates": {
     "title": "提示词模板",
+    "description": "选择一个模板，快速开始预设提示词的对话",
     "newTemplate": "+ 新建模板",
     "all": "全部",
     "name": "名称",
     "namePlaceholder": "模板名称",
     "content": "内容",
     "contentPlaceholder": "模板内容。使用 {变量名} 作为占位符。",
+    "edit": "编辑模板",
+    "delete": "删除模板",
+    "categoriesLabel": "模板分类",
+    "templateList": "可用模板列表",
+    "selectTemplate": "选择 {{name}} 模板",
     "categories": {
       "writing": "写作",
       "coding": "编程",
@@ -242,13 +258,16 @@
     "today": "今天",
     "yesterday": "昨天",
     "daysAgo": "{{count}} 天前",
+    "selectSession": "选择会话：{{title}}",
     "exportSession": "导出会话",
     "moveToFolder": "移至文件夹",
     "uncategorized": "未分类",
     "deleteSession": "删除会话",
     "markdown": "Markdown (.md)",
     "json": "JSON (.json)",
-    "plainText": "纯文本 (.txt)"
+    "plainText": "纯文本 (.txt)",
+    "tags": "标签",
+    "moreTags": "+{{count}} 个标签"
   },
   "theme": {
     "toggle": "切换主题",
@@ -294,6 +313,7 @@
     "noDocuments": "未上传文档",
     "chunks": "{{count}} 个片段",
     "delete": "删除",
+    "deleteDocument": "删除文档 {{filename}}",
     "deleteConfirm": "确定要删除此文档吗？",
     "deleting": "删除中...",
     "deleteError": "删除文档失败",
@@ -332,8 +352,13 @@
     "tag": "标签",
     "selected": "已选",
     "filterByTag": "按标签筛选",
+    "filterActive": "已选 {{count}} 个标签",
     "clear": "清除",
-    "maxTagsReached": "每个会话最多 5 个标签"
+    "clearSelection": "清除所有已选标签",
+    "selectTag": "选择标签 {{tag}}",
+    "deselectTag": "取消选择标签 {{tag}}",
+    "maxTagsReached": "每个会话最多 5 个标签",
+    "suggestions": "标签建议"
   },
   "bookmarks": {
     "title": "书签",

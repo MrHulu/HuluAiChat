@@ -63,15 +63,16 @@ export function DocumentList({
 
   if (isLoading) {
     return (
-      <div className={cn("flex items-center justify-center py-4 animate-fade-in", className)}>
+      <div className={cn("flex items-center justify-center py-4 animate-fade-in", className)} role="status" aria-live="polite">
         <Loading variant="ring" size="md" />
+        <span className="sr-only">{t("common.loading")}</span>
       </div>
     );
   }
 
   if (documents.length === 0) {
     return (
-      <div className={cn("text-center py-4 text-muted-foreground", className)}>
+      <div className={cn("text-center py-4 text-muted-foreground", className)} role="status">
         {t("rag.noDocuments")}
       </div>
     );
@@ -79,12 +80,18 @@ export function DocumentList({
 
   return (
     <div className={cn("space-y-2", className)}>
-      <h3 className="text-sm font-medium text-foreground">{t("rag.documents")}</h3>
-      <ul className="space-y-1">
-        {documents.map((doc) => (
+      <h3 id="rag-documents-heading" className="text-sm font-medium text-foreground">{t("rag.documents")}</h3>
+      <ul className="space-y-1" aria-labelledby="rag-documents-heading">
+        {documents.map((doc, index) => (
           <li
             key={doc.doc_id}
-            className="flex items-center justify-between p-2 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+            className={cn(
+              "flex items-center justify-between p-2 rounded-lg",
+              "bg-muted/50 hover:bg-muted",
+              "transition-all duration-200 ease-out",
+              "list-item-enter"
+            )}
+            style={{ animationDelay: `${index * 50}ms` }}
           >
             <div className="flex items-center gap-2 min-w-0">
               {/* File icon */}
@@ -93,6 +100,7 @@ export function DocumentList({
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -109,9 +117,11 @@ export function DocumentList({
             <button
               onClick={() => handleDelete(doc)}
               disabled={disabled || deletingId === doc.doc_id}
+              aria-label={t("rag.deleteDocument", { filename: doc.filename })}
               className={cn(
-                "text-xs px-2 py-1 rounded-md transition-colors",
-                "text-destructive hover:bg-destructive/10",
+                "text-xs px-2 py-1 rounded-md transition-all duration-200",
+                "text-destructive hover:bg-destructive/10 active:scale-95",
+                "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
                 disabled && "opacity-50 cursor-not-allowed"
               )}
             >

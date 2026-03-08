@@ -89,18 +89,21 @@ export const MermaidBlock = memo(function MermaidBlock({
   if (error) {
     return (
       <div
+        role="alert"
+        aria-label="Chart rendering error"
         className={cn(
-          "p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800",
+          "p-4 rounded-lg bg-error-muted/50 border border-error/30",
+          "animate-in fade-in-0 zoom-in-95 duration-200",
           className
         )}
       >
-        <div className="text-red-600 dark:text-red-400 text-sm font-medium mb-2">
+        <div className="text-error text-sm font-medium mb-2">
           Chart Error
         </div>
-        <pre className="text-xs text-red-500 dark:text-red-300 overflow-x-auto">
+        <pre className="text-xs text-error/80 overflow-x-auto">
           {chart}
         </pre>
-        <div className="text-xs text-red-400 dark:text-red-500 mt-2">
+        <div className="text-xs text-error/60 mt-2">
           {error}
         </div>
       </div>
@@ -110,14 +113,18 @@ export const MermaidBlock = memo(function MermaidBlock({
   if (loading) {
     return (
       <div
+        aria-busy="true"
+        aria-live="polite"
+        aria-label="Loading chart"
         className={cn(
           "mermaid-container flex justify-center items-center p-4 rounded-lg",
-          "bg-muted",
+          "bg-muted animate-in fade-in-0 duration-150",
           className
         )}
       >
-        <div className="text-muted-foreground text-sm animate-pulse">
-          Loading chart...
+        <div className="flex items-center gap-2 text-muted-foreground text-sm">
+          <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+          <span>Loading chart...</span>
         </div>
       </div>
     );
@@ -125,9 +132,12 @@ export const MermaidBlock = memo(function MermaidBlock({
 
   return (
     <div
+      role="img"
+      aria-label={`Chart diagram: ${chart.substring(0, 50)}...`}
       className={cn(
         "mermaid-container flex justify-center p-4 rounded-lg",
         "bg-muted overflow-x-auto",
+        "animate-in fade-in-0 duration-300",
         className
       )}
       dangerouslySetInnerHTML={{ __html: svg }}

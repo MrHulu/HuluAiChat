@@ -104,10 +104,23 @@ export function DocumentUploader({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if ((e.key === "Enter" || e.key === " ") && !disabled && !isUploading) {
+      e.preventDefault();
+      fileInputRef.current?.click();
+    }
+  };
+
   return (
     <div
+      role="button"
+      tabIndex={disabled ? -1 : 0}
+      aria-label={t("rag.selectFile")}
+      aria-disabled={disabled || isUploading}
       className={cn(
-        "border-2 border-dashed rounded-lg p-4 transition-colors cursor-pointer",
+        "border-2 border-dashed rounded-lg p-4 transition-all duration-200 ease-out cursor-pointer",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "hover:border-primary/50 hover:bg-muted/30",
         isDragging && "border-primary bg-primary/5",
         disabled && "opacity-50 cursor-not-allowed",
         className
@@ -116,6 +129,7 @@ export function DocumentUploader({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       onClick={handleClick}
+      onKeyDown={handleKeyDown}
     >
       <input
         ref={fileInputRef}
@@ -129,8 +143,8 @@ export function DocumentUploader({
       <div className="flex flex-col items-center gap-2 text-center">
         {isUploading ? (
           <>
-            <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-            <span className="text-sm text-muted-foreground">{t("rag.uploading")}</span>
+            <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+            <span className="text-sm text-muted-foreground" role="status" aria-live="polite">{t("rag.uploading")}</span>
           </>
         ) : (
           <>
@@ -139,6 +153,7 @@ export function DocumentUploader({
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"

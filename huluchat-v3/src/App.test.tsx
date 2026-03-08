@@ -84,6 +84,12 @@ vi.mock("@/hooks", () => ({
 vi.mock("@/api/client", () => ({
   exportSession: vi.fn(),
   moveSessionToFolder: vi.fn(),
+  listAllTags: vi.fn().mockResolvedValue([]),
+  getSessionTags: vi.fn().mockResolvedValue([]),
+  getSessionBookmarks: vi.fn().mockResolvedValue([]),
+  getSettings: vi.fn().mockResolvedValue({}),
+  getModels: vi.fn().mockResolvedValue([]),
+  getOllamaStatus: vi.fn().mockResolvedValue({ running: false }),
 }));
 
 // Mock @tanstack/react-virtual
@@ -424,23 +430,23 @@ describe("App", () => {
     it("should toggle sidebar collapse state", () => {
       render(<App />);
 
-      const collapseButton = screen.getByTitle("Collapse sidebar");
+      const collapseButton = screen.getByLabelText("Collapse sidebar");
       fireEvent.click(collapseButton);
 
       // Sidebar should be collapsed - the button title changes to "Expand"
-      expect(screen.getByTitle("Expand sidebar")).toBeInTheDocument();
+      expect(screen.getByLabelText("Expand sidebar")).toBeInTheDocument();
     });
 
     it("should expand collapsed sidebar", () => {
       render(<App />);
 
       // First collapse
-      fireEvent.click(screen.getByTitle("Collapse sidebar"));
+      fireEvent.click(screen.getByLabelText("Collapse sidebar"));
 
       // Then expand
-      fireEvent.click(screen.getByTitle("Expand sidebar"));
+      fireEvent.click(screen.getByLabelText("Expand sidebar"));
 
-      expect(screen.getByTitle("Collapse sidebar")).toBeInTheDocument();
+      expect(screen.getByLabelText("Collapse sidebar")).toBeInTheDocument();
     });
   });
 
@@ -905,15 +911,15 @@ describe("App", () => {
     it("should toggle sidebar via keyboard shortcut", async () => {
       render(<App />);
 
-      const collapseButton = screen.getByTitle("Collapse sidebar");
+      const collapseButton = screen.getByLabelText("Collapse sidebar");
 
       // Click to collapse
       fireEvent.click(collapseButton);
-      expect(screen.getByTitle("Expand sidebar")).toBeInTheDocument();
+      expect(screen.getByLabelText("Expand sidebar")).toBeInTheDocument();
 
       // Click to expand
-      fireEvent.click(screen.getByTitle("Expand sidebar"));
-      expect(screen.getByTitle("Collapse sidebar")).toBeInTheDocument();
+      fireEvent.click(screen.getByLabelText("Expand sidebar"));
+      expect(screen.getByLabelText("Collapse sidebar")).toBeInTheDocument();
     });
   });
 
@@ -925,7 +931,7 @@ describe("App", () => {
       render(<App />);
 
       // Click "New folder" button
-      const newFolderButton = screen.getByTitle("New folder");
+      const newFolderButton = screen.getByLabelText("New folder");
       fireEvent.click(newFolderButton);
 
       // Find the input and type folder name
@@ -946,7 +952,7 @@ describe("App", () => {
 
       render(<App />);
 
-      const newFolderButton = screen.getByTitle("New folder");
+      const newFolderButton = screen.getByLabelText("New folder");
       fireEvent.click(newFolderButton);
 
       const folderInput = screen.getByPlaceholderText("Folder name...");
@@ -966,7 +972,7 @@ describe("App", () => {
 
       render(<App />);
 
-      const newFolderButton = screen.getByTitle("New folder");
+      const newFolderButton = screen.getByLabelText("New folder");
       fireEvent.click(newFolderButton);
 
       const folderInput = screen.getByPlaceholderText("Folder name...");
@@ -1131,14 +1137,14 @@ describe("App", () => {
       });
 
       // Sidebar should be collapsed
-      expect(screen.getByTitle("Expand sidebar")).toBeInTheDocument();
+      expect(screen.getByLabelText("Expand sidebar")).toBeInTheDocument();
 
       // Call again to expand
       await act(async () => {
         callbacks.onToggleSidebar();
       });
 
-      expect(screen.getByTitle("Collapse sidebar")).toBeInTheDocument();
+      expect(screen.getByLabelText("Collapse sidebar")).toBeInTheDocument();
     });
 
     it("should open settings via keyboard shortcut callback", async () => {
@@ -1280,7 +1286,7 @@ describe("App", () => {
         await user.hover(sessionElement);
       }
 
-      const deleteButton = screen.getByTitle("Delete session");
+      const deleteButton = screen.getByLabelText("Delete session");
       await user.click(deleteButton);
 
       // Assert - 验证确认对话框和删除调用
@@ -1308,7 +1314,7 @@ describe("App", () => {
         await user.hover(sessionElement);
       }
 
-      const deleteButton = screen.getByTitle("Delete session");
+      const deleteButton = screen.getByLabelText("Delete session");
       await user.click(deleteButton);
 
       // Assert
@@ -1363,7 +1369,7 @@ describe("App", () => {
       }
 
       // 点击导出按钮
-      const exportButton = screen.getByTitle("Export session");
+      const exportButton = screen.getByLabelText("Export session");
       await user.click(exportButton);
 
       // 选择 Markdown 格式
@@ -1403,7 +1409,7 @@ describe("App", () => {
         await user.hover(sessionElement);
       }
 
-      const exportButton = screen.getByTitle("Export session");
+      const exportButton = screen.getByLabelText("Export session");
       await user.click(exportButton);
 
       const markdownOption = await screen.findByText("Markdown (.md)");
@@ -1439,7 +1445,7 @@ describe("App", () => {
         await user.hover(sessionElement);
       }
 
-      const exportButton = screen.getByTitle("Export session");
+      const exportButton = screen.getByLabelText("Export session");
       await user.click(exportButton);
 
       const jsonOption = await screen.findByText("JSON (.json)");
@@ -1472,7 +1478,7 @@ describe("App", () => {
         await user.hover(sessionElement);
       }
 
-      const exportButton = screen.getByTitle("Export session");
+      const exportButton = screen.getByLabelText("Export session");
       await user.click(exportButton);
 
       const txtOption = await screen.findByText("Plain Text (.txt)");
@@ -1566,11 +1572,15 @@ describe("App", () => {
 
       // 应该出现输入框
       const input = screen.getByDisplayValue("Original Name");
-      await user.clear(input);
-      await user.type(input, "Renamed Folder");
 
-      // 按下 Enter 提交
-      await user.keyboard("{Enter}");
+      // 使用 fireEvent.change 来设置完整的值（包含空格）
+      fireEvent.change(input, { target: { value: "Renamed Folder" } });
+
+      // 直接提交表单，避免 blur 事件干扰
+      const form = input.closest("form");
+      if (form) {
+        fireEvent.submit(form);
+      }
 
       // Assert - 验证 toast.success 被调用
       await waitFor(() => {
@@ -1594,7 +1604,7 @@ describe("App", () => {
       });
 
       // Find and click the move to folder button (by title)
-      const moveButton = screen.getByTitle("Move to folder");
+      const moveButton = screen.getByLabelText("Move to folder");
       await user.click(moveButton);
 
       // Wait for dropdown to open and find the folder option in the menu
@@ -1642,7 +1652,7 @@ describe("App", () => {
         expect(screen.getByText("Test Session")).toBeInTheDocument();
       });
 
-      const moveButton = screen.getByTitle("Move to folder");
+      const moveButton = screen.getByLabelText("Move to folder");
       await user.click(moveButton);
 
       // Select "Uncategorized" option
@@ -1676,7 +1686,7 @@ describe("App", () => {
         expect(screen.getByText("Test Session")).toBeInTheDocument();
       });
 
-      const moveButton = screen.getByTitle("Move to folder");
+      const moveButton = screen.getByLabelText("Move to folder");
       await user.click(moveButton);
 
       // Wait for dropdown to open - Work folder should appear in the dropdown

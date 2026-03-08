@@ -69,13 +69,13 @@ function getStateBadgeVariant(state: PluginInstance["state"]): "default" | "seco
 function StateIcon({ state }: { state: PluginInstance["state"] }) {
   switch (state) {
     case "active":
-      return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+      return <CheckCircle2 className="h-4 w-4 text-green-500" aria-hidden="true" />;
     case "inactive":
-      return <Power className="h-4 w-4 text-muted-foreground" />;
+      return <Power className="h-4 w-4 text-muted-foreground" aria-hidden="true" />;
     case "activating":
-      return <Loader2 className="h-4 w-4 animate-spin text-primary" />;
+      return <Loader2 className="h-4 w-4 animate-spin text-primary" aria-hidden="true" />;
     case "error":
-      return <AlertCircle className="h-4 w-4 text-destructive" />;
+      return <AlertCircle className="h-4 w-4 text-destructive" aria-hidden="true" />;
     default:
       return null;
   }
@@ -111,7 +111,7 @@ function PluginCard({
   const hasUpdate = updateInfo?.hasUpdate ?? false;
 
   return (
-    <Card>
+    <Card className="transition-all duration-200 hover:shadow-md hover:border-primary/20">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-base flex items-center gap-2">
@@ -279,8 +279,9 @@ function PluginCard({
                     size="icon"
                     className="h-8 w-8 text-muted-foreground hover:text-destructive"
                     disabled={isProcessing || isActive}
+                    aria-label={t("plugins.uninstall")}
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-4 w-4" aria-hidden="true" />
                     <span className="sr-only">{t("plugins.uninstall")}</span>
                   </Button>
                 </AlertDialogTrigger>
@@ -409,20 +410,31 @@ function DropZone({
 
   return (
     <div
-      className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+      role="button"
+      tabIndex={0}
+      aria-label={t("plugins.dropToInstall")}
+      aria-busy={isInstalling}
+      aria-disabled={isInstalling}
+      className={`border-2 border-dashed rounded-lg p-6 text-center transition-all duration-200 ${
         isDragOver
-          ? "border-primary bg-primary/5"
-          : "border-border hover:border-primary/50"
-      }`}
+          ? "border-primary bg-primary/10 scale-[1.02]"
+          : "border-border hover:border-primary/50 hover:bg-muted/50"
+      } ${isInstalling ? "opacity-50 cursor-wait" : ""}`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleBrowseClick();
+        }
+      }}
     >
       <div className="flex flex-col items-center gap-3">
         {isInstalling ? (
-          <Loader2 className="h-8 w-8 text-muted-foreground animate-spin" />
+          <Loader2 className="h-8 w-8 text-muted-foreground animate-spin" aria-hidden="true" />
         ) : (
-          <Upload className="h-8 w-8 text-muted-foreground" />
+          <Upload className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
         )}
         <div>
           <p className="text-sm font-medium">{t("plugins.dropToInstall")}</p>
@@ -436,7 +448,7 @@ function DropZone({
           onClick={handleBrowseClick}
           disabled={isInstalling}
         >
-          <FolderOpen className="h-4 w-4 mr-2" />
+          <FolderOpen className="h-4 w-4 mr-2" aria-hidden="true" />
           {t("plugins.browseFolder")}
         </Button>
       </div>
@@ -560,7 +572,7 @@ export function PluginSettings() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-8">
+      <div className="flex items-center justify-center py-8 animate-in fade-in-0 duration-200">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         <span className="ml-2 text-sm text-muted-foreground">{t("plugins.loading")}</span>
       </div>
@@ -569,7 +581,7 @@ export function PluginSettings() {
 
   if (!isInitialized) {
     return (
-      <div className="flex flex-col items-center justify-center py-8 text-center">
+      <div className="flex flex-col items-center justify-center py-8 text-center animate-in fade-in-0 zoom-in-95 duration-200">
         <AlertCircle className="h-8 w-8 text-destructive mb-2" />
         <p className="text-sm text-muted-foreground">{error || t("plugins.initFailed")}</p>
       </div>
@@ -598,26 +610,31 @@ export function PluginSettings() {
 
       {/* Plugin list */}
       {plugins.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-8 text-center border rounded-lg">
+        <div className="flex flex-col items-center justify-center py-8 text-center border rounded-lg animate-in fade-in-0 zoom-in-95 duration-200">
           <Puzzle className="h-8 w-8 text-muted-foreground mb-2" />
           <p className="text-sm text-muted-foreground">{t("plugins.noPlugins")}</p>
           <p className="text-xs text-muted-foreground mt-1">{t("plugins.installHint")}</p>
         </div>
       ) : (
         <div className="grid gap-3">
-          {plugins.map((plugin) => (
-            <PluginCard
+          {plugins.map((plugin, index) => (
+            <div
               key={plugin.manifest.id}
-              plugin={plugin}
-              updateInfo={updateInfos.get(plugin.manifest.id) ?? null}
-              updateState={updateStates.get(plugin.manifest.id) ?? "idle"}
-              onActivate={() => handleActivate(plugin.manifest.id)}
-              onDeactivate={() => handleDeactivate(plugin.manifest.id)}
-              onUninstall={() => handleUninstall(plugin.manifest.id)}
-              onCheckUpdate={() => handleCheckUpdate(plugin.manifest.id)}
-              onUpdate={() => handleUpdate(plugin.manifest.id)}
-              isProcessing={processingId === plugin.manifest.id}
-            />
+              className="animate-in fade-in-0 slide-in-from-bottom-2"
+              style={{ animationDelay: `${index * 50}ms`, animationFillMode: "both" }}
+            >
+              <PluginCard
+                plugin={plugin}
+                updateInfo={updateInfos.get(plugin.manifest.id) ?? null}
+                updateState={updateStates.get(plugin.manifest.id) ?? "idle"}
+                onActivate={() => handleActivate(plugin.manifest.id)}
+                onDeactivate={() => handleDeactivate(plugin.manifest.id)}
+                onUninstall={() => handleUninstall(plugin.manifest.id)}
+                onCheckUpdate={() => handleCheckUpdate(plugin.manifest.id)}
+                onUpdate={() => handleUpdate(plugin.manifest.id)}
+                isProcessing={processingId === plugin.manifest.id}
+              />
+            </div>
           ))}
         </div>
       )}

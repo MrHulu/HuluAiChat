@@ -19,16 +19,30 @@ export function SessionTag({
   isActive = false,
   size = "xs",
 }: SessionTagProps) {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      e.stopPropagation();
+      onClick?.();
+    }
+  };
+
   return (
     <span
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
       onClick={(e) => {
         e.stopPropagation();
         onClick?.();
       }}
+      onKeyDown={onClick ? handleKeyDown : undefined}
+      aria-label={`#${name}${isActive ? " (active)" : ""}`}
+      aria-pressed={isActive}
       className={cn(
         "inline-flex items-center gap-1 rounded-full border",
-        "transition-all duration-150 ease-out cursor-pointer",
-        "active:scale-95",
+        "transition-all duration-200 ease-out",
+        onClick && "cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+        onClick && "active:scale-95",
         size === "xs" ? "px-1.5 py-0.5 text-[10px]" : "px-2 py-0.5 text-xs",
         isActive
           ? "bg-primary/20 border-primary/30 text-primary"
@@ -42,7 +56,8 @@ export function SessionTag({
             e.stopPropagation();
             onRemove();
           }}
-          className="hover:text-destructive transition-colors"
+          aria-label={`Remove tag ${name}`}
+          className="hover:text-destructive transition-all duration-200 ease-out active:scale-90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -54,6 +69,7 @@ export function SessionTag({
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
+            aria-hidden="true"
           >
             <path d="M18 6 6 18" />
             <path d="m6 6 12 12" />

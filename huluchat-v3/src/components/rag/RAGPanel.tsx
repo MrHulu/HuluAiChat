@@ -40,11 +40,16 @@ export function RAGPanel({
   );
 
   return (
-    <div className={cn("flex flex-col gap-4 p-4", className)}>
+    <section
+      className={cn("flex flex-col gap-4 p-4", className)}
+      role="region"
+      aria-labelledby="rag-panel-title"
+      aria-describedby="rag-panel-description"
+    >
       {/* Header */}
       <div className="space-y-1">
-        <h3 className="text-sm font-medium text-foreground">{t("rag.title")}</h3>
-        <p className="text-xs text-muted-foreground">{t("rag.description")}</p>
+        <h3 id="rag-panel-title" className="text-sm font-medium text-foreground">{t("rag.title")}</h3>
+        <p id="rag-panel-description" className="text-xs text-muted-foreground">{t("rag.description")}</p>
       </div>
 
       {/* Document Uploader */}
@@ -56,6 +61,6 @@ export function RAGPanel({
 
       {/* Document List */}
       <DocumentList onDelete={handleDelete} disabled={disabled} />
-    </div>
+    </section>
   );
 }
