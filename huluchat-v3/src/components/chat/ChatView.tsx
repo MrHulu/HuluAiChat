@@ -32,18 +32,44 @@ function ConnectionIndicator({ status }: { status: ConnectionStatus }) {
   const { t } = useTranslation();
 
   const statusConfig = {
-    connecting: { color: "bg-yellow-500", text: t("chat.connecting") },
-    connected: { color: "bg-green-500", text: t("chat.connected") },
-    disconnected: { color: "bg-red-500", text: t("chat.disconnected") },
-    error: { color: "bg-red-500", text: t("chat.connectionError") },
+    connecting: { color: "bg-warning", ring: "ring-warning/30", text: t("chat.connecting"), animate: true },
+    connected: { color: "bg-success", ring: "ring-success/30", text: t("chat.connected"), animate: false },
+    disconnected: { color: "bg-error", ring: "ring-error/30", text: t("chat.disconnected"), animate: false },
+    error: { color: "bg-error", ring: "ring-error/30", text: t("chat.connectionError"), animate: true },
   };
 
   const config = statusConfig[status];
 
   return (
-    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-      <span className={cn("w-2 h-2 rounded-full", config.color)} />
-      <span>{config.text}</span>
+    <div
+      className="flex items-center gap-2 text-xs text-muted-foreground transition-all duration-200 ease-out"
+      role="status"
+      aria-live="polite"
+      aria-label={config.text}
+    >
+      <span className="relative flex h-2 w-2">
+        {/* Pulse ring for connecting/error states */}
+        {config.animate && (
+          <span
+            className={cn(
+              "absolute inline-flex h-full w-full rounded-full opacity-75",
+              config.color,
+              "animate-ping"
+            )}
+          />
+        )}
+        {/* Core indicator */}
+        <span
+          className={cn(
+            "relative inline-flex rounded-full h-2 w-2",
+            config.color,
+            "transition-all duration-300",
+            status === "connected" && "ring-2 ring-offset-1 ring-offset-background",
+            status === "connected" && config.ring
+          )}
+        />
+      </span>
+      <span className="transition-opacity duration-200">{config.text}</span>
     </div>
   );
 }
@@ -178,9 +204,9 @@ export function ChatView({ sessionId }: ChatViewProps) {
   return (
     <div className="flex flex-col h-full">
       {/* 顶部状态栏 */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-background/50 backdrop-blur-sm">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-gradient-to-b from-background/80 to-background/50 backdrop-blur-sm">
         <div className="flex items-center gap-3">
-          <div className="text-sm font-medium text-foreground">
+          <div className="text-sm font-medium text-foreground transition-all duration-200">
             {sessionId ? t("chat.title") : t("chat.selectSession")}
           </div>
           {/* 模型选择器 */}
@@ -200,16 +226,25 @@ export function ChatView({ sessionId }: ChatViewProps) {
             <button
               onClick={() => setIsBookmarkPanelOpen(!isBookmarkPanelOpen)}
               aria-pressed={isBookmarkPanelOpen}
+              aria-label={t("chat.bookmarks")}
               className={cn(
-                "px-2 py-1 text-xs rounded-md border transition-colors flex items-center gap-1",
+                "px-2 py-1 text-xs rounded-md border transition-all duration-200 ease-out flex items-center gap-1",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                "hover:scale-105 active:scale-95",
                 isBookmarkPanelOpen
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-background hover:bg-accent border-border"
+                  ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                  : "bg-background hover:bg-accent hover:border-accent border-border"
               )}
             >
-              <Bookmark className="w-3 h-3" />
+              <Bookmark className={cn(
+                "w-3 h-3 transition-transform duration-200",
+                isBookmarkPanelOpen && "scale-110"
+              )} />
               {bookmarkedMessages.size > 0 && (
-                <span className="text-[10px]">{bookmarkedMessages.size}</span>
+                <span className={cn(
+                  "text-[10px] font-medium transition-all duration-200",
+                  isBookmarkPanelOpen ? "text-primary-foreground" : "text-primary"
+                )}>{bookmarkedMessages.size}</span>
               )}
             </button>
           )}
@@ -218,11 +253,14 @@ export function ChatView({ sessionId }: ChatViewProps) {
             <button
               onClick={handleRAGPanelToggle}
               aria-pressed={isRAGPanelOpen}
+              aria-label={t("rag.documents")}
               className={cn(
-                "px-2 py-1 text-xs rounded-md border transition-colors",
+                "px-2 py-1 text-xs rounded-md border transition-all duration-200 ease-out",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                "hover:scale-105 active:scale-95",
                 isRAGPanelOpen
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-background hover:bg-accent border-border"
+                  ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                  : "bg-background hover:bg-accent hover:border-accent border-border"
               )}
             >
               {t("rag.title")}
@@ -243,9 +281,9 @@ export function ChatView({ sessionId }: ChatViewProps) {
         onBookmarkToggle={handleBookmarkToggle}
       />
 
-      {/* Bookmark Panel */}
+      {/* Bookmark Panel - with slide-in animation */}
       {isBookmarkPanelOpen && sessionId && (
-        <div className="border-t border-border bg-muted/30">
+        <div className="border-t border-border bg-muted/30 animate-in slide-in-from-top-2 duration-200">
           <BookmarkPanel
             sessionId={sessionId}
             onJumpToMessage={handleJumpToMessage}
@@ -253,9 +291,9 @@ export function ChatView({ sessionId }: ChatViewProps) {
         </div>
       )}
 
-      {/* RAG Panel（可展开） */}
+      {/* RAG Panel（可展开）- with slide-in animation */}
       {isRAGPanelOpen && sessionId && (
-        <div className="border-t border-border bg-muted/30 max-h-64 overflow-y-auto">
+        <div className="border-t border-border bg-muted/30 max-h-64 overflow-y-auto animate-in slide-in-from-top-2 duration-200">
           <RAGPanel
             disabled={isLoading}
             onDocumentChange={() => checkDocuments()}

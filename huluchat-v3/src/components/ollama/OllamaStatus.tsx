@@ -33,18 +33,24 @@ export function OllamaStatus({
   const { t } = useTranslation();
 
   return (
-    <div className="flex items-center justify-between p-3 rounded-lg border bg-card">
+    <div
+      className="flex items-center justify-between p-3 rounded-lg border bg-card transition-all duration-200 ease-out"
+      role="status"
+      aria-live="polite"
+      aria-label={available ? t("ollama.online") : t("ollama.offline")}
+    >
       <div className="flex items-center gap-3">
         {/* 状态指示器 */}
         <div
           className={cn(
-            "flex items-center justify-center w-8 h-8 rounded-full",
+            "flex items-center justify-center w-8 h-8 rounded-full transition-all duration-200 ease-out",
             available
-              ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
+              ? "bg-success/20 text-success"
               : "bg-muted text-muted-foreground"
           )}
+          aria-hidden="true"
         >
-          <Server className="h-4 w-4" />
+          <Server className="h-4 w-4 transition-transform duration-200 hover:scale-110" />
         </div>
 
         {/* 状态信息 */}
@@ -71,11 +77,13 @@ export function OllamaStatus({
         onClick={onRefresh}
         disabled={isRefreshing}
         className="h-8 w-8"
+        aria-label={t("ollama.refreshStatus")}
+        aria-busy={isRefreshing}
       >
         {isRefreshing ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
+          <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
         ) : (
-          <RefreshCw className="h-4 w-4" />
+          <RefreshCw className="h-4 w-4" aria-hidden="true" />
         )}
         <span className="sr-only">{t("ollama.refreshStatus")}</span>
       </Button>
@@ -101,18 +109,32 @@ export function OllamaStatusIndicator({
   const { t } = useTranslation();
 
   return (
-    <div className="flex items-center gap-1.5">
+    <div
+      className="flex items-center gap-1.5"
+      role="status"
+      aria-label={available
+        ? t("ollama.models", { count: modelCount })
+        : t("ollama.offline")}
+    >
       <div
         className={cn(
           "w-2 h-2 rounded-full",
           available
-            ? "bg-green-500 animate-pulse"
+            ? "bg-success animate-pulse"
             : "bg-muted-foreground"
         )}
+        aria-hidden="true"
       />
       {showText && (
         <span className="text-xs text-muted-foreground">
           {available ? `${modelCount} ${t("ollama.online")}` : t("ollama.offline")}
+        </span>
+      )}
+      {!showText && (
+        <span className="sr-only">
+          {available
+            ? t("ollama.models", { count: modelCount })
+            : t("ollama.offline")}
         </span>
       )}
     </div>

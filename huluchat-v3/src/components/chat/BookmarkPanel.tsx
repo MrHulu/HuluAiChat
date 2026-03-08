@@ -102,7 +102,7 @@ export function BookmarkPanel({
 
   if (isLoading) {
     return (
-      <div className={cn("p-3 text-center text-muted-foreground text-sm", className)}>
+      <div className={cn("p-3 text-center text-muted-foreground text-sm", className)} role="status" aria-live="polite">
         {t("common.loading")}
       </div>
     );
@@ -122,7 +122,7 @@ export function BookmarkPanel({
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2 border-b border-border">
         <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-          <Bookmark className="w-4 h-4 text-primary" />
+          <Bookmark className="w-4 h-4 text-primary" aria-hidden="true" />
           <span>{t("chat.bookmarks")}</span>
           <span className="text-xs text-muted-foreground">({bookmarks.length})</span>
         </div>
@@ -135,17 +135,18 @@ export function BookmarkPanel({
               size="sm"
               className="h-6 w-6 p-0"
               disabled={isExporting || bookmarks.length === 0}
+              aria-label={t("chat.exportBookmarks")}
             >
-              <Download className="h-3 w-3" />
+              <Download className="h-3 w-3" aria-hidden="true" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={handleExportJSON}>
-              <FileJson className="h-4 w-4 mr-2" />
+              <FileJson className="h-4 w-4 mr-2" aria-hidden="true" />
               {t("chat.exportJSON")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleExportMarkdown}>
-              <FileText className="h-4 w-4 mr-2" />
+              <FileText className="h-4 w-4 mr-2" aria-hidden="true" />
               {t("chat.exportMarkdown")}
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -153,14 +154,29 @@ export function BookmarkPanel({
       </div>
 
       {/* Bookmark List */}
-      <div className="flex-1 overflow-y-auto max-h-48">
-        {bookmarks.map((bookmark) => (
+      <div className="flex-1 overflow-y-auto max-h-48" role="list" aria-label={t("chat.bookmarks")}>
+        {bookmarks.map((bookmark, index) => (
           <div
             key={bookmark.id}
+            role="listitem"
             onClick={() => handleJump(bookmark.message_id)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                handleJump(bookmark.message_id);
+              }
+            }}
+            tabIndex={0}
+            aria-label={t("chat.jumpToBookmark", { content: bookmark.message_content.slice(0, 50) })}
+            style={{ animationDelay: `${index * 50}ms` }}
             className={cn(
               "group flex items-start gap-2 px-3 py-2 cursor-pointer",
-              "hover:bg-accent/50 transition-colors border-b border-border/50 last:border-b-0"
+              "border-b border-border/50 last:border-b-0",
+              "transition-all duration-200 ease-out",
+              "hover:bg-accent/50 hover:translate-x-0.5",
+              "active:scale-[0.99]",
+              "animate-in fade-in-0 slide-in-from-left-1",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
             )}
           >
             {/* Role indicator */}
@@ -171,6 +187,7 @@ export function BookmarkPanel({
                   ? "text-primary"
                   : "text-muted-foreground"
               )}
+              aria-hidden="true"
             />
 
             {/* Content */}
@@ -186,14 +203,19 @@ export function BookmarkPanel({
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              <ChevronRight className="w-3 h-3 text-muted-foreground" />
+            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out">
+              <ChevronRight className="w-3 h-3 text-muted-foreground" aria-hidden="true" />
               <button
                 onClick={(e) => handleDelete(bookmark.id, e)}
-                className="p-1 hover:bg-destructive/20 rounded text-muted-foreground hover:text-destructive transition-colors"
+                className={cn(
+                  "p-1 rounded",
+                  "text-muted-foreground hover:text-destructive hover:bg-destructive/20",
+                  "transition-all duration-200 ease-out",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+                )}
                 aria-label={t("chat.removeBookmark")}
               >
-                <X className="w-3 h-3" />
+                <X className="w-3 h-3" aria-hidden="true" />
               </button>
             </div>
           </div>

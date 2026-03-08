@@ -87,17 +87,32 @@ export function SessionItem({
     onMoveToFolder?.(session.id, folderId);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onClick();
+    }
+  };
+
   return (
     <div
-      onClick={onClick}
-      className={cn(
+      role="listitem"
+    >
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={onClick}
+        onKeyDown={handleKeyDown}
+        aria-label={t("sessionItem.selectSession", { title: session.title || t("sessionItem.newChat") })}
+        aria-current={isActive ? "true" : undefined}
+        className={cn(
         "group flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer",
         "transition-all duration-200 ease-out",
-        "list-item-enter",
         isActive
-          ? "bg-accent text-accent-foreground"
-          : "hover:bg-muted/50 text-foreground",
-        "active:scale-[0.98]"
+          ? "bg-accent text-accent-foreground shadow-sm"
+          : "hover:bg-muted/60 hover:shadow-sm text-foreground",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+        "active:scale-[0.98] active:bg-accent/80"
       )}
     >
       <div className="flex-1 min-w-0">
@@ -109,7 +124,12 @@ export function SessionItem({
         </div>
         {/* Tags */}
         {tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-1" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="flex flex-wrap gap-1 mt-1"
+            onClick={(e) => e.stopPropagation()}
+            role="group"
+            aria-label={t("sessionItem.tags")}
+          >
             {tags.slice(0, 3).map((tag) => (
               <SessionTag
                 key={tag}
@@ -119,7 +139,9 @@ export function SessionItem({
               />
             ))}
             {tags.length > 3 && (
-              <span className="text-[10px] text-muted-foreground">+{tags.length - 3}</span>
+              <span className="text-[10px] text-muted-foreground" aria-label={t("sessionItem.moreTags", { count: tags.length - 3 })}>
+                +{tags.length - 3}
+              </span>
             )}
           </div>
         )}
@@ -133,32 +155,37 @@ export function SessionItem({
             <button
               onClick={(e) => e.stopPropagation()}
               disabled={isExporting}
+              aria-label={t("sessionItem.exportSession")}
+              aria-busy={isExporting}
               className={cn(
-                "opacity-0 group-hover:opacity-100 transition-all",
-                "p-1.5 rounded-md hover:bg-primary/10 text-muted-foreground hover:text-primary",
+                "opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out",
+                "p-1.5 rounded-md",
+                "text-muted-foreground hover:text-primary hover:bg-primary/10",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                "focus-visible:opacity-100",
+                "active:scale-90",
                 isExporting && "opacity-50 cursor-wait"
               )}
-              title={t("sessionItem.exportSession")}
             >
-              <Download className="w-3.5 h-3.5" />
+              <Download className="w-3.5 h-3.5" aria-hidden="true" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
             <DropdownMenuItem onClick={handleExport("markdown")}>
               <span className="flex items-center gap-2">
-                <FileText className="w-3.5 h-3.5" />
+                <FileText className="w-3.5 h-3.5" aria-hidden="true" />
                 {t("sessionItem.markdown")}
               </span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleExport("json")}>
               <span className="flex items-center gap-2">
-                <FileText className="w-3.5 h-3.5" />
+                <FileText className="w-3.5 h-3.5" aria-hidden="true" />
                 {t("sessionItem.json")}
               </span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleExport("txt")}>
               <span className="flex items-center gap-2">
-                <FileText className="w-3.5 h-3.5" />
+                <FileText className="w-3.5 h-3.5" aria-hidden="true" />
                 {t("sessionItem.plainText")}
               </span>
             </DropdownMenuItem>
@@ -171,19 +198,23 @@ export function SessionItem({
             <DropdownMenuTrigger asChild>
               <button
                 onClick={(e) => e.stopPropagation()}
+                aria-label={t("sessionItem.moveToFolder")}
                 className={cn(
-                  "opacity-0 group-hover:opacity-100 transition-all",
-                  "p-1.5 rounded-md hover:bg-primary/10 text-muted-foreground hover:text-primary"
+                  "opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out",
+                  "p-1.5 rounded-md",
+                  "text-muted-foreground hover:text-primary hover:bg-primary/10",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  "focus-visible:opacity-100",
+                  "active:scale-90"
                 )}
-                title={t("sessionItem.moveToFolder")}
               >
-                <FolderOpen className="w-3.5 h-3.5" />
+                <FolderOpen className="w-3.5 h-3.5" aria-hidden="true" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
               <DropdownMenuItem onClick={handleMoveToFolder(null)}>
                 <span className="flex items-center gap-2">
-                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <ChevronLeft className="w-3.5 h-3.5" aria-hidden="true" />
                   {t("sessionItem.uncategorized")}
                 </span>
               </DropdownMenuItem>
@@ -194,10 +225,10 @@ export function SessionItem({
                   className={session.folder_id === folder.id ? "bg-muted" : ""}
                 >
                   <span className="flex items-center gap-2">
-                    <FolderOpen className="w-3.5 h-3.5" />
+                    <FolderOpen className="w-3.5 h-3.5" aria-hidden="true" />
                     {folder.name}
                     {session.folder_id === folder.id && (
-                      <Check className="w-3 h-3 ml-auto text-primary" />
+                      <Check className="w-3 h-3 ml-auto text-primary" aria-hidden="true" />
                     )}
                   </span>
                 </DropdownMenuItem>
@@ -209,15 +240,20 @@ export function SessionItem({
         {/* Delete button */}
         <button
           onClick={handleDelete}
+          aria-label={t("sessionItem.deleteSession")}
           className={cn(
-            "opacity-0 group-hover:opacity-100 transition-all",
-            "p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
+            "opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out",
+            "p-1.5 rounded-md",
+            "text-muted-foreground hover:text-destructive hover:bg-destructive/10",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+            "focus-visible:opacity-100",
+            "active:scale-90"
           )}
-          title={t("sessionItem.deleteSession")}
         >
-          <Trash2 className="w-3.5 h-3.5" />
+          <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
         </button>
       </div>
     </div>
+  </div>
   );
 }

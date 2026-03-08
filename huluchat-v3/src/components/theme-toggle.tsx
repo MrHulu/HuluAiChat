@@ -15,7 +15,7 @@ import {
 import { useTheme } from "@/components/theme-provider"
 
 export function ThemeToggle() {
-  const { setTheme } = useTheme()
+  const { theme, setTheme } = useTheme()
   const { t } = useTranslation()
 
   return (
@@ -23,9 +23,15 @@ export function ThemeToggle() {
       <Tooltip>
         <TooltipTrigger asChild>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="icon">
-              <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-              <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            <Button
+              variant="outline"
+              size="icon"
+              aria-label={t("theme.toggle")}
+              aria-haspopup="true"
+              className="relative overflow-hidden"
+            >
+              <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all duration-200 ease-out dark:-rotate-90 dark:scale-0" aria-hidden="true" />
+              <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all duration-200 ease-out dark:rotate-0 dark:scale-100" aria-hidden="true" />
               <span className="sr-only">{t("theme.toggle")}</span>
             </Button>
           </DropdownMenuTrigger>
@@ -35,14 +41,35 @@ export function ThemeToggle() {
         </TooltipContent>
       </Tooltip>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
+        <DropdownMenuItem
+          onClick={() => setTheme("light")}
+          aria-current={theme === "light" ? "true" : undefined}
+          className="transition-all duration-200 ease-out"
+        >
           {t("theme.light")}
+          {theme === "light" && (
+            <span className="ml-auto text-xs animate-in zoom-in-50 duration-150">✓</span>
+          )}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
+        <DropdownMenuItem
+          onClick={() => setTheme("dark")}
+          aria-current={theme === "dark" ? "true" : undefined}
+          className="transition-all duration-200 ease-out"
+        >
           {t("theme.dark")}
+          {theme === "dark" && (
+            <span className="ml-auto text-xs animate-in zoom-in-50 duration-150">✓</span>
+          )}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
+        <DropdownMenuItem
+          onClick={() => setTheme("system")}
+          aria-current={theme === "system" ? "true" : undefined}
+          className="transition-all duration-200 ease-out"
+        >
           {t("theme.system")}
+          {theme === "system" && (
+            <span className="ml-auto text-xs animate-in zoom-in-50 duration-150">✓</span>
+          )}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
