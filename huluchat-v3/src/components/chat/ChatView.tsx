@@ -204,9 +204,9 @@ export function ChatView({ sessionId }: ChatViewProps) {
   return (
     <div className="flex flex-col h-full">
       {/* 顶部状态栏 */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-gradient-to-b from-background/80 to-background/50 backdrop-blur-sm">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-gradient-to-b from-background/80 to-background/50 backdrop-blur-sm dark:from-background/90 dark:to-background/70 dark:shadow-[inset_0_-1px_0_0_rgba(255,255,255,0.05)]">
         <div className="flex items-center gap-3">
-          <div className="text-sm font-medium text-foreground transition-all duration-200">
+          <div className="text-sm font-medium text-foreground transition-all duration-200 dark:text-foreground/95">
             {sessionId ? t("chat.title") : t("chat.selectSession")}
           </div>
           {/* 模型选择器 */}

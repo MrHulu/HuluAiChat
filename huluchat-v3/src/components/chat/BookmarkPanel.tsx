@@ -102,7 +102,7 @@ export function BookmarkPanel({
 
   if (isLoading) {
     return (
-      <div className={cn("p-3 text-center text-muted-foreground text-sm", className)} role="status" aria-live="polite">
+      <div className={cn("p-3 text-center text-muted-foreground text-sm dark:bg-muted/10", className)} role="status" aria-live="polite">
         {t("common.loading")}
       </div>
     );
@@ -110,7 +110,7 @@ export function BookmarkPanel({
 
   if (bookmarks.length === 0) {
     return (
-      <div className={cn("p-3 text-center text-muted-foreground text-sm", className)}>
+      <div className={cn("p-3 text-center text-muted-foreground text-sm dark:bg-muted/10 dark:border dark:border-white/5 rounded-lg mx-2", className)}>
         <Bookmark className="w-5 h-5 mx-auto mb-2 opacity-50" />
         <p>{t("chat.noBookmarks")}</p>
       </div>
