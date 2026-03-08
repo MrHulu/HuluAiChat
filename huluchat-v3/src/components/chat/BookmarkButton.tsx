@@ -71,6 +71,7 @@ export function BookmarkButton({
       disabled={isLoading}
       aria-label={bookmarked ? t("chat.removeBookmark") : t("chat.addBookmark")}
       aria-pressed={bookmarked}
+      aria-busy={isLoading}
       className={cn(
         "p-1.5 rounded-md transition-all duration-200 ease-out",
         "opacity-0 group-hover:opacity-100",
