@@ -174,17 +174,19 @@ export function PromptTemplateSelector({
           <nav className="w-48 border-r border-border pr-2 overflow-y-auto dark:border-white/10" aria-label={t("templates.categoriesLabel")}>
             <Button
               variant={selectedCategory === null ? "secondary" : "ghost"}
-              className="w-full justify-start mb-1 transition-all duration-200 ease-out"
+              className="w-full justify-start mb-1 transition-all duration-200 ease-out animate-list-enter"
+              style={{ animationDelay: '0ms' }}
               onClick={() => setSelectedCategory(null)}
               aria-pressed={selectedCategory === null}
             >
               {t("templates.all")}
             </Button>
-            {(Object.keys(CATEGORY_ICONS) as TemplateCategory[]).map((category) => (
+            {(Object.keys(CATEGORY_ICONS) as TemplateCategory[]).map((category, index) => (
               <Button
                 key={category}
                 variant={selectedCategory === category ? "secondary" : "ghost"}
-                className="w-full justify-start mb-1 transition-all duration-200 ease-out"
+                className="w-full justify-start mb-1 transition-all duration-200 ease-out animate-list-enter"
+                style={{ animationDelay: `${(index + 1) * 50}ms` }}
                 onClick={() => setSelectedCategory(category)}
                 aria-pressed={selectedCategory === category}
               >
