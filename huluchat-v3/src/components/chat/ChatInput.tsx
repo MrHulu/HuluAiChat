@@ -223,7 +223,7 @@ export const ChatInput = memo(function ChatInput({
           aria-live="polite"
         >
           <div className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-dashed border-primary/50 bg-primary/5 dark:bg-primary/10 dark:border-primary/40">
-            <ImagePlus className="w-8 h-8 text-primary animate-bounce" aria-hidden="true" />
+            <ImagePlus className="w-8 h-8 text-primary animate-bounce-subtle" aria-hidden="true" />
             <span className="text-sm font-medium text-primary">{t("chat.dropImage")}</span>
           </div>
         </div>
@@ -236,7 +236,7 @@ export const ChatInput = memo(function ChatInput({
           aria-label={t("chat.uploadedImages")}
         >
           {images.map((image, index) => (
-            <div key={index} className="image-preview-item relative group list-item-enter rounded-lg">
+            <div key={index} className="image-preview-item relative group animate-scale-in rounded-lg">
               <img
                 src={image.image_url.url}
                 alt={t("chat.uploadedImage", { index: index + 1 })}
