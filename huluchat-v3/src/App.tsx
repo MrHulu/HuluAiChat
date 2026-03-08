@@ -207,7 +207,18 @@ function App() {
 
   return (
     <TooltipProvider>
-      <Toaster position="top-center" richColors closeButton />
+      <Toaster
+        position="top-center"
+        richColors
+        closeButton
+        toastOptions={{
+          classNames: {
+            toast: "animate-slide-down",
+            success: "animate-success",
+            error: "animate-shake-subtle",
+          },
+        }}
+      />
       <UpdateNotification />
       <WelcomeDialog
         open={welcomeOpen}
