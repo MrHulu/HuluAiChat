@@ -351,7 +351,10 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
               <div className="grid gap-2">
                 <Label htmlFor="model">{t("settings.model")}</Label>
                 <Select value={model} onValueChange={setModel}>
-                  <SelectTrigger>
+                  <SelectTrigger
+                    id="model"
+                    aria-describedby={model ? "model-description" : undefined}
+                  >
                     <SelectValue placeholder={t("settings.selectModel")} />
                   </SelectTrigger>
                   <SelectContent>
@@ -365,7 +368,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                   </SelectContent>
                 </Select>
                 {model && (
-                  <p className="text-xs text-muted-foreground">
+                  <p id="model-description" className="text-xs text-muted-foreground">
                     {models.find((m) => m.id === model)?.description}
                   </p>
                 )}
