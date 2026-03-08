@@ -88,7 +88,7 @@ export function LanguageSelector() {
               <Loader2 className="ml-auto h-3 w-3 animate-spin" aria-hidden="true" />
             )}
             {i18n.language === lang.code && loadingLang !== lang.code && (
-              <span className="ml-auto text-xs text-muted-foreground animate-in zoom-in-50 duration-150">✓</span>
+              <span className="ml-auto text-xs text-muted-foreground animate-bounce-in">✓</span>
             )}
           </DropdownMenuItem>
         ))}
