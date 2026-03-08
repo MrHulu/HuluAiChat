@@ -97,10 +97,10 @@ export function WelcomeDialog({ open, onOpenChange, onComplete }: WelcomeDialogP
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                 "hover:scale-125 active:scale-110",
                 index === currentStep
-                  ? "bg-primary w-6"
+                  ? "bg-primary w-6 dark:shadow-lg dark:shadow-primary/30"
                   : index < currentStep
-                    ? "bg-primary/50 hover:bg-primary/70"
-                    : "bg-muted hover:bg-muted-foreground/30"
+                    ? "bg-primary/50 hover:bg-primary/70 dark:bg-primary/40 dark:hover:bg-primary/60"
+                    : "bg-muted hover:bg-muted-foreground/30 dark:bg-muted/60 dark:hover:bg-muted-foreground/40"
               )}
             />
           ))}
@@ -108,12 +108,14 @@ export function WelcomeDialog({ open, onOpenChange, onComplete }: WelcomeDialogP
 
         {/* Icon display with animation */}
         <div className="flex justify-center py-6" aria-hidden="true">
-          <span
-            key={step.key}
-            className="text-6xl animate-in zoom-in-50 duration-300"
-          >
-            {step.icon}
-          </span>
+          <div className="w-24 h-24 flex items-center justify-center rounded-2xl bg-muted/50 dark:bg-muted/30 dark:border dark:border-white/10 dark:shadow-lg dark:shadow-black/20">
+            <span
+              key={step.key}
+              className="text-6xl animate-in zoom-in-50 duration-300"
+            >
+              {step.icon}
+            </span>
+          </div>
         </div>
 
         {/* Progress info for screen readers */}
