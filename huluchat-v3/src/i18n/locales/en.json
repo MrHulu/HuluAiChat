@@ -206,6 +206,7 @@
     "title": "Keyboard Shortcuts",
     "description": "View all available keyboard shortcuts to navigate the app efficiently",
     "shortcutsList": "List of keyboard shortcuts",
+    "shortcutKey": "{{action}}: {{key}}",
     "newChat": "New chat",
     "search": "Search chats",
     "settings": "Open settings",

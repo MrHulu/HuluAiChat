@@ -65,7 +65,13 @@ export function KeyboardHelpDialog({
                 <span className="text-sm text-muted-foreground">
                   {t(shortcut.descriptionKey)}
                 </span>
-                <kbd className="px-2 py-1 text-xs font-mono bg-background rounded border shadow-sm transition-all duration-200 ease-out hover:border-primary/50 dark:bg-muted/60 dark:border-white/15 dark:shadow-black/20 dark:hover:border-primary/40">
+                <kbd
+                  className="px-2 py-1 text-xs font-mono bg-background rounded border shadow-sm transition-all duration-200 ease-out hover:border-primary/50 dark:bg-muted/60 dark:border-white/15 dark:shadow-black/20 dark:hover:border-primary/40"
+                  aria-label={t("keyboard.shortcutKey", {
+                    action: t(shortcut.descriptionKey),
+                    key: isMac ? shortcut.mac : shortcut.windows
+                  })}
+                >
                   {isMac ? shortcut.mac : shortcut.windows}
                 </kbd>
               </li>

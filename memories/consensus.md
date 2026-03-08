@@ -1,10 +1,10 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-08 - Cycle #223
+2026-03-08 - Cycle #224
 
 ## Current Phase
-♿ **无障碍访问增强** - MathBlock/MermaidBlock 组件 i18n 无障碍改进
+♿ **无障碍访问增强** - KeyboardHelpDialog kbd 元素无障碍改进
 
 ---
 
@@ -23,6 +23,7 @@
 - ✅ HTML lang 属性自动更新（语言切换时）
 - ✅ MathBlock 块级模式添加 role="img" 无障碍属性
 - ✅ MermaidBlock/MathBlock i18n 翻译支持（加载/错误状态）
+- ✅ KeyboardHelpDialog kbd 元素添加 aria-label（屏幕阅读器友好播报）
 
 继续方向：
 - 屏幕阅读器测试
@@ -79,6 +80,25 @@
   - MermaidBlock 添加 i18n 翻译支持
   - MathBlock 添加 i18n 翻译支持
   - i18n 翻译键：mermaid.loading, mermaid.error, mermaid.label, math.formula, math.error
+
+### Cycle #224 KeyboardHelpDialog kbd 无障碍改进
+**改进内容**：
+- ✅ KeyboardHelpDialog 中 kbd 元素添加 aria-label
+- ✅ 使用 i18n 翻译键 keyboard.shortcutKey 描述快捷键功能
+- ✅ 屏幕阅读器播报格式："{功能描述}：{快捷键}"
+- ✅ i18n 翻译（EN/ZH）
+
+**测试结果**：
+- ✅ 712 个测试全部通过
+
+### Cycle #224 KeyboardHelpDialog kbd 无障碍改进
+**改进内容**：
+- ✅ kbd 元素添加 aria-label 属性
+- ✅ aria-label 包含功能描述和快捷键（如 "New chat: Ctrl+N"）
+- ✅ i18n 翻译键：keyboard.shortcutKey（EN/ZH）
+
+**测试结果**：
+- ✅ 712 个测试全部通过
 
 ### Cycle #223 MathBlock/MermaidBlock 无障碍改进
 **改进内容**：
@@ -240,4 +260,4 @@
 ---
 
 ## 循环计数
-当前周期: 223
+当前周期: 224
