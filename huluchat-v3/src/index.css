@@ -771,6 +771,57 @@
       0 0 8px oklch(0.55 0.2 264 / 0.15);
   }
 
+  /* ═══════════════════════════════════════════════════════════════
+   * ✨ Dark Mode - Chat Input Enhancement (Cycle #191)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Chat input container - subtle inner glow when focused */
+  .dark .chat-input-container:focus-within {
+    background: oklch(0.18 0 0);
+    box-shadow:
+      inset 0 1px 0 oklch(1 0 0 / 5%),
+      0 0 0 1px oklch(0.5 0.15 264 / 0.2),
+      0 -8px 32px -8px oklch(0.5 0.15 264 / 0.08);
+  }
+
+  /* Chat input textarea - enhanced glow */
+  .dark textarea:focus {
+    border-color: oklch(0.55 0.2 264 / 0.8);
+    box-shadow:
+      0 0 0 1px oklch(0.55 0.2 264 / 0.3),
+      0 0 16px oklch(0.5 0.2 264 / 0.12),
+      inset 0 1px 0 oklch(1 0 0 / 3%);
+  }
+
+  /* Send button - glowing effect when active */
+  .dark .chat-send-button:not(:disabled):hover {
+    box-shadow:
+      0 0 20px oklch(0.5 0.2 264 / 0.3),
+      0 0 40px oklch(0.5 0.2 264 / 0.1);
+  }
+
+  .dark .chat-send-button:not(:disabled):active {
+    box-shadow:
+      0 0 12px oklch(0.5 0.2 264 / 0.25);
+  }
+
+  /* Icon buttons in chat input - subtle glow on hover */
+  .dark .chat-input-icon-btn:hover:not(:disabled) {
+    background: oklch(0.28 0.05 264 / 0.4);
+    box-shadow: 0 0 8px oklch(0.5 0.15 264 / 0.15);
+  }
+
+  /* Image preview container - enhanced border */
+  .dark .image-preview-item {
+    border-color: oklch(1 0 0 / 10%);
+    box-shadow: 0 2px 8px oklch(0 0 0 / 0.25);
+  }
+
+  .dark .image-preview-item:hover {
+    border-color: oklch(0.5 0.15 264 / 0.4);
+    box-shadow: 0 4px 12px oklch(0 0 0 / 0.3);
+  }
+
   /* Select trigger - enhanced styling */
   .dark [data-slot="select-trigger"] {
     border-color: oklch(1 0 0 / 15%);
