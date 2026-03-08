@@ -175,19 +175,19 @@ export function SessionItem({
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-            <DropdownMenuItem onClick={handleExport("markdown")}>
+            <DropdownMenuItem onClick={handleExport("markdown")} className="animate-list-enter" style={{ animationDelay: "0ms" }}>
               <span className="flex items-center gap-2">
                 <FileText className="w-3.5 h-3.5" aria-hidden="true" />
                 {t("sessionItem.markdown")}
               </span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleExport("json")}>
+            <DropdownMenuItem onClick={handleExport("json")} className="animate-list-enter" style={{ animationDelay: "50ms" }}>
               <span className="flex items-center gap-2">
                 <FileText className="w-3.5 h-3.5" aria-hidden="true" />
                 {t("sessionItem.json")}
               </span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleExport("txt")}>
+            <DropdownMenuItem onClick={handleExport("txt")} className="animate-list-enter" style={{ animationDelay: "100ms" }}>
               <span className="flex items-center gap-2">
                 <FileText className="w-3.5 h-3.5" aria-hidden="true" />
                 {t("sessionItem.plainText")}
@@ -216,17 +216,21 @@ export function SessionItem({
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-              <DropdownMenuItem onClick={handleMoveToFolder(null)}>
+              <DropdownMenuItem onClick={handleMoveToFolder(null)} className="animate-list-enter" style={{ animationDelay: "0ms" }}>
                 <span className="flex items-center gap-2">
                   <ChevronLeft className="w-3.5 h-3.5" aria-hidden="true" />
                   {t("sessionItem.uncategorized")}
                 </span>
               </DropdownMenuItem>
-              {folders.map((folder) => (
+              {folders.map((folder, index) => (
                 <DropdownMenuItem
                   key={folder.id}
                   onClick={handleMoveToFolder(folder.id)}
-                  className={session.folder_id === folder.id ? "bg-muted" : ""}
+                  className={cn(
+                    "animate-list-enter",
+                    session.folder_id === folder.id ? "bg-muted" : ""
+                  )}
+                  style={{ animationDelay: `${(index + 1) * 50}ms` }}
                 >
                   <span className="flex items-center gap-2">
                     <FolderOpen className="w-3.5 h-3.5" aria-hidden="true" />
