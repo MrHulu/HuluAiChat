@@ -76,14 +76,14 @@ export function OllamaStatus({
         size="icon"
         onClick={onRefresh}
         disabled={isRefreshing}
-        className="h-8 w-8"
+        className="group/refresh h-8 w-8"
         aria-label={t("ollama.refreshStatus")}
         aria-busy={isRefreshing}
       >
         {isRefreshing ? (
           <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
         ) : (
-          <RefreshCw className="h-4 w-4" aria-hidden="true" />
+          <RefreshCw className="h-4 w-4 transition-transform duration-200 group-hover/refresh:rotate-180" aria-hidden="true" />
         )}
         <span className="sr-only">{t("ollama.refreshStatus")}</span>
       </Button>

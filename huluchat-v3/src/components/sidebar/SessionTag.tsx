@@ -57,7 +57,7 @@ export function SessionTag({
             onRemove();
           }}
           aria-label={`Remove tag ${name}`}
-          className="hover:text-destructive transition-all duration-200 ease-out active:scale-90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded"
+          className="group/remove hover:text-destructive transition-all duration-200 ease-out active:scale-90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -70,6 +70,7 @@ export function SessionTag({
             strokeLinecap="round"
             strokeLinejoin="round"
             aria-hidden="true"
+            className="transition-transform duration-200 group-hover/remove:rotate-90"
           >
             <path d="M18 6 6 18" />
             <path d="m6 6 12 12" />
