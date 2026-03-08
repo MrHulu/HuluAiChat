@@ -296,8 +296,9 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                   placeholder={t("settings.baseUrlPlaceholder")}
                   value={baseUrl}
                   onChange={(e) => setBaseUrl(e.target.value)}
+                  aria-describedby="baseUrl-hint"
                 />
-                <p className="text-xs text-muted-foreground">
+                <p id="baseUrl-hint" className="text-xs text-muted-foreground">
                   {t("settings.baseUrlHint")}
                 </p>
               </div>
@@ -348,8 +349,9 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                     value={temperature}
                     onChange={(e) => setTemperature(parseFloat(e.target.value))}
                     className="h-2 w-full cursor-pointer"
+                    aria-describedby="temperature-hint"
                   />
-                  <p className="text-xs text-muted-foreground">
+                  <p id="temperature-hint" className="text-xs text-muted-foreground">
                     {t("settings.temperatureHint")}
                   </p>
                 </div>
@@ -369,8 +371,9 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                     value={topP}
                     onChange={(e) => setTopP(parseFloat(e.target.value))}
                     className="h-2 w-full cursor-pointer"
+                    aria-describedby="topp-hint"
                   />
-                  <p className="text-xs text-muted-foreground">
+                  <p id="topp-hint" className="text-xs text-muted-foreground">
                     {t("settings.topPHint")}
                   </p>
                 </div>
@@ -386,8 +389,9 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                     step="256"
                     value={maxTokens}
                     onChange={(e) => setMaxTokens(parseInt(e.target.value) || 4096)}
+                    aria-describedby="maxtokens-hint"
                   />
-                  <p className="text-xs text-muted-foreground">
+                  <p id="maxtokens-hint" className="text-xs text-muted-foreground">
                     {t("settings.maxTokensHint")}
                   </p>
                 </div>
