@@ -108,7 +108,9 @@ export function TagInput({
                   "bg-transparent border-dashed border-muted-foreground/50",
                   "transition-all duration-150",
                   "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:border-primary",
-                  "hover:border-muted-foreground/70"
+                  "hover:border-muted-foreground/70",
+                  "dark:border-muted-foreground/40 dark:hover:border-muted-foreground/60",
+                  "dark:focus-visible:border-primary/70 dark:focus-visible:ring-primary/50"
                 )}
               />
 
@@ -122,7 +124,9 @@ export function TagInput({
                     "min-w-[100px] max-w-[150px] p-1",
                     "bg-popover border rounded-md shadow-md",
                     "animate-in fade-in-0 zoom-in-95 duration-150",
-                    "origin-top-left"
+                    "origin-top-left",
+                    "dark:bg-popover/95 dark:backdrop-blur-sm",
+                    "dark:border-white/10 dark:shadow-lg dark:shadow-black/30"
                   )}
                 >
                   {filteredSuggestions.slice(0, 5).map((suggestion, index) => (
@@ -136,7 +140,9 @@ export function TagInput({
                         "hover:bg-muted transition-all duration-100",
                         "active:scale-[0.98]",
                         "animate-in fade-in-0 slide-in-from-left-1",
-                        "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:bg-muted"
+                        "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:bg-muted",
+                        "dark:hover:bg-muted/60 dark:focus-visible:bg-muted/60",
+                        "dark:text-foreground/90"
                       )}
                     >
                       #{suggestion}
@@ -158,7 +164,9 @@ export function TagInput({
                 "hover:border-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/30",
                 "active:scale-95",
                 "transition-all duration-150 ease-out",
-                "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+                "dark:border-muted-foreground/25 dark:hover:border-muted-foreground/40",
+                "dark:hover:bg-muted/20 dark:focus-visible:ring-primary/50"
               )}
             >
               + {t("tags.tag")}
