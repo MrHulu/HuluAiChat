@@ -16,6 +16,7 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
           "hover:shadow-none dark:hover:bg-input/20",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-1 focus-visible:border-transparent",
           "focus-visible:bg-background",
+          "dark:focus-visible:ring-ring/60 dark:focus-visible:shadow-[0_0_12px_oklch(0.4_0.1_264/0.2)]",
           "disabled:cursor-not-allowed disabled:opacity-50",
           "md:text-sm",
           "[&[type='range']]:h-2 [&[type='range']]:cursor-pointer [&[type='range']]:shadow-none [&[type='range']]:bg-muted",

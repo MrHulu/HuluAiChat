@@ -124,8 +124,10 @@ export const CodeBlock = memo(function CodeBlock({
           "rounded-lg p-3 overflow-x-auto my-2",
           "border border-border dark:border-border/60",
           "shadow-sm",
-          "dark:shadow-lg dark:shadow-black/20",
-          "dark:hover:border-border/80 transition-colors duration-200",
+          // Dark mode enhancements - Cycle #186
+          "dark:shadow-lg dark:shadow-black/25",
+          "dark:hover:border-white/20 dark:hover:shadow-[0_0_16px_oklch(0.35_0.06_264/0.2)]",
+          "transition-all duration-200",
           className
         )}
       >

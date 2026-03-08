@@ -34,7 +34,7 @@ export function OllamaStatus({
 
   return (
     <div
-      className="flex items-center justify-between p-3 rounded-lg border bg-card transition-all duration-200 ease-out"
+      className="flex items-center justify-between p-3 rounded-lg border bg-card transition-all duration-200 ease-out dark:border-white/10 dark:shadow-sm dark:shadow-black/10"
       role="status"
       aria-live="polite"
       aria-label={available ? t("ollama.online") : t("ollama.offline")}
@@ -45,8 +45,8 @@ export function OllamaStatus({
           className={cn(
             "flex items-center justify-center w-8 h-8 rounded-full transition-all duration-200 ease-out",
             available
-              ? "bg-success/20 text-success"
-              : "bg-muted text-muted-foreground"
+              ? "bg-success/20 text-success dark:bg-success/25 dark:text-success"
+              : "bg-muted text-muted-foreground dark:bg-muted/60"
           )}
           aria-hidden="true"
         >

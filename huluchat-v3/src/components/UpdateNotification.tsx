@@ -31,7 +31,7 @@ export function UpdateNotification() {
       aria-live="polite"
       aria-label={t("update.notificationLabel")}
     >
-      <div className="bg-card border border-border rounded-xl shadow-lg dark:shadow-xl dark:shadow-black/20 p-4 backdrop-blur-sm">
+      <div className="bg-card border border-border rounded-xl shadow-lg dark:shadow-xl dark:shadow-black/20 dark:border-primary/20 dark:hover:border-primary/30 p-4 backdrop-blur-sm transition-all duration-300 dark:hover:shadow-[0_0_20px_oklch(0.4_0.1_264/0.2)]">
         {isChecking ? (
           <div className="flex items-center gap-3">
             <RefreshCw className="h-5 w-5 animate-spin text-muted-foreground" aria-hidden="true" />
@@ -57,7 +57,7 @@ export function UpdateNotification() {
               aria-label={t("update.downloadProgress")}
             >
               <div
-                className="bg-primary h-full rounded-full transition-all duration-300 ease-out relative overflow-hidden"
+                className="bg-primary h-full rounded-full transition-all duration-300 ease-out relative overflow-hidden dark:shadow-[0_0_10px_oklch(0.5_0.15_264/0.5)]"
                 style={{ width: `${downloadProgress}%` }}
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
@@ -68,7 +68,7 @@ export function UpdateNotification() {
           <div className="space-y-3">
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-primary/10 rounded-lg transition-transform duration-200 hover:scale-105">
+                <div className="p-2 bg-primary/10 rounded-lg transition-transform duration-200 hover:scale-105 dark:shadow-[0_0_12px_oklch(0.4_0.15_264/0.3)]">
                   <RefreshCw className="h-4 w-4 text-primary" aria-hidden="true" />
                 </div>
                 <div>
@@ -106,7 +106,7 @@ export function UpdateNotification() {
                   "flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium",
                   "bg-primary text-primary-foreground",
                   "transition-all duration-200 ease-out",
-                  "hover:bg-primary/90 hover:shadow-md",
+                  "hover:bg-primary/90 hover:shadow-md dark:hover:shadow-lg dark:hover:shadow-primary/30 dark:hover:[box-shadow:0_0_15px_oklch(0.5_0.15_264/0.4)]",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                   "active:scale-[0.98]"
                 )}

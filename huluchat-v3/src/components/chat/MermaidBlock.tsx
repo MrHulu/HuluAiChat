@@ -94,6 +94,7 @@ export const MermaidBlock = memo(function MermaidBlock({
         className={cn(
           "p-4 rounded-lg bg-error-muted/50 border border-error/30",
           "animate-in fade-in-0 zoom-in-95 duration-200",
+          "dark:bg-error-muted/30 dark:border-error/40 dark:shadow-sm dark:shadow-error/10",
           className
         )}
       >
@@ -119,6 +120,7 @@ export const MermaidBlock = memo(function MermaidBlock({
         className={cn(
           "mermaid-container flex justify-center items-center p-4 rounded-lg",
           "bg-muted animate-in fade-in-0 duration-150",
+          "dark:bg-muted/40 dark:border dark:border-white/10",
           className
         )}
       >
@@ -138,6 +140,7 @@ export const MermaidBlock = memo(function MermaidBlock({
         "mermaid-container flex justify-center p-4 rounded-lg",
         "bg-muted overflow-x-auto",
         "animate-in fade-in-0 duration-300",
+        "dark:bg-muted/40 dark:border dark:border-white/10 dark:shadow-sm dark:shadow-black/10",
         className
       )}
       dangerouslySetInnerHTML={{ __html: svg }}

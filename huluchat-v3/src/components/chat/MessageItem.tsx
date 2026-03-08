@@ -257,11 +257,11 @@ export const MessageItem = memo(function MessageItem({
           "shadow-sm hover:shadow-md transition-all duration-200 ease-out",
           "hover:scale-[1.005] active:scale-[0.995]",
           isUser
-            ? "bg-primary text-primary-foreground ml-12 hover:bg-primary/90"
+            ? "bg-primary text-primary-foreground ml-12 hover:bg-primary/90 dark:shadow-primary/20 dark:hover:shadow-primary/30"
             : "bg-muted text-foreground mr-12 border-l-4 border-primary/30 hover:bg-muted/80",
-          // Dark mode enhancements
+          // Dark mode enhancements - more visible borders and backgrounds
           "dark:shadow-lg dark:hover:shadow-xl",
-          !isUser && "dark:border-primary/50 dark:bg-muted/60 dark:hover:bg-muted/80"
+          !isUser && "dark:border-primary/60 dark:bg-muted/70 dark:hover:bg-muted/90 dark:shadow-black/20 dark:hover:shadow-black/30"
         )}
       >
         {/* 头像标识 */}

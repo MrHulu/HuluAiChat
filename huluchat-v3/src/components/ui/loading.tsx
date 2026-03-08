@@ -260,13 +260,30 @@ export function Loading({
 export function LoadingOverlay({ text, ariaLabel }: { text?: string; ariaLabel?: string }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm animate-in fade-in zoom-in-95 duration-200"
+      className={cn(
+        "fixed inset-0 z-50 flex items-center justify-center",
+        "bg-background/80 backdrop-blur-sm",
+        "animate-in fade-in zoom-in-95 duration-200",
+        // Dark mode enhancements - Cycle #180
+        "dark:bg-gradient-to-br dark:from-background/95 dark:to-background/85",
+        "dark:backdrop-blur-md"
+      )}
       role="alertdialog"
       aria-busy="true"
       aria-label={ariaLabel || text || "Loading"}
       aria-modal="true"
     >
-      <Loading variant="dots" size="lg" text={text} ariaLabel={ariaLabel} />
+      {/* Glowing loading container - Cycle #180 */}
+      <div className={cn(
+        "p-6 rounded-xl",
+        "bg-card/80 backdrop-blur-sm",
+        // Dark mode enhancements - Cycle #180
+        "dark:bg-card/90",
+        "dark:border dark:border-white/10",
+        "dark:shadow-[0_0_20px_oklch(0.4_0.1_264/0.3),0_0_40px_oklch(0.4_0.1_264/0.15)]"
+      )}>
+        <Loading variant="dots" size="lg" text={text} ariaLabel={ariaLabel} />
+      </div>
     </div>
   );
 }
