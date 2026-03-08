@@ -22,6 +22,7 @@ const SelectTrigger = React.forwardRef<
       "ring-offset-background placeholder:text-muted-foreground",
       "hover:border-muted-foreground/50 dark:hover:border-muted-foreground/45",
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:border-transparent",
+      "dark:focus-visible:ring-ring/60 dark:focus-visible:shadow-[0_0_12px_oklch(0.4_0.1_264/0.2)]",
       "disabled:cursor-not-allowed disabled:opacity-50",
       "[&>span]:line-clamp-1",
       className
@@ -80,7 +81,7 @@ const SelectContent = React.forwardRef<
       ref={ref}
       className={cn(
         "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-lg border bg-popover text-popover-foreground",
-        "shadow-md dark:shadow-lg dark:shadow-black/30 dark:border-border/60",
+        "shadow-md dark:shadow-lg dark:shadow-black/30 dark:border-border/60 dark:ring-1 dark:ring-white/5 dark:shadow-[0_0_15px_oklch(0.3_0.08_264/0.1)]",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
@@ -131,6 +132,7 @@ const SelectItem = React.forwardRef<
       "relative flex w-full cursor-default select-none items-center rounded-md py-1.5 pl-2 pr-8 text-sm outline-none",
       "transition-all duration-200 ease-out",
       "focus:bg-accent focus:text-accent-foreground",
+      "dark:focus:bg-accent/60 dark:focus:shadow-[inset_0_0_8px_oklch(0.4_0.1_264/0.15)]",
       "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
