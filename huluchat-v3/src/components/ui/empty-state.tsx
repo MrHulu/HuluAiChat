@@ -161,6 +161,8 @@ export function EmptyStateCompact({
         "dark:border dark:border-white/5",
         "dark:rounded-lg",
         "dark:shadow-sm dark:shadow-black/10",
+        // 进入动画 - Cycle #244
+        "animate-fade-in",
         className
       )}
       role="status"
