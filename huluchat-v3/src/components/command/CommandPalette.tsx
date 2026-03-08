@@ -231,11 +231,12 @@ export function CommandPalette({
         {/* Actions Group */}
         {groupedCommands.actions.length > 0 && (
           <CommandGroup heading={t("command.groupActions")}>
-            {groupedCommands.actions.map((cmd) => (
+            {groupedCommands.actions.map((cmd, index) => (
               <CommandItem
                 key={cmd.id}
                 onSelect={() => runCommand(cmd)}
-                className="cursor-pointer"
+                className="cursor-pointer animate-list-enter"
+                style={{ animationDelay: `${index * 50}ms` }}
               >
                 {cmd.icon}
                 <span>{t(cmd.labelKey)}</span>
@@ -252,11 +253,12 @@ export function CommandPalette({
           <>
             <CommandSeparator />
             <CommandGroup heading={t("command.groupNavigation")}>
-              {groupedCommands.navigation.map((cmd) => (
+              {groupedCommands.navigation.map((cmd, index) => (
                 <CommandItem
                   key={cmd.id}
                   onSelect={() => runCommand(cmd)}
-                  className="cursor-pointer"
+                  className="cursor-pointer animate-list-enter"
+                  style={{ animationDelay: `${(groupedCommands.actions.length + index) * 50}ms` }}
                 >
                   {cmd.icon}
                   <span>{t(cmd.labelKey)}</span>
@@ -274,11 +276,12 @@ export function CommandPalette({
           <>
             <CommandSeparator />
             <CommandGroup heading={t("command.groupSettings")}>
-              {groupedCommands.settings.map((cmd) => (
+              {groupedCommands.settings.map((cmd, index) => (
                 <CommandItem
                   key={cmd.id}
                   onSelect={() => runCommand(cmd)}
-                  className="cursor-pointer"
+                  className="cursor-pointer animate-list-enter"
+                  style={{ animationDelay: `${(groupedCommands.actions.length + groupedCommands.navigation.length + index) * 50}ms` }}
                 >
                   {cmd.icon}
                   <span>{t(cmd.labelKey)}</span>
