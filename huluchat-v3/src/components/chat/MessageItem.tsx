@@ -287,7 +287,7 @@ export const MessageItem = memo(function MessageItem({
         >
           <span>{isUser ? t("chat.you") : t("chat.ai")}</span>
           <div className="flex items-center gap-1">
-            {/* Bookmark button for all messages */}
+            {/* Bookmark button for all messages - Cycle #204 icon micro-interaction */}
             {onBookmarkToggle && !isEditing && (
               <button
                 onClick={(e) => {
@@ -297,7 +297,7 @@ export const MessageItem = memo(function MessageItem({
                 aria-label={isBookmarked ? t("chat.removeBookmark") : t("chat.addBookmark")}
                 aria-pressed={isBookmarked}
                 className={cn(
-                  "transition-all p-1 rounded",
+                  "group/bookmark transition-all p-1 rounded",
                   "opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
                   isBookmarked && "opacity-100",
@@ -309,24 +309,24 @@ export const MessageItem = memo(function MessageItem({
                 )}
               >
                 {isBookmarked ? (
-                  <BookmarkCheck className="w-3 h-3" aria-hidden="true" />
+                  <BookmarkCheck className="w-3 h-3 transition-transform duration-200 ease-out group-hover/bookmark:scale-110" aria-hidden="true" />
                 ) : (
-                  <Bookmark className="w-3 h-3" aria-hidden="true" />
+                  <Bookmark className="w-3 h-3 transition-transform duration-200 ease-out group-hover/bookmark:scale-110" aria-hidden="true" />
                 )}
               </button>
             )}
-            {/* Edit button for user messages */}
+            {/* Edit button for user messages - Cycle #204 icon micro-interaction */}
             {isUser && onEdit && !isEditing && (
               <button
                 onClick={handleStartEdit}
                 aria-label={t("chat.editMessage")}
                 className={cn(
-                  "opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity p-1 rounded",
+                  "group/edit opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity p-1 rounded",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
                   "hover:bg-primary-foreground/10"
                 )}
               >
-                <Pencil className="w-3 h-3" aria-hidden="true" />
+                <Pencil className="w-3 h-3 transition-transform duration-200 ease-out group-hover/edit:rotate-12" aria-hidden="true" />
               </button>
             )}
           </div>

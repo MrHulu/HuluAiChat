@@ -153,7 +153,7 @@ export function SessionItem({
 
       {/* Action buttons */}
       <div className="flex items-center gap-1">
-        {/* Export button */}
+        {/* Export button - Cycle #204 icon micro-interaction */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
@@ -162,7 +162,7 @@ export function SessionItem({
               aria-label={t("sessionItem.exportSession")}
               aria-busy={isExporting}
               className={cn(
-                "opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out",
+                "group/export opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out",
                 "p-1.5 rounded-md",
                 "text-muted-foreground hover:text-primary hover:bg-primary/10",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
@@ -171,7 +171,7 @@ export function SessionItem({
                 isExporting && "opacity-50 cursor-wait"
               )}
             >
-              <Download className="w-3.5 h-3.5" aria-hidden="true" />
+              <Download className="w-3.5 h-3.5 transition-transform duration-200 ease-out group-hover/export:translate-y-0.5" aria-hidden="true" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
@@ -196,7 +196,7 @@ export function SessionItem({
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* Move to folder submenu */}
+        {/* Move to folder submenu - Cycle #204 icon micro-interaction */}
         {folders.length > 0 && onMoveToFolder && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -204,7 +204,7 @@ export function SessionItem({
                 onClick={(e) => e.stopPropagation()}
                 aria-label={t("sessionItem.moveToFolder")}
                 className={cn(
-                  "opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out",
+                  "group/folder opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out",
                   "p-1.5 rounded-md",
                   "text-muted-foreground hover:text-primary hover:bg-primary/10",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
@@ -212,7 +212,7 @@ export function SessionItem({
                   "active:scale-90"
                 )}
               >
-                <FolderOpen className="w-3.5 h-3.5" aria-hidden="true" />
+                <FolderOpen className="w-3.5 h-3.5 transition-transform duration-200 ease-out group-hover/folder:scale-110" aria-hidden="true" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
@@ -241,12 +241,12 @@ export function SessionItem({
           </DropdownMenu>
         )}
 
-        {/* Delete button */}
+        {/* Delete button - Cycle #204 icon micro-interaction */}
         <button
           onClick={handleDelete}
           aria-label={t("sessionItem.deleteSession")}
           className={cn(
-            "opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out",
+            "group/delete opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out",
             "p-1.5 rounded-md",
             "text-muted-foreground hover:text-destructive hover:bg-destructive/10",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
@@ -254,7 +254,7 @@ export function SessionItem({
             "active:scale-90"
           )}
         >
-          <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
+          <Trash2 className="w-3.5 h-3.5 transition-transform duration-200 ease-out group-hover/delete:rotate-6" aria-hidden="true" />
         </button>
       </div>
     </div>
