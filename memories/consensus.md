@@ -29,7 +29,7 @@
 - ✅ Cycle #105: 统一间距规范 + 视觉层次
 - ✅ Cycle #106: 消息气泡样式优化
 - ✅ Cycle #173-175: 深色模式增强 (TagInput, BookmarkPanel, RAG, Command)
-- ✅ Cycle #176: 深色模式增强 (KeyboardHelpDialog, PromptTemplateSelector, OllamaStatus, Select, AlertDialog)
+- ✅ Cycle #176: 深色模式增强 (KeyboardHelpDialog, PromptTemplateSelector, OllamaStatus, Select, AlertDialog, MermaidBlock, MathBlock)
 
 ### 下一步优化方向
 - 继续深色模式细节优化
