@@ -1,22 +1,36 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-08 - Cycle #232
+2026-03-08 - Cycle #233
 
 ## Current Phase
-🎨 **UI/UX 交互优化** - 操作反馈动画增强
+🎨 **UI/UX 交互优化** - 组件交互动画应用
 
 ---
 
 ## Next Action
 **继续 UI/UX 优化方向**
 
-本轮完成（Cycle #232）：
+本轮完成（Cycle #233）：
+- ✅ 将动画库应用到关键交互组件
+- ✅ CodeBlock 复制按钮：`animate-bounce-in` 替代基础动画
+- ✅ BookmarkButton：`animate-bounce-in` + `animate-scale-in` 增强书签状态切换
+- ✅ VoiceInputButton 录音状态：`animate-bounce-subtle` 替代 `animate-pulse`
+- ✅ 711 个测试通过
+
+**应用动画的组件**：
+| 组件 | 动画效果 | 场景 |
+|------|----------|------|
+| CodeBlock | `animate-bounce-in` | 复制成功时对勾图标弹跳 |
+| BookmarkButton | `animate-bounce-in` / `animate-scale-in` | 书签添加/移除状态切换 |
+| VoiceInputButton | `animate-bounce-subtle` | 录音中图标微动效 |
+
+上轮完成（Cycle #232）：
 - ✅ 添加操作反馈动画库（success/bounce/slide/pop/wiggle）
 - ✅ Toast 组件动画增强
 - ✅ 712 个测试全部通过
 
-**新增动画**：
+**动画库定义**：
 | 动画类 | 用途 | 效果 |
 |--------|------|------|
 | `animate-success` | 成功反馈 | 脉冲放大 (scale 1→1.05→1) |
@@ -122,6 +136,26 @@
   - 添加 8 种新动画效果（success/bounce/slide/pop/wiggle/shake）
   - Toast 组件动画增强
   - CSS 动画库完善
+- ✅ **Cycle #233: 动画应用到关键组件**
+  - CodeBlock 复制按钮使用 `animate-bounce-in`
+  - BookmarkButton 使用 `animate-bounce-in` + `animate-scale-in`
+  - VoiceInputButton 录音状态使用 `animate-bounce-subtle`
+
+### Cycle #233 动画应用到关键组件
+**改进内容**：
+- ✅ CodeBlock：复制成功时对勾图标弹跳动画
+- ✅ BookmarkButton：书签状态切换时弹跳/缩放动画
+- ✅ VoiceInputButton：录音中图标轻微弹跳动效
+
+**动画效果对比**：
+| 组件 | 之前 | 之后 |
+|------|------|------|
+| CodeBlock | `animate-in zoom-in-50` | `animate-bounce-in` |
+| BookmarkButton | `animate-in zoom-in-50` | `animate-bounce-in` / `animate-scale-in` |
+| VoiceInputButton | `animate-pulse` | `animate-bounce-subtle` |
+
+**测试结果**：
+- ✅ 711 个测试通过
 
 ### Cycle #232 操作反馈动画增强
 **新增动画**：
