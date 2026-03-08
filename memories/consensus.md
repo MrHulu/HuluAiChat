@@ -1,10 +1,10 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-08 - Cycle #221
+2026-03-08 - Cycle #222
 
 ## Current Phase
-♿ **无障碍访问增强** - Select 组件无障碍优化
+♿ **无障碍访问增强** - HTML lang 属性自动更新
 
 ---
 
@@ -20,6 +20,7 @@
 - ✅ Max Tokens 数值范围验证（256-128000）
 - ✅ 滑块控件 aria-valuetext（Temperature/Top P）
 - ✅ Select 组件无障碍增强（滚动按钮 aria-label + Model Select 关联描述）
+- ✅ HTML lang 属性自动更新（语言切换时）
 
 继续方向：
 - 屏幕阅读器测试
@@ -67,6 +68,19 @@
   - SelectScrollUpButton/DownButton 添加 aria-label
   - 图标添加 aria-hidden 避免重复播报
   - Model Select 添加 id 和 aria-describedby 关联描述文本
+- ✅ **Cycle #222: HTML lang 属性自动更新**
+  - 语言切换时自动更新 document.documentElement.lang
+  - 应用初始化时设置 HTML lang 属性
+  - 确保屏幕阅读器使用正确的语音合成引擎
+
+### Cycle #222 HTML lang 属性自动更新
+**改进内容**：
+- ✅ changeLanguage() 函数中添加 document.documentElement.lang = lang
+- ✅ initI18n() 函数中设置初始 HTML lang 属性
+- ✅ 确保屏幕阅读器使用正确的语音合成引擎
+
+**测试结果**：
+- ✅ 712 个测试全部通过
 
 ### Cycle #221 Select 组件无障碍增强
 **改进内容**：
@@ -209,4 +223,4 @@
 ---
 
 ## 循环计数
-当前周期: 221
+当前周期: 222
