@@ -258,7 +258,10 @@ export const MessageItem = memo(function MessageItem({
           "hover:scale-[1.005] active:scale-[0.995]",
           isUser
             ? "bg-primary text-primary-foreground ml-12 hover:bg-primary/90"
-            : "bg-muted text-foreground mr-12 border-l-4 border-primary/30 hover:bg-muted/80"
+            : "bg-muted text-foreground mr-12 border-l-4 border-primary/30 hover:bg-muted/80",
+          // Dark mode enhancements
+          "dark:shadow-lg dark:hover:shadow-xl",
+          !isUser && "dark:border-primary/50 dark:bg-muted/60 dark:hover:bg-muted/80"
         )}
       >
         {/* 头像标识 */}
