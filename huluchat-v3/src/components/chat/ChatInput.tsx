@@ -36,8 +36,10 @@ export const ChatInput = memo(function ChatInput({
   const [value, setValue] = useState("");
   const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   const [images, setImages] = useState<ImageContent[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const prevDisabledRef = useRef<boolean | undefined>(undefined);
 
   const actualPlaceholder = placeholder || t("chat.typeMessage");
@@ -64,9 +66,8 @@ export const ChatInput = memo(function ChatInput({
     }
   }, [disabled]);
 
-  // 处理图片文件选择
-  const handleImageSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
+  // 处理图片文件（支持选择和拖拽上传）
+  const processImageFiles = useCallback((files: FileList | null) => {
     if (!files) return;
 
     const newImages: ImageContent[] = [];
@@ -91,17 +92,60 @@ export const ChatInput = memo(function ChatInput({
       };
       reader.readAsDataURL(file);
     }
+  }, [images.length]);
 
+  // 处理图片文件选择
+  const handleImageSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      processImageFiles(files);
+    }
     // Reset file input
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
-  }, [images.length]);
+  }, [processImageFiles]);
 
   // 移除图片
   const handleRemoveImage = useCallback((index: number) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
   }, []);
+
+  // 拖拽事件处理
+  const handleDragEnter = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!disabled && !isLoading) {
+      setIsDragging(true);
+    }
+  }, [disabled, isLoading]);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // 只有当离开整个容器时才取消拖拽状态
+    if (containerRef.current && !containerRef.current.contains(e.relatedTarget as Node)) {
+      setIsDragging(false);
+    }
+  }, []);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    if (disabled || isLoading) return;
+
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      processImageFiles(files);
+    }
+  }, [disabled, isLoading, processImageFiles]);
 
   const handleSend = useCallback(() => {
     if ((value.trim() || images.length > 0) && !disabled) {
@@ -156,7 +200,34 @@ export const ChatInput = memo(function ChatInput({
   }, []);
 
   return (
-    <div className="chat-input-container border-t border-border bg-background dark:bg-background/95 dark:shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.3)] p-4 transition-all duration-300 ease-out" role="region" aria-label={t("chat.typeMessage")}>
+    <div
+      ref={containerRef}
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+      className={cn(
+        "chat-input-container border-t border-border bg-background dark:bg-background/95 dark:shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.3)] p-4 transition-all duration-300 ease-out relative",
+        // 拖拽状态视觉反馈
+        isDragging && "border-primary/50 bg-primary/5 dark:bg-primary/10",
+        isDragging && "dark:shadow-[0_0_24px_oklch(0.5_0.2_264/0.2),0_-4px_20px_-5px_rgba(0,0,0,0.3)]"
+      )}
+      role="region"
+      aria-label={t("chat.typeMessage")}
+    >
+      {/* 拖拽提示覆盖层 */}
+      {isDragging && (
+        <div
+          className="absolute inset-0 z-10 flex items-center justify-center bg-background/80 dark:bg-background/90 backdrop-blur-sm animate-in fade-in duration-200"
+          role="status"
+          aria-live="polite"
+        >
+          <div className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-dashed border-primary/50 bg-primary/5 dark:bg-primary/10 dark:border-primary/40">
+            <ImagePlus className="w-8 h-8 text-primary animate-bounce" aria-hidden="true" />
+            <span className="text-sm font-medium text-primary">{t("chat.dropImage")}</span>
+          </div>
+        </div>
+      )}
       {/* Image Preview Area */}
       {images.length > 0 && (
         <div
