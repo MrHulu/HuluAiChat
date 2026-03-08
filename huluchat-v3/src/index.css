@@ -771,6 +771,28 @@
       0 0 8px oklch(0.55 0.2 264 / 0.15);
   }
 
+  /* Dark mode caret (cursor) color - enhanced visibility (Cycle #203) */
+  .dark input,
+  .dark textarea {
+    caret-color: oklch(0.7 0.15 264);
+  }
+
+  /* Dark mode placeholder - slightly brighter for better visibility */
+  .dark input::placeholder,
+  .dark textarea::placeholder {
+    color: oklch(0.5 0 0 / 0.7);
+  }
+
+  .dark input::-webkit-input-placeholder,
+  .dark textarea::-webkit-input-placeholder {
+    color: oklch(0.5 0 0 / 0.7);
+  }
+
+  .dark input::-moz-placeholder,
+  .dark textarea::-moz-placeholder {
+    color: oklch(0.5 0 0 / 0.7);
+  }
+
   /* ═══════════════════════════════════════════════════════════════
    * ✨ Dark Mode - Chat Input Enhancement (Cycle #191)
    * ═══════════════════════════════════════════════════════════════ */
