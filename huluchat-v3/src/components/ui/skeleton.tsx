@@ -36,7 +36,7 @@ export function Skeleton({ className, animate = true }: SkeletonProps) {
       aria-label="Loading"
       className={cn(
         "rounded-md bg-muted",
-        "dark:bg-muted/50",
+        "dark:bg-muted/40 dark:border dark:border-white/5",
         animate && "animate-shimmer",
         className
       )}
@@ -130,7 +130,7 @@ export function SkeletonSessionItem({ className }: { className?: string }) {
  */
 export function SkeletonCard({ className }: { className?: string }) {
   return (
-    <div className={cn("rounded-lg border border-border p-4 space-y-3", className)}>
+    <div className={cn("rounded-lg border border-border p-4 space-y-3", "dark:border-white/10 dark:shadow-sm dark:shadow-black/10", className)}>
       <Skeleton className="h-5 w-1/3" />
       <SkeletonText lines={2} />
       <div className="flex gap-2 pt-2">
