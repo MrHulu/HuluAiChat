@@ -1,10 +1,10 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-08 - Cycle #215
+2026-03-08 - Cycle #216
 
 ## Current Phase
-♿ **无障碍访问增强** - 基础增强进行中
+♿ **无障碍访问增强** - 表单无障碍改进
 
 ---
 
@@ -14,11 +14,12 @@
 已完成的改进：
 - ✅ 添加 Skip to Main Content 跳过链接（键盘导航增强）
 - ✅ 无障碍审计完成 - 确认主要组件支持良好
+- ✅ 表单字段 aria-describedby 关联（SettingsDialog）
 
 继续方向：
-- 更多 aria-live 动态内容通知
-- 更完善的焦点管理
-- 屏幕阅读器优化
+- 更多表单组件的无障碍优化
+- 验证错误提示的无障碍支持
+- 屏幕阅读器测试
 
 ---
 
@@ -36,6 +37,19 @@
   - 无障碍审计完成
   - 添加 Skip to Main Content 跳过链接
   - 添加 i18n 翻译（EN/ZH）
+- ✅ **Cycle #216: 表单无障碍改进**
+  - SettingsDialog 表单字段添加 aria-describedby
+  - 关联帮助文本：baseUrl, temperature, topP, maxTokens
+
+### Cycle #216 表单无障碍改进
+**改进内容**：
+- ✅ Base URL 输入框关联 baseUrl-hint
+- ✅ Temperature 滑块关联 temperature-hint
+- ✅ Top P 滑块关联 topp-hint
+- ✅ Max Tokens 输入框关联 maxtokens-hint
+
+**测试结果**：
+- ✅ 40 个 SettingsDialog 测试全部通过
 
 ### Cycle #215 无障碍访问增强
 **无障碍审计发现**：
@@ -117,4 +131,4 @@
 ---
 
 ## 循环计数
-当前周期: 215
+当前周期: 216
