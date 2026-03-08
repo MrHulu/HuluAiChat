@@ -236,7 +236,11 @@ export const ChatInput = memo(function ChatInput({
           aria-label={t("chat.uploadedImages")}
         >
           {images.map((image, index) => (
-            <div key={index} className="image-preview-item relative group animate-scale-in rounded-lg">
+            <div
+              key={index}
+              className="image-preview-item relative group animate-list-enter rounded-lg"
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
               <img
                 src={image.image_url.url}
                 alt={t("chat.uploadedImage", { index: index + 1 })}
