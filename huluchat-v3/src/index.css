@@ -522,4 +522,91 @@
     backdrop-filter: blur(12px);
     border: 1px solid oklch(1 0 0 / 8%);
   }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🌙 Dark Mode - Enhanced Visual Consistency (Cycle #167)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Dark mode separator/divider - more visible */
+  .dark .divider-subtle {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      oklch(1 0 0 / 15%) 20%,
+      oklch(1 0 0 / 15%) 80%,
+      transparent
+    );
+    height: 1px;
+  }
+
+  /* Dark mode hover states - enhanced feedback */
+  .dark .hover-lift:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px oklch(0 0 0 / 0.3);
+  }
+
+  /* Dark mode active states - tactile feedback */
+  .dark .active-press:active {
+    transform: scale(0.98);
+  }
+
+  /* Dark mode selection highlight for list items */
+  .dark .item-selected {
+    background: oklch(0.35 0.08 264 / 0.3);
+    border-left: 2px solid oklch(0.55 0.2 264);
+  }
+
+  /* Dark mode subtle gradient backgrounds */
+  .dark .bg-gradient-subtle {
+    background: linear-gradient(
+      180deg,
+      oklch(0.18 0 0) 0%,
+      oklch(0.15 0 0) 100%
+    );
+  }
+
+  /* Dark mode text hierarchy */
+  .dark .text-primary-high {
+    color: oklch(0.95 0 0);
+  }
+
+  .dark .text-primary-medium {
+    color: oklch(0.8 0 0);
+  }
+
+  .dark .text-primary-low {
+    color: oklch(0.6 0 0);
+  }
+
+  /* Dark mode status indicator glow */
+  .dark .status-online {
+    box-shadow: 0 0 8px oklch(0.72 0.19 142.5 / 0.6);
+  }
+
+  .dark .status-offline {
+    box-shadow: 0 0 8px oklch(0.5 0 0 / 0.3);
+  }
+
+  /* Dark mode interactive card styling */
+  .dark .interactive-card {
+    background: oklch(0.2 0 0);
+    border: 1px solid oklch(1 0 0 / 8%);
+    transition: all 0.2s ease-out;
+  }
+
+  .dark .interactive-card:hover {
+    background: oklch(0.22 0 0);
+    border-color: oklch(1 0 0 / 15%);
+    box-shadow: 0 4px 16px oklch(0 0 0 / 0.25);
+  }
+
+  /* Dark mode button hover glow */
+  .dark .btn-glow:hover {
+    box-shadow: 0 0 12px oklch(0.488 0.243 264.376 / 0.25);
+  }
+
+  /* Dark mode scrollbar track - subtle contrast */
+  .dark .scrollbar-track-dark::-webkit-scrollbar-track {
+    background: oklch(0.12 0 0);
+  }
 }

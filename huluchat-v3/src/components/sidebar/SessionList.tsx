@@ -431,7 +431,7 @@ export function SessionList({
             {/* Folders Section */}
             <div className="mb-2" role="region" aria-label={t("sidebar.folders")}>
               {/* Folders Header */}
-              <div className="flex items-center justify-between px-3 py-2 mx-2 rounded-md bg-muted/40">
+              <div className="flex items-center justify-between px-3 py-2 mx-2 rounded-md bg-muted/40 dark:bg-muted/30 dark:border dark:border-white/5">
                 <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   {t("sidebar.folders")}
                 </span>
@@ -510,7 +510,7 @@ export function SessionList({
             {/* Uncategorized Sessions */}
             {activeFolderFilter === null && sessionsByFolder.root.length > 0 && (
               <div className="mt-2" role="region" aria-label={t("sidebar.uncategorized")}>
-                <div className="px-3 py-2 mx-2 rounded-md bg-muted/40">
+                <div className="px-3 py-2 mx-2 rounded-md bg-muted/40 dark:bg-muted/30 dark:border dark:border-white/5">
                   <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     {t("sidebar.uncategorized")}
                   </span>
