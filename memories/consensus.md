@@ -1,20 +1,21 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-08 - Cycle #226
+2026-03-08 - Cycle #227
 
 ## Current Phase
-♿ **无障碍访问增强** - i18n 翻译修复 + UpdateNotification 无障碍翻译键
+♿ **无障碍访问增强** - MessageList/WelcomeDialog i18n 翻译键补全
 
 ---
 
 ## Next Action
 **无障碍访问增强阶段继续**
 
-本轮完成的改进（Cycle #226）：
-- ✅ 修复 en.json 重复的 "update" 对象问题
-- ✅ 添加缺失的无障碍翻译键：update.notificationLabel, update.downloadProgress
-- ✅ 同步更新 zh.json 翻译文件
+本轮完成的改进（Cycle #227）：
+- ✅ 添加 chat.messageList 翻译键（MessageList 组件 aria-label）
+- ✅ 添加 welcome.stepIndicator 翻译键（步骤导航 aria-label）
+- ✅ 添加 welcome.stepLabel 翻译键（步骤按钮 aria-label）
+- ✅ 添加 welcome.stepProgress 翻译键（屏幕阅读器进度播报）
 - ✅ 712 个测试全部通过
 
 已完成的改进（累计）：
@@ -32,6 +33,7 @@
 - ✅ KeyboardHelpDialog kbd 元素添加 aria-label（屏幕阅读器友好播报）
 - ✅ ChatInput textarea 添加 aria-describedby 关联提示文本
 - ✅ UpdateNotification 无障碍翻译键修复
+- ✅ MessageList/WelcomeDialog 无障碍翻译键补全
 
 继续方向：
 - 屏幕阅读器测试
@@ -88,6 +90,21 @@
   - MermaidBlock 添加 i18n 翻译支持
   - MathBlock 添加 i18n 翻译支持
   - i18n 翻译键：mermaid.loading, mermaid.error, mermaid.label, math.formula, math.error
+- ✅ **Cycle #227: MessageList/WelcomeDialog i18n 翻译键补全**
+  - 添加 chat.messageList 翻译键（MessageList 组件 aria-label）
+  - 添加 welcome.stepIndicator 翻译键（步骤导航 aria-label）
+  - 添加 welcome.stepLabel 翻译键（步骤按钮 aria-label）
+  - 添加 welcome.stepProgress 翻译键（屏幕阅读器进度播报）
+
+### Cycle #227 MessageList/WelcomeDialog i18n 翻译键补全
+**改进内容**：
+- ✅ 添加 chat.messageList 翻译键（EN/ZH）
+- ✅ 添加 welcome.stepIndicator 翻译键（EN/ZH）
+- ✅ 添加 welcome.stepLabel 翻译键（EN/ZH）
+- ✅ 添加 welcome.stepProgress 翻译键（EN/ZH）
+
+**测试结果**：
+- ✅ 712 个测试全部通过
 
 ### Cycle #226 UpdateNotification 无障碍翻译修复
 **改进内容**：
@@ -288,4 +305,4 @@
 ---
 
 ## 循环计数
-当前周期: 226
+当前周期: 227
