@@ -573,7 +573,7 @@ export function PluginSettings() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-8 animate-in fade-in-0 duration-200">
+      <div className="flex items-center justify-center py-8 animate-fade-in">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         <span className="ml-2 text-sm text-muted-foreground">{t("plugins.loading")}</span>
       </div>
@@ -582,7 +582,7 @@ export function PluginSettings() {
 
   if (!isInitialized) {
     return (
-      <div className="flex flex-col items-center justify-center py-8 text-center animate-in fade-in-0 zoom-in-95 duration-200">
+      <div className="flex flex-col items-center justify-center py-8 text-center animate-bounce-in">
         <AlertCircle className="h-8 w-8 text-destructive mb-2" />
         <p className="text-sm text-muted-foreground">{error || t("plugins.initFailed")}</p>
       </div>
@@ -611,7 +611,7 @@ export function PluginSettings() {
 
       {/* Plugin list */}
       {plugins.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-8 text-center border rounded-lg animate-in fade-in-0 zoom-in-95 duration-200">
+        <div className="flex flex-col items-center justify-center py-8 text-center border rounded-lg animate-bounce-in">
           <Puzzle className="h-8 w-8 text-muted-foreground mb-2" />
           <p className="text-sm text-muted-foreground">{t("plugins.noPlugins")}</p>
           <p className="text-xs text-muted-foreground mt-1">{t("plugins.installHint")}</p>
@@ -621,7 +621,7 @@ export function PluginSettings() {
           {plugins.map((plugin, index) => (
             <div
               key={plugin.manifest.id}
-              className="animate-in fade-in-0 slide-in-from-bottom-2"
+              className="animate-slide-up"
               style={{ animationDelay: `${index * 50}ms`, animationFillMode: "both" }}
             >
               <PluginCard

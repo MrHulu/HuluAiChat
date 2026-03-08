@@ -263,7 +263,7 @@ export function LoadingOverlay({ text, ariaLabel }: { text?: string; ariaLabel?:
       className={cn(
         "fixed inset-0 z-50 flex items-center justify-center",
         "bg-background/80 backdrop-blur-sm",
-        "animate-in fade-in zoom-in-95 duration-200",
+        "animate-bounce-in",
         // Dark mode enhancements - Cycle #180
         "dark:bg-gradient-to-br dark:from-background/95 dark:to-background/85",
         "dark:backdrop-blur-md"

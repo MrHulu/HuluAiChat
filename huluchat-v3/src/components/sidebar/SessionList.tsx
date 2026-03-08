@@ -779,7 +779,7 @@ function FolderItem({
       {/* Sessions in Folder - with slide-in animation */}
       {isExpanded && sessions.length > 0 && (
         <div
-          className="ml-4 border-l border-border pl-2 space-y-1 animate-in slide-in-from-top-1 duration-200"
+          className="ml-4 border-l border-border pl-2 space-y-1 animate-slide-down"
           role="list"
         >
           {sessions.map((session) => (

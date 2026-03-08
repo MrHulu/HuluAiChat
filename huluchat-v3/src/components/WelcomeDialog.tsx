@@ -67,13 +67,13 @@ export function WelcomeDialog({ open, onOpenChange, onComplete }: WelcomeDialogP
         <DialogHeader>
           <DialogTitle
             key={`title-${step.key}`}
-            className="text-xl animate-in fade-in-0 slide-in-from-bottom-2 duration-300"
+            className="text-xl animate-slide-up"
           >
             {t(step.titleKey)}
           </DialogTitle>
           <DialogDescription
             key={`desc-${step.key}`}
-            className="text-base pt-2 animate-in fade-in-0 slide-in-from-bottom-1 duration-300"
+            className="text-base pt-2 animate-slide-up animation-delay-75"
           >
             {t(step.descKey)}
           </DialogDescription>
