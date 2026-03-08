@@ -26,7 +26,7 @@ export function UpdateNotification() {
 
   return (
     <div
-      className="fixed bottom-4 right-4 z-50 max-w-sm animate-in slide-in-from-bottom-4 fade-in-0 duration-300"
+      className="fixed bottom-4 right-4 z-50 max-w-sm animate-slide-up"
       role="status"
       aria-live="polite"
       aria-label={t("update.notificationLabel")}

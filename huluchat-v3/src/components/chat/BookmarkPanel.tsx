@@ -177,7 +177,7 @@ export function BookmarkPanel({
               "transition-all duration-200 ease-out",
               "hover:bg-accent/50 hover:translate-x-0.5",
               "active:scale-[0.99]",
-              "animate-in fade-in-0 slide-in-from-left-1",
+              "animate-slide-right",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
               "dark:border-border/30 dark:hover:bg-accent/30",
               "dark:hover:shadow-sm dark:hover:shadow-primary/5"

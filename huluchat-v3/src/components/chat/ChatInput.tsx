@@ -218,7 +218,7 @@ export const ChatInput = memo(function ChatInput({
       {/* 拖拽提示覆盖层 */}
       {isDragging && (
         <div
-          className="absolute inset-0 z-10 flex items-center justify-center bg-background/80 dark:bg-background/90 backdrop-blur-sm animate-in fade-in duration-200"
+          className="absolute inset-0 z-10 flex items-center justify-center bg-background/80 dark:bg-background/90 backdrop-blur-sm animate-fade-in"
           role="status"
           aria-live="polite"
         >
