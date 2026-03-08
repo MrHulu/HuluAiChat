@@ -72,7 +72,7 @@ export function LanguageSelector() {
         </TooltipContent>
       </Tooltip>
       <DropdownMenuContent align="end">
-        {supportedLanguages.map((lang) => (
+        {supportedLanguages.map((lang, index) => (
           <DropdownMenuItem
             key={lang.code}
             onClick={() => handleLanguageChange(lang.code)}
@@ -80,8 +80,10 @@ export function LanguageSelector() {
             aria-current={i18n.language === lang.code ? "true" : undefined}
             className={cn(
               "transition-all duration-200 ease-out",
+              "animate-list-enter",
               i18n.language === lang.code && "bg-accent"
             )}
+            style={{ animationDelay: `${index * 50}ms` }}
           >
             <span className="mr-2">{lang.nativeName}</span>
             {loadingLang === lang.code && (
