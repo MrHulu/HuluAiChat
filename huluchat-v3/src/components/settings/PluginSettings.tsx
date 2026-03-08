@@ -111,7 +111,7 @@ function PluginCard({
   const hasUpdate = updateInfo?.hasUpdate ?? false;
 
   return (
-    <Card className="transition-all duration-200 hover:shadow-md hover:border-primary/20">
+    <Card className="transition-all duration-200 hover:shadow-md hover:border-primary/20 dark:hover:shadow-[0_0_12px_oklch(0.4_0.1_264/0.2)] dark:hover:border-primary/30">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-base flex items-center gap-2">
@@ -175,9 +175,9 @@ function PluginCard({
             </div>
           )}
 
-          {/* Error message */}
+          {/* Error message - Cycle #182: dark mode glow */}
           {plugin.error && (
-            <div className="flex items-start gap-2 p-2 rounded-md bg-destructive/10 text-destructive text-sm">
+            <div className="flex items-start gap-2 p-2 rounded-md bg-destructive/10 text-destructive text-sm dark:bg-destructive/20 dark:shadow-[inset_0_0_8px_oklch(0.55_0.22_25/0.15)]">
               <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
               <span className="line-clamp-2">{plugin.error}</span>
             </div>
@@ -417,8 +417,8 @@ function DropZone({
       aria-disabled={isInstalling}
       className={`border-2 border-dashed rounded-lg p-6 text-center transition-all duration-200 ${
         isDragOver
-          ? "border-primary bg-primary/10 scale-[1.02]"
-          : "border-border hover:border-primary/50 hover:bg-muted/50"
+          ? "border-primary bg-primary/10 scale-[1.02] dark:shadow-[0_0_16px_oklch(0.5_0.15_264/0.3)]"
+          : "border-border hover:border-primary/50 hover:bg-muted/50 dark:hover:border-primary/30 dark:hover:shadow-[0_0_8px_oklch(0.4_0.1_264/0.2)]"
       } ${isInstalling ? "opacity-50 cursor-wait" : ""}`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}

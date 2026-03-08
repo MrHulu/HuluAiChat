@@ -37,6 +37,7 @@ const TabsTrigger = React.forwardRef<
       "disabled:pointer-events-none disabled:opacity-50",
       "data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm",
       "data-[state=active]:dark:bg-background/90 data-[state=active]:dark:shadow-lg data-[state=active]:dark:shadow-black/10",
+      "data-[state=active]:dark:ring-1 data-[state=active]:dark:ring-primary/20 data-[state=active]:dark:shadow-[0_0_10px_oklch(0.4_0.1_264/0.15)]",
       "data-[state=inactive]:text-muted-foreground",
       "data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50",
       "data-[state=inactive]:dark:hover:bg-muted/40 data-[state=inactive]:dark:hover:text-foreground/90",

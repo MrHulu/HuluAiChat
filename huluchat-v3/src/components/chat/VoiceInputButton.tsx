@@ -64,6 +64,9 @@ export const VoiceInputButton = memo(function VoiceInputButton({
         "px-3 h-12 transition-all duration-200",
         "hover:bg-accent hover:scale-105 active:scale-95",
         isListening && "bg-error-muted hover:bg-error-muted/80 hover:scale-105",
+        // Dark mode enhancements - Cycle #182
+        "dark:hover:shadow-[0_0_8px_oklch(0.6_0.15_264/0.3)]",
+        isListening && "dark:shadow-[0_0_12px_oklch(0.55_0.22_25/0.5),0_0_24px_oklch(0.55_0.22_25/0.25)]",
         className
       )}
       title={isListening ? t("chat.voice.stopRecording") : t("chat.voice.startRecording")}

@@ -41,6 +41,7 @@ export const MathBlock = memo(function MathBlock({
         className={cn(
           "p-4 rounded-lg bg-error-muted/50 border border-error/30",
           "animate-in fade-in-0 zoom-in-95 duration-200",
+          "dark:bg-error-muted/30 dark:border-error/40 dark:shadow-sm dark:shadow-error/10",
           className
         )}
       >

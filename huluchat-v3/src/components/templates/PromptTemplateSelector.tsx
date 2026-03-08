@@ -171,7 +171,7 @@ export function PromptTemplateSelector({
 
         <div className="flex flex-1 overflow-hidden">
           {/* Category Filter */}
-          <nav className="w-48 border-r border-border pr-2 overflow-y-auto" aria-label={t("templates.categoriesLabel")}>
+          <nav className="w-48 border-r border-border pr-2 overflow-y-auto dark:border-white/10" aria-label={t("templates.categoriesLabel")}>
             <Button
               variant={selectedCategory === null ? "secondary" : "ghost"}
               className="w-full justify-start mb-1 transition-all duration-200 ease-out"
@@ -265,8 +265,9 @@ export function PromptTemplateSelector({
                             "active:scale-[0.99]",
                             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                             template.is_builtin
-                              ? "border-border"
-                              : "border-dashed"
+                              ? "border-border dark:border-white/10"
+                              : "border-dashed dark:border-white/15",
+                            "dark:hover:bg-accent/40 dark:hover:shadow-black/10"
                           )}
                           onClick={() => handleSelect(template)}
                           onKeyDown={(e) => {
