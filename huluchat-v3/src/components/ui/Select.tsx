@@ -21,7 +21,7 @@ const SelectTrigger = React.forwardRef<
       "transition-all duration-200 ease-out",
       "ring-offset-background placeholder:text-muted-foreground",
       "hover:border-muted-foreground/50 dark:hover:border-muted-foreground/30",
-      "focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:border-transparent",
       "disabled:cursor-not-allowed disabled:opacity-50",
       "[&>span]:line-clamp-1",
       className
