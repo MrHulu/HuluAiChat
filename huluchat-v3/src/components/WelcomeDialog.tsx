@@ -73,7 +73,8 @@ export function WelcomeDialog({ open, onOpenChange, onComplete }: WelcomeDialogP
           </DialogTitle>
           <DialogDescription
             key={`desc-${step.key}`}
-            className="text-base pt-2 animate-slide-up animation-delay-75"
+            className="text-base pt-2 animate-slide-up"
+            style={{ animationDelay: "75ms" }}
           >
             {t(step.descKey)}
           </DialogDescription>
