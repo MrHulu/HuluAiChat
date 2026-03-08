@@ -28,7 +28,7 @@ export function ThemeToggle() {
               size="icon"
               aria-label={t("theme.toggle")}
               aria-haspopup="true"
-              className="relative overflow-hidden"
+              className="relative overflow-hidden dark:hover:shadow-[0_0_12px_oklch(0.5_0.15_264/0.25)] dark:hover:border-primary/40 dark:active:shadow-[0_0_8px_oklch(0.5_0.15_264/0.15)]"
             >
               <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all duration-200 ease-out dark:-rotate-90 dark:scale-0" aria-hidden="true" />
               <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all duration-200 ease-out dark:rotate-0 dark:scale-100" aria-hidden="true" />
