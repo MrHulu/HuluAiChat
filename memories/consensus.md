@@ -1,7 +1,7 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-08 - Cycle #208
+2026-03-08 - Cycle #209
 
 ## Current Phase
 🎨 **UI/UX 美化优化** - 细节打磨阶段
@@ -46,7 +46,8 @@
 - ✅ Cycle #204: MessageItem 和 SessionItem 图标交互动画
 - ✅ Cycle #205: 更多组件图标交互动画扩展
 - ✅ **Cycle #207: 设置和侧边栏组件图标交互动画**
-- ✅ **Cycle #208: 更多组件图标交互动画扩展** (当前)
+- ✅ **Cycle #208: 更多组件图标交互动画扩展**
+- ✅ **Cycle #209: 模板和文档上传组件图标交互动画** (当前)
 
 ### Cycle #207 图标交互动画扩展
 **PluginSettings.tsx** 插件设置：
@@ -88,6 +89,14 @@
 - Moon：选中时旋转 -12° (`data-[selected=true]:-rotate-12`)
 - Settings：选中时旋转 45° (`data-[selected=true]:rotate-45`)
 - HelpCircle：选中时放大 (`data-[selected=true]:scale-110`)
+
+### Cycle #209 图标交互动画扩展
+**PromptTemplateSelector.tsx** 模板选择器：
+- Pencil (编辑)：悬停放大 110% (`group-hover/edit:scale-110`)
+- Trash (删除)：悬停放大 110% (`group-hover/delete:scale-110`)
+
+**DocumentUploader.tsx** 文档上传：
+- Upload：悬停上移 (`group-hover/uploader:-translate-y-0.5`)
 
 ### 深色模式增强覆盖率
 - 📊 **组件覆盖率**: 100% (所有主要组件)
@@ -132,4 +141,4 @@
 ---
 
 ## 循环计数
-当前周期: 208
+当前周期: 209

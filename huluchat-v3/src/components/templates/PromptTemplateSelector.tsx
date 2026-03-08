@@ -290,7 +290,7 @@ export function PromptTemplateSelector({
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-6 w-6 p-0"
+                                  className="group/edit h-6 w-6 p-0"
                                   aria-label={t("templates.edit")}
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -308,6 +308,7 @@ export function PromptTemplateSelector({
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
                                     aria-hidden="true"
+                                    className="transition-transform duration-200 group-hover/edit:scale-110"
                                   >
                                     <path d="M17 3a2.85 2.83 0 1 1 4 4L3.5 13.5 4 4 12.5 2.5 0 0 5.5 6.5L12 21l6.5-6.5-6.5-6.5z" />
                                   </svg>
@@ -315,7 +316,7 @@ export function PromptTemplateSelector({
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-6 w-6 p-0 text-destructive"
+                                  className="group/delete h-6 w-6 p-0 text-destructive"
                                   aria-label={t("templates.delete")}
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -333,6 +334,7 @@ export function PromptTemplateSelector({
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
                                     aria-hidden="true"
+                                    className="transition-transform duration-200 group-hover/delete:scale-110"
                                   >
                                     <path d="M3 6h18" />
                                     <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
