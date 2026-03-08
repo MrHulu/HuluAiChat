@@ -324,13 +324,13 @@
   }
 
   /* ═══════════════════════════════════════════════════════════════
-   * 📋 List Item Animations
+   * 📋 List Item Animations - Unified to core animation library
    * ═══════════════════════════════════════════════════════════════ */
-  .list-item-enter {
-    animation: listItemEnter 0.2s ease-out forwards;
+  .animate-list-enter {
+    animation: listEnter 0.2s ease-out forwards;
   }
 
-  @keyframes listItemEnter {
+  @keyframes listEnter {
     from {
       opacity: 0;
       transform: translateY(-4px);

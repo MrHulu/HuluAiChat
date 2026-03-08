@@ -261,7 +261,7 @@ export const MessageItem = memo(function MessageItem({
       role="article"
       aria-label={isUser ? t("chat.you") : t("chat.ai")}
       className={cn(
-        "group flex w-full mb-4 list-item-enter",
+        "group flex w-full mb-4 animate-list-enter",
         isUser ? "justify-end" : "justify-start"
       )}
     >
