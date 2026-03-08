@@ -191,7 +191,7 @@ export const ChatInput = memo(function ChatInput({
           size="sm"
           onClick={handleOpenTemplateSelector}
           disabled={disabled}
-          className="chat-input-icon-btn px-3 h-12 transition-all duration-200 hover:bg-accent hover:scale-105 active:scale-95"
+          className="chat-input-icon-btn px-3 h-12 transition-all duration-200 hover:bg-accent hover:scale-105 active:scale-95 group"
           aria-label={t("chat.selectTemplate")}
         >
           <LayoutTemplate className="w-[18px] h-[18px] transition-transform duration-200 group-hover:rotate-12" aria-hidden="true" />
@@ -203,10 +203,10 @@ export const ChatInput = memo(function ChatInput({
           size="sm"
           onClick={handleOpenImagePicker}
           disabled={disabled || images.length >= MAX_IMAGES}
-          className="chat-input-icon-btn px-3 h-12 transition-all duration-200 hover:bg-accent hover:scale-105 active:scale-95 disabled:hover:scale-100"
+          className="chat-input-icon-btn px-3 h-12 transition-all duration-200 hover:bg-accent hover:scale-105 active:scale-95 disabled:hover:scale-100 group"
           aria-label={t("chat.uploadImage")}
         >
-          <ImagePlus className="w-[18px] h-[18px]" aria-hidden="true" />
+          <ImagePlus className="w-[18px] h-[18px] transition-transform duration-200 group-hover:scale-110" aria-hidden="true" />
         </Button>
         <input
           ref={fileInputRef}
@@ -250,7 +250,7 @@ export const ChatInput = memo(function ChatInput({
           onClick={handleSend}
           disabled={disabled || isLoading || (!value.trim() && images.length === 0)}
           data-loading={isLoading || undefined}
-          className="chat-send-button px-6 h-12 transition-all duration-200 hover:scale-105 active:scale-95 disabled:hover:scale-100"
+          className="chat-send-button px-6 h-12 transition-all duration-200 hover:scale-105 active:scale-95 disabled:hover:scale-100 group"
           aria-label={isLoading ? t("chat.sending") : t("chat.send")}
         >
           {isLoading ? (
@@ -261,7 +261,7 @@ export const ChatInput = memo(function ChatInput({
           ) : (
             <>
               <span className="mr-2">{t("chat.send")}</span>
-              <Send className="w-4 h-4" aria-hidden="true" />
+              <Send className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
             </>
           )}
         </Button>
