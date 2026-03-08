@@ -176,7 +176,9 @@ export function BookmarkPanel({
               "hover:bg-accent/50 hover:translate-x-0.5",
               "active:scale-[0.99]",
               "animate-in fade-in-0 slide-in-from-left-1",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
+              "dark:border-border/30 dark:hover:bg-accent/30",
+              "dark:hover:shadow-sm dark:hover:shadow-primary/5"
             )}
           >
             {/* Role indicator */}
@@ -211,7 +213,8 @@ export function BookmarkPanel({
                   "p-1 rounded",
                   "text-muted-foreground hover:text-destructive hover:bg-destructive/20",
                   "transition-all duration-200 ease-out",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  "dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/50"
                 )}
                 aria-label={t("chat.removeBookmark")}
               >
