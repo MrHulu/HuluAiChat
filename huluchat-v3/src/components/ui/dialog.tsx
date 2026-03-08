@@ -41,6 +41,7 @@ const DialogContent = React.forwardRef<
       className={cn(
         "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%]",
         "gap-4 border border-border bg-background p-6 shadow-lg",
+        "dark:shadow-xl dark:shadow-black/25 dark:border-border/60",
         "rounded-xl",
         "duration-200",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
@@ -57,7 +58,7 @@ const DialogContent = React.forwardRef<
         className={cn(
           "absolute right-4 top-4 rounded-md p-1",
           "opacity-70 ring-offset-background transition-all duration-200 ease-out",
-          "hover:opacity-100 hover:bg-muted",
+          "hover:opacity-100 hover:bg-muted dark:hover:bg-muted/60",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2",
           "disabled:pointer-events-none",
           "active:scale-95"
