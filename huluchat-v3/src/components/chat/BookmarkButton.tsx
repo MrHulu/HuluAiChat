@@ -80,8 +80,10 @@ export function BookmarkButton({
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
         "active:scale-90",
         bookmarked
-          ? "text-primary hover:bg-primary/10"
+          ? "text-primary hover:bg-primary/10 dark:shadow-[0_0_8px_oklch(0.6_0.2_264/0.4)]"
           : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        // Dark mode enhancements - Cycle #182
+        "dark:focus-visible:ring-ring/70",
         className
       )}
     >
