@@ -63,7 +63,7 @@ const DialogContent = React.forwardRef<
           "active:scale-95"
         )}
       >
-        <X className="h-4 w-4" />
+        <X className="h-4 w-4" aria-hidden="true" />
         <span className="sr-only">Close</span>
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
