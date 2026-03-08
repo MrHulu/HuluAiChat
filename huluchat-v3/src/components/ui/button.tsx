@@ -10,15 +10,15 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 hover:shadow-sm dark:shadow-primary/5",
+          "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 hover:shadow-sm dark:shadow-primary/5 dark:hover:shadow-primary/20 dark:hover:bg-primary/85",
         destructive:
-          "bg-destructive text-white shadow-xs hover:bg-destructive/90 hover:shadow-sm focus-visible:ring-destructive/20 dark:bg-destructive/70 dark:hover:bg-destructive/80 dark:focus-visible:ring-destructive/40",
+          "bg-destructive text-white shadow-xs hover:bg-destructive/90 hover:shadow-sm focus-visible:ring-destructive/20 dark:bg-destructive/70 dark:hover:bg-destructive/80 dark:focus-visible:ring-destructive/40 dark:hover:shadow-destructive/20",
         outline:
-          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground hover:border-accent dark:border-border dark:bg-transparent dark:hover:bg-accent/30 dark:hover:border-accent/50",
+          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground hover:border-accent dark:border-border/80 dark:bg-transparent dark:hover:bg-accent/30 dark:hover:border-accent/50 dark:active:border-accent/60",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80 hover:shadow-sm dark:bg-secondary/80 dark:hover:bg-secondary/60",
+          "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80 hover:shadow-sm dark:bg-secondary/80 dark:hover:bg-secondary/60 dark:active:bg-secondary/50",
         ghost:
-          "hover:bg-accent/60 hover:text-accent-foreground dark:hover:bg-accent/50 dark:active:bg-accent/60",
+          "hover:bg-accent/60 hover:text-accent-foreground dark:hover:bg-accent/50 dark:active:bg-accent/60 dark:hover:shadow-sm dark:hover:shadow-accent/10",
         link:
           "text-primary underline-offset-4 hover:underline decoration-primary/30 hover:decoration-primary decoration-2 transition-[text-decoration-color,opacity] dark:decoration-primary/40 dark:hover:decoration-primary",
       },

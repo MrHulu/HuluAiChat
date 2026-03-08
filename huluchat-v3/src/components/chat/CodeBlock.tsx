@@ -86,7 +86,7 @@ export const CodeBlock = memo(function CodeBlock({
               "text-xs text-muted-foreground",
               "bg-muted/80 dark:bg-muted/70 backdrop-blur-sm",
               "px-2 py-0.5 rounded-md",
-              "dark:border dark:border-white/10"
+              "dark:border dark:border-white/10 dark:shadow-sm dark:shadow-black/20"
             )}
           >
             {displayLanguage}

@@ -638,4 +638,164 @@
     );
     box-shadow: 0 0 0 1px oklch(0.6 0.22 264 / 0.5);
   }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🔲 Dark Mode - Border Enhancement (Cycle #173)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Session list items - more visible hover state */
+  .dark [role="listitem"]:hover {
+    background: oklch(0.25 0.02 264 / 0.5);
+  }
+
+  /* Dropdown menus - enhanced border and shadow */
+  .dark [role="menu"] {
+    background: oklch(0.2 0 0);
+    border-color: oklch(1 0 0 / 12%);
+    box-shadow:
+      0 4px 12px oklch(0 0 0 / 0.4),
+      0 0 0 1px oklch(1 0 0 / 5%);
+  }
+
+  /* Dialog content - enhanced shadow */
+  .dark [role="dialog"] {
+    box-shadow:
+      0 0 0 1px oklch(1 0 0 / 8%),
+      0 8px 32px oklch(0 0 0 / 0.5),
+      0 0 64px oklch(0.488 0.243 264.376 / 0.05);
+  }
+
+  /* Tooltip - subtle glow */
+  .dark [role="tooltip"] {
+    background: oklch(0.25 0 0);
+    border: 1px solid oklch(1 0 0 / 10%);
+    box-shadow: 0 4px 12px oklch(0 0 0 / 0.3);
+  }
+
+  /* Tab buttons - enhanced active state */
+  .dark [role="tab"][data-state="active"] {
+    background: oklch(0.25 0 0);
+    box-shadow: inset 0 -2px 0 oklch(0.55 0.2 264);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * ✨ Dark Mode - Interaction Feedback (Cycle #173)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Button glow effect on hover */
+  .dark .btn-primary-glow:hover {
+    box-shadow:
+      0 0 20px oklch(0.488 0.243 264.376 / 0.3),
+      0 0 40px oklch(0.488 0.243 264.376 / 0.1);
+  }
+
+  /* Icon button subtle background */
+  .dark button[size="icon"]:hover:not(:disabled) {
+    background: oklch(0.25 0 0 / 0.8);
+  }
+
+  /* Session item active indicator */
+  .dark .session-active {
+    background: linear-gradient(
+      90deg,
+      oklch(0.35 0.1 264 / 0.2),
+      transparent
+    );
+    border-left: 2px solid oklch(0.55 0.2 264);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🌫️ Dark Mode - Shadow Depth System (Cycle #173)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Elevation level 1 - subtle lift */
+  .dark .elevation-1 {
+    box-shadow:
+      0 1px 2px oklch(0 0 0 / 0.2),
+      0 0 0 1px oklch(1 0 0 / 5%);
+  }
+
+  /* Elevation level 2 - card level */
+  .dark .elevation-2 {
+    box-shadow:
+      0 2px 4px oklch(0 0 0 / 0.2),
+      0 4px 8px oklch(0 0 0 / 0.15),
+      0 0 0 1px oklch(1 0 0 / 5%);
+  }
+
+  /* Elevation level 3 - floating elements */
+  .dark .elevation-3 {
+    box-shadow:
+      0 4px 8px oklch(0 0 0 / 0.25),
+      0 8px 16px oklch(0 0 0 / 0.15),
+      0 16px 32px oklch(0 0 0 / 0.1),
+      0 0 0 1px oklch(1 0 0 / 5%);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 📝 Dark Mode - Form Elements Enhancement (Cycle #173)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Input fields - enhanced focus state */
+  .dark input:focus-visible,
+  .dark textarea:focus-visible {
+    border-color: oklch(0.55 0.2 264);
+    box-shadow:
+      0 0 0 2px oklch(0.55 0.2 264 / 0.25),
+      0 0 8px oklch(0.55 0.2 264 / 0.15);
+  }
+
+  /* Select trigger - enhanced styling */
+  .dark [data-slot="select-trigger"] {
+    border-color: oklch(1 0 0 / 15%);
+    background: oklch(0.18 0 0);
+  }
+
+  .dark [data-slot="select-trigger"]:hover {
+    border-color: oklch(1 0 0 / 25%);
+    background: oklch(0.2 0 0);
+  }
+
+  /* Range slider - enhanced track */
+  .dark input[type="range"] {
+    background: oklch(0.3 0 0);
+  }
+
+  .dark input[type="range"]::-webkit-slider-thumb {
+    background: oklch(0.55 0.2 264);
+    box-shadow: 0 0 8px oklch(0.55 0.2 264 / 0.4);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🏷️ Dark Mode - Badge & Tag Enhancement (Cycle #173)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Tags - more visible in dark mode */
+  .dark .tag-item {
+    background: oklch(0.25 0.05 264);
+    border: 1px solid oklch(0.4 0.1 264 / 0.5);
+    color: oklch(0.85 0 0);
+  }
+
+  .dark .tag-item:hover {
+    background: oklch(0.3 0.08 264);
+    border-color: oklch(0.5 0.15 264);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 📊 Dark Mode - Code Block Enhancement (Cycle #173)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Code block container */
+  .dark pre {
+    background: oklch(0.15 0 0);
+    border: 1px solid oklch(1 0 0 / 8%);
+    box-shadow: inset 0 1px 0 oklch(1 0 0 / 3%);
+  }
+
+  /* Inline code */
+  .dark code:not(.hljs) {
+    background: oklch(0.25 0 0);
+    border: 1px solid oklch(1 0 0 / 5%);
+  }
 }
