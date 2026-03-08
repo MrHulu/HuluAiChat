@@ -222,6 +222,24 @@
 /* Step 5: Animation System - Unified Standards */
 @layer utilities {
   /* ═══════════════════════════════════════════════════════════════
+   * 🚀 Animation Performance - Hardware Acceleration
+   * ═══════════════════════════════════════════════════════════════ */
+  .animate-spin {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  .animate-pulse {
+    will-change: opacity;
+  }
+
+  .animate-ping {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
    * 🎬 Animation Duration Standards
    * ═══════════════════════════════════════════════════════════════ */
   --duration-fast: 0.1s;     /* Micro-interactions: hover, focus */
