@@ -78,13 +78,18 @@ export function TagInput({
 
   return (
     <div className="flex flex-wrap items-center gap-1">
-      {tags.map((tag) => (
-        <SessionTag
+      {tags.map((tag, index) => (
+        <span
           key={tag}
-          name={tag}
-          onRemove={() => onRemoveTag(tag)}
-          size="xs"
-        />
+          className="animate-list-enter"
+          style={{ animationDelay: `${index * 50}ms` }}
+        >
+          <SessionTag
+            name={tag}
+            onRemove={() => onRemoveTag(tag)}
+            size="xs"
+          />
+        </span>
       ))}
 
       {tags.length < maxTags && (
