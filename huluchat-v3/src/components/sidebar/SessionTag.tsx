@@ -45,8 +45,8 @@ export function SessionTag({
         onClick && "active:scale-95",
         size === "xs" ? "px-1.5 py-0.5 text-[10px]" : "px-2 py-0.5 text-xs",
         isActive
-          ? "bg-primary/20 border-primary/30 text-primary"
-          : "bg-muted/50 border-border text-muted-foreground hover:bg-muted"
+          ? "bg-primary/20 border-primary/30 text-primary dark:bg-primary/30 dark:border-primary/50"
+          : "bg-muted/50 border-border text-muted-foreground hover:bg-muted dark:border-border/60 dark:hover:bg-muted/70"
       )}
     >
       <span className="truncate max-w-[60px]">#{name}</span>
