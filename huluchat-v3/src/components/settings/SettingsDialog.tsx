@@ -382,7 +382,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                 <div className="grid gap-2 mb-4">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="temperature" className="text-sm">{t("settings.temperature")}</Label>
-                    <span className="text-xs text-muted-foreground">{temperature.toFixed(2)}</span>
+                    <span className="text-xs text-muted-foreground" aria-hidden="true">{temperature.toFixed(2)}</span>
                   </div>
                   <Input
                     id="temperature"
@@ -394,6 +394,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                     onChange={(e) => setTemperature(parseFloat(e.target.value))}
                     className="h-2 w-full cursor-pointer"
                     aria-describedby="temperature-hint"
+                    aria-valuetext={t("settings.temperatureValue", { value: temperature.toFixed(2) })}
                   />
                   <p id="temperature-hint" className="text-xs text-muted-foreground">
                     {t("settings.temperatureHint")}
@@ -404,7 +405,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                 <div className="grid gap-2 mb-4">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="topP" className="text-sm">{t("settings.topP")}</Label>
-                    <span className="text-xs text-muted-foreground">{topP.toFixed(2)}</span>
+                    <span className="text-xs text-muted-foreground" aria-hidden="true">{topP.toFixed(2)}</span>
                   </div>
                   <Input
                     id="topP"
@@ -416,6 +417,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                     onChange={(e) => setTopP(parseFloat(e.target.value))}
                     className="h-2 w-full cursor-pointer"
                     aria-describedby="topp-hint"
+                    aria-valuetext={t("settings.topPValue", { value: topP.toFixed(2) })}
                   />
                   <p id="topp-hint" className="text-xs text-muted-foreground">
                     {t("settings.topPHint")}
