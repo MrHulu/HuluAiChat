@@ -69,6 +69,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
   // Settings state
   const [apiKey, setApiKey] = useState("");
   const [baseUrl, setBaseUrl] = useState("");
+  const [baseUrlError, setBaseUrlError] = useState<string | null>(null);
   const [model, setModel] = useState("");
   const [hasApiKey, setHasApiKey] = useState(false);
 
@@ -97,6 +98,26 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
       loadOllamaStatus();
     }
   }, [open]);
+
+  // Validate URL format
+  const validateBaseUrl = (url: string): string | null => {
+    if (!url.trim()) return null; // Empty is valid (will use default)
+
+    try {
+      const parsed = new URL(url);
+      if (!parsed.protocol.startsWith("http")) {
+        return t("settings.invalidUrlProtocol");
+      }
+      return null;
+    } catch {
+      return t("settings.invalidUrl");
+    }
+  };
+
+  const handleBaseUrlChange = (value: string) => {
+    setBaseUrl(value);
+    setBaseUrlError(validateBaseUrl(value));
+  };
 
   const loadOllamaStatus = async () => {
     try {
@@ -295,12 +316,20 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                   type="url"
                   placeholder={t("settings.baseUrlPlaceholder")}
                   value={baseUrl}
-                  onChange={(e) => setBaseUrl(e.target.value)}
-                  aria-describedby="baseUrl-hint"
+                  onChange={(e) => handleBaseUrlChange(e.target.value)}
+                  aria-invalid={!!baseUrlError}
+                  aria-errormessage={baseUrlError ? "baseUrl-error" : undefined}
+                  aria-describedby={baseUrlError ? "baseUrl-error" : "baseUrl-hint"}
                 />
-                <p id="baseUrl-hint" className="text-xs text-muted-foreground">
-                  {t("settings.baseUrlHint")}
-                </p>
+                {baseUrlError ? (
+                  <p id="baseUrl-error" className="text-xs text-destructive" role="alert">
+                    {baseUrlError}
+                  </p>
+                ) : (
+                  <p id="baseUrl-hint" className="text-xs text-muted-foreground">
+                    {t("settings.baseUrlHint")}
+                  </p>
+                )}
               </div>
 
               {/* Model Selection */}

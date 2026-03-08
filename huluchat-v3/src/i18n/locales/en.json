@@ -116,7 +116,9 @@
     "connectionSuccessful": "Connection successful",
     "connectionFailed": "Connection failed",
     "settingsSaved": "Settings saved successfully",
-    "settingsSaveFailed": "Failed to save settings"
+    "settingsSaveFailed": "Failed to save settings",
+    "invalidUrl": "Please enter a valid URL",
+    "invalidUrlProtocol": "URL must start with http:// or https://"
   },
   "plugins": {
     "title": "Plugins",
