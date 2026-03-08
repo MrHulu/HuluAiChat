@@ -115,7 +115,8 @@ export function SessionItem({
         "active:scale-[0.98] active:bg-accent/80",
         // Dark mode enhancements
         "dark:hover:bg-muted/40 dark:hover:shadow-none",
-        isActive && "dark:bg-accent/80 dark:border-l-2 dark:border-primary/50"
+        // Dark mode active session glow (Cycle #193)
+        isActive && "dark:bg-accent/80 dark:border-l-2 dark:border-primary/50 dark:shadow-[0_0_16px_oklch(0.5_0.15_264/0.15),inset_0_1px_0_oklch(1_0_0/0.05)]"
       )}
     >
       <div className="flex-1 min-w-0">
