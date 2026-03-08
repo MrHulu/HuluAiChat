@@ -3,10 +3,11 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
-  ({ className, type, ...props }, ref) => {
+  ({ className, type, "aria-invalid": ariaInvalid, ...props }, ref) => {
     return (
       <input
         type={type}
+        aria-invalid={ariaInvalid}
         className={cn(
           "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm",
           "transition-all duration-200 ease-out",
@@ -21,6 +22,9 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
           "md:text-sm",
           "[&[type='range']]:h-2 [&[type='range']]:cursor-pointer [&[type='range']]:shadow-none [&[type='range']]:bg-muted",
           "[&[type='range']]:hover:bg-muted/80",
+          // Invalid state styling for accessibility
+          "aria-invalid:border-destructive aria-invalid:focus-visible:ring-destructive/50",
+          "dark:aria-invalid:border-destructive/80 dark:aria-invalid:focus-visible:ring-destructive/60",
           className
         )}
         ref={ref}

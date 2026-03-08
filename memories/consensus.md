@@ -1,10 +1,10 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-08 - Cycle #216
+2026-03-08 - Cycle #217
 
 ## Current Phase
-♿ **无障碍访问增强** - 表单无障碍改进
+♿ **无障碍访问增强** - 表单验证状态优化
 
 ---
 
@@ -15,11 +15,12 @@
 - ✅ 添加 Skip to Main Content 跳过链接（键盘导航增强）
 - ✅ 无障碍审计完成 - 确认主要组件支持良好
 - ✅ 表单字段 aria-describedby 关联（SettingsDialog）
+- ✅ Input 组件 aria-invalid 状态样式支持
 
 继续方向：
-- 更多表单组件的无障碍优化
-- 验证错误提示的无障碍支持
+- 表单验证错误的无障碍提示
 - 屏幕阅读器测试
+- 更多表单组件优化
 
 ---
 
@@ -40,6 +41,20 @@
 - ✅ **Cycle #216: 表单无障碍改进**
   - SettingsDialog 表单字段添加 aria-describedby
   - 关联帮助文本：baseUrl, temperature, topP, maxTokens
+- ✅ **Cycle #217: 表单验证状态无障碍**
+  - Input 组件添加 aria-invalid 属性支持
+  - 添加 aria-invalid 状态样式（错误边框 + 焦点环）
+  - 添加无障碍翻译键：formError, fieldRequired, fieldInvalid
+
+### Cycle #217 表单验证状态无障碍
+**改进内容**：
+- ✅ Input 组件支持 aria-invalid 属性
+- ✅ aria-invalid 状态样式（destructive 边框和焦点环）
+- ✅ 深色模式下的无效状态样式
+- ✅ i18n 翻译键扩展
+
+**测试结果**：
+- ✅ 712 个测试全部通过
 
 ### Cycle #216 表单无障碍改进
 **改进内容**：
@@ -131,4 +146,4 @@
 ---
 
 ## 循环计数
-当前周期: 216
+当前周期: 217

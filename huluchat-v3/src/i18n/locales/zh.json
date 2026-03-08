@@ -1,6 +1,9 @@
 {
   "accessibility": {
-    "skipToMain": "跳转到主内容"
+    "skipToMain": "跳转到主内容",
+    "formError": "表单有错误",
+    "fieldRequired": "此字段为必填项",
+    "fieldInvalid": "请输入有效的值"
   },
   "common": {
     "save": "保存",
