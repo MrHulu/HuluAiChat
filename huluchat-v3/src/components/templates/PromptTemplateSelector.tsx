@@ -254,11 +254,12 @@ export function PromptTemplateSelector({
                       <span>{getCategoryLabel(category as TemplateCategory)}</span>
                     </h4>
                     <div className="space-y-2" role="list" aria-label={t("templates.templateList")}>
-                      {templates.map((template) => (
+                      {templates.map((template, index) => (
                         <div
                           key={template.id}
                           role="listitem"
                           tabIndex={0}
+                          style={{ animationDelay: `${index * 50}ms` }}
                           className={cn(
                             "p-3 rounded-lg border cursor-pointer transition-all duration-200",
                             "hover:bg-accent hover:border-primary/30 hover:shadow-sm hover:scale-[1.01]",
@@ -267,7 +268,8 @@ export function PromptTemplateSelector({
                             template.is_builtin
                               ? "border-border dark:border-white/10"
                               : "border-dashed dark:border-white/15",
-                            "dark:hover:bg-accent/40 dark:hover:shadow-black/10"
+                            "dark:hover:bg-accent/40 dark:hover:shadow-black/10",
+                            "animate-list-enter"
                           )}
                           onClick={() => handleSelect(template)}
                           onKeyDown={(e) => {
