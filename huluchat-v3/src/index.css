@@ -609,4 +609,33 @@
   .dark .scrollbar-track-dark::-webkit-scrollbar-track {
     background: oklch(0.12 0 0);
   }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🔍 Dark Mode - Search Highlight Enhancement (Cycle #170)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Search highlight in dark mode - more visible with better contrast */
+  .dark mark,
+  .dark .search-highlight {
+    background: linear-gradient(
+      90deg,
+      oklch(0.55 0.2 264 / 0.35),
+      oklch(0.55 0.2 264 / 0.45)
+    );
+    color: oklch(0.95 0 0);
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    box-shadow: 0 0 0 1px oklch(0.55 0.2 264 / 0.3);
+  }
+
+  /* Primary highlight for active/first match */
+  .dark mark.active-match,
+  .dark .search-highlight-active {
+    background: linear-gradient(
+      90deg,
+      oklch(0.6 0.22 264 / 0.5),
+      oklch(0.6 0.22 264 / 0.6)
+    );
+    box-shadow: 0 0 0 1px oklch(0.6 0.22 264 / 0.5);
+  }
 }
