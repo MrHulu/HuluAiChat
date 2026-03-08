@@ -5,6 +5,15 @@
     "fieldRequired": "此字段为必填项",
     "fieldInvalid": "请输入有效的值"
   },
+  "mermaid": {
+    "loading": "加载图表中...",
+    "error": "图表渲染错误",
+    "label": "图表"
+  },
+  "math": {
+    "formula": "数学公式",
+    "error": "数学公式错误"
+  },
   "common": {
     "save": "保存",
     "cancel": "取消",
