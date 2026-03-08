@@ -493,39 +493,44 @@ export function SessionList({
               )}
 
               {/* Folder List */}
-              {folders.map((folder) => (
-                <FolderItem
+              {folders.map((folder, index) => (
+                <div
                   key={folder.id}
-                  folder={folder}
-                  sessions={sessionsByFolder[folder.id] || []}
-                  isExpanded={expandedFolders.has(folder.id)}
-                  isActive={activeFolderFilter === folder.id}
-                  isEditing={editingFolderId === folder.id}
-                  editingName={editingFolderName}
-                  onToggle={() => toggleFolder(folder.id)}
-                  onClick={() =>
-                    setActiveFolderFilter(activeFolderFilter === folder.id ? null : folder.id)
-                  }
-                  onStartEdit={() => {
-                    setEditingFolderId(folder.id);
-                    setEditingFolderName(folder.name);
-                  }}
-                  onEditChange={setEditingFolderName}
-                  onEditSubmit={handleRenameFolder}
-                  onEditCancel={() => {
-                    setEditingFolderId(null);
-                    setEditingFolderName("");
-                  }}
-                  onDelete={() => onDeleteFolder(folder.id)}
-                  onSelectSession={onSelectSession}
-                  currentSessionId={currentSessionId}
-                  onDeleteSession={onDeleteSession}
-                  onExportSession={onExportSession}
-                  onMoveSession={handleMoveSession}
-                  folders={folders}
-                  sessionTags={sessionTags}
-                  onTagClick={handleTagClick}
-                />
+                  className="animate-list-enter"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  <FolderItem
+                    folder={folder}
+                    sessions={sessionsByFolder[folder.id] || []}
+                    isExpanded={expandedFolders.has(folder.id)}
+                    isActive={activeFolderFilter === folder.id}
+                    isEditing={editingFolderId === folder.id}
+                    editingName={editingFolderName}
+                    onToggle={() => toggleFolder(folder.id)}
+                    onClick={() =>
+                      setActiveFolderFilter(activeFolderFilter === folder.id ? null : folder.id)
+                    }
+                    onStartEdit={() => {
+                      setEditingFolderId(folder.id);
+                      setEditingFolderName(folder.name);
+                    }}
+                    onEditChange={setEditingFolderName}
+                    onEditSubmit={handleRenameFolder}
+                    onEditCancel={() => {
+                      setEditingFolderId(null);
+                      setEditingFolderName("");
+                    }}
+                    onDelete={() => onDeleteFolder(folder.id)}
+                    onSelectSession={onSelectSession}
+                    currentSessionId={currentSessionId}
+                    onDeleteSession={onDeleteSession}
+                    onExportSession={onExportSession}
+                    onMoveSession={handleMoveSession}
+                    folders={folders}
+                    sessionTags={sessionTags}
+                    onTagClick={handleTagClick}
+                  />
+                </div>
               ))}
             </div>
 
