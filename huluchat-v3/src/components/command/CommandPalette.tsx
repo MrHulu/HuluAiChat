@@ -224,7 +224,7 @@ export function CommandPalette({
       description={t("command.description")}
       className="sm:max-w-lg"
     >
-      <CommandInput placeholder={t("command.placeholder")} />
+      <CommandInput placeholder={t("command.placeholder")} aria-label={t("command.searchInput")} />
       <CommandList>
         <CommandEmpty>{t("command.noResults")}</CommandEmpty>
 

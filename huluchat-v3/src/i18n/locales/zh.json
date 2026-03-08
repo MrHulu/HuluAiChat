@@ -317,7 +317,8 @@
     "toggleTheme": "切换主题",
     "settings": "设置",
     "showHelp": "键盘快捷键",
-    "openCommandPalette": "打开命令面板"
+    "openCommandPalette": "打开命令面板",
+    "searchInput": "搜索命令"
   },
   "rag": {
     "title": "文档对话（实验性）",
