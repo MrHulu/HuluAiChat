@@ -1,4 +1,7 @@
 {
+  "accessibility": {
+    "skipToMain": "跳转到主内容"
+  },
   "common": {
     "save": "保存",
     "cancel": "取消",
