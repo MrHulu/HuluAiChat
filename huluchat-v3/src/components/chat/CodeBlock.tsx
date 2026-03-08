@@ -84,7 +84,7 @@ export const CodeBlock = memo(function CodeBlock({
           <span
             className={cn(
               "text-xs text-muted-foreground",
-              "bg-muted/80 dark:bg-muted/60 backdrop-blur-sm",
+              "bg-muted/80 dark:bg-muted/70 backdrop-blur-sm",
               "px-2 py-0.5 rounded-md"
             )}
           >
@@ -96,7 +96,7 @@ export const CodeBlock = memo(function CodeBlock({
           className={cn(
             "p-1.5 rounded-md",
             "transition-all duration-200 ease-out",
-            "bg-muted/80 dark:bg-muted/60 backdrop-blur-sm",
+            "bg-muted/80 dark:bg-muted/70 backdrop-blur-sm",
             "hover:bg-accent active:scale-95",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
             copied
@@ -116,9 +116,9 @@ export const CodeBlock = memo(function CodeBlock({
       </div>
       <pre
         className={cn(
-          "!bg-muted dark:!bg-muted/40",
+          "!bg-muted dark:!bg-muted/50",
           "rounded-lg p-3 overflow-x-auto my-2",
-          "border border-border dark:border-border/50",
+          "border border-border dark:border-border/60",
           "shadow-sm",
           className
         )}

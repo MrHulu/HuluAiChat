@@ -16,7 +16,7 @@ const TabsList = React.forwardRef<
     ref={ref}
     className={cn(
       "inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground",
-      "dark:bg-muted/50",
+      "dark:bg-muted/60",
       className
     )}
     {...props}
@@ -39,7 +39,7 @@ const TabsTrigger = React.forwardRef<
       "data-[state=active]:dark:bg-background/90",
       "data-[state=inactive]:text-muted-foreground",
       "data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-muted/50",
-      "data-[state=inactive]:dark:hover:bg-muted/30",
+      "data-[state=inactive]:dark:hover:bg-muted/40",
       "active:scale-[0.98]",
       className
     )}
