@@ -32,6 +32,7 @@ import { TagFilter } from "./TagFilter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SkeletonSessionItem } from "@/components/ui/skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
 
 export interface SessionListProps {
@@ -389,9 +390,14 @@ export function SessionList({
         ) : searchQuery ? (
           // Search Results
           displaySessions.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground" role="status" aria-live="polite">
-              <p className="text-sm">{t("sidebar.noResults")}</p>
-              <p className="text-xs mt-1">{t("sidebar.tryDifferent")}</p>
+            <div className="py-4 px-2" role="status" aria-live="polite">
+              <EmptyState
+                icon="🔍"
+                title={t("sidebar.noResults")}
+                description={t("sidebar.tryDifferent")}
+                size="sm"
+                animated={false}
+              />
             </div>
           ) : (
             <div className="space-y-1">

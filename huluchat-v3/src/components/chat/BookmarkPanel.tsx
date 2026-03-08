@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Bookmark, MessageSquare, X, ChevronRight, Download, FileJson, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { EmptyStateCompact } from "@/components/ui/empty-state";
 import {
   getSessionBookmarks,
   deleteBookmark,
@@ -110,10 +111,11 @@ export function BookmarkPanel({
 
   if (bookmarks.length === 0) {
     return (
-      <div className={cn("p-3 text-center text-muted-foreground text-sm dark:bg-muted/10 dark:border dark:border-white/5 rounded-lg mx-2", className)}>
-        <Bookmark className="w-5 h-5 mx-auto mb-2 opacity-50" />
-        <p>{t("chat.noBookmarks")}</p>
-      </div>
+      <EmptyStateCompact
+        icon={<Bookmark className="w-5 h-5 opacity-50" />}
+        title={t("chat.noBookmarks")}
+        className={cn("mx-2", className)}
+      />
     );
   }
 
