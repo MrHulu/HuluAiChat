@@ -1,10 +1,10 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-08 - Cycle #222
+2026-03-08 - Cycle #223
 
 ## Current Phase
-♿ **无障碍访问增强** - HTML lang 属性自动更新
+♿ **无障碍访问增强** - MathBlock/MermaidBlock 组件 i18n 无障碍改进
 
 ---
 
@@ -21,10 +21,12 @@
 - ✅ 滑块控件 aria-valuetext（Temperature/Top P）
 - ✅ Select 组件无障碍增强（滚动按钮 aria-label + Model Select 关联描述）
 - ✅ HTML lang 属性自动更新（语言切换时）
+- ✅ MathBlock 块级模式添加 role="img" 无障碍属性
+- ✅ MermaidBlock/MathBlock i18n 翻译支持（加载/错误状态）
 
 继续方向：
 - 屏幕阅读器测试
-- 更多表单组件优化
+- 更多组件无障碍优化
 
 ---
 
@@ -72,6 +74,21 @@
   - 语言切换时自动更新 document.documentElement.lang
   - 应用初始化时设置 HTML lang 属性
   - 确保屏幕阅读器使用正确的语音合成引擎
+- ✅ **Cycle #223: MathBlock/MermaidBlock 无障碍改进**
+  - MathBlock 块级模式添加 role="img" 属性
+  - MermaidBlock 添加 i18n 翻译支持
+  - MathBlock 添加 i18n 翻译支持
+  - i18n 翻译键：mermaid.loading, mermaid.error, mermaid.label, math.formula, math.error
+
+### Cycle #223 MathBlock/MermaidBlock 无障碍改进
+**改进内容**：
+- ✅ MathBlock 块级模式添加 role="img" 无障碍属性
+- ✅ MermaidBlock 加载/错误状态文本 i18n 翻译
+- ✅ MathBlock 加载/错误状态文本 i18n 翻译
+- ✅ 更新测试用例匹配新的 i18n 文本
+
+**测试结果**：
+- ✅ 712 个测试全部通过
 
 ### Cycle #222 HTML lang 属性自动更新
 **改进内容**：
@@ -223,4 +240,4 @@
 ---
 
 ## 循环计数
-当前周期: 222
+当前周期: 223
