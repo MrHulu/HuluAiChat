@@ -59,13 +59,18 @@ export function SkeletonText({
   return (
     <div className={cn("space-y-2", className)}>
       {Array.from({ length: lines }).map((_, i) => (
-        <Skeleton
+        <div
           key={i}
-          className={cn(
-            "h-4",
-            i === lines - 1 ? "w-3/4" : "w-full"
-          )}
-        />
+          className="animate-fade-in"
+          style={{ animationDelay: `${i * 50}ms` }}
+        >
+          <Skeleton
+            className={cn(
+              "h-4",
+              i === lines - 1 ? "w-3/4" : "w-full"
+            )}
+          />
+        </div>
       ))}
     </div>
   );
