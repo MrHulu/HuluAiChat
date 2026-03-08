@@ -156,7 +156,7 @@ export const ChatInput = memo(function ChatInput({
   }, []);
 
   return (
-    <div className="border-t border-border bg-background p-4" role="region" aria-label={t("chat.typeMessage")}>
+    <div className="border-t border-border bg-background dark:bg-background/95 dark:shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.3)] p-4" role="region" aria-label={t("chat.typeMessage")}>
       {/* Image Preview Area */}
       {images.length > 0 && (
         <div
@@ -238,7 +238,9 @@ export const ChatInput = memo(function ChatInput({
               "w-full resize-none rounded-lg border border-input bg-background",
               "px-4 py-3 text-sm",
               "placeholder:text-muted-foreground",
+              "hover:border-muted-foreground/40 dark:hover:border-muted-foreground/50 dark:hover:bg-muted/10",
               "focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent",
+              "dark:focus:ring-ring/60",
               "disabled:cursor-not-allowed disabled:opacity-50",
               "transition-all duration-200 ease-out"
             )}

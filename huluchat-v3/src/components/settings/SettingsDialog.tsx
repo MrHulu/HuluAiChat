@@ -437,18 +437,18 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                 role="status"
                 aria-live="polite"
                 aria-label={ollamaAvailable ? t("ollama.online") : t("ollama.offline")}
-                className={`flex items-center justify-between p-3 rounded-lg border mb-3 ${
+                className={`flex items-center justify-between p-3 rounded-lg border mb-3 transition-all duration-200 ${
                   ollamaAvailable
-                    ? "bg-success-muted/50 border-success/30"
-                    : "bg-muted"
+                    ? "bg-success-muted/50 border-success/30 dark:bg-success-muted/20 dark:border-success/25 dark:shadow-sm dark:shadow-success/10"
+                    : "bg-muted dark:bg-muted/50 dark:border-white/5"
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className={`flex items-center justify-center w-8 h-8 rounded-full ${
+                    className={`flex items-center justify-center w-8 h-8 rounded-full transition-colors duration-200 ${
                       ollamaAvailable
-                        ? "bg-success/20 text-success"
-                        : "bg-muted text-muted-foreground"
+                        ? "bg-success/20 text-success dark:bg-success/25 dark:text-success"
+                        : "bg-muted text-muted-foreground dark:bg-muted/60"
                     }`}
                     aria-hidden="true"
                   >
@@ -493,7 +493,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                     {ollamaModels.map((m) => (
                       <span
                         key={m.name}
-                        className="inline-flex items-center px-2 py-1 rounded-md bg-muted text-xs"
+                        className="inline-flex items-center px-2 py-1 rounded-md bg-muted dark:bg-muted/60 dark:border dark:border-white/10 text-xs"
                       >
                         {m.name}
                       </span>
