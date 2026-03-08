@@ -401,12 +401,16 @@ export function SessionList({
             </div>
           ) : (
             <div className="space-y-1">
-              {displaySessions.map((session) => {
+              {displaySessions.map((session, sessionIndex) => {
                 const searchResult = searchResults?.find((r) => r.session.id === session.id);
                 const matchedMessages = searchResult?.matched_messages || [];
 
                 return (
-                  <div key={session.id}>
+                  <div
+                    key={session.id}
+                    className="animate-list-enter"
+                    style={{ animationDelay: `${sessionIndex * 50}ms` }}
+                  >
                     <SessionItem
                       session={session}
                       folders={folders}
@@ -543,19 +547,24 @@ export function SessionList({
                   </span>
                 </div>
                 <div className="space-y-1 mt-1" role="list">
-                  {sessionsByFolder.root.map((session) => (
-                    <SessionItem
+                  {sessionsByFolder.root.map((session, index) => (
+                    <div
                       key={session.id}
-                      session={session}
-                      folders={folders}
-                      isActive={session.id === currentSessionId}
-                      onClick={() => onSelectSession(session.id)}
-                      onDelete={() => onDeleteSession(session.id)}
-                      onExport={onExportSession}
-                      onMoveToFolder={handleMoveSession}
-                      tags={sessionTags[session.id] || []}
-                      onTagClick={handleTagClick}
-                    />
+                      className="animate-list-enter"
+                      style={{ animationDelay: `${index * 50}ms` }}
+                    >
+                      <SessionItem
+                        session={session}
+                        folders={folders}
+                        isActive={session.id === currentSessionId}
+                        onClick={() => onSelectSession(session.id)}
+                        onDelete={() => onDeleteSession(session.id)}
+                        onExport={onExportSession}
+                        onMoveToFolder={handleMoveSession}
+                        tags={sessionTags[session.id] || []}
+                        onTagClick={handleTagClick}
+                      />
+                    </div>
                   ))}
                 </div>
               </div>
@@ -573,19 +582,24 @@ export function SessionList({
                   {t("sidebar.backToAll")}
                 </button>
                 <div className="space-y-1 mt-1" role="list">
-                  {(sessionsByFolder[activeFolderFilter] || []).map((session) => (
-                    <SessionItem
+                  {(sessionsByFolder[activeFolderFilter] || []).map((session, index) => (
+                    <div
                       key={session.id}
-                      session={session}
-                      folders={folders}
-                      isActive={session.id === currentSessionId}
-                      onClick={() => onSelectSession(session.id)}
-                      onDelete={() => onDeleteSession(session.id)}
-                      onExport={onExportSession}
-                      onMoveToFolder={handleMoveSession}
-                      tags={sessionTags[session.id] || []}
-                      onTagClick={handleTagClick}
-                    />
+                      className="animate-list-enter"
+                      style={{ animationDelay: `${index * 50}ms` }}
+                    >
+                      <SessionItem
+                        session={session}
+                        folders={folders}
+                        isActive={session.id === currentSessionId}
+                        onClick={() => onSelectSession(session.id)}
+                        onDelete={() => onDeleteSession(session.id)}
+                        onExport={onExportSession}
+                        onMoveToFolder={handleMoveSession}
+                        tags={sessionTags[session.id] || []}
+                        onTagClick={handleTagClick}
+                      />
+                    </div>
                   ))}
                 </div>
               </div>
@@ -788,19 +802,24 @@ function FolderItem({
           className="ml-4 border-l border-border pl-2 space-y-1 animate-slide-down"
           role="list"
         >
-          {sessions.map((session) => (
-            <SessionItem
+          {sessions.map((session, index) => (
+            <div
               key={session.id}
-              session={session}
-              folders={folders}
-              isActive={session.id === currentSessionId}
-              onClick={() => onSelectSession(session.id)}
-              onDelete={() => onDeleteSession(session.id)}
-              onExport={onExportSession}
-              onMoveToFolder={onMoveSession}
-              tags={sessionTags[session.id] || []}
-              onTagClick={onTagClick}
-            />
+              className="animate-list-enter"
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
+              <SessionItem
+                session={session}
+                folders={folders}
+                isActive={session.id === currentSessionId}
+                onClick={() => onSelectSession(session.id)}
+                onDelete={() => onDeleteSession(session.id)}
+                onExport={onExportSession}
+                onMoveToFolder={onMoveSession}
+                tags={sessionTags[session.id] || []}
+                onTagClick={onTagClick}
+              />
+            </div>
           ))}
         </div>
       )}
