@@ -46,8 +46,8 @@ export function TagFilter({
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
             "active:scale-[0.97]",
             selectedTags.length > 0
-              ? "bg-primary/10 border-primary/30 text-primary"
-              : "bg-transparent border-border text-muted-foreground hover:bg-muted"
+              ? "bg-primary/10 border-primary/30 text-primary dark:bg-primary/20 dark:border-primary/40"
+              : "bg-transparent border-border text-muted-foreground hover:bg-muted dark:border-border/60 dark:hover:bg-muted/40"
           )}
         >
           <svg
@@ -104,8 +104,8 @@ export function TagFilter({
                   "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
                   "active:scale-95",
                   selectedTags.includes(tag)
-                    ? "bg-primary/20 border-primary/30 text-primary"
-                    : "bg-transparent border-border text-muted-foreground hover:bg-muted"
+                    ? "bg-primary/20 border-primary/30 text-primary dark:bg-primary/30 dark:border-primary/50"
+                    : "bg-transparent border-border text-muted-foreground hover:bg-muted dark:border-border/60 dark:hover:bg-muted/40"
                 )}
               >
                 #{tag}
