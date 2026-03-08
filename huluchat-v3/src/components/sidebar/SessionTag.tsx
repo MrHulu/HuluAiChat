@@ -45,8 +45,8 @@ export function SessionTag({
         onClick && "active:scale-95",
         size === "xs" ? "px-1.5 py-0.5 text-[10px]" : "px-2 py-0.5 text-xs",
         isActive
-          ? "bg-primary/20 border-primary/30 text-primary dark:bg-primary/30 dark:border-primary/50"
-          : "bg-muted/50 border-border text-muted-foreground hover:bg-muted dark:border-border/60 dark:hover:bg-muted/70"
+          ? "bg-primary/20 border-primary/30 text-primary dark:bg-primary/25 dark:border-primary/40 dark:shadow-[0_0_10px_oklch(0.5_0.15_264/0.3)]"
+          : "bg-muted/50 border-border text-muted-foreground hover:bg-muted dark:border-white/10 dark:hover:bg-white/10 dark:hover:border-white/20"
       )}
     >
       <span className="truncate max-w-[60px]">#{name}</span>

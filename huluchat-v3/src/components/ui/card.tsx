@@ -12,8 +12,10 @@ const Card = React.forwardRef<
       "rounded-xl border border-border bg-card text-card-foreground shadow-sm",
       "transition-all duration-200 ease-out",
       "hover:shadow-md hover:border-border/80",
-      "dark:border-border/60 dark:shadow-lg dark:shadow-black/20",
-      "dark:hover:shadow-xl dark:hover:shadow-black/35 dark:hover:border-border/75",
+      // Dark mode enhancements - Cycle #186
+      "dark:border-white/10 dark:shadow-lg dark:shadow-black/30",
+      "dark:hover:border-white/20 dark:hover:shadow-xl dark:hover:shadow-black/40",
+      "dark:hover:shadow-[0_0_20px_oklch(0.4_0.08_264/0.15)]",
       className
     )}
     {...props}
