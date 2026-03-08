@@ -269,7 +269,14 @@ export function SessionList({
       >
         <button
           onClick={onToggleCollapse}
-          className="p-2 rounded-lg hover:bg-muted dark:hover:bg-muted/50 transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+          className={cn(
+            "p-2 rounded-lg transition-all duration-200 ease-out",
+            "hover:bg-muted dark:hover:bg-muted/50",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+            "active:scale-95",
+            // Dark mode enhancements - Cycle #192
+            "dark:hover:bg-primary/15 dark:hover:shadow-[0_0_12px_oklch(0.5_0.15_264/0.2)]"
+          )}
           aria-label={t("sidebar.expandSidebar")}
         >
           <PanelLeft className="w-5 h-5" aria-hidden="true" />
@@ -277,7 +284,14 @@ export function SessionList({
 
         <button
           onClick={onCreateSession}
-          className="mt-4 p-2 rounded-lg hover:bg-muted dark:hover:bg-muted/50 transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+          className={cn(
+            "mt-4 p-2 rounded-lg transition-all duration-200 ease-out",
+            "hover:bg-muted dark:hover:bg-muted/50",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+            "active:scale-95",
+            // Dark mode enhancements - Cycle #192
+            "dark:hover:bg-primary/15 dark:hover:shadow-[0_0_12px_oklch(0.5_0.15_264/0.2)]"
+          )}
           aria-label={t("sidebar.newChat")}
         >
           <Plus className="w-5 h-5" aria-hidden="true" />
