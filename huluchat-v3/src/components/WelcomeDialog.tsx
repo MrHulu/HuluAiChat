@@ -93,7 +93,7 @@ export function WelcomeDialog({ open, onOpenChange, onComplete }: WelcomeDialogP
               aria-current={index === currentStep ? "step" : undefined}
               aria-label={t("welcome.stepLabel", { step: index + 1, title: t(s.titleKey) })}
               className={cn(
-                "w-2 h-2 rounded-full transition-all duration-300 ease-out",
+                "w-2 h-2 rounded-full transition-all duration-200 ease-out",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                 "hover:scale-125 active:scale-110",
                 index === currentStep

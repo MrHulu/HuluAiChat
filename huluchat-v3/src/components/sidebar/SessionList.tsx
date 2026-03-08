@@ -269,7 +269,7 @@ export function SessionList({
       >
         <button
           onClick={onToggleCollapse}
-          className="p-2 rounded-lg hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+          className="p-2 rounded-lg hover:bg-muted transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
           aria-label={t("sidebar.expandSidebar")}
         >
           <PanelLeft className="w-5 h-5" aria-hidden="true" />
@@ -277,7 +277,7 @@ export function SessionList({
 
         <button
           onClick={onCreateSession}
-          className="mt-4 p-2 rounded-lg hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+          className="mt-4 p-2 rounded-lg hover:bg-muted transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
           aria-label={t("sidebar.newChat")}
         >
           <Plus className="w-5 h-5" aria-hidden="true" />
@@ -290,7 +290,7 @@ export function SessionList({
     <div
       className={cn(
         "flex flex-col h-full border-r border-border bg-muted/30",
-        "transition-all duration-300 ease-in-out"
+        "transition-all duration-200 ease-out"
       )}
       role="navigation"
       aria-label={t("sidebar.chats")}
@@ -301,7 +301,7 @@ export function SessionList({
         <div className="flex items-center gap-1">
           <button
             onClick={onToggleCollapse}
-            className="p-1.5 rounded-md hover:bg-muted transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+            className="p-1.5 rounded-md hover:bg-muted transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
             aria-label={t("sidebar.collapseSidebar")}
           >
             <PanelLeftClose className="w-4 h-4" aria-hidden="true" />
@@ -336,7 +336,7 @@ export function SessionList({
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-muted transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               aria-label={t("common.clear")}
             >
               <X className="w-3 h-3" aria-hidden="true" />
@@ -402,7 +402,7 @@ export function SessionList({
                         {matchedMessages.map((msg) => (
                           <div
                             key={msg.id}
-                            className="text-xs p-2 rounded bg-muted/50 cursor-pointer hover:bg-muted transition-colors"
+                            className="text-xs p-2 rounded bg-muted/50 cursor-pointer hover:bg-muted transition-all duration-200 ease-out"
                             onClick={() => onSelectSession(session.id)}
                           >
                             <span
@@ -437,7 +437,7 @@ export function SessionList({
                 </span>
                 <button
                   onClick={() => setShowNewFolderInput(true)}
-                  className="p-1 rounded-md hover:bg-background/50 transition-all text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="p-1 rounded-md hover:bg-background/50 transition-all duration-200 ease-out text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   aria-label={t("sidebar.newFolder")}
                 >
                   <Plus className="w-3.5 h-3.5" aria-hidden="true" />
@@ -539,7 +539,7 @@ export function SessionList({
               <div className="mt-2">
                 <button
                   onClick={() => setActiveFolderFilter(null)}
-                  className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+                  className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
                   aria-label={t("sidebar.backToAll")}
                 >
                   <ArrowLeft className="w-3 h-3" aria-hidden="true" />
@@ -627,7 +627,7 @@ function FolderItem({
     <div className="select-none" role="listitem">
       <div
         className={cn(
-          "flex items-center gap-1 px-2 py-1.5 rounded-md cursor-pointer transition-colors group",
+          "flex items-center gap-1 px-2 py-1.5 rounded-md cursor-pointer transition-all duration-200 ease-out group",
           isActive ? "bg-muted" : "hover:bg-muted/50",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
         )}
@@ -653,7 +653,7 @@ function FolderItem({
             e.stopPropagation();
             onToggle();
           }}
-          className="p-1 rounded-md hover:bg-background/50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="p-1 rounded-md hover:bg-background/50 transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           aria-label={isExpanded ? t("sidebar.collapseFolder") : t("sidebar.expandFolder")}
         >
           <ChevronRight
@@ -758,7 +758,7 @@ function FolderItem({
       {/* Sessions in Folder - with slide-in animation */}
       {isExpanded && sessions.length > 0 && (
         <div
-          className="ml-4 border-l border-border pl-2 space-y-1 animate-in slide-in-from-top-1 duration-150"
+          className="ml-4 border-l border-border pl-2 space-y-1 animate-in slide-in-from-top-1 duration-200"
           role="list"
         >
           {sessions.map((session) => (

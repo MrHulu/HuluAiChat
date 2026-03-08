@@ -174,7 +174,7 @@ export function PromptTemplateSelector({
           <nav className="w-48 border-r border-border pr-2 overflow-y-auto" aria-label={t("templates.categoriesLabel")}>
             <Button
               variant={selectedCategory === null ? "secondary" : "ghost"}
-              className="w-full justify-start mb-1 transition-all duration-150"
+              className="w-full justify-start mb-1 transition-all duration-200 ease-out"
               onClick={() => setSelectedCategory(null)}
               aria-pressed={selectedCategory === null}
             >
@@ -184,7 +184,7 @@ export function PromptTemplateSelector({
               <Button
                 key={category}
                 variant={selectedCategory === category ? "secondary" : "ghost"}
-                className="w-full justify-start mb-1 transition-all duration-150"
+                className="w-full justify-start mb-1 transition-all duration-200 ease-out"
                 onClick={() => setSelectedCategory(category)}
                 aria-pressed={selectedCategory === category}
               >

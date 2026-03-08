@@ -203,14 +203,14 @@ export function BookmarkPanel({
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out">
               <ChevronRight className="w-3 h-3 text-muted-foreground" aria-hidden="true" />
               <button
                 onClick={(e) => handleDelete(bookmark.id, e)}
                 className={cn(
                   "p-1 rounded",
                   "text-muted-foreground hover:text-destructive hover:bg-destructive/20",
-                  "transition-colors duration-150",
+                  "transition-all duration-200 ease-out",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
                 )}
                 aria-label={t("chat.removeBookmark")}
