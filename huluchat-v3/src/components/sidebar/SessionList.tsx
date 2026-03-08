@@ -380,12 +380,12 @@ export function SessionList({
         aria-label={t("sidebar.chats")}
       >
         {isLoading || isSearching ? (
-          <div className="space-y-1 animate-fade-in" aria-busy="true" aria-live="polite">
-            <SkeletonSessionItem />
-            <SkeletonSessionItem />
-            <SkeletonSessionItem />
-            <SkeletonSessionItem />
-            <SkeletonSessionItem />
+          <div className="space-y-1" aria-busy="true" aria-live="polite">
+            <div className="animate-fade-in stagger-1"><SkeletonSessionItem /></div>
+            <div className="animate-fade-in stagger-2"><SkeletonSessionItem /></div>
+            <div className="animate-fade-in stagger-3"><SkeletonSessionItem /></div>
+            <div className="animate-fade-in stagger-4"><SkeletonSessionItem /></div>
+            <div className="animate-fade-in stagger-5"><SkeletonSessionItem /></div>
           </div>
         ) : searchQuery ? (
           // Search Results
@@ -468,7 +468,7 @@ export function SessionList({
 
               {/* New Folder Input */}
               {showNewFolderInput && (
-                <div className="px-2 pb-2">
+                <div className="px-2 pb-2 animate-slide-down">
                   <form
                     onSubmit={(e) => {
                       e.preventDefault();
@@ -680,7 +680,7 @@ function FolderItem({
         >
           <ChevronRight
             className={cn(
-              "w-3 h-3 transition-transform",
+              "w-3 h-3 transition-transform duration-200 ease-out",
               isExpanded && "rotate-90"
             )}
             aria-hidden="true"
