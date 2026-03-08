@@ -16,9 +16,9 @@ const Switch = React.forwardRef<
       "hover:scale-[1.02] active:scale-[0.98]",
       "disabled:cursor-not-allowed disabled:opacity-50",
       "data-[state=checked]:bg-primary data-[state=unchecked]:bg-input",
-      // Dark mode enhancements
+      // Dark mode enhancements - Cycle #180
       "dark:shadow-none",
-      "dark:data-[state=checked]:shadow-[0_0_8px_oklch(0.55_0.2_264/0.4)]",
+      "dark:data-[state=checked]:shadow-[0_0_12px_oklch(0.55_0.2_264/0.5),0_0_24px_oklch(0.55_0.2_264/0.2)]",
       "dark:data-[state=unchecked]:bg-muted/60 dark:hover:data-[state=unchecked]:bg-muted/80",
       "dark:focus-visible:ring-offset-background dark:focus-visible:ring-ring",
       className
@@ -32,9 +32,9 @@ const Switch = React.forwardRef<
         "transition-all duration-200 ease-out",
         "data-[state=checked]:translate-x-4 data-[state=checked]:scale-100",
         "data-[state=unchecked]:translate-x-0 data-[state=unchecked]:scale-90",
-        // Dark mode enhancements
+        // Dark mode enhancements - Cycle #180
         "dark:shadow-[0_2px_4px_oklch(0_0_0/0.3)]",
-        "dark:data-[state=checked]:shadow-[0_2px_8px_oklch(0_0_0/0.4)]"
+        "dark:data-[state=checked]:shadow-[0_0_8px_oklch(0.6_0.15_264/0.4),0_0_16px_oklch(0.6_0.15_264/0.2)]"
       )}
     />
   </SwitchPrimitives.Root>
