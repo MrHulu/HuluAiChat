@@ -1,7 +1,7 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-08 - Cycle #252
+2026-03-08 - Cycle #253
 
 ## Current Phase
 🎨 **UI/UX 交互优化** - 动画一致性增强
@@ -11,7 +11,19 @@
 ## Next Action
 **继续 UI/UX 优化方向**
 
-本轮完成（Cycle #252）：
+本轮完成（Cycle #253）：
+- ✅ ModelSelector 模型选择下拉框添加交错进入动画
+- ✅ Cloud Models 分组模型项使用 `animate-list-enter` + 交错延迟（50ms 间隔）
+- ✅ Ollama Models 分组模型项使用 `animate-list-enter` + 交错延迟（50ms 间隔）
+- ✅ 712 个测试通过
+
+**改进的组件**：
+| 组件 | 之前 | 之后 |
+|------|------|------|
+| ModelSelector Cloud 模型项 | 无动画 | `animate-list-enter` + `animationDelay: index * 50ms` |
+| ModelSelector Ollama 模型项 | 无动画 | `animate-list-enter` + `animationDelay: index * 50ms` |
+
+上轮完成（Cycle #252）：
 - ✅ TagInput 已有标签添加交错进入动画
 - ✅ 标签项使用 `animate-list-enter` + 交错延迟（50ms 间隔）
 - ✅ 712 个测试通过
@@ -593,4 +605,4 @@
 ---
 
 ## 循环计数
-当前周期: 252
+当前周期: 253

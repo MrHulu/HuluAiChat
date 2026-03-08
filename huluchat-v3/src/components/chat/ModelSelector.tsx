@@ -107,15 +107,17 @@ export function ModelSelector({
               </DropdownMenuLabel>
             )}
             <DropdownMenuGroup>
-              {cloudModels.map((model) => (
+              {cloudModels.map((model, index) => (
                 <DropdownMenuItem
                   key={model.id}
                   onClick={() => onChange(model.id)}
                   className={cn(
                     "flex items-center justify-between gap-2 transition-all duration-200 ease-out",
                     "hover:bg-accent/50 hover:translate-x-0.5",
+                    "animate-list-enter",
                     value === model.id && "bg-accent"
                   )}
+                  style={{ animationDelay: `${index * 50}ms` }}
                 >
                   <div className="flex flex-col flex-1 min-w-0">
                     <span className="font-medium truncate">{model.name}</span>
@@ -144,15 +146,17 @@ export function ModelSelector({
             )}
             <DropdownMenuGroup>
               {hasOllamaModels ? (
-                ollamaModelsList.map((model) => (
+                ollamaModelsList.map((model, index) => (
                   <DropdownMenuItem
                     key={model.id}
                     onClick={() => onChange(model.id)}
                     className={cn(
                       "flex items-center justify-between gap-2 transition-all duration-150",
                       "hover:bg-accent/50 hover:translate-x-0.5",
+                      "animate-list-enter",
                       value === model.id && "bg-accent"
                     )}
+                    style={{ animationDelay: `${index * 50}ms` }}
                   >
                     <div className="flex flex-col flex-1 min-w-0">
                       <span className="font-medium truncate">{model.name}</span>
