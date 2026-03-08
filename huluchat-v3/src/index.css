@@ -333,6 +333,7 @@
   .animate-shimmer {
     animation: shimmer 2s infinite linear;
     background-size: 200% 100%;
+    will-change: background-position;
   }
 
   @keyframes shimmer {
