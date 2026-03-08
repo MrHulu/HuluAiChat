@@ -1,7 +1,7 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-08 - Cycle #209
+2026-03-08 - Cycle #210
 
 ## Current Phase
 🎨 **UI/UX 美化优化** - 细节打磨阶段
@@ -10,9 +10,9 @@
 
 ## Next Action
 继续细节优化或等待 Boss 新指令：
-- 其他组件图标交互动画
 - 动画性能检查
 - 无障碍访问增强
+- 新功能开发
 
 ---
 
@@ -47,7 +47,8 @@
 - ✅ Cycle #205: 更多组件图标交互动画扩展
 - ✅ **Cycle #207: 设置和侧边栏组件图标交互动画**
 - ✅ **Cycle #208: 更多组件图标交互动画扩展**
-- ✅ **Cycle #209: 模板和文档上传组件图标交互动画** (当前)
+- ✅ **Cycle #209: 模板和文档上传组件图标交互动画**
+- ✅ **Cycle #210: UI 基础组件图标交互动画** (当前)
 
 ### Cycle #207 图标交互动画扩展
 **PluginSettings.tsx** 插件设置：
@@ -98,6 +99,19 @@
 **DocumentUploader.tsx** 文档上传：
 - Upload：悬停上移 (`group-hover/uploader:-translate-y-0.5`)
 
+### Cycle #210 UI 基础组件图标交互动画扩展
+**BookmarkPanel.tsx** 书签面板导出菜单：
+- FileJson：悬停放大 110% (`group-hover/json:scale-110`)
+- FileText：悬停放大 105% (`group-hover/markdown:scale-105`)
+
+**Select.tsx** 下拉选择器：
+- ChevronDown：打开时旋转 180° (`group-data-[state=open]:rotate-180`)
+- Check：选中时缩放动画 (`animate-in zoom-in-50`)
+
+**dropdown-menu.tsx** 下拉菜单：
+- CheckIcon：选中时缩放动画 (`animate-in zoom-in-50`)
+- ChevronRightIcon：子菜单展开时旋转 90° (`data-[state=open]:rotate-90`)
+
 ### 深色模式增强覆盖率
 - 📊 **组件覆盖率**: 100% (所有主要组件)
 - 🎨 **视觉效果**: 发光效果、阴影层次、过渡动画
@@ -141,4 +155,4 @@
 ---
 
 ## 循环计数
-当前周期: 209
+当前周期: 210
