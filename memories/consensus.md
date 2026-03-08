@@ -24,17 +24,16 @@
 - **状态**：持续进行
 - **方向**：界面美化、交互优化、视觉一致性
 
-### 已完成优化
-- ✅ Cycle #104: 统一圆角规范 + hover 效果
-- ✅ Cycle #105: 统一间距规范 + 视觉层次
-- ✅ Cycle #106: 消息气泡样式优化
-- ✅ Cycle #158: 深色模式细节优化（输入框/按钮/侧边栏）
-- ✅ Cycle #159: 加载动画性能优化（GPU 加速 + 无障碍支持）
-- ✅ Cycle #160: Focus Ring 样式统一（button/input/select/tabs/switch/dialog）
+### 已完成优化 (Cycle #151-160)
+- ✅ Cycle #151-156: 可访问性改进 (aria-hidden, aria-busy, aria-live)
+- ✅ Cycle #157: 可访问性审查完成
+- ✅ Cycle #158: 深色模式对比度增强
+- ✅ Cycle #159: 加载动画硬件加速
+- ✅ Cycle #160: Focus ring 统一 + shimmer 动画性能优化
 
 ### 下一步优化方向
-- 过渡效果优化
-- 组件 hover 状态统一
+- 继续组件细节优化
+- 微交互一致性检查
 
 ---
 
