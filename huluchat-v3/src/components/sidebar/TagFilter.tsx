@@ -104,7 +104,7 @@ export function TagFilter({
                   "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
                   "active:scale-95",
                   selectedTags.includes(tag)
-                    ? "bg-primary/20 border-primary/30 text-primary dark:bg-primary/30 dark:border-primary/50"
+                    ? "bg-primary/20 border-primary/30 text-primary dark:bg-primary/30 dark:border-primary/50 dark:shadow-[0_0_8px_oklch(0.5_0.15_264/0.2)]"
                     : "bg-transparent border-border text-muted-foreground hover:bg-muted dark:border-border/60 dark:hover:bg-muted/40"
                 )}
               >
