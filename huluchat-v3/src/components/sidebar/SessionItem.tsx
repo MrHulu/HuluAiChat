@@ -109,10 +109,13 @@ export function SessionItem({
         "group flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer",
         "transition-all duration-200 ease-out",
         isActive
-          ? "bg-accent text-accent-foreground shadow-sm"
+          ? "bg-accent text-accent-foreground shadow-sm dark:shadow-lg dark:shadow-accent/20"
           : "hover:bg-muted/60 hover:shadow-sm text-foreground",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-        "active:scale-[0.98] active:bg-accent/80"
+        "active:scale-[0.98] active:bg-accent/80",
+        // Dark mode enhancements
+        "dark:hover:bg-muted/40 dark:hover:shadow-none",
+        isActive && "dark:bg-accent/80 dark:border-l-2 dark:border-primary/50"
       )}
     >
       <div className="flex-1 min-w-0">

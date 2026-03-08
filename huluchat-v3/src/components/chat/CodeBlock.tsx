@@ -85,7 +85,8 @@ export const CodeBlock = memo(function CodeBlock({
             className={cn(
               "text-xs text-muted-foreground",
               "bg-muted/80 dark:bg-muted/70 backdrop-blur-sm",
-              "px-2 py-0.5 rounded-md"
+              "px-2 py-0.5 rounded-md",
+              "dark:border dark:border-white/10"
             )}
           >
             {displayLanguage}
@@ -101,7 +102,10 @@ export const CodeBlock = memo(function CodeBlock({
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
             copied
               ? "text-primary animate-in zoom-in-50 duration-150"
-              : "text-muted-foreground hover:text-foreground"
+              : "text-muted-foreground hover:text-foreground",
+            "dark:border dark:border-white/10",
+            "dark:hover:bg-accent/80 dark:hover:border-white/20",
+            "dark:hover:shadow-lg dark:hover:shadow-primary/10"
           )}
           aria-label={copied ? t("chat.codeCopied") : t("chat.copyCode")}
           aria-live="polite"
@@ -120,6 +124,8 @@ export const CodeBlock = memo(function CodeBlock({
           "rounded-lg p-3 overflow-x-auto my-2",
           "border border-border dark:border-border/60",
           "shadow-sm",
+          "dark:shadow-lg dark:shadow-black/20",
+          "dark:hover:border-border/80 transition-colors duration-200",
           className
         )}
       >
