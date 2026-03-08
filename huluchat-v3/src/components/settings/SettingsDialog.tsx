@@ -77,6 +77,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
   const [temperature, setTemperature] = useState(0.7);
   const [topP, setTopP] = useState(1.0);
   const [maxTokens, setMaxTokens] = useState(4096);
+  const [maxTokensError, setMaxTokensError] = useState<string | null>(null);
 
   // Models
   const [models, setModels] = useState<ModelInfo[]>([]);
@@ -117,6 +118,20 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
   const handleBaseUrlChange = (value: string) => {
     setBaseUrl(value);
     setBaseUrlError(validateBaseUrl(value));
+  };
+
+  // Validate Max Tokens range (256 - 128000)
+  const validateMaxTokens = (value: number): string | null => {
+    if (isNaN(value)) return t("settings.fieldInvalid");
+    if (value < 256) return t("settings.maxTokensMinError");
+    if (value > 128000) return t("settings.maxTokensMaxError");
+    return null;
+  };
+
+  const handleMaxTokensChange = (value: string) => {
+    const numValue = parseInt(value, 10);
+    setMaxTokens(numValue || 0);
+    setMaxTokensError(validateMaxTokens(numValue));
   };
 
   const loadOllamaStatus = async () => {
@@ -417,12 +432,20 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                     max="128000"
                     step="256"
                     value={maxTokens}
-                    onChange={(e) => setMaxTokens(parseInt(e.target.value) || 4096)}
-                    aria-describedby="maxtokens-hint"
+                    onChange={(e) => handleMaxTokensChange(e.target.value)}
+                    aria-invalid={!!maxTokensError}
+                    aria-errormessage={maxTokensError ? "maxTokens-error" : undefined}
+                    aria-describedby={maxTokensError ? "maxTokens-error" : "maxtokens-hint"}
                   />
-                  <p id="maxtokens-hint" className="text-xs text-muted-foreground">
-                    {t("settings.maxTokensHint")}
-                  </p>
+                  {maxTokensError ? (
+                    <p id="maxTokens-error" className="text-xs text-destructive" role="alert">
+                      {maxTokensError}
+                    </p>
+                  ) : (
+                    <p id="maxtokens-hint" className="text-xs text-muted-foreground">
+                      {t("settings.maxTokensHint")}
+                    </p>
+                  )}
                 </div>
               </div>
 
