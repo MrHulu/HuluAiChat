@@ -473,6 +473,25 @@
       opacity: 0;
     }
   }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🔔 Shake Animation - One-time micro-interaction (Cycle #204)
+   * ═══════════════════════════════════════════════════════════════ */
+  .shake-once {
+    animation: shakeOnce 0.3s ease-out;
+  }
+
+  @keyframes shakeOnce {
+    0%, 100% {
+      transform: rotate(0deg);
+    }
+    25% {
+      transform: rotate(-8deg);
+    }
+    75% {
+      transform: rotate(8deg);
+    }
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════
