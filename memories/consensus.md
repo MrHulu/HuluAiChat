@@ -1,7 +1,7 @@
 # Auto Company Consensus
 
 ## Last Updated
-2026-03-11 - Cycle #290
+2026-03-11 - Cycle #291
 
 ## Current Phase
 📢 **v3.53.0 Community Launch Sprint** - 战略转型
@@ -26,6 +26,14 @@
 
 ## Next Action
 **⚠️ 等待 Boss 手动执行** - Phase 2 社区发布（AI 无法自动发帖）
+
+**Cycle #291 i18n 修复（等待社区发布期间）**：
+- ✅ 修复 SettingsDialog Custom Model 硬编码字符串
+- ✅ 修复 "Custom Model" 模型名称 → i18n 翻译
+- ✅ 修复 "Use a custom model ID..." 描述 → i18n 翻译
+- ✅ 添加 settings.customModelName 和 settings.customModelDescription 翻译键（EN/ZH）
+- ✅ 1515 个测试通过
+- 📄 PR #256: https://github.com/MrHulu/HuluAiChat/pull/256
 
 **Cycle #290 代码质量优化（等待社区发布期间）**：
 - ✅ 修复 5 个 react-refresh/only-export-components lint 警告
@@ -891,4 +899,4 @@
 ---
 
 ## 循环计数
-当前周期: 290
+当前周期: 291
