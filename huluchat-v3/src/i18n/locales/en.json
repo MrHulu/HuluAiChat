@@ -5,6 +5,12 @@
     "fieldRequired": "This field is required",
     "fieldInvalid": "Please enter a valid value"
   },
+  "errorBoundary": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. Please try again.",
+    "tryAgain": "Try Again",
+    "goHome": "Go Home"
+  },
   "mermaid": {
     "loading": "Loading chart...",
     "error": "Chart rendering error",
