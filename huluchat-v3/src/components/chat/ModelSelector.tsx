@@ -66,7 +66,7 @@ export function ModelSelector({
     return (
       <Button variant="outline" size="sm" disabled className="gap-2">
         <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
-        <span>Loading...</span>
+        <span>{t("modelSelector.loading")}</span>
       </Button>
     );
   }

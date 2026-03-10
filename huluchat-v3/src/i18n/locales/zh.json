@@ -247,6 +247,8 @@
     "es": "Español"
   },
   "modelSelector": {
+    "loading": "加载中...",
+    "selectModel": "选择模型",
     "cloudModels": "云端模型",
     "localModels": "本地模型（Ollama）",
     "ollamaOffline": "Ollama 离线",
