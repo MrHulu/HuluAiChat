@@ -30,6 +30,12 @@
     "error": "Error",
     "success": "Success"
   },
+  "dialog": {
+    "close": "Close"
+  },
+  "skeleton": {
+    "loading": "Loading..."
+  },
   "sidebar": {
     "chats": "Chats",
     "newChat": "New Chat",

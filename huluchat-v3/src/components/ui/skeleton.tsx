@@ -3,6 +3,7 @@
  * 骨架屏加载占位组件，用于内容加载前的占位显示
  */
 import { cn } from "@/lib/utils";
+import { t } from "@/i18n";
 
 export interface SkeletonProps {
   /** 额外的类名 */
@@ -33,7 +34,7 @@ export function Skeleton({ className, animate = true }: SkeletonProps) {
     <div
       role="status"
       aria-busy="true"
-      aria-label="Loading"
+      aria-label={t("skeleton.loading")}
       className={cn(
         "rounded-md bg-muted",
         "dark:bg-muted/40 dark:border dark:border-white/5",
@@ -41,7 +42,7 @@ export function Skeleton({ className, animate = true }: SkeletonProps) {
         className
       )}
     >
-      <span className="sr-only">Loading...</span>
+      <span className="sr-only">{t("skeleton.loading")}</span>
     </div>
   );
 }

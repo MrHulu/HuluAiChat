@@ -3,6 +3,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { t } from "@/i18n"
 
 const Dialog = DialogPrimitive.Root
 
@@ -73,7 +74,7 @@ const DialogContent = React.forwardRef<
         )}
       >
         <X className="h-4 w-4 transition-transform duration-200 ease-out group-hover/close:rotate-90" aria-hidden="true" />
-        <span className="sr-only">Close</span>
+        <span className="sr-only">{t("dialog.close")}</span>
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
   </DialogPortal>
