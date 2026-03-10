@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import React from "react";
 import {
   Dialog,
   DialogTrigger,
@@ -16,7 +16,7 @@ import {
 
 // Mock @radix-ui/react-dialog
 vi.mock("@radix-ui/react-dialog", () => {
-  const React = require("react");
+  // React is imported at the top of the file
   return {
     Root: ({
       children,
