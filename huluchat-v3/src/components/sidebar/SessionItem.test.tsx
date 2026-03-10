@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SessionItem } from "./SessionItem";
 import type { Session, Folder } from "@/api/client";
@@ -566,9 +566,9 @@ describe("SessionItem", () => {
     // Should have been called once
     expect(mockOnExport).toHaveBeenCalledTimes(1);
 
-    // Click again quickly - the button should be disabled during export
-    await user.click(exportButton);
-    // The button should have disabled styling
-    expect(exportButton).toHaveClass("cursor-wait");
+    // The button should have disabled styling after export starts
+    await waitFor(() => {
+      expect(exportButton).toBeDisabled();
+    });
   });
 });
