@@ -49,7 +49,7 @@ describe("MermaidBlock", () => {
     render(<MermaidBlock chart="invalid mermaid syntax" />);
 
     await waitFor(() => {
-      expect(screen.getByText("Chart Error")).toBeInTheDocument();
+      expect(screen.getByText("Chart rendering error")).toBeInTheDocument();
     });
   });
 

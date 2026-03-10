@@ -135,20 +135,20 @@ export function BookmarkPanel({
             <Button
               variant="ghost"
               size="sm"
-              className="h-6 w-6 p-0"
+              className="group/export h-6 w-6 p-0"
               disabled={isExporting || bookmarks.length === 0}
               aria-label={t("chat.exportBookmarks")}
             >
-              <Download className="h-3 w-3" aria-hidden="true" />
+              <Download className="h-3 w-3 transition-transform duration-200 group-hover/export:translate-y-0.5" aria-hidden="true" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={handleExportJSON}>
-              <FileJson className="h-4 w-4 mr-2" aria-hidden="true" />
+            <DropdownMenuItem onClick={handleExportJSON} className="group/json animate-list-enter" style={{ animationDelay: '0ms' }}>
+              <FileJson className="h-4 w-4 mr-2 transition-transform duration-200 group-hover/json:scale-110" aria-hidden="true" />
               {t("chat.exportJSON")}
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleExportMarkdown}>
-              <FileText className="h-4 w-4 mr-2" aria-hidden="true" />
+            <DropdownMenuItem onClick={handleExportMarkdown} className="group/markdown animate-list-enter" style={{ animationDelay: '50ms' }}>
+              <FileText className="h-4 w-4 mr-2 transition-transform duration-200 group-hover/markdown:scale-105" aria-hidden="true" />
               {t("chat.exportMarkdown")}
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -177,7 +177,7 @@ export function BookmarkPanel({
               "transition-all duration-200 ease-out",
               "hover:bg-accent/50 hover:translate-x-0.5",
               "active:scale-[0.99]",
-              "animate-in fade-in-0 slide-in-from-left-1",
+              "animate-list-enter",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
               "dark:border-border/30 dark:hover:bg-accent/30",
               "dark:hover:shadow-sm dark:hover:shadow-primary/5"
@@ -208,11 +208,11 @@ export function BookmarkPanel({
 
             {/* Actions */}
             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out">
-              <ChevronRight className="w-3 h-3 text-muted-foreground" aria-hidden="true" />
+              <ChevronRight className="w-3 h-3 text-muted-foreground transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden="true" />
               <button
                 onClick={(e) => handleDelete(bookmark.id, e)}
                 className={cn(
-                  "p-1 rounded",
+                  "group/remove p-1 rounded",
                   "text-muted-foreground hover:text-destructive hover:bg-destructive/20",
                   "transition-all duration-200 ease-out",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
@@ -220,7 +220,7 @@ export function BookmarkPanel({
                 )}
                 aria-label={t("chat.removeBookmark")}
               >
-                <X className="w-3 h-3" aria-hidden="true" />
+                <X className="w-3 h-3 transition-transform duration-200 group-hover/remove:rotate-90" aria-hidden="true" />
               </button>
             </div>
           </div>

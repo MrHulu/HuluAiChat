@@ -228,7 +228,7 @@ export function ChatView({ sessionId }: ChatViewProps) {
               aria-pressed={isBookmarkPanelOpen}
               aria-label={t("chat.bookmarks")}
               className={cn(
-                "px-2 py-1 text-xs rounded-md border transition-all duration-200 ease-out flex items-center gap-1",
+                "group/bookmark px-2 py-1 text-xs rounded-md border transition-all duration-200 ease-out flex items-center gap-1",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
                 "hover:scale-105 active:scale-95",
                 isBookmarkPanelOpen
@@ -237,7 +237,8 @@ export function ChatView({ sessionId }: ChatViewProps) {
               )}
             >
               <Bookmark className={cn(
-                "w-3 h-3 transition-transform duration-200",
+                "w-3 h-3 transition-transform duration-200 ease-out",
+                "group-hover/bookmark:scale-110",
                 isBookmarkPanelOpen && "scale-110"
               )} />
               {bookmarkedMessages.size > 0 && (
@@ -283,7 +284,7 @@ export function ChatView({ sessionId }: ChatViewProps) {
 
       {/* Bookmark Panel - with slide-in animation */}
       {isBookmarkPanelOpen && sessionId && (
-        <div className="border-t border-border bg-muted/30 animate-in slide-in-from-top-2 duration-200">
+        <div className="border-t border-border bg-muted/30 animate-slide-down">
           <BookmarkPanel
             sessionId={sessionId}
             onJumpToMessage={handleJumpToMessage}
@@ -293,7 +294,7 @@ export function ChatView({ sessionId }: ChatViewProps) {
 
       {/* RAG Panel（可展开）- with slide-in animation */}
       {isRAGPanelOpen && sessionId && (
-        <div className="border-t border-border bg-muted/30 max-h-64 overflow-y-auto animate-in slide-in-from-top-2 duration-200">
+        <div className="border-t border-border bg-muted/30 max-h-64 overflow-y-auto animate-slide-down">
           <RAGPanel
             disabled={isLoading}
             onDocumentChange={() => checkDocuments()}

@@ -1,4 +1,19 @@
 {
+  "accessibility": {
+    "skipToMain": "跳转到主内容",
+    "formError": "表单有错误",
+    "fieldRequired": "此字段为必填项",
+    "fieldInvalid": "请输入有效的值"
+  },
+  "mermaid": {
+    "loading": "加载图表中...",
+    "error": "图表渲染错误",
+    "label": "图表"
+  },
+  "math": {
+    "formula": "数学公式",
+    "error": "数学公式错误"
+  },
   "common": {
     "save": "保存",
     "cancel": "取消",
@@ -56,6 +71,7 @@
     "startConversation": "开始对话",
     "startConversationHint": "发送消息开始与 AI 聊天",
     "thinking": "思考中...",
+    "messageList": "聊天消息列表",
     "messageUpdated": "消息已更新",
     "messageUpdateFailed": "更新消息失败",
     "connecting": "连接中...",
@@ -66,6 +82,7 @@
     "removeImage": "移除图片",
     "uploadedImages": "已上传图片",
     "uploadedImage": "已上传图片 {{index}}",
+    "dropImage": "拖放图片到这里",
     "bookmarks": "书签",
     "addBookmark": "添加书签",
     "removeBookmark": "移除书签",
@@ -100,14 +117,25 @@
     "modelParameters": "模型参数",
     "temperature": "温度",
     "temperatureHint": "低=更专注，高=更有创意",
+    "temperatureValue": "{{value}} 温度",
     "topP": "Top P",
     "topPHint": "核采样阈值",
+    "topPValue": "{{value}} Top P",
     "maxTokens": "最大令牌数",
     "maxTokensHint": "AI 响应的最大长度",
+    "maxTokensMinError": "最小值为 256",
+    "maxTokensMaxError": "最大值为 128000",
+    "fieldInvalid": "请输入有效的数字",
     "connectionSuccessful": "连接成功",
     "connectionFailed": "连接失败",
     "settingsSaved": "设置已保存",
-    "settingsSaveFailed": "保存设置失败"
+    "settingsSaveFailed": "保存设置失败",
+    "invalidUrl": "请输入有效的 URL",
+    "invalidUrlProtocol": "URL 必须以 http:// 或 https:// 开头",
+    "customModelId": "自定义模型 ID",
+    "customModelPlaceholder": "例如: glm-4, qwen-max, moonshot-v1",
+    "customModelHint": "输入您的 API 服务提供的模型 ID",
+    "customModelRequired": "请输入自定义模型 ID"
   },
   "plugins": {
     "title": "插件",
@@ -170,10 +198,15 @@
     "refreshStatus": "刷新状态"
   },
   "update": {
-    "available": "有可用更新",
-    "newVersion": "新版本（{{version}}）可用！",
-    "download": "下载",
+    "notificationLabel": "更新通知",
+    "checking": "检查更新中...",
+    "downloading": "下载更新中...",
+    "downloadProgress": "下载进度",
+    "available": "v{{version}} 可用",
+    "newVersion": "发现新版本",
+    "updateNow": "立即更新",
     "later": "稍后",
+    "download": "下载",
     "installing": "正在安装更新...",
     "installed": "更新已安装！正在重启..."
   },
@@ -181,6 +214,7 @@
     "title": "键盘快捷键",
     "description": "查看所有可用的键盘快捷键，高效导航应用程序",
     "shortcutsList": "快捷键列表",
+    "shortcutKey": "{{action}}：{{key}}",
     "newChat": "新建聊天",
     "search": "搜索聊天",
     "settings": "打开设置",
@@ -191,14 +225,6 @@
     "close": "关闭对话框",
     "showHelp": "显示快捷键帮助",
     "pressToOpen": "按 {{key1}} 或 {{key2}} 随时打开此帮助"
-  },
-  "update": {
-    "checking": "检查更新中...",
-    "downloading": "下载更新中...",
-    "newVersion": "发现新版本",
-    "available": "v{{version}} 可用",
-    "updateNow": "立即更新",
-    "later": "稍后"
   },
   "export": {
     "title": "导出聊天",
@@ -296,7 +322,8 @@
     "toggleTheme": "切换主题",
     "settings": "设置",
     "showHelp": "键盘快捷键",
-    "openCommandPalette": "打开命令面板"
+    "openCommandPalette": "打开命令面板",
+    "searchInput": "搜索命令"
   },
   "rag": {
     "title": "文档对话（实验性）",
@@ -339,6 +366,9 @@
     "skip": "跳过",
     "next": "下一步",
     "getStarted": "开始使用",
+    "stepIndicator": "步骤导航",
+    "stepLabel": "第 {{step}} 步：{{title}}",
+    "stepProgress": "第 {{current}} 步，共 {{total}} 步",
     "emptyState": {
       "title": "开始对话",
       "hint": "在下方输入消息开始与 AI 聊天",

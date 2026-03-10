@@ -118,7 +118,7 @@ export function DocumentUploader({
       aria-label={t("rag.selectFile")}
       aria-disabled={disabled || isUploading}
       className={cn(
-        "border-2 border-dashed rounded-lg p-4 transition-all duration-200 ease-out cursor-pointer",
+        "group/uploader border-2 border-dashed rounded-lg p-4 transition-all duration-200 ease-out cursor-pointer",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         "hover:border-primary/50 hover:bg-muted/30",
         // Dark mode enhancements - Cycle #195
@@ -157,7 +157,7 @@ export function DocumentUploader({
         ) : (
           <>
             <svg
-              className="w-8 h-8 text-muted-foreground"
+              className="w-8 h-8 text-muted-foreground transition-transform duration-200 group-hover/uploader:-translate-y-0.5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

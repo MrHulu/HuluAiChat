@@ -3,6 +3,7 @@
  * 数学公式渲染组件，支持 KaTeX
  */
 import { useMemo, memo } from "react";
+import { useTranslation } from "react-i18next";
 import katex from "katex";
 import "katex/dist/katex.min.css";
 import { cn } from "@/lib/utils";
@@ -18,6 +19,8 @@ export const MathBlock = memo(function MathBlock({
   inline = false,
   className,
 }: MathBlockProps) {
+  const { t } = useTranslation();
+
   const { html, error } = useMemo(() => {
     try {
       const rendered = katex.renderToString(math, {
@@ -27,26 +30,26 @@ export const MathBlock = memo(function MathBlock({
       return { html: rendered, error: null };
     } catch (err) {
       console.error("KaTeX rendering error:", err);
-      const errorMsg = err instanceof Error ? err.message : "Math rendering error";
+      const errorMsg = err instanceof Error ? err.message : t("math.error");
       return { html: "", error: errorMsg };
     }
-  }, [math, inline]);
+  }, [math, inline, t]);
 
   // 错误处理 - block 模式显示详细错误
   if (error && !inline) {
     return (
       <div
         role="alert"
-        aria-label="Math formula error"
+        aria-label={t("math.error")}
         className={cn(
           "p-4 rounded-lg bg-error-muted/50 border border-error/30",
-          "animate-in fade-in-0 zoom-in-95 duration-200",
+          "animate-bounce-in",
           "dark:bg-error-muted/30 dark:border-error/40 dark:shadow-sm dark:shadow-error/10",
           className
         )}
       >
         <div className="text-error text-sm font-medium mb-2">
-          Math Error
+          {t("math.error")}
         </div>
         <pre className="text-xs text-error/80 overflow-x-auto">
           {math}
@@ -63,7 +66,7 @@ export const MathBlock = memo(function MathBlock({
     return (
       <span
         role="alert"
-        aria-label={`Math formula error: ${error}`}
+        aria-label={`${t("math.error")}: ${error}`}
         className={cn("text-error", className)}
         title={error}
       >
@@ -77,7 +80,8 @@ export const MathBlock = memo(function MathBlock({
 
   return (
     <Wrapper
-      aria-label={`Math formula: ${math}`}
+      role={inline ? undefined : "img"}
+      aria-label={`${t("math.formula")}: ${math}`}
       className={inline ? className : cn("katex-display", className)}
       dangerouslySetInnerHTML={{ __html: html }}
     />

@@ -78,19 +78,24 @@ export function TagInput({
 
   return (
     <div className="flex flex-wrap items-center gap-1">
-      {tags.map((tag) => (
-        <SessionTag
+      {tags.map((tag, index) => (
+        <span
           key={tag}
-          name={tag}
-          onRemove={() => onRemoveTag(tag)}
-          size="xs"
-        />
+          className="animate-list-enter"
+          style={{ animationDelay: `${index * 50}ms` }}
+        >
+          <SessionTag
+            name={tag}
+            onRemove={() => onRemoveTag(tag)}
+            size="xs"
+          />
+        </span>
       ))}
 
       {tags.length < maxTags && (
         <>
           {isInputVisible ? (
-            <div className="relative animate-in zoom-in-95 duration-150">
+            <div className="relative animate-bounce-in">
               <input
                 ref={inputRef}
                 type="text"
@@ -123,8 +128,7 @@ export function TagInput({
                     "absolute left-0 top-full mt-1 z-50",
                     "min-w-[100px] max-w-[150px] p-1",
                     "bg-popover border rounded-md shadow-md",
-                    "animate-in fade-in-0 zoom-in-95 duration-150",
-                    "origin-top-left",
+                    "animate-slide-down",
                     "dark:bg-popover/95 dark:backdrop-blur-sm",
                     "dark:border-white/10 dark:shadow-lg dark:shadow-black/30"
                   )}
@@ -139,7 +143,7 @@ export function TagInput({
                         "w-full px-2 py-1 text-xs text-left rounded",
                         "hover:bg-muted transition-all duration-100",
                         "active:scale-[0.98]",
-                        "animate-in fade-in-0 slide-in-from-left-1",
+                        "animate-slide-right",
                         "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:bg-muted",
                         "dark:hover:bg-muted/60 dark:focus-visible:bg-muted/60",
                         "dark:text-foreground/90"

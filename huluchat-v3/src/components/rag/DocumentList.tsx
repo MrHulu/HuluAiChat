@@ -89,18 +89,18 @@ export function DocumentList({
           <li
             key={doc.doc_id}
             className={cn(
-              "flex items-center justify-between p-2 rounded-lg",
+              "group flex items-center justify-between p-2 rounded-lg",
               "bg-muted/50 hover:bg-muted",
               "dark:bg-white/[0.03] dark:hover:bg-white/[0.06] dark:border dark:border-transparent dark:hover:border-white/10",
               "transition-all duration-200 ease-out",
-              "list-item-enter"
+              "animate-list-enter"
             )}
             style={{ animationDelay: `${index * 50}ms` }}
           >
             <div className="flex items-center gap-2 min-w-0">
               {/* File icon */}
               <svg
-                className="w-4 h-4 text-muted-foreground shrink-0"
+                className="w-4 h-4 text-muted-foreground shrink-0 transition-transform duration-200 group-hover:scale-105"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

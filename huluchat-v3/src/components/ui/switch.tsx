@@ -30,7 +30,7 @@ const Switch = React.forwardRef<
       className={cn(
         "pointer-events-none block h-4 w-4 rounded-full bg-background shadow-lg ring-0",
         "transition-all duration-200 ease-out",
-        "data-[state=checked]:translate-x-4 data-[state=checked]:scale-100",
+        "data-[state=checked]:translate-x-4 data-[state=checked]:animate-bounce-in",
         "data-[state=unchecked]:translate-x-0 data-[state=unchecked]:scale-90",
         // Dark mode enhancements - Cycle #180
         "dark:shadow-[0_2px_4px_oklch(0_0_0/0.3)]",

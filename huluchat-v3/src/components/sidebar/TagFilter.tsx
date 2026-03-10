@@ -41,7 +41,7 @@ export function TagFilter({
           aria-expanded={isOpen}
           aria-haspopup="true"
           className={cn(
-            "flex items-center gap-1 px-2 py-1 text-xs rounded-md",
+            "group flex items-center gap-1 px-2 py-1 text-xs rounded-md",
             "border transition-all duration-200 ease-out",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
             "active:scale-[0.97]",
@@ -61,6 +61,7 @@ export function TagFilter({
             strokeLinecap="round"
             strokeLinejoin="round"
             aria-hidden="true"
+            className="transition-transform duration-200 group-hover:rotate-12"
           >
             <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z" />
             <path d="M7 7h.01" />
@@ -91,7 +92,7 @@ export function TagFilter({
             )}
           </div>
           <div className="flex flex-wrap gap-1">
-            {allTags.map((tag) => (
+            {allTags.map((tag, index) => (
               <button
                 key={tag}
                 onClick={() => onTagSelect(tag)}
@@ -105,8 +106,11 @@ export function TagFilter({
                   "active:scale-95",
                   selectedTags.includes(tag)
                     ? "bg-primary/20 border-primary/30 text-primary dark:bg-primary/30 dark:border-primary/50 dark:shadow-[0_0_8px_oklch(0.5_0.15_264/0.2)]"
-                    : "bg-transparent border-border text-muted-foreground hover:bg-muted dark:border-border/60 dark:hover:bg-muted/40"
+                    : "bg-transparent border-border text-muted-foreground hover:bg-muted dark:border-border/60 dark:hover:bg-muted/40",
+                  // List enter animation - Cycle #245
+                  "animate-list-enter"
                 )}
+                style={{ animationDelay: `${index * 50}ms` }}
               >
                 #{tag}
               </button>

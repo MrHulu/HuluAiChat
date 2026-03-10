@@ -42,7 +42,7 @@ export function SessionTag({
         "inline-flex items-center gap-1 rounded-full border",
         "transition-all duration-200 ease-out",
         onClick && "cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
-        onClick && "active:scale-95",
+        onClick && "hover:scale-105 active:scale-95",
         size === "xs" ? "px-1.5 py-0.5 text-[10px]" : "px-2 py-0.5 text-xs",
         isActive
           ? "bg-primary/20 border-primary/30 text-primary dark:bg-primary/25 dark:border-primary/40 dark:shadow-[0_0_10px_oklch(0.5_0.15_264/0.3)]"
@@ -57,7 +57,7 @@ export function SessionTag({
             onRemove();
           }}
           aria-label={`Remove tag ${name}`}
-          className="hover:text-destructive transition-all duration-200 ease-out active:scale-90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded"
+          className="group/remove hover:text-destructive transition-all duration-200 ease-out active:scale-90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -70,6 +70,7 @@ export function SessionTag({
             strokeLinecap="round"
             strokeLinejoin="round"
             aria-hidden="true"
+            className="transition-transform duration-200 group-hover/remove:rotate-90"
           >
             <path d="M18 6 6 18" />
             <path d="m6 6 12 12" />
