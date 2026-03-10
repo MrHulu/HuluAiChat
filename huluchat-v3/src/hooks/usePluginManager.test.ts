@@ -2,7 +2,7 @@
  * Tests for usePluginManager hook
  */
 import { renderHook, act, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { usePluginManager } from "./usePluginManager";
 import * as pluginModule from "@/plugins";
 
@@ -81,10 +81,6 @@ describe("usePluginManager", () => {
     vi.clearAllMocks();
     mockManager = createMockManager();
     vi.mocked(pluginModule.initializePluginSystem).mockReset();
-  });
-
-  afterEach(() => {
-    vi.clearAllMocks();
   });
 
   describe("initialization", () => {

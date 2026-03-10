@@ -30,6 +30,20 @@ const MockSpeechRecognition: any = vi.fn(function (this: MockRecognition) {
   return this;
 });
 
+/** Helper to setup SpeechRecognition support type */
+function setupSpeechRecognition(
+  supportType: "standard" | "webkit" | "none" = "standard"
+) {
+  delete (window as Partial<typeof window>).SpeechRecognition;
+  delete (window as Partial<typeof window>).webkitSpeechRecognition;
+
+  if (supportType === "standard") {
+    window.SpeechRecognition = MockSpeechRecognition;
+  } else if (supportType === "webkit") {
+    window.webkitSpeechRecognition = MockSpeechRecognition;
+  }
+}
+
 describe("useVoiceRecognition", () => {
   const originalSpeechRecognition = window.SpeechRecognition;
   const originalWebkitSpeechRecognition = window.webkitSpeechRecognition;
@@ -45,8 +59,7 @@ describe("useVoiceRecognition", () => {
 
   describe("browser support detection", () => {
     it("should detect support when SpeechRecognition is available", () => {
-      window.SpeechRecognition = MockSpeechRecognition;
-      delete (window as Partial<typeof window>).webkitSpeechRecognition;
+      setupSpeechRecognition("standard");
 
       const { result } = renderHook(() => useVoiceRecognition());
 
@@ -54,8 +67,7 @@ describe("useVoiceRecognition", () => {
     });
 
     it("should detect support when webkitSpeechRecognition is available", () => {
-      delete (window as Partial<typeof window>).SpeechRecognition;
-      window.webkitSpeechRecognition = MockSpeechRecognition;
+      setupSpeechRecognition("webkit");
 
       const { result } = renderHook(() => useVoiceRecognition());
 
@@ -63,8 +75,7 @@ describe("useVoiceRecognition", () => {
     });
 
     it("should detect no support when neither is available", () => {
-      delete (window as Partial<typeof window>).SpeechRecognition;
-      delete (window as Partial<typeof window>).webkitSpeechRecognition;
+      setupSpeechRecognition("none");
 
       const { result } = renderHook(() => useVoiceRecognition());
 
@@ -74,8 +85,7 @@ describe("useVoiceRecognition", () => {
 
   describe("initialization", () => {
     it("should initialize with default values", () => {
-      window.SpeechRecognition = MockSpeechRecognition;
-      delete (window as Partial<typeof window>).webkitSpeechRecognition;
+      setupSpeechRecognition("standard");
 
       const { result } = renderHook(() => useVoiceRecognition());
 
@@ -84,8 +94,7 @@ describe("useVoiceRecognition", () => {
     });
 
     it("should create recognition instance with default options", () => {
-      window.SpeechRecognition = MockSpeechRecognition;
-      delete (window as Partial<typeof window>).webkitSpeechRecognition;
+      setupSpeechRecognition("standard");
 
       renderHook(() => useVoiceRecognition());
 
@@ -93,8 +102,7 @@ describe("useVoiceRecognition", () => {
     });
 
     it("should create recognition instance with custom options", () => {
-      window.SpeechRecognition = MockSpeechRecognition;
-      delete (window as Partial<typeof window>).webkitSpeechRecognition;
+      setupSpeechRecognition("standard");
 
       renderHook(() =>
         useVoiceRecognition({
@@ -110,8 +118,7 @@ describe("useVoiceRecognition", () => {
 
   describe("startListening", () => {
     it("should start recognition when not listening", () => {
-      window.SpeechRecognition = MockSpeechRecognition;
-      delete (window as Partial<typeof window>).webkitSpeechRecognition;
+      setupSpeechRecognition("standard");
 
       const { result } = renderHook(() => useVoiceRecognition());
 
@@ -124,8 +131,7 @@ describe("useVoiceRecognition", () => {
     });
 
     it("should reset transcript when starting", () => {
-      window.SpeechRecognition = MockSpeechRecognition;
-      delete (window as Partial<typeof window>).webkitSpeechRecognition;
+      setupSpeechRecognition("standard");
 
       const { result } = renderHook(() => useVoiceRecognition());
 
@@ -141,8 +147,7 @@ describe("useVoiceRecognition", () => {
 
   describe("stopListening", () => {
     it("should not throw when not listening", () => {
-      window.SpeechRecognition = MockSpeechRecognition;
-      delete (window as Partial<typeof window>).webkitSpeechRecognition;
+      setupSpeechRecognition("standard");
 
       const { result } = renderHook(() => useVoiceRecognition());
 
@@ -156,8 +161,7 @@ describe("useVoiceRecognition", () => {
 
   describe("resetTranscript", () => {
     it("should reset transcript to empty string", () => {
-      window.SpeechRecognition = MockSpeechRecognition;
-      delete (window as Partial<typeof window>).webkitSpeechRecognition;
+      setupSpeechRecognition("standard");
 
       const { result } = renderHook(() => useVoiceRecognition());
 
@@ -171,8 +175,7 @@ describe("useVoiceRecognition", () => {
 
   describe("return values", () => {
     it("should return all expected properties", () => {
-      window.SpeechRecognition = MockSpeechRecognition;
-      delete (window as Partial<typeof window>).webkitSpeechRecognition;
+      setupSpeechRecognition("standard");
 
       const { result } = renderHook(() => useVoiceRecognition());
 
@@ -191,8 +194,7 @@ describe("useVoiceRecognition", () => {
 
   describe("no browser support", () => {
     it("should handle missing SpeechRecognition gracefully", () => {
-      delete (window as Partial<typeof window>).SpeechRecognition;
-      delete (window as Partial<typeof window>).webkitSpeechRecognition;
+      setupSpeechRecognition("none");
 
       const { result } = renderHook(() => useVoiceRecognition());
 
@@ -217,8 +219,7 @@ describe("useVoiceRecognition", () => {
 
   describe("callbacks", () => {
     it("should accept onResult callback", () => {
-      window.SpeechRecognition = MockSpeechRecognition;
-      delete (window as Partial<typeof window>).webkitSpeechRecognition;
+      setupSpeechRecognition("standard");
 
       const onResult = vi.fn();
 
@@ -232,8 +233,7 @@ describe("useVoiceRecognition", () => {
     });
 
     it("should accept onError callback", () => {
-      window.SpeechRecognition = MockSpeechRecognition;
-      delete (window as Partial<typeof window>).webkitSpeechRecognition;
+      setupSpeechRecognition("standard");
 
       const onError = vi.fn();
 
@@ -249,8 +249,7 @@ describe("useVoiceRecognition", () => {
 
   describe("options", () => {
     it("should accept custom lang option", () => {
-      window.SpeechRecognition = MockSpeechRecognition;
-      delete (window as Partial<typeof window>).webkitSpeechRecognition;
+      setupSpeechRecognition("standard");
 
       const { result } = renderHook(() =>
         useVoiceRecognition({
@@ -262,8 +261,7 @@ describe("useVoiceRecognition", () => {
     });
 
     it("should accept continuous option", () => {
-      window.SpeechRecognition = MockSpeechRecognition;
-      delete (window as Partial<typeof window>).webkitSpeechRecognition;
+      setupSpeechRecognition("standard");
 
       const { result } = renderHook(() =>
         useVoiceRecognition({
@@ -275,8 +273,7 @@ describe("useVoiceRecognition", () => {
     });
 
     it("should accept interimResults option", () => {
-      window.SpeechRecognition = MockSpeechRecognition;
-      delete (window as Partial<typeof window>).webkitSpeechRecognition;
+      setupSpeechRecognition("standard");
 
       const { result } = renderHook(() =>
         useVoiceRecognition({
