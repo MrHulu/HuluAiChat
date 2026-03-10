@@ -156,7 +156,9 @@
     "customModelId": "自定义模型 ID",
     "customModelPlaceholder": "例如: glm-4, qwen-max, moonshot-v1",
     "customModelHint": "输入您的 API 服务提供的模型 ID",
-    "customModelRequired": "请输入自定义模型 ID"
+    "customModelRequired": "请输入自定义模型 ID",
+    "customModelName": "自定义模型",
+    "customModelDescription": "使用自定义模型 ID（例如 GLM-4、Qwen）"
   },
   "plugins": {
     "title": "插件",

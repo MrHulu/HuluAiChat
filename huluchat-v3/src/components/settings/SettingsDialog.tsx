@@ -172,8 +172,8 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
         ...modelList,
         {
           id: "custom",
-          name: "Custom Model",
-          description: "Use a custom model ID (e.g., GLM-4, Qwen)",
+          name: t("settings.customModelName"),
+          description: t("settings.customModelDescription"),
           provider: "openai",
         },
       ];
