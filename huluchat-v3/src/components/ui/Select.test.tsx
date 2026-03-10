@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import React from "react";
 import {
   Select,
   SelectGroup,
@@ -16,12 +17,11 @@ import {
 
 // Mock @radix-ui/react-select
 vi.mock("@radix-ui/react-select", () => {
-  const React = require("react");
+  // React is imported at the top of the file
   return {
     Root: ({
       children,
       value,
-      onValueChange,
       open,
       onOpenChange,
     }: {
