@@ -31,6 +31,12 @@
 - 📄 **文档**：CLAUDE.md 和 PROMPT.md 已明确记录此要求
 
 ## 已完成
+- [x] **TASK-129**: 🚀 v3.52.0 官网上线 + README 优化 ✅ 2026-03-10
+  - Phase 1: 添加 Cloudflare Pages 部署 workflow ✅
+  - Phase 2: 优化 GitHub README（营销导向）✅
+  - Phase 3: 更新官网内容（功能特性、版本号）✅
+  - Phase 4: PR #240 已合并
+
 - [x] **TASK-128**: ⚙ 支持自定义模型配置（智谱、中转 API 等）✅ 2026-03-10
   - SettingsDialog 添加 "Custom Model" 选项
   - 选择 Custom 时显示输入框让用户输入模型 ID
