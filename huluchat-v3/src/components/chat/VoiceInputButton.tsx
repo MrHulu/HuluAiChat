@@ -74,7 +74,7 @@ export const VoiceInputButton = memo(function VoiceInputButton({
       aria-pressed={isListening}
     >
       {isListening ? (
-        <MicOff className="w-[18px] h-[18px] text-error animate-pulse transition-all duration-200" aria-hidden="true" />
+        <MicOff className="w-[18px] h-[18px] text-error animate-bounce-subtle transition-all duration-200" aria-hidden="true" />
       ) : (
         <Mic className="w-[18px] h-[18px] transition-transform duration-200 group-hover:scale-110" aria-hidden="true" />
       )}

@@ -62,7 +62,7 @@ const DialogContent = React.forwardRef<
       {children}
       <DialogPrimitive.Close
         className={cn(
-          "absolute right-4 top-4 rounded-md p-1",
+          "group/close absolute right-4 top-4 rounded-md p-1",
           "opacity-70 ring-offset-background transition-all duration-200 ease-out",
           "hover:opacity-100 hover:bg-muted",
           // Dark mode enhancements - Cycle #186
@@ -72,7 +72,7 @@ const DialogContent = React.forwardRef<
           "active:scale-95"
         )}
       >
-        <X className="h-4 w-4" aria-hidden="true" />
+        <X className="h-4 w-4 transition-transform duration-200 ease-out group-hover/close:rotate-90" aria-hidden="true" />
         <span className="sr-only">Close</span>
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>

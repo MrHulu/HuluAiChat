@@ -1,4 +1,19 @@
 {
+  "accessibility": {
+    "skipToMain": "Skip to main content",
+    "formError": "Form has errors",
+    "fieldRequired": "This field is required",
+    "fieldInvalid": "Please enter a valid value"
+  },
+  "mermaid": {
+    "loading": "Loading chart...",
+    "error": "Chart rendering error",
+    "label": "Chart diagram"
+  },
+  "math": {
+    "formula": "Math formula",
+    "error": "Math formula error"
+  },
   "common": {
     "save": "Save",
     "cancel": "Cancel",
@@ -56,6 +71,7 @@
     "startConversation": "Start a conversation",
     "startConversationHint": "Send a message to begin chatting with AI",
     "thinking": "Thinking...",
+    "messageList": "Chat messages",
     "messageUpdated": "Message updated",
     "messageUpdateFailed": "Failed to update message",
     "connecting": "Connecting...",
@@ -66,6 +82,7 @@
     "removeImage": "Remove image",
     "uploadedImages": "Uploaded images",
     "uploadedImage": "Uploaded image {{index}}",
+    "dropImage": "Drop image here",
     "bookmarks": "Bookmarks",
     "addBookmark": "Add bookmark",
     "removeBookmark": "Remove bookmark",
@@ -103,14 +120,25 @@
     "modelParameters": "Model Parameters",
     "temperature": "Temperature",
     "temperatureHint": "Lower = more focused, Higher = more creative",
+    "temperatureValue": "{{value}} - Temperature",
     "topP": "Top P",
     "topPHint": "Nucleus sampling threshold",
+    "topPValue": "{{value}} - Top P",
     "maxTokens": "Max Tokens",
     "maxTokensHint": "Maximum length of AI response",
+    "maxTokensMinError": "Minimum value is 256",
+    "maxTokensMaxError": "Maximum value is 128000",
+    "fieldInvalid": "Please enter a valid number",
     "connectionSuccessful": "Connection successful",
     "connectionFailed": "Connection failed",
     "settingsSaved": "Settings saved successfully",
-    "settingsSaveFailed": "Failed to save settings"
+    "settingsSaveFailed": "Failed to save settings",
+    "invalidUrl": "Please enter a valid URL",
+    "invalidUrlProtocol": "URL must start with http:// or https://",
+    "customModelId": "Custom Model ID",
+    "customModelPlaceholder": "e.g., glm-4, qwen-max, moonshot-v1",
+    "customModelHint": "Enter the model ID provided by your API service",
+    "customModelRequired": "Please enter a custom model ID"
   },
   "plugins": {
     "title": "Plugins",
@@ -173,10 +201,15 @@
     "refreshStatus": "Refresh status"
   },
   "update": {
-    "available": "Update Available",
-    "newVersion": "A new version ({{version}}) is available!",
-    "download": "Download",
+    "notificationLabel": "Update notification",
+    "checking": "Checking for updates...",
+    "downloading": "Downloading update...",
+    "downloadProgress": "Download progress",
+    "available": "v{{version}} available",
+    "newVersion": "New version available",
+    "updateNow": "Update Now",
     "later": "Later",
+    "download": "Download",
     "installing": "Installing update...",
     "installed": "Update installed! Restarting..."
   },
@@ -184,6 +217,7 @@
     "title": "Keyboard Shortcuts",
     "description": "View all available keyboard shortcuts to navigate the app efficiently",
     "shortcutsList": "List of keyboard shortcuts",
+    "shortcutKey": "{{action}}: {{key}}",
     "newChat": "New chat",
     "search": "Search chats",
     "settings": "Open settings",
@@ -194,14 +228,6 @@
     "close": "Close dialog",
     "showHelp": "Show keyboard shortcuts",
     "pressToOpen": "Press {{key1}} or {{key2}} to open this help anytime"
-  },
-  "update": {
-    "checking": "Checking for updates...",
-    "downloading": "Downloading update...",
-    "newVersion": "New version available",
-    "available": "v{{version}} available",
-    "updateNow": "Update Now",
-    "later": "Later"
   },
   "export": {
     "title": "Export Chat",
@@ -299,7 +325,8 @@
     "toggleTheme": "Toggle Theme",
     "settings": "Settings",
     "showHelp": "Keyboard Shortcuts",
-    "openCommandPalette": "Open Command Palette"
+    "openCommandPalette": "Open Command Palette",
+    "searchInput": "Search commands"
   },
   "rag": {
     "title": "Document Chat (Experimental)",
@@ -342,6 +369,9 @@
     "skip": "Skip",
     "next": "Next",
     "getStarted": "Get Started",
+    "stepIndicator": "Step navigation",
+    "stepLabel": "Step {{step}}: {{title}}",
+    "stepProgress": "Step {{current}} of {{total}}",
     "emptyState": {
       "title": "Start a conversation",
       "hint": "Type a message below to begin chatting with AI",

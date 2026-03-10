@@ -48,7 +48,7 @@ export function ThemeToggle() {
         >
           {t("theme.light")}
           {theme === "light" && (
-            <span className="ml-auto text-xs animate-in zoom-in-50 duration-150">✓</span>
+            <span className="ml-auto text-xs animate-bounce-in duration-150">✓</span>
           )}
         </DropdownMenuItem>
         <DropdownMenuItem
@@ -58,7 +58,7 @@ export function ThemeToggle() {
         >
           {t("theme.dark")}
           {theme === "dark" && (
-            <span className="ml-auto text-xs animate-in zoom-in-50 duration-150">✓</span>
+            <span className="ml-auto text-xs animate-bounce-in duration-150">✓</span>
           )}
         </DropdownMenuItem>
         <DropdownMenuItem
@@ -68,7 +68,7 @@ export function ThemeToggle() {
         >
           {t("theme.system")}
           {theme === "system" && (
-            <span className="ml-auto text-xs animate-in zoom-in-50 duration-150">✓</span>
+            <span className="ml-auto text-xs animate-bounce-in duration-150">✓</span>
           )}
         </DropdownMenuItem>
       </DropdownMenuContent>

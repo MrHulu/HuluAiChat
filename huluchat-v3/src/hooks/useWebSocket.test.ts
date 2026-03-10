@@ -313,8 +313,9 @@ describe("useWebSocket hook", () => {
     expect(result.current.status).toBe("disconnected");
 
     // Wait for reconnect timeout + connection delay
+    // Need extra time for the second WebSocket to complete connection (setTimeout 0 in mock)
     await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, reconnectInterval + 20));
+      await new Promise((resolve) => setTimeout(resolve, reconnectInterval + 50));
     });
 
     // Should have created a new WebSocket instance for reconnect

@@ -317,10 +317,10 @@ export function SessionList({
         <div className="flex items-center gap-1">
           <button
             onClick={onToggleCollapse}
-            className="p-1.5 rounded-md hover:bg-muted transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+            className="group/collapse p-1.5 rounded-md hover:bg-muted transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
             aria-label={t("sidebar.collapseSidebar")}
           >
-            <PanelLeftClose className="w-4 h-4" aria-hidden="true" />
+            <PanelLeftClose className="w-4 h-4 transition-transform duration-200 ease-out group-hover/collapse:-translate-x-0.5" aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -352,10 +352,10 @@ export function SessionList({
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-muted transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="group/clear absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-muted transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               aria-label={t("common.clear")}
             >
-              <X className="w-3 h-3" aria-hidden="true" />
+              <X className="w-3 h-3 transition-transform duration-200 ease-out group-hover/clear:rotate-90" aria-hidden="true" />
             </button>
           )}
         </div>
@@ -380,12 +380,12 @@ export function SessionList({
         aria-label={t("sidebar.chats")}
       >
         {isLoading || isSearching ? (
-          <div className="space-y-1 animate-fade-in" aria-busy="true" aria-live="polite">
-            <SkeletonSessionItem />
-            <SkeletonSessionItem />
-            <SkeletonSessionItem />
-            <SkeletonSessionItem />
-            <SkeletonSessionItem />
+          <div className="space-y-1" aria-busy="true" aria-live="polite">
+            <div className="animate-fade-in stagger-1"><SkeletonSessionItem /></div>
+            <div className="animate-fade-in stagger-2"><SkeletonSessionItem /></div>
+            <div className="animate-fade-in stagger-3"><SkeletonSessionItem /></div>
+            <div className="animate-fade-in stagger-4"><SkeletonSessionItem /></div>
+            <div className="animate-fade-in stagger-5"><SkeletonSessionItem /></div>
           </div>
         ) : searchQuery ? (
           // Search Results
@@ -401,12 +401,16 @@ export function SessionList({
             </div>
           ) : (
             <div className="space-y-1">
-              {displaySessions.map((session) => {
+              {displaySessions.map((session, sessionIndex) => {
                 const searchResult = searchResults?.find((r) => r.session.id === session.id);
                 const matchedMessages = searchResult?.matched_messages || [];
 
                 return (
-                  <div key={session.id}>
+                  <div
+                    key={session.id}
+                    className="animate-list-enter"
+                    style={{ animationDelay: `${sessionIndex * 50}ms` }}
+                  >
                     <SessionItem
                       session={session}
                       folders={folders}
@@ -419,11 +423,12 @@ export function SessionList({
                       onTagClick={handleTagClick}
                     />
                     {matchedMessages.length > 0 && (
-                      <div className="ml-4 mt-1 mb-2 space-y-1">
-                        {matchedMessages.map((msg) => (
+                      <div className="ml-4 mt-1 mb-2 space-y-1 animate-slide-down">
+                        {matchedMessages.map((msg, index) => (
                           <div
                             key={msg.id}
-                            className="text-xs p-2 rounded bg-muted/50 cursor-pointer hover:bg-muted transition-all duration-200 ease-out"
+                            className="text-xs p-2 rounded bg-muted/50 cursor-pointer hover:bg-muted transition-all duration-200 ease-out animate-slide-right"
+                            style={{ animationDelay: `${index * 50}ms` }}
                             onClick={() => onSelectSession(session.id)}
                           >
                             <span
@@ -467,7 +472,7 @@ export function SessionList({
 
               {/* New Folder Input */}
               {showNewFolderInput && (
-                <div className="px-2 pb-2">
+                <div className="px-2 pb-2 animate-slide-down">
                   <form
                     onSubmit={(e) => {
                       e.preventDefault();
@@ -492,39 +497,44 @@ export function SessionList({
               )}
 
               {/* Folder List */}
-              {folders.map((folder) => (
-                <FolderItem
+              {folders.map((folder, index) => (
+                <div
                   key={folder.id}
-                  folder={folder}
-                  sessions={sessionsByFolder[folder.id] || []}
-                  isExpanded={expandedFolders.has(folder.id)}
-                  isActive={activeFolderFilter === folder.id}
-                  isEditing={editingFolderId === folder.id}
-                  editingName={editingFolderName}
-                  onToggle={() => toggleFolder(folder.id)}
-                  onClick={() =>
-                    setActiveFolderFilter(activeFolderFilter === folder.id ? null : folder.id)
-                  }
-                  onStartEdit={() => {
-                    setEditingFolderId(folder.id);
-                    setEditingFolderName(folder.name);
-                  }}
-                  onEditChange={setEditingFolderName}
-                  onEditSubmit={handleRenameFolder}
-                  onEditCancel={() => {
-                    setEditingFolderId(null);
-                    setEditingFolderName("");
-                  }}
-                  onDelete={() => onDeleteFolder(folder.id)}
-                  onSelectSession={onSelectSession}
-                  currentSessionId={currentSessionId}
-                  onDeleteSession={onDeleteSession}
-                  onExportSession={onExportSession}
-                  onMoveSession={handleMoveSession}
-                  folders={folders}
-                  sessionTags={sessionTags}
-                  onTagClick={handleTagClick}
-                />
+                  className="animate-list-enter"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  <FolderItem
+                    folder={folder}
+                    sessions={sessionsByFolder[folder.id] || []}
+                    isExpanded={expandedFolders.has(folder.id)}
+                    isActive={activeFolderFilter === folder.id}
+                    isEditing={editingFolderId === folder.id}
+                    editingName={editingFolderName}
+                    onToggle={() => toggleFolder(folder.id)}
+                    onClick={() =>
+                      setActiveFolderFilter(activeFolderFilter === folder.id ? null : folder.id)
+                    }
+                    onStartEdit={() => {
+                      setEditingFolderId(folder.id);
+                      setEditingFolderName(folder.name);
+                    }}
+                    onEditChange={setEditingFolderName}
+                    onEditSubmit={handleRenameFolder}
+                    onEditCancel={() => {
+                      setEditingFolderId(null);
+                      setEditingFolderName("");
+                    }}
+                    onDelete={() => onDeleteFolder(folder.id)}
+                    onSelectSession={onSelectSession}
+                    currentSessionId={currentSessionId}
+                    onDeleteSession={onDeleteSession}
+                    onExportSession={onExportSession}
+                    onMoveSession={handleMoveSession}
+                    folders={folders}
+                    sessionTags={sessionTags}
+                    onTagClick={handleTagClick}
+                  />
+                </div>
               ))}
             </div>
 
@@ -537,19 +547,24 @@ export function SessionList({
                   </span>
                 </div>
                 <div className="space-y-1 mt-1" role="list">
-                  {sessionsByFolder.root.map((session) => (
-                    <SessionItem
+                  {sessionsByFolder.root.map((session, index) => (
+                    <div
                       key={session.id}
-                      session={session}
-                      folders={folders}
-                      isActive={session.id === currentSessionId}
-                      onClick={() => onSelectSession(session.id)}
-                      onDelete={() => onDeleteSession(session.id)}
-                      onExport={onExportSession}
-                      onMoveToFolder={handleMoveSession}
-                      tags={sessionTags[session.id] || []}
-                      onTagClick={handleTagClick}
-                    />
+                      className="animate-list-enter"
+                      style={{ animationDelay: `${index * 50}ms` }}
+                    >
+                      <SessionItem
+                        session={session}
+                        folders={folders}
+                        isActive={session.id === currentSessionId}
+                        onClick={() => onSelectSession(session.id)}
+                        onDelete={() => onDeleteSession(session.id)}
+                        onExport={onExportSession}
+                        onMoveToFolder={handleMoveSession}
+                        tags={sessionTags[session.id] || []}
+                        onTagClick={handleTagClick}
+                      />
+                    </div>
                   ))}
                 </div>
               </div>
@@ -560,26 +575,31 @@ export function SessionList({
               <div className="mt-2">
                 <button
                   onClick={() => setActiveFolderFilter(null)}
-                  className="flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+                  className="group/back flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
                   aria-label={t("sidebar.backToAll")}
                 >
-                  <ArrowLeft className="w-3 h-3" aria-hidden="true" />
+                  <ArrowLeft className="w-3 h-3 transition-transform duration-200 ease-out group-hover/back:-translate-x-0.5" aria-hidden="true" />
                   {t("sidebar.backToAll")}
                 </button>
                 <div className="space-y-1 mt-1" role="list">
-                  {(sessionsByFolder[activeFolderFilter] || []).map((session) => (
-                    <SessionItem
+                  {(sessionsByFolder[activeFolderFilter] || []).map((session, index) => (
+                    <div
                       key={session.id}
-                      session={session}
-                      folders={folders}
-                      isActive={session.id === currentSessionId}
-                      onClick={() => onSelectSession(session.id)}
-                      onDelete={() => onDeleteSession(session.id)}
-                      onExport={onExportSession}
-                      onMoveToFolder={handleMoveSession}
-                      tags={sessionTags[session.id] || []}
-                      onTagClick={handleTagClick}
-                    />
+                      className="animate-list-enter"
+                      style={{ animationDelay: `${index * 50}ms` }}
+                    >
+                      <SessionItem
+                        session={session}
+                        folders={folders}
+                        isActive={session.id === currentSessionId}
+                        onClick={() => onSelectSession(session.id)}
+                        onDelete={() => onDeleteSession(session.id)}
+                        onExport={onExportSession}
+                        onMoveToFolder={handleMoveSession}
+                        tags={sessionTags[session.id] || []}
+                        onTagClick={handleTagClick}
+                      />
+                    </div>
                   ))}
                 </div>
               </div>
@@ -679,7 +699,7 @@ function FolderItem({
         >
           <ChevronRight
             className={cn(
-              "w-3 h-3 transition-transform",
+              "w-3 h-3 transition-transform duration-200 ease-out",
               isExpanded && "rotate-90"
             )}
             aria-hidden="true"
@@ -753,10 +773,10 @@ function FolderItem({
                   setShowMenu(false);
                   onStartEdit();
                 }}
-                className="w-full px-3 py-1.5 text-sm text-left hover:bg-muted transition-colors flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                className="group/edit w-full px-3 py-1.5 text-sm text-left hover:bg-muted transition-colors flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
                 role="menuitem"
               >
-                <Pencil className="w-3.5 h-3.5" aria-hidden="true" />
+                <Pencil className="w-3.5 h-3.5 transition-transform duration-200 ease-out group-hover/edit:scale-110" aria-hidden="true" />
                 {t("common.rename")}
               </button>
               <button
@@ -765,10 +785,10 @@ function FolderItem({
                   setShowMenu(false);
                   onDelete();
                 }}
-                className="w-full px-3 py-1.5 text-sm text-left hover:bg-muted text-destructive transition-colors flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                className="group/delete w-full px-3 py-1.5 text-sm text-left hover:bg-muted text-destructive transition-colors flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
                 role="menuitem"
               >
-                <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
+                <Trash2 className="w-3.5 h-3.5 transition-transform duration-200 ease-out group-hover/delete:scale-110" aria-hidden="true" />
                 {t("common.delete")}
               </button>
             </div>
@@ -779,22 +799,27 @@ function FolderItem({
       {/* Sessions in Folder - with slide-in animation */}
       {isExpanded && sessions.length > 0 && (
         <div
-          className="ml-4 border-l border-border pl-2 space-y-1 animate-in slide-in-from-top-1 duration-200"
+          className="ml-4 border-l border-border pl-2 space-y-1 animate-slide-down"
           role="list"
         >
-          {sessions.map((session) => (
-            <SessionItem
+          {sessions.map((session, index) => (
+            <div
               key={session.id}
-              session={session}
-              folders={folders}
-              isActive={session.id === currentSessionId}
-              onClick={() => onSelectSession(session.id)}
-              onDelete={() => onDeleteSession(session.id)}
-              onExport={onExportSession}
-              onMoveToFolder={onMoveSession}
-              tags={sessionTags[session.id] || []}
-              onTagClick={onTagClick}
-            />
+              className="animate-list-enter"
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
+              <SessionItem
+                session={session}
+                folders={folders}
+                isActive={session.id === currentSessionId}
+                onClick={() => onSelectSession(session.id)}
+                onDelete={() => onDeleteSession(session.id)}
+                onExport={onExportSession}
+                onMoveToFolder={onMoveSession}
+                tags={sessionTags[session.id] || []}
+                onTagClick={onTagClick}
+              />
+            </div>
           ))}
         </div>
       )}

@@ -84,11 +84,15 @@ export function ModelSelector({
           variant="outline"
           size="sm"
           disabled={disabled}
-          className="gap-2 max-w-[180px] transition-all duration-200 hover:bg-accent hover:scale-105 active:scale-95 disabled:hover:scale-100"
+          className="group/model gap-2 max-w-[180px] transition-all duration-200 hover:bg-accent hover:scale-105 active:scale-95 disabled:hover:scale-100"
           aria-label={t("modelSelector.selectModel")}
           aria-haspopup="listbox"
         >
-          {currentModel?.provider && <ProviderIcon provider={currentModel.provider} />}
+          {currentModel?.provider && (
+            <span className="transition-transform duration-200 group-hover/model:scale-110">
+              <ProviderIcon provider={currentModel.provider} />
+            </span>
+          )}
           <span className="truncate">{currentModel?.name || value}</span>
         </Button>
       </DropdownMenuTrigger>
@@ -103,15 +107,17 @@ export function ModelSelector({
               </DropdownMenuLabel>
             )}
             <DropdownMenuGroup>
-              {cloudModels.map((model) => (
+              {cloudModels.map((model, index) => (
                 <DropdownMenuItem
                   key={model.id}
                   onClick={() => onChange(model.id)}
                   className={cn(
                     "flex items-center justify-between gap-2 transition-all duration-200 ease-out",
                     "hover:bg-accent/50 hover:translate-x-0.5",
+                    "animate-list-enter",
                     value === model.id && "bg-accent"
                   )}
+                  style={{ animationDelay: `${index * 50}ms` }}
                 >
                   <div className="flex flex-col flex-1 min-w-0">
                     <span className="font-medium truncate">{model.name}</span>
@@ -119,7 +125,7 @@ export function ModelSelector({
                       {model.description}
                     </span>
                   </div>
-                  {value === model.id && <Check className="h-4 w-4 shrink-0 animate-scale-in" aria-hidden="true" />}
+                  {value === model.id && <Check className="h-4 w-4 shrink-0 animate-scale-in transition-transform duration-200 hover:scale-110" aria-hidden="true" />}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuGroup>
@@ -140,15 +146,17 @@ export function ModelSelector({
             )}
             <DropdownMenuGroup>
               {hasOllamaModels ? (
-                ollamaModelsList.map((model) => (
+                ollamaModelsList.map((model, index) => (
                   <DropdownMenuItem
                     key={model.id}
                     onClick={() => onChange(model.id)}
                     className={cn(
                       "flex items-center justify-between gap-2 transition-all duration-150",
                       "hover:bg-accent/50 hover:translate-x-0.5",
+                      "animate-list-enter",
                       value === model.id && "bg-accent"
                     )}
+                    style={{ animationDelay: `${index * 50}ms` }}
                   >
                     <div className="flex flex-col flex-1 min-w-0">
                       <span className="font-medium truncate">{model.name}</span>
@@ -156,7 +164,7 @@ export function ModelSelector({
                         {model.description}
                       </span>
                     </div>
-                    {value === model.id && <Check className="h-4 w-4 shrink-0 animate-scale-in" aria-hidden="true" />}
+                    {value === model.id && <Check className="h-4 w-4 shrink-0 animate-scale-in transition-transform duration-200 hover:scale-110" aria-hidden="true" />}
                   </DropdownMenuItem>
                 ))
               ) : (

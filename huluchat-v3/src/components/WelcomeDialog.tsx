@@ -67,13 +67,14 @@ export function WelcomeDialog({ open, onOpenChange, onComplete }: WelcomeDialogP
         <DialogHeader>
           <DialogTitle
             key={`title-${step.key}`}
-            className="text-xl animate-in fade-in-0 slide-in-from-bottom-2 duration-300"
+            className="text-xl animate-slide-up"
           >
             {t(step.titleKey)}
           </DialogTitle>
           <DialogDescription
             key={`desc-${step.key}`}
-            className="text-base pt-2 animate-in fade-in-0 slide-in-from-bottom-1 duration-300"
+            className="text-base pt-2 animate-slide-up"
+            style={{ animationDelay: "75ms" }}
           >
             {t(step.descKey)}
           </DialogDescription>
@@ -96,12 +97,14 @@ export function WelcomeDialog({ open, onOpenChange, onComplete }: WelcomeDialogP
                 "w-2 h-2 rounded-full transition-all duration-200 ease-out",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                 "hover:scale-125 active:scale-110",
+                "animate-bounce-in",
                 index === currentStep
                   ? "bg-primary w-6 dark:shadow-lg dark:shadow-primary/30"
                   : index < currentStep
                     ? "bg-primary/50 hover:bg-primary/70 dark:bg-primary/40 dark:hover:bg-primary/60"
                     : "bg-muted hover:bg-muted-foreground/30 dark:bg-muted/60 dark:hover:bg-muted-foreground/40"
               )}
+              style={{ animationDelay: `${index * 100}ms` }}
             />
           ))}
         </div>
@@ -111,7 +114,7 @@ export function WelcomeDialog({ open, onOpenChange, onComplete }: WelcomeDialogP
           <div className="w-24 h-24 flex items-center justify-center rounded-2xl bg-muted/50 dark:bg-muted/30 dark:border dark:border-white/10 dark:shadow-lg dark:shadow-black/20">
             <span
               key={step.key}
-              className="text-6xl animate-in zoom-in-50 duration-300"
+              className="text-6xl animate-bounce-in"
             >
               {step.icon}
             </span>

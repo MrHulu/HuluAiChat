@@ -324,13 +324,13 @@
   }
 
   /* ═══════════════════════════════════════════════════════════════
-   * 📋 List Item Animations
+   * 📋 List Item Animations - Unified to core animation library
    * ═══════════════════════════════════════════════════════════════ */
-  .list-item-enter {
-    animation: listItemEnter 0.2s ease-out forwards;
+  .animate-list-enter {
+    animation: listEnter 0.2s ease-out forwards;
   }
 
-  @keyframes listItemEnter {
+  @keyframes listEnter {
     from {
       opacity: 0;
       transform: translateY(-4px);
@@ -471,6 +471,229 @@
     }
     50% {
       opacity: 0;
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🔔 Shake Animation - One-time micro-interaction (Cycle #204)
+   * ═══════════════════════════════════════════════════════════════ */
+  .shake-once {
+    animation: shakeOnce 0.3s ease-out;
+  }
+
+  @keyframes shakeOnce {
+    0%, 100% {
+      transform: rotate(0deg);
+    }
+    25% {
+      transform: rotate(-8deg);
+    }
+    75% {
+      transform: rotate(8deg);
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * ✅ Success Animation - Pulse feedback (Cycle #232)
+   * ═══════════════════════════════════════════════════════════════ */
+  .animate-success {
+    animation: successPulse 0.4s ease-out;
+  }
+
+  @keyframes successPulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  /* Success checkmark animation */
+  .animate-check {
+    animation: checkDraw 0.3s ease-out forwards;
+  }
+
+  @keyframes checkDraw {
+    0% {
+      stroke-dashoffset: 24;
+      opacity: 0;
+    }
+    100% {
+      stroke-dashoffset: 0;
+      opacity: 1;
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🎯 Bounce Animation - Playful entrance (Cycle #232)
+   * ═══════════════════════════════════════════════════════════════ */
+  .animate-bounce-in {
+    animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  @keyframes bounceIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+    70% {
+      transform: scale(0.9);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Subtle bounce for icons */
+  .animate-bounce-subtle {
+    animation: bounceSubtle 0.5s ease-out;
+  }
+
+  @keyframes bounceSubtle {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-4px);
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 📤 Slide Animations - Directional transitions (Cycle #232)
+   * ═══════════════════════════════════════════════════════════════ */
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out forwards;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slide-down {
+    animation: slideDown 0.3s ease-out forwards;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slide-left {
+    animation: slideLeft 0.3s ease-out forwards;
+  }
+
+  @keyframes slideLeft {
+    from {
+      opacity: 0;
+      transform: translateX(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .animate-slide-right {
+    animation: slideRight 0.3s ease-out forwards;
+  }
+
+  @keyframes slideRight {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🌟 Pop Animation - Attention grabber (Cycle #232)
+   * ═══════════════════════════════════════════════════════════════ */
+  .animate-pop {
+    animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  @keyframes popIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    70% {
+      transform: scale(1.1);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Wiggle animation for attention */
+  .animate-wiggle {
+    animation: wiggle 0.5s ease-in-out;
+  }
+
+  @keyframes wiggle {
+    0%, 100% {
+      transform: rotate(0deg);
+    }
+    20% {
+      transform: rotate(-3deg);
+    }
+    40% {
+      transform: rotate(3deg);
+    }
+    60% {
+      transform: rotate(-2deg);
+    }
+    80% {
+      transform: rotate(2deg);
+    }
+  }
+
+  /* Shake subtle - for error feedback (Cycle #232) */
+  .animate-shake-subtle {
+    animation: shakeSubtle 0.4s ease-out;
+  }
+
+  @keyframes shakeSubtle {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    20% {
+      transform: translateX(-4px);
+    }
+    40% {
+      transform: translateX(4px);
+    }
+    60% {
+      transform: translateX(-3px);
+    }
+    80% {
+      transform: translateX(3px);
     }
   }
 }

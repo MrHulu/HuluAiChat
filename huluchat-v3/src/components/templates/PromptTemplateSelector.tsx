@@ -174,17 +174,19 @@ export function PromptTemplateSelector({
           <nav className="w-48 border-r border-border pr-2 overflow-y-auto dark:border-white/10" aria-label={t("templates.categoriesLabel")}>
             <Button
               variant={selectedCategory === null ? "secondary" : "ghost"}
-              className="w-full justify-start mb-1 transition-all duration-200 ease-out"
+              className="w-full justify-start mb-1 transition-all duration-200 ease-out animate-list-enter"
+              style={{ animationDelay: '0ms' }}
               onClick={() => setSelectedCategory(null)}
               aria-pressed={selectedCategory === null}
             >
               {t("templates.all")}
             </Button>
-            {(Object.keys(CATEGORY_ICONS) as TemplateCategory[]).map((category) => (
+            {(Object.keys(CATEGORY_ICONS) as TemplateCategory[]).map((category, index) => (
               <Button
                 key={category}
                 variant={selectedCategory === category ? "secondary" : "ghost"}
-                className="w-full justify-start mb-1 transition-all duration-200 ease-out"
+                className="w-full justify-start mb-1 transition-all duration-200 ease-out animate-list-enter"
+                style={{ animationDelay: `${(index + 1) * 50}ms` }}
                 onClick={() => setSelectedCategory(category)}
                 aria-pressed={selectedCategory === category}
               >
@@ -197,11 +199,11 @@ export function PromptTemplateSelector({
           {/* Template List / Editor */}
           <div className="flex-1 overflow-y-auto p-4">
             {loading ? (
-              <div className="flex items-center justify-center h-32 animate-in fade-in-0 duration-200" role="status" aria-live="polite">
+              <div className="flex items-center justify-center h-32 animate-fade-in" role="status" aria-live="polite">
                 <span className="text-muted-foreground">{t("common.loading")}</span>
               </div>
             ) : editingTemplate ? (
-              <div className="space-y-4 animate-in fade-in-0 slide-in-from-right-2 duration-200">
+              <div className="space-y-4 animate-slide-left">
                 <div>
                   <label htmlFor="template-name" className="text-sm font-medium mb-1 block">{t("templates.name")}</label>
                   <input
@@ -254,11 +256,12 @@ export function PromptTemplateSelector({
                       <span>{getCategoryLabel(category as TemplateCategory)}</span>
                     </h4>
                     <div className="space-y-2" role="list" aria-label={t("templates.templateList")}>
-                      {templates.map((template) => (
+                      {templates.map((template, index) => (
                         <div
                           key={template.id}
                           role="listitem"
                           tabIndex={0}
+                          style={{ animationDelay: `${index * 50}ms` }}
                           className={cn(
                             "p-3 rounded-lg border cursor-pointer transition-all duration-200",
                             "hover:bg-accent hover:border-primary/30 hover:shadow-sm hover:scale-[1.01]",
@@ -267,7 +270,8 @@ export function PromptTemplateSelector({
                             template.is_builtin
                               ? "border-border dark:border-white/10"
                               : "border-dashed dark:border-white/15",
-                            "dark:hover:bg-accent/40 dark:hover:shadow-black/10"
+                            "dark:hover:bg-accent/40 dark:hover:shadow-black/10",
+                            "animate-list-enter"
                           )}
                           onClick={() => handleSelect(template)}
                           onKeyDown={(e) => {
@@ -290,7 +294,7 @@ export function PromptTemplateSelector({
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-6 w-6 p-0"
+                                  className="group/edit h-6 w-6 p-0"
                                   aria-label={t("templates.edit")}
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -308,6 +312,7 @@ export function PromptTemplateSelector({
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
                                     aria-hidden="true"
+                                    className="transition-transform duration-200 group-hover/edit:scale-110"
                                   >
                                     <path d="M17 3a2.85 2.83 0 1 1 4 4L3.5 13.5 4 4 12.5 2.5 0 0 5.5 6.5L12 21l6.5-6.5-6.5-6.5z" />
                                   </svg>
@@ -315,7 +320,7 @@ export function PromptTemplateSelector({
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-6 w-6 p-0 text-destructive"
+                                  className="group/delete h-6 w-6 p-0 text-destructive"
                                   aria-label={t("templates.delete")}
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -333,6 +338,7 @@ export function PromptTemplateSelector({
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
                                     aria-hidden="true"
+                                    className="transition-transform duration-200 group-hover/delete:scale-110"
                                   >
                                     <path d="M3 6h18" />
                                     <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />

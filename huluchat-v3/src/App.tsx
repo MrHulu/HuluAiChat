@@ -207,7 +207,18 @@ function App() {
 
   return (
     <TooltipProvider>
-      <Toaster position="top-center" richColors closeButton />
+      <Toaster
+        position="top-center"
+        richColors
+        closeButton
+        toastOptions={{
+          classNames: {
+            toast: "animate-slide-down",
+            success: "animate-success",
+            error: "animate-shake-subtle",
+          },
+        }}
+      />
       <UpdateNotification />
       <WelcomeDialog
         open={welcomeOpen}
@@ -226,6 +237,13 @@ function App() {
         onShowHelp={() => setKeyboardHelpOpen(true)}
       />
       <div className="flex h-screen bg-background text-foreground">
+      {/* Skip to main content link - Accessibility enhancement */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+      >
+        {t("accessibility.skipToMain")}
+      </a>
       {/* 侧边栏 */}
       <SessionList
         sessions={sessions}
@@ -267,7 +285,7 @@ function App() {
         </header>
 
         {/* 聊天区域 */}
-        <main className="flex-1 min-h-0">
+        <main id="main-content" className="flex-1 min-h-0" tabIndex={-1}>
           <ChatView sessionId={currentSession?.id || null} />
         </main>
       </div>

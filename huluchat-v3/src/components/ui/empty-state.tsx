@@ -90,7 +90,7 @@ export function EmptyState({
         "dark:shadow-[0_4px_24px_oklch(0_0_0/0.2),0_0_32px_oklch(0.4_0.1_264/0.05)]",
         "dark:backdrop-blur-sm",
         // 进入动画
-        "animate-in fade-in-0 zoom-in-95 duration-300",
+        "animate-bounce-in",
         className
       )}
       role="status"
@@ -161,6 +161,8 @@ export function EmptyStateCompact({
         "dark:border dark:border-white/5",
         "dark:rounded-lg",
         "dark:shadow-sm dark:shadow-black/10",
+        // 进入动画 - Cycle #244
+        "animate-fade-in",
         className
       )}
       role="status"

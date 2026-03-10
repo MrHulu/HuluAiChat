@@ -173,7 +173,7 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
       {/* 加载指示器 */}
       {isLoading && !streamingMessage && (
         <div
-          className="flex justify-start mb-4 animate-in fade-in-0 slide-in-from-bottom-2 duration-200"
+          className="flex justify-start mb-4 animate-slide-up"
           role="status"
           aria-live="polite"
           aria-label={t("chat.thinking")}

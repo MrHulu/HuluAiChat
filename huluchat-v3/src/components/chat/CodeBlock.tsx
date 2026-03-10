@@ -100,8 +100,9 @@ export const CodeBlock = memo(function CodeBlock({
             "bg-muted/80 dark:bg-muted/70 backdrop-blur-sm",
             "hover:bg-accent active:scale-95",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            "group/copy",
             copied
-              ? "text-primary animate-in zoom-in-50 duration-150"
+              ? "text-primary"
               : "text-muted-foreground hover:text-foreground",
             "dark:border dark:border-white/10",
             "dark:hover:bg-accent/80 dark:hover:border-white/20",
@@ -112,9 +113,9 @@ export const CodeBlock = memo(function CodeBlock({
           title={copied ? t("chat.codeCopied") : t("chat.copyCode")}
         >
           {copied ? (
-            <Check className="w-4 h-4 animate-in zoom-in-50 duration-150" aria-hidden="true" />
+            <Check className="w-4 h-4 animate-bounce-in duration-300 group-hover/copy:scale-110" aria-hidden="true" />
           ) : (
-            <Copy className="w-4 h-4" aria-hidden="true" />
+            <Copy className="w-4 h-4 transition-transform duration-200 group-hover/copy:-translate-y-0.5" aria-hidden="true" />
           )}
         </button>
       </div>
