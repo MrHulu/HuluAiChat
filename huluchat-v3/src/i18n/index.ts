@@ -195,4 +195,7 @@ export const changeLanguage = async (lang: LanguageCode): Promise<boolean> => {
 // Export init function
 export const initI18nLazy = initI18n;
 
+// Export global t function for use outside React components
+export const t = i18n.t.bind(i18n);
+
 export default i18n;

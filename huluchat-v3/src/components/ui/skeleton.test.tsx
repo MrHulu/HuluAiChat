@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest"
+import { describe, it, expect, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
 import {
   Skeleton,
@@ -8,6 +8,16 @@ import {
   SkeletonSessionItem,
   SkeletonCard,
 } from "./skeleton"
+
+// Mock i18n
+vi.mock("@/i18n", () => ({
+  t: (key: string) => {
+    const translations: Record<string, string> = {
+      "skeleton.loading": "Loading...",
+    }
+    return translations[key] || key
+  },
+}))
 
 describe("Skeleton", () => {
   describe("Rendering", () => {
@@ -48,10 +58,10 @@ describe("Skeleton", () => {
       expect(skeleton).toHaveAttribute("aria-busy", "true")
     })
 
-    it("has aria-label='Loading'", () => {
+    it("has aria-label='Loading...'", () => {
       render(<Skeleton />)
       const skeleton = screen.getByRole("status")
-      expect(skeleton).toHaveAttribute("aria-label", "Loading")
+      expect(skeleton).toHaveAttribute("aria-label", "Loading...")
     })
   })
 

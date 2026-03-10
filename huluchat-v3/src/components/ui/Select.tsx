@@ -3,6 +3,7 @@ import * as SelectPrimitive from "@radix-ui/react-select"
 import { Check, ChevronDown, ChevronUp } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import i18n from "@/i18n"
 
 const Select = SelectPrimitive.Root
 
@@ -47,7 +48,7 @@ const SelectScrollUpButton = React.forwardRef<
       "flex cursor-default items-center justify-center py-1",
       className
     )}
-    aria-label="Scroll up"
+    aria-label={i18n.t("select.scrollUp")}
     {...props}
   >
     <ChevronUp className="h-4 w-4" aria-hidden="true" />
@@ -65,7 +66,7 @@ const SelectScrollDownButton = React.forwardRef<
       "flex cursor-default items-center justify-center py-1",
       className
     )}
-    aria-label="Scroll down"
+    aria-label={i18n.t("select.scrollDown")}
     {...props}
   >
     <ChevronDown className="h-4 w-4" aria-hidden="true" />
