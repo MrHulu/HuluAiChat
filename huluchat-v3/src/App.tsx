@@ -14,6 +14,7 @@ import { LanguageSelector } from "@/components/LanguageSelector";
 import { CommandPalette } from "@/components/command";
 import { WelcomeDialog } from "@/components/WelcomeDialog";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { useSession, useKeyboardShortcuts, useFolders } from "@/hooks";
 import { exportSession, moveSessionToFolder, ExportFormat } from "@/api/client";
 
@@ -286,7 +287,9 @@ function App() {
 
         {/* 聊天区域 */}
         <main id="main-content" className="flex-1 min-h-0" tabIndex={-1}>
-          <ChatView sessionId={currentSession?.id || null} />
+          <ErrorBoundary>
+            <ChatView sessionId={currentSession?.id || null} />
+          </ErrorBoundary>
         </main>
       </div>
     </div>
