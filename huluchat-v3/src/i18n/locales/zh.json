@@ -5,6 +5,10 @@
     "fieldRequired": "此字段为必填项",
     "fieldInvalid": "请输入有效的值"
   },
+  "select": {
+    "scrollUp": "向上滚动",
+    "scrollDown": "向下滚动"
+  },
   "errorBoundary": {
     "title": "出现了一些问题",
     "description": "发生了意外错误，请重试。",
@@ -117,7 +121,8 @@
       "startRecording": "开始语音输入",
       "stopRecording": "停止录音",
       "notSupported": "当前浏览器不支持语音输入"
-    }
+    },
+    "streaming": "正在输入..."
   },
   "settings": {
     "title": "设置",

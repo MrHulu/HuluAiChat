@@ -4,6 +4,7 @@
  */
 import { useState, useRef, useEffect, memo, useCallback, useMemo, type ReactElement } from "react";
 import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { cn } from "@/lib/utils";
 import { Message } from "@/api/client";
 import { Button } from "@/components/ui/button";
@@ -107,7 +108,7 @@ const StreamingCursor = memo(function StreamingCursor({ isStreaming }: { isStrea
         "dark:bg-primary/90",
         "dark:shadow-[0_0_8px_oklch(0.488_0.243_264.376/0.5)]"
       )}
-      aria-label="Streaming..."
+      aria-label={i18n.t("chat.streaming")}
     />
   );
 });
