@@ -19,9 +19,9 @@ const jsonLd = {
     "url": "https://github.com/MrHulu",
   },
   "downloadUrl": "https://github.com/MrHulu/HuluAiChat/releases/latest",
-  "softwareVersion": "3.51.0",
+  "softwareVersion": "3.52.0",
   "datePublished": "2024-01-01",
-  "dateModified": "2026-03-07",
+  "dateModified": "2026-03-10",
   "aggregateRating": {
     "@type": "AggregateRating",
     "ratingValue": "4.8",
@@ -33,7 +33,7 @@ const features = [
   {
     icon: "🤖",
     title: "Multi-Model Support",
-    description: "Switch between GPT-4, Claude, DeepSeek, and local models instantly. One app for all your AI needs.",
+    description: "Switch between GPT-4, Claude, DeepSeek, and local models instantly. Custom API support included.",
   },
   {
     icon: "📚",
@@ -118,7 +118,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-zinc-800/50 border border-zinc-700 rounded-full px-4 py-2 text-sm text-zinc-400 mb-8">
             <span className="text-green-400">●</span>
-            v3.51.0 Released — Bookmarks Export + RAG
+            v3.52.0 Released — Custom Models + UI Enhancements
           </div>
 
           <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">

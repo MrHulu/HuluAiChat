@@ -11,14 +11,10 @@ English | [中文](README.md)
 
 ---
 
-> 🎤 **User Interview Recruitment** - Help us improve HuluChat! [Join Interview](https://github.com/MrHulu/HuluAiChat/issues/190) 🙏
-
----
-
 ## ✨ Features
 
 ### 🤖 Multi-Model Support
-One-click switching between GPT-4, Claude, Gemini, DeepSeek and other OpenAI-compatible APIs.
+One-click switching between GPT-4, Claude, Gemini, DeepSeek and other OpenAI-compatible APIs. **Custom model configuration** supported (Zhipu GLM, Tongyi Qianwen, Moonshot, etc.).
 
 ### 🧠 RAG Intelligence
 Upload documents for intelligent Q&A with Retrieval-Augmented Generation.
@@ -195,16 +191,16 @@ huluchat-v3/
 
 See full changelog: [Releases](https://github.com/MrHulu/HuluChat/releases)
 
-### Latest v3.47.0 (2026-03-07)
+### Latest v3.52.0 (2026-03-10)
 
+- ⚙️ **Custom Model Config** - Support Zhipu GLM, Tongyi Qianwen, Moonshot and any OpenAI-compatible API
+- 📤 **Bookmark Export** - Export to Markdown + JSON formats
+- 🏷️ **Session Tags** - Add tags to sessions and filter by tags
+- 📑 **Message Bookmarks** - Mark important messages for quick navigation
+- ⌨️ **Keyboard Shortcuts** - Ctrl+1/2/3 to switch between recent sessions
+- 🎯 **Smart Onboarding** - 3-step guide for new users
 - 🧠 **RAG Q&A** - Upload documents for intelligent chat
 - 🔌 **Plugin System** - Extensible plugin architecture
-- 🤖 **DeepSeek Default** - Cost-effective AI model
-- 🎨 **UX Improvements** - Auto-focus, loading feedback
-- 🌐 **18 Languages** - Covers 65% of global users
-- 📁 **Session Folders** - Organize chats with folders
-- 🔍 **Global Search** - Real-time search with highlighting
-- 📤 **Multi-Format Export** - MD/JSON/TXT support
 
 ---
 
