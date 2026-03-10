@@ -29,6 +29,15 @@
 
 ---
 
+## 🎬 Demo
+
+<!-- Demo GIF placeholder - Add actual demo GIF here -->
+![HuluChat Demo](docs/demo/huluchat-demo-30s.gif)
+
+> Quick demo: Multi-model chat, session folders, search, and export
+
+---
+
 ## ✨ 核心功能
 
 ### 🤖 多模型支持
