@@ -14,14 +14,10 @@
 
 ---
 
-> 🎤 **用户访谈招募中** - 帮助我们改进 HuluChat！[参与访谈](https://github.com/MrHulu/HuluAiChat/issues/190) 🙏
-
----
-
 ## ✨ 功能亮点
 
 ### 🤖 多模型支持
-一键切换 GPT-4、Claude、Gemini、DeepSeek 等 OpenAI 兼容 API，无需切换应用。
+一键切换 GPT-4、Claude、Gemini、DeepSeek 等 OpenAI 兼容 API，**支持自定义模型配置**（智谱 GLM、通义千问、Moonshot 等）。
 
 ### 🧠 RAG 智能问答
 上传文档进行智能问答，基于检索增强生成技术，让 AI 理解你的私有知识。
@@ -198,8 +194,9 @@ huluchat-v3/
 
 查看完整更新日志：[Releases](https://github.com/MrHulu/HuluChat/releases)
 
-### 最新版本 v3.51.0 (2026-03-07)
+### 最新版本 v3.52.0 (2026-03-10)
 
+- ⚙️ **自定义模型配置** - 支持智谱 GLM、通义千问、Moonshot 等任意 OpenAI 兼容 API
 - 📤 **书签导出** - 支持 Markdown + JSON 格式导出
 - 🏷️ **会话标签** - 为会话添加标签，按标签筛选
 - 📑 **消息书签** - 标记重要消息，快速跳转
@@ -207,7 +204,6 @@ huluchat-v3/
 - 🎯 **智能引导** - 新用户 3 步引导系统
 - 🧠 **RAG 智能问答** - 上传文档进行智能对话
 - 🔌 **插件系统** - 可扩展的插件架构
-- 🤖 **DeepSeek 默认模型** - 高性价比 AI 模型
 
 ---
 
