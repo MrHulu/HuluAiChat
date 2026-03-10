@@ -122,6 +122,7 @@ export class ErrorBoundary extends Component<Props, State> {
  * withErrorBoundary HOC
  * Wraps a component with an ErrorBoundary
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function withErrorBoundary<P extends object>(
   WrappedComponent: React.ComponentType<P>,
   errorBoundaryProps?: Omit<Props, "children">
