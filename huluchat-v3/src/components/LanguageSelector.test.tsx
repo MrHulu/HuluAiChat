@@ -157,9 +157,9 @@ describe("LanguageSelector", () => {
     const user = userEvent.setup();
     const { changeLanguage } = await import("@/i18n");
 
-    // Make changeLanguage take some time
+    // Make changeLanguage take some time (500ms to ensure we can check disabled state)
     vi.mocked(changeLanguage).mockImplementationOnce(
-      () => new Promise((resolve) => setTimeout(() => resolve(true), 100))
+      () => new Promise((resolve) => setTimeout(() => resolve(true), 500))
     );
 
     renderWithProviders(<LanguageSelector />);
