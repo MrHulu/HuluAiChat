@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { ChatView } from "./ChatView";
 import type { Message, Model } from "@/api/client";
 import type { ConnectionStatus } from "@/hooks/useWebSocket";

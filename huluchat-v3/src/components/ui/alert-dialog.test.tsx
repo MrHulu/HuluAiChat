@@ -388,7 +388,6 @@ describe("AlertDialog", () => {
     });
 
     it("should support default variant", async () => {
-      const user = userEvent.setup();
       render(
         <AlertDialog defaultOpen>
           <AlertDialogTrigger>Open Alert</AlertDialogTrigger>
@@ -406,7 +405,6 @@ describe("AlertDialog", () => {
     });
 
     it("should support destructive variant", async () => {
-      const user = userEvent.setup();
       render(
         <AlertDialog defaultOpen>
           <AlertDialogTrigger>Open Alert</AlertDialogTrigger>
@@ -515,7 +513,6 @@ describe("AlertDialog", () => {
 
   describe("AlertDialogContent", () => {
     it("should apply default size", async () => {
-      const user = userEvent.setup();
       render(
         <AlertDialog defaultOpen>
           <AlertDialogTrigger>Open Alert</AlertDialogTrigger>
@@ -530,7 +527,6 @@ describe("AlertDialog", () => {
     });
 
     it("should apply small size", async () => {
-      const user = userEvent.setup();
       render(
         <AlertDialog defaultOpen>
           <AlertDialogTrigger>Open Alert</AlertDialogTrigger>
