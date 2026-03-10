@@ -30,6 +30,7 @@ export interface MessageListProps {
  * 估算消息高度（基于内容长度）
  * 用于虚拟列表的初始高度估算
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function estimateMessageHeight(content: string): number {
   // 基础高度：头像 + padding + 内容
   const baseHeight = 60;
