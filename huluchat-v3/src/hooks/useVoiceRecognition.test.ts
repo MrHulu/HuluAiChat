@@ -23,7 +23,7 @@ function createMockRecognition() {
 
 type MockRecognition = ReturnType<typeof createMockRecognition>;
 
-// biome-ignore lint/suspicious/noExplicitAny: Mock class constructor
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mock class constructor
 const MockSpeechRecognition: any = vi.fn(function (this: MockRecognition) {
   const mock = createMockRecognition();
   Object.assign(this, mock);
