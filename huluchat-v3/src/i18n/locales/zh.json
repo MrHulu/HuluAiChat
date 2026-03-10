@@ -30,6 +30,12 @@
     "error": "错误",
     "success": "成功"
   },
+  "dialog": {
+    "close": "关闭"
+  },
+  "skeleton": {
+    "loading": "加载中..."
+  },
   "sidebar": {
     "chats": "聊天",
     "newChat": "新建聊天",
