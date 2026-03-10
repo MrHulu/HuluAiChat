@@ -2,7 +2,7 @@
  * Settings Dialog Component
  * API Key configuration, model selection, Ollama settings, and plugin management
  */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
@@ -92,49 +92,8 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
   const [ollamaTestResult, setOllamaTestResult] = useState<{ success: boolean; message: string } | null>(null);
   const [refreshingOllama, setRefreshingOllama] = useState(false);
 
-  // Load settings on open
-  useEffect(() => {
-    if (open) {
-      loadSettings();
-      loadOllamaStatus();
-    }
-  }, [open]);
-
-  // Validate URL format
-  const validateBaseUrl = (url: string): string | null => {
-    if (!url.trim()) return null; // Empty is valid (will use default)
-
-    try {
-      const parsed = new URL(url);
-      if (!parsed.protocol.startsWith("http")) {
-        return t("settings.invalidUrlProtocol");
-      }
-      return null;
-    } catch {
-      return t("settings.invalidUrl");
-    }
-  };
-
-  const handleBaseUrlChange = (value: string) => {
-    setBaseUrl(value);
-    setBaseUrlError(validateBaseUrl(value));
-  };
-
-  // Validate Max Tokens range (256 - 128000)
-  const validateMaxTokens = (value: number): string | null => {
-    if (isNaN(value)) return t("settings.fieldInvalid");
-    if (value < 256) return t("settings.maxTokensMinError");
-    if (value > 128000) return t("settings.maxTokensMaxError");
-    return null;
-  };
-
-  const handleMaxTokensChange = (value: string) => {
-    const numValue = parseInt(value, 10);
-    setMaxTokens(numValue || 0);
-    setMaxTokensError(validateMaxTokens(numValue));
-  };
-
-  const loadOllamaStatus = async () => {
+  // Define callbacks first (before useEffect that uses them)
+  const loadOllamaStatus = useCallback(async () => {
     try {
       const [status, models] = await Promise.all([
         getOllamaStatus(),
@@ -149,9 +108,9 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
       console.error("Failed to load Ollama status:", error);
       setOllamaAvailable(false);
     }
-  };
+  }, []);
 
-  const loadSettings = async () => {
+  const loadSettings = useCallback(async () => {
     setLoading(true);
     try {
       const settings = await getSettings();
@@ -197,6 +156,48 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
     } finally {
       setLoading(false);
     }
+  }, [t]);
+
+  // Load settings on open
+  useEffect(() => {
+    if (open) {
+      loadSettings();
+      loadOllamaStatus();
+    }
+  }, [open, loadSettings, loadOllamaStatus]);
+
+  // Validate URL format
+  const validateBaseUrl = (url: string): string | null => {
+    if (!url.trim()) return null; // Empty is valid (will use default)
+
+    try {
+      const parsed = new URL(url);
+      if (!parsed.protocol.startsWith("http")) {
+        return t("settings.invalidUrlProtocol");
+      }
+      return null;
+    } catch {
+      return t("settings.invalidUrl");
+    }
+  };
+
+  const handleBaseUrlChange = (value: string) => {
+    setBaseUrl(value);
+    setBaseUrlError(validateBaseUrl(value));
+  };
+
+  // Validate Max Tokens range (256 - 128000)
+  const validateMaxTokens = (value: number): string | null => {
+    if (isNaN(value)) return t("settings.fieldInvalid");
+    if (value < 256) return t("settings.maxTokensMinError");
+    if (value > 128000) return t("settings.maxTokensMaxError");
+    return null;
+  };
+
+  const handleMaxTokensChange = (value: string) => {
+    const numValue = parseInt(value, 10);
+    setMaxTokens(numValue || 0);
+    setMaxTokensError(validateMaxTokens(numValue));
   };
 
   const handleSave = async () => {
