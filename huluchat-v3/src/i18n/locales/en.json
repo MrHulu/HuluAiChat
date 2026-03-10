@@ -250,6 +250,8 @@
     "es": "Español"
   },
   "modelSelector": {
+    "loading": "Loading...",
+    "selectModel": "Select model",
     "cloudModels": "Cloud Models",
     "localModels": "Local Models (Ollama)",
     "ollamaOffline": "Ollama Offline",
