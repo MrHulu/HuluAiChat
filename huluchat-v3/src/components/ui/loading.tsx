@@ -4,6 +4,7 @@
  */
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
+import { t } from "@/i18n";
 
 export type LoadingVariant = "spinner" | "dots" | "pulse" | "ring" | "wave" | "thinking";
 export type LoadingSize = "sm" | "md" | "lg";
@@ -234,12 +235,12 @@ export function Loading({
       role="status"
       aria-live="polite"
       aria-busy="true"
-      aria-label={ariaLabel || text || "Loading"}
+      aria-label={ariaLabel || text || t("loading.loading")}
     >
       {renderLoader()}
       {text && <span className="text-sm text-muted-foreground">{text}</span>}
       {/* Screen reader only text for components without visible text */}
-      {!text && <span className="sr-only">{ariaLabel || "Loading"}</span>}
+      {!text && <span className="sr-only">{ariaLabel || t("loading.loading")}</span>}
     </div>
   );
 
@@ -270,7 +271,7 @@ export function LoadingOverlay({ text, ariaLabel }: { text?: string; ariaLabel?:
       )}
       role="alertdialog"
       aria-busy="true"
-      aria-label={ariaLabel || text || "Loading"}
+      aria-label={ariaLabel || text || t("loading.loading")}
       aria-modal="true"
     >
       {/* Glowing loading container - Cycle #180 */}
@@ -297,7 +298,7 @@ export function LoadingInline({ className, ariaLabel }: { className?: string; ar
       variant="spinner"
       size="sm"
       className={className}
-      ariaLabel={ariaLabel || "Processing"}
+      ariaLabel={ariaLabel || t("loading.processing")}
     />
   );
 }
