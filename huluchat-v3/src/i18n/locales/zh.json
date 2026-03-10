@@ -36,6 +36,10 @@
   "skeleton": {
     "loading": "加载中..."
   },
+  "loading": {
+    "loading": "加载中",
+    "processing": "处理中"
+  },
   "sidebar": {
     "chats": "聊天",
     "newChat": "新建聊天",
