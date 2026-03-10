@@ -38,7 +38,7 @@ vi.mock("@radix-ui/react-dialog", () => {
     Trigger: ({
       children,
       className,
-      asChild,
+      asChild: _asChild,
       ...props
     }: React.ComponentProps<"button"> & { asChild?: boolean }) => (
       <button data-testid="dialog-trigger" className={className} {...props}>
