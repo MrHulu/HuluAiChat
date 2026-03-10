@@ -29,9 +29,9 @@
 
 **Phase 1: 资产准备 (Day 1-3)**
 - [ ] 创建 GitHub Social Preview 图片 (1280x640px)
-- [ ] 优化 README Hero 区域
+- [x] 优化 README Hero 区域 ✅ Cycle #278
 - [ ] 创建 15-30 秒 Demo GIF
-- [ ] 更新 CHANGELOG
+- [x] 更新 CHANGELOG v3.52.0 ✅ Cycle #278
 
 **Phase 2: 社区发布 (Day 4-7)**
 - [ ] r/privacy 发布帖
@@ -39,6 +39,12 @@
 - [ ] r/LocalLLaMA 发布帖
 - [ ] HN Show HN 帖
 - [ ] v2ex 发布帖
+
+**Cycle #278 资产准备**：
+- ✅ CHANGELOG.md 更新 v3.52.0（自定义模型 + 官网部署 + 测试覆盖）
+- ✅ README.md Hero 区域优化（隐私优先定位 + 对比表格 + 官网链接）
+- ✅ Agent 团队协作完成（Research/Product/Critic/CEO/CTO）
+- ✅ PR #242 已创建（等待合并）
 
 **v3.52.0 已完成**：
 - ✅ 官网上线（Cloudflare Pages）
