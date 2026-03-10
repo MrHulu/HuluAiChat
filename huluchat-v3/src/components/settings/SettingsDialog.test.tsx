@@ -204,10 +204,13 @@ describe("SettingsDialog", () => {
       const button = screen.getByRole("button", { name: /settings/i });
       await user.click(button);
 
-      await waitFor(async () => {
-        const apiKeyInput = screen.getByLabelText("API Key");
-        await user.type(apiKeyInput, "sk-test-key");
+      // Wait for dialog to open and API Key input to be available
+      await waitFor(() => {
+        expect(screen.getByLabelText("API Key")).toBeInTheDocument();
       });
+
+      const apiKeyInput = screen.getByLabelText("API Key");
+      await user.type(apiKeyInput, "sk-test-key");
 
       const saveButton = screen.getByRole("button", { name: /save/i });
       await user.click(saveButton);
