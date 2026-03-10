@@ -5,20 +5,43 @@
 
 ## 待开始
 <!-- 新任务添加到这里 -->
-- [ ] **TASK-129**: 🚀 规划并开发 v3.52.0 - 官网上线 + README 优化
-  - 状态：待开始
-  - 紧急程度：高
-  - 内容：
-    - Phase 1: 修复并部署官网到 Cloudflare Pages
-    - Phase 2: 优化 GitHub README（营销导向）
-    - Phase 3: 更新官网内容（功能特性、截图、下载链接）
-    - Phase 4: 发布 v3.52.0
+
+### v3.53.0 Community Launch Sprint (CEO Strategic Decision)
+- [x] **TASK-130**: 📢 社区发布冲刺 - Phase 1: 资产准备 ✅ 2026-03-11
+  - [x] 优化 README Hero 区域 ✅ Cycle #278
+  - [x] 更新 CHANGELOG v3.52.0 ✅ Cycle #278
+  - [x] 创建社区发布资产规范文档 ✅ Cycle #279
+  - [x] 创建 6 个社区发布帖模板 ✅ Cycle #279
+  - [x] 添加 Demo GIF 占位符 ✅ Cycle #279
+  - ⚠️ **需 Boss 手动创建**：GitHub Social Preview 图片、Demo GIF
+  - 优先级：P0（规范已完成，图片待创建）
+
+- [ ] **TASK-131**: 🚀 社区发布冲刺 - Phase 2: 社区启动
+  - ⚠️ **需要 Boss 手动执行**（AI 无法自动发帖）
+  - r/privacy 发布（1.5M 用户）
+  - r/selfhosted 发布（1M 用户）
+  - r/LocalLLaMA 发布（500K 用户）
+  - r/opensource 发布（600K 用户）
+  - HN Show HN 发布
+  - v2ex 发布（中文社区）
+  - 📄 发布帖模板：`docs/v3.53.0-community-launch-assets.md`
+  - 优先级：P0（增长核心）
+
+- [ ] **TASK-132**: 📊 社区发布冲刺 - Phase 3: 跟进与迭代
+  - 24h 内回复所有评论
+  - 收集反馈并分类
+  - 修复报告的 Bug（v3.53.1）
+  - 验证功能请求加入 Backlog
+  - 优先级：P1
 
 - [ ] **TASK-122**: 🎨 UI/UX 美化优化（持续进行）
   - 状态：长期任务，持续进行
   - 方向：界面美化、交互优化、视觉一致性
+  - 优先级：P2（降级，等待增长数据）
 
-- [ ] **TASK-116**: 🎬 准备 Product Hunt 发布素材(截图、视频) - 等待 Boss
+- [ ] **TASK-116**: 🎬 准备 Product Hunt 发布素材(截图、视频)
+  - 状态：等待 Boss
+  - 优先级：P3（非阻塞，社区发布先行）
 
 ## 已取消
 - [x] ~~**TASK-127**: 🎤 用户访谈招募~~ ❌ **Boss 决定取消** - 暂停并删除相关内容

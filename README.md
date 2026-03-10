@@ -1,7 +1,10 @@
 # 🍵 HuluChat
 
-> **极简、跨平台 AI 聊天桌面应用**
-> 支持 GPT-4、Claude、Gemini、DeepSeek 等多模型快速切换，RAG 智能问答，插件系统，会话分组管理，18 种语言界面
+> **Privacy-First AI Chat Desktop App**
+>
+> No telemetry. No tracking. Your data stays on your device.
+>
+> 一个**隐私优先**的 AI 聊天桌面应用 - 零遥测、零追踪、数据完全本地化
 
 [![GitHub release](https://img.shields.io/github/v/release/MrHulu/HuluChat?style=flat-square)](https://github.com/MrHulu/HuluChat/releases)
 [![GitHub stars](https://img.shields.io/github/stars/MrHulu/HuluChat?style=flat-square&logo=github&color=yellow)](https://github.com/MrHulu/HuluChat/stargazers)
@@ -10,11 +13,32 @@
 [![License](https://img.shields.io/github/license/MrHulu/HuluChat?style=flat-square)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-blue?style=flat-square)](https://github.com/MrHulu/HuluChat/releases)
 
-[English](README_EN.md) | 中文
+[🌐 Official Website](https://huluchat-website.pages.dev) | [English](README_EN.md) | 中文
 
 ---
 
-## ✨ 功能亮点
+## 🛡️ Why HuluChat?
+
+| Feature | HuluChat | Others |
+|---------|----------|--------|
+| **Privacy** | ✅ Zero telemetry | ⚠️ Often includes analytics |
+| **Data Ownership** | ✅ 100% local | ⚠️ Cloud-based options |
+| **Multi-Model** | ✅ GPT-4, Claude, DeepSeek, Local | ⚠️ Limited providers |
+| **Open Source** | ✅ Full source code | ⚠️ Often closed source |
+| **Cross-Platform** | ✅ Win/Mac/Linux | ⚠️ Platform-limited |
+
+---
+
+## 🎬 Demo
+
+<!-- Demo GIF placeholder - Add actual demo GIF here -->
+![HuluChat Demo](docs/demo/huluchat-demo-30s.gif)
+
+> Quick demo: Multi-model chat, session folders, search, and export
+
+---
+
+## ✨ 核心功能
 
 ### 🤖 多模型支持
 一键切换 GPT-4、Claude、Gemini、DeepSeek 等 OpenAI 兼容 API，**支持自定义模型配置**（智谱 GLM、通义千问、Moonshot 等）。
@@ -28,23 +52,17 @@
 ### 📁 会话分组管理
 用文件夹整理你的对话历史，保持井井有条。
 
-### 🔍 全局搜索
-快速搜索所有对话内容，支持实时高亮匹配。
+### 🏷️ 标签与书签
+为会话添加标签分类，标记重要消息快速跳转。
 
 ### 📤 多格式导出
 支持 Markdown、JSON、TXT 三种格式导出，便于备份与分享。
-
-### ⌨️ 高效快捷键
-完整的键盘快捷键支持，让你的操作更高效。
 
 ### 🌙 深色模式
 精心设计的深色主题，保护你的眼睛。
 
 ### 🌐 多语言支持
 支持 18 种语言界面：English、中文、日本語、한국어、Español、Français、Deutsch、Português、Italiano、Русский、العربية、Nederlands、Polski、Türkçe、हिन्दी、Tiếng Việt、ไทย、Bahasa Indonesia
-
-### ⚡ 自动更新
-永远保持最新版本，无需手动下载。
 
 ---
 
