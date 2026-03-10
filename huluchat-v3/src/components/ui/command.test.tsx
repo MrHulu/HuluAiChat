@@ -10,7 +10,7 @@ vi.mock("lucide-react", () => ({
 
 // Mock cmdk module
 vi.mock("cmdk", () => {
-  const React = require("react")
+  // React is already imported at the top of the file
 
   // Create base Command component
   const CommandBase = React.forwardRef<

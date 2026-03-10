@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import React from "react";
 import {
   Tooltip,
   TooltipTrigger,
@@ -9,7 +10,7 @@ import {
 
 // Mock radix-ui Tooltip
 vi.mock("radix-ui", () => {
-  const React = require("react");
+  // React is imported at the top of the file
   return {
     Tooltip: {
       Provider: ({
