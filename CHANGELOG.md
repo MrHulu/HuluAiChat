@@ -2,6 +2,37 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [3.52.0] - 2026-03-10
+
+### ✨ Features
+
+- **Custom Model Configuration**: Support for any OpenAI-compatible API
+  - New "Custom Model" option in model selector
+  - Free-form input for custom model IDs
+  - Support for Zhipu GLM, Tongyi Qianwen, Moonshot, and other providers
+  - Full i18n support (English/Chinese)
+
+### 🚀 Infrastructure
+
+- **Official Website Deployment**: Cloudflare Pages auto-deploy
+  - GitHub Actions workflow for automated deployment
+  - Production URL: https://huluchat-website.pages.dev
+
+### 📝 Documentation
+
+- **README Optimization**: Marketing-focused improvements
+  - Hero section with clear value proposition
+  - Feature highlights with visual hierarchy
+  - Updated badges and download links
+  - Better SEO and discoverability
+
+### 🧪 Testing
+
+- **Complete Test Coverage**: All major components tested
+  - 1498+ tests passing
+  - UI components: Button, Input, Select, Dialog, CommandPalette, etc.
+  - Feature components: PluginSettings, LanguageSelector, PromptTemplateSelector
+
 ## [3.51.0] - 2026-03-07
 
 ### ✨ Features
