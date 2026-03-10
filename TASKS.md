@@ -17,12 +17,14 @@
   - 优先级：P0（规范已完成，图片待创建）
 
 - [ ] **TASK-131**: 🚀 社区发布冲刺 - Phase 2: 社区启动
+  - ⚠️ **需要 Boss 手动执行**（AI 无法自动发帖）
   - r/privacy 发布（1.5M 用户）
   - r/selfhosted 发布（1M 用户）
   - r/LocalLLaMA 发布（500K 用户）
   - r/opensource 发布（600K 用户）
   - HN Show HN 发布
   - v2ex 发布（中文社区）
+  - 📄 发布帖模板：`docs/v3.53.0-community-launch-assets.md`
   - 优先级：P0（增长核心）
 
 - [ ] **TASK-132**: 📊 社区发布冲刺 - Phase 3: 跟进与迭代
