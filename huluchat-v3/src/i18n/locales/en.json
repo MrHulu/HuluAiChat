@@ -134,7 +134,11 @@
     "settingsSaved": "Settings saved successfully",
     "settingsSaveFailed": "Failed to save settings",
     "invalidUrl": "Please enter a valid URL",
-    "invalidUrlProtocol": "URL must start with http:// or https://"
+    "invalidUrlProtocol": "URL must start with http:// or https://",
+    "customModelId": "Custom Model ID",
+    "customModelPlaceholder": "e.g., glm-4, qwen-max, moonshot-v1",
+    "customModelHint": "Enter the model ID provided by your API service",
+    "customModelRequired": "Please enter a custom model ID"
   },
   "plugins": {
     "title": "Plugins",

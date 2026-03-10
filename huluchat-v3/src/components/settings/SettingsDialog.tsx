@@ -71,6 +71,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
   const [baseUrl, setBaseUrl] = useState("");
   const [baseUrlError, setBaseUrlError] = useState<string | null>(null);
   const [model, setModel] = useState("");
+  const [customModel, setCustomModel] = useState(""); // Custom model ID input
   const [hasApiKey, setHasApiKey] = useState(false);
 
   // Model parameters state
@@ -95,7 +96,6 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
   useEffect(() => {
     if (open) {
       loadSettings();
-      loadModels();
       loadOllamaStatus();
     }
   }, [open]);
@@ -156,7 +156,6 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
     try {
       const settings = await getSettings();
       setBaseUrl(settings.openai_base_url || "");
-      setModel(settings.openai_model);
       setHasApiKey(settings.has_api_key);
       // Load model parameters
       setTemperature(settings.temperature ?? 0.7);
@@ -165,19 +164,38 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
       if (settings.has_api_key) {
         setApiKey(""); // Don't show the actual key
       }
+
+      // Load models first to check if current model is in the list
+      const modelList = await getModels();
+      // Add custom model option for Settings dialog (not shown in ModelSelector)
+      const modelsWithCustom: ModelInfo[] = [
+        ...modelList,
+        {
+          id: "custom",
+          name: "Custom Model",
+          description: "Use a custom model ID (e.g., GLM-4, Qwen)",
+          provider: "openai",
+        },
+      ];
+      setModels(modelsWithCustom);
+
+      // Check if current model is in the predefined list
+      const modelInList = modelList.some((m) => m.id === settings.openai_model);
+      if (modelInList) {
+        setModel(settings.openai_model);
+        setCustomModel("");
+      } else if (settings.openai_model) {
+        // Model not in list, treat as custom
+        setModel("custom");
+        setCustomModel(settings.openai_model);
+      } else {
+        setModel("");
+        setCustomModel("");
+      }
     } catch (error) {
       console.error("Failed to load settings:", error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const loadModels = async () => {
-    try {
-      const modelList = await getModels();
-      setModels(modelList);
-    } catch (error) {
-      console.error("Failed to load models:", error);
     }
   };
 
@@ -196,7 +214,15 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
         updateData.openai_base_url = baseUrl.trim();
       }
 
-      if (model) {
+      // Handle custom model vs predefined model
+      if (model === "custom") {
+        if (!customModel.trim()) {
+          toast.error(t("settings.customModelRequired"));
+          setSaving(false);
+          return;
+        }
+        updateData.openai_model = customModel.trim();
+      } else if (model) {
         updateData.openai_model = model;
       }
 
@@ -367,12 +393,30 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                     ))}
                   </SelectContent>
                 </Select>
-                {model && (
+                {model && model !== "custom" && (
                   <p id="model-description" className="text-xs text-muted-foreground">
                     {models.find((m) => m.id === model)?.description}
                   </p>
                 )}
               </div>
+
+              {/* Custom Model Input - shown when "custom" is selected */}
+              {model === "custom" && (
+                <div className="grid gap-2 animate-slide-down">
+                  <Label htmlFor="customModel">{t("settings.customModelId")}</Label>
+                  <Input
+                    id="customModel"
+                    type="text"
+                    placeholder={t("settings.customModelPlaceholder")}
+                    value={customModel}
+                    onChange={(e) => setCustomModel(e.target.value)}
+                    aria-describedby="customModel-hint"
+                  />
+                  <p id="customModel-hint" className="text-xs text-muted-foreground">
+                    {t("settings.customModelHint")}
+                  </p>
+                </div>
+              )}
 
               {/* Model Parameters */}
               <div className="border-t pt-4 mt-2">

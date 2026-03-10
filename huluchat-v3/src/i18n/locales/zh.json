@@ -131,7 +131,11 @@
     "settingsSaved": "设置已保存",
     "settingsSaveFailed": "保存设置失败",
     "invalidUrl": "请输入有效的 URL",
-    "invalidUrlProtocol": "URL 必须以 http:// 或 https:// 开头"
+    "invalidUrlProtocol": "URL 必须以 http:// 或 https:// 开头",
+    "customModelId": "自定义模型 ID",
+    "customModelPlaceholder": "例如: glm-4, qwen-max, moonshot-v1",
+    "customModelHint": "输入您的 API 服务提供的模型 ID",
+    "customModelRequired": "请输入自定义模型 ID"
   },
   "plugins": {
     "title": "插件",
