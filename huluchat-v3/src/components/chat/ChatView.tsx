@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import {
   updateMessage,
   ImageContent,
+  FileAttachment,
   queryRAGDocuments,
   listRAGDocuments,
   getSessionBookmarks,
@@ -167,7 +168,7 @@ export function ChatView({ sessionId }: ChatViewProps) {
 
   const isDisabled = connectionStatus !== "connected" || isLoading;
 
-  const handleSend = async (content: string, images?: ImageContent[]) => {
+  const handleSend = async (content: string, images?: ImageContent[], files?: FileAttachment[]) => {
     // If RAG is enabled and we have documents, query for context
     if (isRAGPanelOpen && hasDocuments) {
       try {
@@ -175,7 +176,7 @@ export function ChatView({ sessionId }: ChatViewProps) {
         if (ragResult.success && ragResult.context) {
           // Prepend RAG context to the message
           const enhancedContent = `${t("rag.ragEnabled")}\n\n${ragResult.context}\n\n---\n\n${content}`;
-          sendMessage(enhancedContent, currentModel, parameters, images);
+          sendMessage(enhancedContent, currentModel, parameters, images, files);
           return;
         }
       } catch (error) {
@@ -184,7 +185,7 @@ export function ChatView({ sessionId }: ChatViewProps) {
         toast.warning(t("rag.queryError"));
       }
     }
-    sendMessage(content, currentModel, parameters, images);
+    sendMessage(content, currentModel, parameters, images, files);
   };
 
   // 编辑消息处理

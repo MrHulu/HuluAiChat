@@ -1,47 +1,21 @@
 # 任务清单
 
 ## 进行中
-<!-- 当前正在处理的任务 -->
+<!-- 当前没有进行中的任务 -->
 
 ## 待开始
 <!-- 新任务添加到这里 -->
-
-### v3.53.0 Community Launch Sprint (CEO Strategic Decision)
-- [x] **TASK-130**: 📢 社区发布冲刺 - Phase 1: 资产准备 ✅ 2026-03-11
-  - [x] 优化 README Hero 区域 ✅ Cycle #278
-  - [x] 更新 CHANGELOG v3.52.0 ✅ Cycle #278
-  - [x] 创建社区发布资产规范文档 ✅ Cycle #279
-  - [x] 创建 6 个社区发布帖模板 ✅ Cycle #279
-  - [x] 添加 Demo GIF 占位符 ✅ Cycle #279
-  - ⚠️ **需 Boss 手动创建**：GitHub Social Preview 图片、Demo GIF
-  - 优先级：P0（规范已完成，图片待创建）
-
-- [ ] **TASK-131**: 🚀 社区发布冲刺 - Phase 2: 社区启动
-  - ⚠️ **需要 Boss 手动执行**（AI 无法自动发帖）
-  - r/privacy 发布（1.5M 用户）
-  - r/selfhosted 发布（1M 用户）
-  - r/LocalLLaMA 发布（500K 用户）
-  - r/opensource 发布（600K 用户）
-  - HN Show HN 发布
-  - v2ex 发布（中文社区）
-  - 📄 发布帖模板：`docs/v3.53.0-community-launch-assets.md`
-  - 优先级：P0（增长核心）
-
-- [ ] **TASK-132**: 📊 社区发布冲刺 - Phase 3: 跟进与迭代
-  - 24h 内回复所有评论
-  - 收集反馈并分类
-  - 修复报告的 Bug（v3.53.1）
-  - 验证功能请求加入 Backlog
-  - 优先级：P1
+- [ ] **TASK-129**: 🚀 规划并开发 v3.52.0 - README 优化（暂缓）
+  - 状态：已调整
+  - 原内容：官网上线 + README 优化
+  - ⚠️ **调整原因**：Boss 要求先做文件上传功能
+  - ⚠️ **官网发布推迟**：素材未准备好
 
 - [ ] **TASK-122**: 🎨 UI/UX 美化优化（持续进行）
   - 状态：长期任务，持续进行
   - 方向：界面美化、交互优化、视觉一致性
-  - 优先级：P2（降级，等待增长数据）
 
-- [ ] **TASK-116**: 🎬 准备 Product Hunt 发布素材(截图、视频)
-  - 状态：等待 Boss
-  - 优先级：P3（非阻塞，社区发布先行）
+- [ ] **TASK-116**: 🎬 准备 Product Hunt 发布素材(截图、视频) - 等待 Boss
 
 ## 已取消
 - [x] ~~**TASK-127**: 🎤 用户访谈招募~~ ❌ **Boss 决定取消** - 暂停并删除相关内容
@@ -54,11 +28,15 @@
 - 📄 **文档**：CLAUDE.md 和 PROMPT.md 已明确记录此要求
 
 ## 已完成
-- [x] **TASK-129**: 🚀 v3.52.0 官网上线 + README 优化 ✅ 2026-03-10
-  - Phase 1: 添加 Cloudflare Pages 部署 workflow ✅
-  - Phase 2: 优化 GitHub README（营销导向）✅
-  - Phase 3: 更新官网内容（功能特性、版本号）✅
-  - Phase 4: PR #240 已合并
+- [x] **TASK-130**: 📎 添加文件上传功能（文档、代码等）✅ 2026-03-11
+  - Phase 1: 文件上传 UI（支持多文件、拖拽）✅
+  - Phase 2: 文件预览（显示文件名、大小、类型）✅
+  - Phase 3: API 集成（发送给后端）✅
+  - Phase 4: 测试和优化 ✅
+  - 前端：ChatInput 添加文件上传按钮、拖拽支持、预览组件
+  - 后端：MessageModel 添加 files 字段、chat.py 处理文件附件
+  - 支持文件类型：PDF、TXT、MD、CSV、JSON、JS、TS、JSX、TSX、HTML、CSS、XML、DOC、DOCX、XLS、XLSX
+  - 最大文件大小：20MB，最多 5 个文件
 
 - [x] **TASK-128**: ⚙ 支持自定义模型配置（智谱、中转 API 等）✅ 2026-03-10
   - SettingsDialog 添加 "Custom Model" 选项

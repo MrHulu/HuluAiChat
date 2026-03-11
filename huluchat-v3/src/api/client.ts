@@ -54,12 +54,25 @@ export interface ImageContent {
   };
 }
 
+// File attachment type for documents and code files
+export interface FileAttachment {
+  id: string;           // Unique ID for UI management
+  name: string;         // Original filename
+  type: string;         // MIME type (e.g., application/pdf, text/plain)
+  size: number;         // File size in bytes
+  content: string;      // Base64 encoded content (data:xxx;base64,xxx)
+}
+
+// Content types that can be sent with a message
+export type MessageContent = string | ImageContent[] | FileAttachment[];
+
 export interface Message {
   id: string;
   session_id: string;
   role: "user" | "assistant";
   content: string;
   images?: ImageContent[];  // Optional images for multimodal messages
+  files?: FileAttachment[]; // Optional file attachments
   created_at: string;
 }
 
