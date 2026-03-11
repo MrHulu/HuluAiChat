@@ -188,6 +188,11 @@ export function ChatView({ sessionId }: ChatViewProps) {
     sendMessage(content, currentModel, parameters, images, files);
   };
 
+  // Handle suggestion hint click
+  const handleSuggestionClick = (suggestion: string) => {
+    handleSend(suggestion);
+  };
+
   // 编辑消息处理
   const handleEditMessage = async (messageId: string, newContent: string) => {
     if (!sessionId) return;
@@ -281,6 +286,7 @@ export function ChatView({ sessionId }: ChatViewProps) {
         onEditMessage={handleEditMessage}
         bookmarkedMessages={bookmarkedMessages}
         onBookmarkToggle={handleBookmarkToggle}
+        onSuggestionClick={handleSuggestionClick}
       />
 
       {/* Bookmark Panel - with slide-in animation */}

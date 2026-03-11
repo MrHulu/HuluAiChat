@@ -4,8 +4,20 @@
  */
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
+import { Button } from "@/components/ui/button";
 
 export type EmptyStateSize = "sm" | "md" | "lg";
+
+export interface EmptyStateAction {
+  /** 按钮文字 */
+  label: string;
+  /** 点击回调 */
+  onClick: () => void;
+  /** 按钮图标 */
+  icon?: ReactNode;
+  /** 按钮样式变体 */
+  variant?: "default" | "outline" | "ghost" | "link";
+}
 
 export interface EmptyStateProps {
   /** 图标（可以是 emoji 或 ReactNode） */
@@ -22,6 +34,12 @@ export interface EmptyStateProps {
   iconClassName?: string;
   /** 是否显示动画 */
   animated?: boolean;
+  /** 快捷操作按钮 */
+  action?: EmptyStateAction;
+  /** 快捷提示列表 */
+  hints?: string[];
+  /** 快捷提示点击回调 */
+  onHintClick?: (hint: string) => void;
 }
 
 const sizeConfig = {
@@ -73,6 +91,9 @@ export function EmptyState({
   className,
   iconClassName,
   animated = true,
+  action,
+  hints,
+  onHintClick,
 }: EmptyStateProps) {
   const config = sizeConfig[size];
 
@@ -134,6 +155,59 @@ export function EmptyState({
         >
           {description}
         </p>
+      )}
+
+      {/* 快捷提示列表 */}
+      {hints && hints.length > 0 && onHintClick && (
+        <div className="mt-4 flex flex-wrap justify-center gap-2">
+          {hints.map((hint, index) => (
+            <button
+              key={index}
+              onClick={() => onHintClick(hint)}
+              className={cn(
+                "px-3 py-1.5 text-xs rounded-full",
+                "bg-muted/50 hover:bg-muted",
+                "text-muted-foreground hover:text-foreground",
+                "border border-border/50 hover:border-border",
+                "transition-all duration-200 ease-out",
+                "hover:scale-105 active:scale-95",
+                "animate-list-enter",
+                // Dark mode enhancements - Cycle #134
+                "dark:bg-primary/10 dark:hover:bg-primary/20",
+                "dark:border-primary/20 dark:hover:border-primary/30",
+                "dark:text-primary/80 dark:hover:text-primary",
+                "dark:shadow-sm dark:hover:shadow-[0_0_8px_oklch(0.5_0.15_264/0.2)]"
+              )}
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
+              {hint}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* 快捷操作按钮 */}
+      {action && (
+        <div className="mt-4">
+          <Button
+            variant={action.variant || "default"}
+            size="sm"
+            onClick={action.onClick}
+            className={cn(
+              "transition-all duration-200",
+              "hover:scale-105 active:scale-95",
+              // Dark mode glow - Cycle #134
+              "dark:hover:shadow-[0_0_12px_oklch(0.5_0.2_264/0.3)]"
+            )}
+          >
+            {action.icon && (
+              <span className="mr-1.5" aria-hidden="true">
+                {action.icon}
+              </span>
+            )}
+            {action.label}
+          </Button>
+        </div>
       )}
     </div>
   );

@@ -90,6 +90,12 @@
     "selectSessionToChat": "选择一个会话开始聊天...",
     "startConversation": "开始对话",
     "startConversationHint": "发送消息开始与 AI 聊天",
+    "suggestionHints": [
+      "写一首诗",
+      "解释量子计算",
+      "帮我写代码",
+      "翻译成英文"
+    ],
     "thinking": "思考中...",
     "messageList": "聊天消息列表",
     "messageUpdated": "消息已更新",
