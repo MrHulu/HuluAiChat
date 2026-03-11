@@ -5,10 +5,11 @@
 import { useState, useRef, useEffect, memo, useCallback, useMemo, type ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Message } from "@/api/client";
 import { Button } from "@/components/ui/button";
-import { Pencil, Check, X, Bookmark, BookmarkCheck } from "lucide-react";
+import { Pencil, Check, X, Bookmark, BookmarkCheck, Copy } from "lucide-react";
 import { CodeBlock } from "./CodeBlock";
 import { MermaidBlock } from "./MermaidBlock";
 import ReactMarkdown from "react-markdown";
@@ -127,6 +128,7 @@ export const MessageItem = memo(function MessageItem({
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(message.content);
   const [isSaving, setIsSaving] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Sync editContent when message content changes (e.g., during streaming)
@@ -198,6 +200,19 @@ export const MessageItem = memo(function MessageItem({
     e.target.style.height = "auto";
     e.target.style.height = `${e.target.scrollHeight}px`;
   }, []);
+
+  // Copy message content to clipboard
+  const handleCopy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(message.content);
+      setIsCopied(true);
+      toast.success(t("chat.copied"));
+      setTimeout(() => setIsCopied(false), 2000);
+    } catch (error) {
+      console.error("Failed to copy:", error);
+      toast.error(t("common.error"));
+    }
+  }, [message.content, t]);
 
   // Memoize markdown components to prevent unnecessary re-renders
   const markdownComponents = useMemo(
@@ -288,6 +303,33 @@ export const MessageItem = memo(function MessageItem({
         >
           <span>{isUser ? t("chat.you") : t("chat.ai")}</span>
           <div className="flex items-center gap-1">
+            {/* Copy button for all messages */}
+            {!isEditing && !isStreaming && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCopy();
+                }}
+                aria-label={t("chat.copy")}
+                className={cn(
+                  "group/copy transition-all p-1 rounded",
+                  "opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  isCopied && "opacity-100",
+                  isCopied
+                    ? "text-primary hover:text-primary/80"
+                    : isUser
+                      ? "hover:bg-primary-foreground/10 text-primary-foreground/70"
+                      : "hover:bg-accent text-muted-foreground"
+                )}
+              >
+                {isCopied ? (
+                  <Check className="w-3 h-3 transition-transform duration-200 ease-out group-hover/copy:scale-110" aria-hidden="true" />
+                ) : (
+                  <Copy className="w-3 h-3 transition-transform duration-200 ease-out group-hover/copy:scale-110" aria-hidden="true" />
+                )}
+              </button>
+            )}
             {/* Bookmark button for all messages - Cycle #204 icon micro-interaction */}
             {onBookmarkToggle && !isEditing && (
               <button
