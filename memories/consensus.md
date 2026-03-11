@@ -5,15 +5,15 @@
 ---
 
 ## 当前状态
-🚀 **Phase 2 MCP 支持进行中** - TASK-167 已完成，进入 MCP 实现
+🚀 **Phase 2 MCP 支持进行中** - TASK-167/168 已完成，进入前端面板开发
 
 ---
 
 ## Next Action
-> **TASK-168: 实现 Python MCP Client**
-> - 安装 mcp SDK
-> - 创建 MCP Service 和 Client
-> - 实现 Server 管理 API
+> **TASK-169: 创建 MCP 设置面板（Settings 新 Tab）**
+> - 创建 MCPSettings.tsx 组件
+> - 更新 SettingsDialog.tsx 添加 MCP Tab
+> - 扩展 API Client 添加 MCP 函数
 
 ---
 
@@ -27,6 +27,34 @@
 ---
 
 ## 最近完成
+
+### TASK-168: Python MCP Client 实现（Cycle #165）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- `models/mcp_server.py` - 数据模型
+- `services/mcp_service.py` - 核心服务
+- `api/mcp.py` - REST API 端点
+- `requirements.txt` - 添加 mcp 依赖
+
+**实现内容**:
+1. **数据模型**: MCPServerConfig, MCPTool, MCPResource, MCPServerStatus
+2. **MCP Service**:
+   - Server 配置管理（CRUD）
+   - stdio 传输连接
+   - Tool 调用
+   - 配置持久化（mcp_servers.json）
+3. **API 端点**:
+   - GET/POST/PUT/DELETE /mcp/servers
+   - POST /mcp/servers/{id}/connect|disconnect
+   - GET /mcp/servers/{id}/tools
+   - POST /mcp/tools/call
+   - GET /mcp/status
+
+**结果**: MCP 后端实现完成，可开始前端面板开发
+
+---
 
 ### TASK-167: MCP 架构设计（Cycle #165）
 
@@ -185,8 +213,8 @@
 - **当前版本**: v3.54.0
 - **下一版本**: v3.55.0
 - **进行中任务**: 0 个
-- **待开始任务**: 21 个（20 新 + TASK-116）
-- **已完成任务计数**: 12 (本次周期)
+- **待开始任务**: 20 个（19 新 + TASK-116）
+- **已完成任务计数**: 13 (本次周期)
 
 ---
 
@@ -208,7 +236,8 @@
 | 任务 | 描述 | 状态 |
 |------|------|------|
 | TASK-167 | MCP 架构设计 | ✅ 已完成 |
-| TASK-168 ~ 172 | MCP 实现（5个任务） | 待开始 |
+| TASK-168 | Python MCP Client | ✅ 已完成 |
+| TASK-169 ~ 172 | 前端/集成/文档（4个任务） | 待开始 |
 
 ### Phase 3: 用户功能
 | 任务 | 描述 | 状态 |
@@ -263,8 +292,9 @@
 - OpenAI/Ollama 请求超时配置
 - **TASK-163/164 阻塞**: Rust 编译内存不足
 
-**Cycle #165** - 完成 TASK-167（MCP 架构设计）
-- 创建 `docs/cto/mcp-architecture.md`
-- 定义后端 MCP Service 结构
-- 定义前端 MCP Settings 面板
-- 设计 Tool Calling 集成流程
+**Cycle #165** - 完成 TASK-167/168（MCP 架构设计 + Python Client 实现）
+- 创建 `docs/cto/mcp-architecture.md` 架构文档
+- 实现 `models/mcp_server.py` 数据模型
+- 实现 `services/mcp_service.py` 核心服务
+- 实现 `api/mcp.py` REST API 端点
+- 安装 mcp SDK v1.26.0

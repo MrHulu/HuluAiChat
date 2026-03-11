@@ -11,3 +11,6 @@ websockets>=14.0
 # RAG dependencies
 chromadb>=0.5.0
 pypdf>=5.0.0
+
+# MCP dependencies
+mcp>=1.0.0
