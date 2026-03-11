@@ -28,6 +28,13 @@
 - 📄 **文档**：CLAUDE.md 和 PROMPT.md 已明确记录此要求
 
 ## 已完成
+- [x] **TASK-122**: 🎨 UI/UX 美化优化 - AI 消息重新生成按钮 ✅ 2026-03-11
+  - useChat hook 添加 regenerateMessage 函数
+  - MessageItem 组件添加重新生成按钮（仅 AI 消息显示）
+  - 加载状态显示旋转动画
+  - 新增 7 个测试用例
+  - Cycle #143
+
 - [x] **TASK-122**: 🎨 UI/UX 美化优化 - 输入框字符计数 ✅ 2026-03-11
   - ChatInput 添加实时字符计数显示
   - 超过 4000 字符显示橙色警告

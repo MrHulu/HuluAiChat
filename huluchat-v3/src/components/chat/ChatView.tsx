@@ -77,7 +77,7 @@ function ConnectionIndicator({ status }: { status: ConnectionStatus }) {
 
 export function ChatView({ sessionId }: ChatViewProps) {
   const { t } = useTranslation();
-  const { messages, streamingMessage, connectionStatus, sendMessage, isLoading, refreshMessages } =
+  const { messages, streamingMessage, connectionStatus, sendMessage, regenerateMessage, isLoading, refreshMessages } =
     useChat(sessionId);
   const { currentModel, models, setModel, isLoading: isLoadingModels, parameters } = useModel();
 
@@ -286,6 +286,8 @@ export function ChatView({ sessionId }: ChatViewProps) {
         onEditMessage={handleEditMessage}
         bookmarkedMessages={bookmarkedMessages}
         onBookmarkToggle={handleBookmarkToggle}
+        onRegenerate={regenerateMessage}
+        isRegenerating={isLoading}
         onSuggestionClick={handleSuggestionClick}
       />
 
