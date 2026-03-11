@@ -127,7 +127,7 @@ export const ChatInput = memo(function ChatInput({
       };
       reader.readAsDataURL(file);
     }
-  }, [images.length]);
+  }, [t, images.length]);
 
   // 处理普通文件（支持选择和拖拽上传）
   const processRegularFiles = useCallback((fileList: FileList | null) => {
@@ -166,7 +166,7 @@ export const ChatInput = memo(function ChatInput({
       };
       reader.readAsDataURL(file);
     }
-  }, [files.length]);
+  }, [t, files.length]);
 
   // 处理图片文件选择
   const handleImageSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
