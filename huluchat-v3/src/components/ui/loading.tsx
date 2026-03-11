@@ -154,6 +154,112 @@ function ThinkingLoader({ size, className }: { size: LoadingSize; className?: st
 }
 
 /**
+ * AI 沉浸式思考加载器
+ * 更有沉浸感的思考动画，包含打字效果和呼吸发光
+ * 用于消息列表中 AI 思考时的显示
+ */
+export function ThinkingLoaderImmersive({
+  size = "md",
+  text,
+  className,
+}: {
+  size?: LoadingSize;
+  text?: string;
+  className?: string;
+}) {
+  const displayText = text || t("loading.thinking");
+
+  return (
+    <div
+      className={cn(
+        "flex items-center gap-3",
+        "animate-fade-in",
+        className
+      )}
+    >
+      {/* 动态思考图标 - 旋转的 AI 符号 */}
+      <div className="relative">
+        <div
+          className={cn(
+            "rounded-full bg-gradient-to-br from-primary/80 to-primary/40",
+            "flex items-center justify-center",
+            "animate-[pulse_2s_ease-in-out_infinite]",
+            "dark:shadow-[0_0_16px_oklch(0.5_0.2_264/0.4)]",
+            size === "sm" ? "w-6 h-6" : size === "md" ? "w-8 h-8" : "w-10 h-10"
+          )}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            className={cn(
+              "text-primary-foreground animate-[spin_3s_linear_infinite]",
+              size === "sm" ? "w-3.5 h-3.5" : size === "md" ? "w-4 h-4" : "w-5 h-5"
+            )}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z" />
+            <circle cx="7.5" cy="14.5" r="1.5" className="animate-[pulse_1s_ease-in-out_infinite]" />
+            <circle cx="16.5" cy="14.5" r="1.5" className="animate-[pulse_1s_ease-in-out_infinite_200ms]" />
+          </svg>
+        </div>
+        {/* 脉冲环 */}
+        <div
+          className={cn(
+            "absolute inset-0 rounded-full border-2 border-primary/30",
+            "animate-[ping_2s_ease-out_infinite]",
+            size === "sm" ? "w-6 h-6" : size === "md" ? "w-8 h-8" : "w-10 h-10"
+          )}
+        />
+      </div>
+
+      {/* 打字效果的文字 */}
+      <div className="flex items-center">
+        <span
+          className={cn(
+            "text-muted-foreground font-medium",
+            "animate-[shimmer_2s_ease-in-out_infinite]",
+            "bg-gradient-to-r from-muted-foreground via-foreground/70 to-muted-foreground bg-[length:200%_100%] bg-clip-text",
+            size === "sm" ? "text-xs" : size === "md" ? "text-sm" : "text-base"
+          )}
+        >
+          {displayText}
+        </span>
+        {/* 动态打字点 */}
+        <span className="flex ml-1">
+          <span
+            className={cn(
+              "rounded-full bg-primary/70",
+              "animate-[bounce_1.4s_ease-in-out_infinite]",
+              size === "sm" ? "w-1 h-1" : size === "md" ? "w-1.5 h-1.5" : "w-2 h-2"
+            )}
+            style={{ animationDelay: "0ms" }}
+          />
+          <span
+            className={cn(
+              "rounded-full bg-primary/70 ml-0.5",
+              "animate-[bounce_1.4s_ease-in-out_infinite]",
+              size === "sm" ? "w-1 h-1" : size === "md" ? "w-1.5 h-1.5" : "w-2 h-2"
+            )}
+            style={{ animationDelay: "200ms" }}
+          />
+          <span
+            className={cn(
+              "rounded-full bg-primary/70 ml-0.5",
+              "animate-[bounce_1.4s_ease-in-out_infinite]",
+              size === "sm" ? "w-1 h-1" : size === "md" ? "w-1.5 h-1.5" : "w-2 h-2"
+            )}
+            style={{ animationDelay: "400ms" }}
+          />
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/**
  * 脉冲加载器
  */
 function PulseLoader({ size, className }: { size: LoadingSize; className?: string }) {

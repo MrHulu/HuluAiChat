@@ -7,7 +7,7 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { Message } from "@/api/client";
 import { MessageItem } from "./MessageItem";
 import { StreamingMessage } from "@/hooks/useChat";
-import { Loading } from "@/components/ui/loading";
+import { ThinkingLoaderImmersive } from "@/components/ui/loading";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
@@ -171,7 +171,7 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
         />
       )}
 
-      {/* 加载指示器 */}
+      {/* 加载指示器 - 使用沉浸式思考动画 */}
       {isLoading && !streamingMessage && (
         <div
           className="flex justify-start mb-4 animate-slide-up"
@@ -180,7 +180,7 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
           aria-label={t("chat.thinking")}
         >
           <div className={cn(
-            "bg-muted/80 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm transition-all duration-200",
+            "bg-muted/80 backdrop-blur-sm rounded-2xl px-5 py-4 shadow-sm transition-all duration-200",
             "hover:shadow-md",
             // Dark mode enhancements - Cycle #194
             "dark:bg-muted/70",
@@ -189,7 +189,7 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
             "dark:hover:shadow-[0_6px_20px_oklch(0_0_0/0.3),0_0_32px_oklch(0.488_0.243_264.376/0.12)]",
             "dark:hover:border-primary/20"
           )}>
-            <Loading variant="thinking" size="sm" text={t("chat.thinking")} />
+            <ThinkingLoaderImmersive size="md" text={t("chat.thinking")} />
           </div>
         </div>
       )}
