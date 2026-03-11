@@ -1,20 +1,30 @@
 # HuluChat 共识状态
 
-> 最后更新: 2026-03-11 - Cycle #131
+> 最后更新: 2026-03-11 - Cycle #132
 
 ---
 
 ## 当前状态
-🎯 **执行 TASK-122** - UI/UX 美化优化（持续进行）
+🎯 **TASK-122 进行中** - UI/UX 美化优化（持续进行）
 
 ---
 
 ## Next Action
-> 继续 TASK-122: 分析并优化下一个 UI/UX 美化点
+> 继续 TASK-122: 实现更多 UI/UX 美化（会话列表悬停、设置 Tab 过渡等）
 
 ---
 
 ## 最近完成任务
+
+### TASK-122: UI/UX 美化优化 - 思考指示器 + 输入框聚焦 ✅ 2026-03-11
+
+**已完成**:
+- MessageList: AI 思考状态添加脉冲发光动画
+- ChatInput: 输入框聚焦时显示渐变边框动画
+- 新增 CSS keyframes: `thinkingGlow`, `focusRingGradient`
+- 深色模式专属视觉增强
+
+**PR**: https://github.com/MrHulu/HuluAiChat/pull/362
 
 ### TASK-122: UI/UX 美化优化 - 发送按钮呼吸灯 ✅ 2026-03-11
 
@@ -22,7 +32,6 @@
 - 发送按钮添加呼吸灯动画（深色模式）
 - 2.5s 呼吸周期，柔和的紫色光晕
 - 仅在按钮可用时激活，悬停时暂停
-- 增强用户交互反馈
 
 **PR**: https://github.com/MrHulu/HuluAiChat/pull/359 (已合并)
 
@@ -33,7 +42,6 @@
 - 添加发光环动画 (animate-glow-ring)
 - 添加浮动动画 (animate-float)
 - WelcomeDialog 图标容器应用新动画
-- 深色模式下更吸引人的视觉反馈
 
 **PR**: https://github.com/MrHulu/HuluAiChat/pull/355 (已合并)
 
@@ -57,7 +65,7 @@
 
 - **项目**: HuluChat
 - **版本**: v3.51.0
-- **周期**: #131
+- **周期**: #132
 - **进行中任务**: TASK-122（UI/UX 美化优化）
 - **待开始任务**: 2 个（TASK-116, TASK-129）
   - TASK-129: 暂缓（官网素材未准备好）
@@ -130,4 +138,4 @@
 
 ---
 
-*更新时间: 2026-03-11 - Cycle #131*
+*更新时间: 2026-03-11 - Cycle #132*
