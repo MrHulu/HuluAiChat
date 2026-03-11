@@ -1,13 +1,15 @@
 /**
  * CodeBlock Component
- * 代码块组件，支持语法高亮和一键复制
+ * 代码块组件，支持语法高亮、一键复制和折叠/展开
  */
 import { useState, useCallback, useRef, useEffect, useMemo, memo } from "react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
-import { Check, Copy } from "lucide-react";
+import { Check, Copy, ChevronDown, ChevronUp } from "lucide-react";
 
 const COPY_FEEDBACK_DURATION_MS = 2000;
+const COLLAPSE_THRESHOLD_LINES = 15; // 超过 15 行自动折叠
+const COLLAPSED_MAX_HEIGHT = 200; // 折叠时最大高度 px
 
 export interface CodeBlockProps {
   children: React.ReactNode;
@@ -22,7 +24,10 @@ export const CodeBlock = memo(function CodeBlock({
 }: CodeBlockProps) {
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [shouldShowCollapse, setShouldShowCollapse] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const preRef = useRef<HTMLPreElement>(null);
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -48,6 +53,21 @@ export const CodeBlock = memo(function CodeBlock({
     return "";
   }, [children]);
 
+  // Count lines and determine if collapse should be shown
+  const lineCount = useMemo(() => {
+    return codeText.split("\n").length;
+  }, [codeText]);
+
+  // Check if code should be collapsible based on line count
+  useEffect(() => {
+    const isLong = lineCount > COLLAPSE_THRESHOLD_LINES;
+    setShouldShowCollapse(isLong);
+    // Auto-collapse long code blocks on initial render
+    if (isLong && !isCollapsed) {
+      setIsCollapsed(true);
+    }
+  }, [lineCount]);
+
   // Extract language from className (e.g., "language-typescript")
   const displayLanguage = useMemo(
     () => language || className?.replace("hljs language-", "") || "",
@@ -70,9 +90,13 @@ export const CodeBlock = memo(function CodeBlock({
     }
   }, [codeText]);
 
+  const toggleCollapse = useCallback(() => {
+    setIsCollapsed((prev) => !prev);
+  }, []);
+
   return (
     <div className="relative group/codeblock rounded-lg overflow-hidden">
-      {/* Language badge and copy button */}
+      {/* Language badge, line count, collapse button and copy button */}
       <div
         className={cn(
           "absolute right-2 top-2 flex items-center gap-2 z-10",
@@ -91,6 +115,31 @@ export const CodeBlock = memo(function CodeBlock({
           >
             {displayLanguage}
           </span>
+        )}
+        {/* Collapse/Expand button - Cycle #144 */}
+        {shouldShowCollapse && (
+          <button
+            onClick={toggleCollapse}
+            className={cn(
+              "p-1.5 rounded-md",
+              "transition-all duration-200 ease-out",
+              "bg-muted/80 dark:bg-muted/70 backdrop-blur-sm",
+              "hover:bg-accent active:scale-95",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "text-muted-foreground hover:text-foreground",
+              "dark:border dark:border-white/10",
+              "dark:hover:bg-accent/80 dark:hover:border-white/20"
+            )}
+            aria-label={isCollapsed ? t("chat.expandCode") : t("chat.collapseCode")}
+            aria-expanded={!isCollapsed}
+            title={isCollapsed ? t("chat.expandCode") : t("chat.collapseCode")}
+          >
+            {isCollapsed ? (
+              <ChevronDown className="w-4 h-4" aria-hidden="true" />
+            ) : (
+              <ChevronUp className="w-4 h-4" aria-hidden="true" />
+            )}
+          </button>
         )}
         <button
           onClick={handleCopy}
@@ -120,6 +169,7 @@ export const CodeBlock = memo(function CodeBlock({
         </button>
       </div>
       <pre
+        ref={preRef}
         className={cn(
           "!bg-muted dark:!bg-muted/50",
           "rounded-lg p-3 overflow-x-auto my-2",
@@ -129,11 +179,47 @@ export const CodeBlock = memo(function CodeBlock({
           "dark:shadow-lg dark:shadow-black/25",
           "dark:hover:border-white/20 dark:hover:shadow-[0_0_16px_oklch(0.35_0.06_264/0.2)]",
           "transition-all duration-200",
+          // Collapse styles - Cycle #144
+          shouldShowCollapse && isCollapsed && "max-h-[200px] relative",
           className
         )}
+        style={shouldShowCollapse && isCollapsed ? { maxHeight: COLLAPSED_MAX_HEIGHT } : undefined}
       >
         {children}
+        {/* Gradient overlay when collapsed - Cycle #144 */}
+        {shouldShowCollapse && isCollapsed && (
+          <div
+            className={cn(
+              "absolute bottom-0 left-0 right-0 h-16",
+              "bg-gradient-to-t from-muted to-transparent",
+              "dark:from-muted/90 dark:to-transparent",
+              "pointer-events-none"
+            )}
+            aria-hidden="true"
+          />
+        )}
       </pre>
+      {/* Show more indicator when collapsed - Cycle #144 */}
+      {shouldShowCollapse && isCollapsed && (
+        <button
+          onClick={toggleCollapse}
+          className={cn(
+            "absolute bottom-2 left-1/2 -translate-x-1/2",
+            "text-xs text-muted-foreground hover:text-foreground",
+            "bg-muted/80 dark:bg-muted/70 backdrop-blur-sm",
+            "px-3 py-1 rounded-full",
+            "border border-border/50 hover:border-border",
+            "transition-all duration-200 ease-out",
+            "hover:scale-105 active:scale-95",
+            "opacity-0 group-hover/codeblock:opacity-100",
+            "focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            "dark:border-white/10 dark:hover:border-white/20"
+          )}
+          aria-label={t("chat.showMoreLines", { count: lineCount })}
+        >
+          {t("chat.showMoreLines", { count: lineCount })}
+        </button>
+      )}
     </div>
   );
 });

@@ -149,7 +149,10 @@
     "fileTooLarge": "{{name}} is too large (max {{max}})",
     "maxImagesReached": "Maximum {{max}} images allowed",
     "maxFilesReached": "Maximum {{max}} files allowed",
-    "characterCount": "{{count}} characters"
+    "characterCount": "{{count}} characters",
+    "expandCode": "Expand code",
+    "collapseCode": "Collapse code",
+    "showMoreLines": "Show all {{count}} lines"
   },
   "settings": {
     "title": "Settings",
