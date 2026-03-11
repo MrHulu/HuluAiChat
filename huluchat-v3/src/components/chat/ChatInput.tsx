@@ -7,12 +7,12 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { LayoutTemplate, Send, ImagePlus, X, Loader2, Paperclip, FileText, FileCode, File } from "lucide-react";
+import { LayoutTemplate, Send, ImagePlus, X, Loader2, Paperclip, FileText, FileCode, File, Quote } from "lucide-react";
 import {
   PromptTemplateSelector,
 } from "@/components/templates/PromptTemplateSelector";
 import { VoiceInputButton } from "@/components/chat/VoiceInputButton";
-import { ImageContent, FileAttachment } from "@/api/client";
+import { ImageContent, FileAttachment, Message } from "@/api/client";
 
 // Constants
 const MAX_TEXTAREA_HEIGHT = 200;
@@ -48,6 +48,9 @@ export interface ChatInputProps {
   placeholder?: string;
   onTemplateSelect?: (content: string) => void;
   isLoading?: boolean;
+  // Quote message props
+  quoteMessage?: Message | null;
+  onCancelQuote?: () => void;
 }
 
 export const ChatInput = memo(function ChatInput({
@@ -55,6 +58,8 @@ export const ChatInput = memo(function ChatInput({
   disabled = false,
   placeholder,
   isLoading = false,
+  quoteMessage,
+  onCancelQuote,
 }: ChatInputProps) {
   const { t, i18n } = useTranslation();
   const [value, setValue] = useState("");
@@ -322,6 +327,36 @@ export const ChatInput = memo(function ChatInput({
           <div className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-dashed border-primary/50 bg-primary/5 dark:bg-primary/10 dark:border-primary/40">
             <ImagePlus className="w-8 h-8 text-primary animate-bounce-subtle" aria-hidden="true" />
             <span className="text-sm font-medium text-primary">{t("chat.dropFile")}</span>
+          </div>
+        </div>
+      )}
+      {/* Quote Preview Area - Cycle #145 */}
+      {quoteMessage && (
+        <div
+          className="mb-3 max-w-4xl mx-auto animate-fade-in"
+          role="region"
+          aria-label={t("chat.quotingMessage")}
+        >
+          <div className="flex items-start gap-2 px-3 py-2 bg-muted/50 dark:bg-muted/30 rounded-lg border-l-4 border-primary/50">
+            <Quote className="w-4 h-4 text-primary/70 flex-shrink-0 mt-0.5" aria-hidden="true" />
+            <div className="flex-1 min-w-0">
+              <span className="text-xs font-medium text-muted-foreground">
+                {quoteMessage.role === "user" ? t("chat.you") : t("chat.ai")}
+              </span>
+              <p className="text-sm text-foreground/80 line-clamp-2 mt-0.5">
+                {quoteMessage.content}
+              </p>
+            </div>
+            {onCancelQuote && (
+              <button
+                type="button"
+                onClick={onCancelQuote}
+                className="flex-shrink-0 p-1 rounded hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                aria-label={t("chat.cancelQuote")}
+              >
+                <X className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
+              </button>
+            )}
           </div>
         </div>
       )}
