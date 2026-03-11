@@ -152,7 +152,8 @@
     "showMoreLines": "显示全部 {{count}} 行",
     "quote": "引用",
     "quotingMessage": "正在引用消息",
-    "cancelQuote": "取消引用"
+    "cancelQuote": "取消引用",
+    "doubleClickToQuote": "双击引用消息"
   },
   "settings": {
     "title": "设置",
