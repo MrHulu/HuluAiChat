@@ -133,7 +133,17 @@
       "stopRecording": "Stop recording",
       "notSupported": "Voice input not supported in this browser"
     },
-    "streaming": "Streaming..."
+    "streaming": "Streaming...",
+    "time": {
+      "justNow": "Just now",
+      "minutesAgo": "{{count}} min ago",
+      "minutesAgo_other": "{{count}} mins ago",
+      "hoursAgo": "{{count}} hour ago",
+      "hoursAgo_other": "{{count}} hours ago",
+      "yesterday": "Yesterday",
+      "daysAgo": "{{count}} day ago",
+      "daysAgo_other": "{{count}} days ago"
+    }
   },
   "settings": {
     "title": "Settings",
