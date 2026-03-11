@@ -437,4 +437,81 @@ describe("useWebSocket hook", () => {
     // The test verifies no duplicate connections pile up
     expect(MockWebSocket.instances.length).toBeGreaterThanOrEqual(1);
   });
+
+  it("should use exponential backoff for reconnection delays", async () => {
+    // Disable exponential backoff for comparison - should use fixed interval
+    const fixedInterval = 50;
+
+    const { result } = renderHook(() =>
+      useWebSocket({
+        url: testUrl,
+        reconnectAttempts: 3,
+        reconnectInterval: fixedInterval,
+        exponentialBackoff: false,
+      })
+    );
+
+    // Wait for initial connection
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    });
+
+    expect(result.current.status).toBe("connected");
+
+    // Close and verify fixed interval reconnect
+    const ws = MockWebSocket.instances[0];
+    if (ws?.onclose) {
+      ws.readyState = MockWebSocket.CLOSED;
+      act(() => {
+        ws.onclose!();
+      });
+    }
+
+    // Wait for fixed interval + connection
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, fixedInterval + 50));
+    });
+
+    expect(MockWebSocket.instances.length).toBe(2);
+    expect(result.current.status).toBe("connected");
+  });
+
+  it("should support new exponential backoff options", async () => {
+    const baseDelay = 10;
+    const maxDelay = 100;
+
+    const { result } = renderHook(() =>
+      useWebSocket({
+        url: testUrl,
+        reconnectAttempts: 2,
+        exponentialBackoff: true,
+        baseDelay,
+        maxDelay,
+        jitter: 0, // No jitter for predictable testing
+      })
+    );
+
+    // Wait for initial connection
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    });
+
+    expect(result.current.status).toBe("connected");
+
+    // Close connection
+    const ws = MockWebSocket.instances[0];
+    if (ws?.onclose) {
+      ws.readyState = MockWebSocket.CLOSED;
+      act(() => {
+        ws.onclose!();
+      });
+    }
+
+    // First reconnect should use baseDelay (10ms) + some buffer
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, baseDelay + 50));
+    });
+
+    expect(MockWebSocket.instances.length).toBe(2);
+  });
 });

@@ -21,6 +21,14 @@ All notable changes to HuluChat will be documented in this file.
   - Added TypeScript types for environment variables
   - Updated WebSocket URL generation to use environment variable
 
+### 🔄 Networking
+
+- **TASK-165**: Implemented WebSocket exponential backoff reconnection
+  - Added exponential backoff with jitter to avoid thundering herd
+  - Configurable base delay (default: 1000ms), max delay (default: 30000ms)
+  - Backwards compatible with existing `reconnectInterval` option
+  - Added new test cases for backoff behavior
+
 ## [3.54.0] - 2026-03-12
 
 ### 🎨 UI/UX Enhancements
