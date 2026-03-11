@@ -14,6 +14,7 @@ import {
   ExternalLink,
   Sliders,
   Puzzle,
+  Cpu,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -47,6 +48,7 @@ import {
   type OllamaModel,
 } from "@/api/client";
 import { PluginSettings } from "./PluginSettings";
+import { MCPSettings } from "./MCPSettings";
 
 interface SettingsDialogProps {
   onSettingsChange?: () => void;
@@ -319,9 +321,13 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
           </div>
         ) : (
           <Tabs defaultValue="api" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="api">{t("settings.tabApi")}</TabsTrigger>
               <TabsTrigger value="ollama">{t("settings.tabOllama")}</TabsTrigger>
+              <TabsTrigger value="mcp">
+                <Cpu className="h-4 w-4 mr-1" />
+                MCP
+              </TabsTrigger>
               <TabsTrigger value="plugins">
                 <Puzzle className="h-4 w-4 mr-1" />
                 {t("settings.tabPlugins")}
@@ -643,6 +649,11 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                 ) : null}
                 {t("ollama.testConnection")}
               </Button>
+            </TabsContent>
+
+            {/* MCP Tab */}
+            <TabsContent value="mcp" className="py-4">
+              <MCPSettings />
             </TabsContent>
 
             {/* Plugins Tab */}

@@ -43,7 +43,12 @@
   - 创建 api/mcp.py (REST API 端点)
   - 更新 main.py 添加 MCP 路由
   - Cycle #165
-- [ ] **TASK-169**: ⚙️ 创建 MCP 设置面板（Settings 新 Tab）
+- [x] **TASK-169**: ⚙️ 创建 MCP 设置面板（Settings 新 Tab）✅ 2026-03-12
+  - 扩展 src/api/client.ts 添加 MCP API 函数
+  - 创建 src/components/settings/MCPSettings.tsx
+  - 更新 SettingsDialog.tsx 添加 MCP Tab
+  - Server 卡片、添加对话框、连接管理
+  - Cycle #165
 - [ ] **TASK-170**: 🔗 集成 MCP tool calling 与现有聊天流
 - [ ] **TASK-171**: 🌐 添加 MCP i18n 支持（EN/ZH）
 - [ ] **TASK-172**: 📚 编写 MCP 使用文档
