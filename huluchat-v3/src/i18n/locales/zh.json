@@ -122,6 +122,7 @@
     "bookmarkError": "书签操作失败",
     "bookmarkLoadError": "加载书签失败",
     "noBookmarks": "当前对话暂无书签",
+    "scrollToBottom": "滚动到底部",
     "exportJSON": "导出为 JSON",
     "exportMarkdown": "导出为 Markdown",
     "exportSuccess": "书签导出成功",
