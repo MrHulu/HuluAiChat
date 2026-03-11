@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { ChatView } from "./ChatView";
 import type { Message, Model } from "@/api/client";
 import type { ConnectionStatus } from "@/hooks/useWebSocket";
@@ -236,7 +236,7 @@ describe("ChatView", () => {
         temperature: 0.7,
         top_p: 1.0,
         max_tokens: 4096,
-      }, undefined);
+      }, undefined, undefined);
     });
   });
 
@@ -301,20 +301,20 @@ describe("ChatView", () => {
     it("should show RAG toggle button when session is selected", () => {
       render(<ChatView sessionId="session-1" />);
 
-      // Button text is "Document Chat (Experimental)" from i18n
-      expect(screen.getByRole("button", { name: /document chat/i })).toBeInTheDocument();
+      // Button has aria-label="Documents"
+      expect(screen.getByLabelText("Documents")).toBeInTheDocument();
     });
 
     it("should not show RAG toggle button when no session", () => {
       render(<ChatView sessionId={null} />);
 
-      expect(screen.queryByRole("button", { name: /document chat/i })).not.toBeInTheDocument();
+      expect(screen.queryByLabelText("Documents")).not.toBeInTheDocument();
     });
 
     it("should toggle RAG panel when RAG button clicked", () => {
       render(<ChatView sessionId="session-1" />);
 
-      const ragButton = screen.getByRole("button", { name: /document chat/i });
+      const ragButton = screen.getByLabelText("Documents");
 
       // Initially RAG panel is hidden
       expect(screen.queryByTestId("rag-panel")).not.toBeInTheDocument();
@@ -335,7 +335,7 @@ describe("ChatView", () => {
     it("should show RAG button as active when panel is open", () => {
       render(<ChatView sessionId="session-1" />);
 
-      const ragButton = screen.getByRole("button", { name: /document chat/i });
+      const ragButton = screen.getByLabelText("Documents");
 
       // Initially not active
       expect(ragButton).not.toHaveAttribute("aria-pressed", "true");

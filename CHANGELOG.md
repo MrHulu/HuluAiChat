@@ -2,6 +2,119 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [3.52.0] - 2026-03-10
+
+### ✨ Features
+
+- **Custom Model Configuration**: Support for any OpenAI-compatible API
+  - New "Custom Model" option in model selector
+  - Free-form input for custom model IDs
+  - Support for Zhipu GLM, Tongyi Qianwen, Moonshot, and other providers
+  - Full i18n support (English/Chinese)
+
+### 🚀 Infrastructure
+
+- **Official Website Deployment**: Cloudflare Pages auto-deploy
+  - GitHub Actions workflow for automated deployment
+  - Production URL: https://huluchat-website.pages.dev
+
+### 📝 Documentation
+
+- **README Optimization**: Marketing-focused improvements
+  - Hero section with clear value proposition
+  - Feature highlights with visual hierarchy
+  - Updated badges and download links
+  - Better SEO and discoverability
+
+### 🧪 Testing
+
+- **Complete Test Coverage**: All major components tested
+  - 1498+ tests passing
+  - UI components: Button, Input, Select, Dialog, CommandPalette, etc.
+  - Feature components: PluginSettings, LanguageSelector, PromptTemplateSelector
+
+## [3.51.0] - 2026-03-07
+
+### ✨ Features
+
+- **Bookmark Export**: Export bookmarks to shareable formats
+  - Export to JSON (structured data for processing)
+  - Export to Markdown (readable format for sharing)
+  - Include session name, model, and full message content
+  - Markdown grouped by session with HuluChat branding
+  - Export button in bookmark panel header
+
+### 🎯 Strategic Rationale
+
+This feature enables users to share their curated AI insights, creating viral
+potential for organic growth. Every exported file carries HuluChat branding.
+
+## [3.50.0] - 2026-03-07
+
+### ✨ Features
+
+- **Session Tags**: Organize chat sessions with custom tags
+  - Add/remove tags from sessions
+  - Filter sessions by tags
+  - Tag input with autocomplete suggestions
+  - Visual tag display on session items
+  - Full i18n support (English/Chinese)
+
+- **Message Bookmarks**: Mark important messages for quick access
+  - Bookmark button on message hover
+  - Dedicated bookmark panel (toggle with toolbar button)
+  - Click to jump to bookmarked message with highlight effect
+  - Auto-scroll to target message in long conversations
+  - Full i18n support (English/Chinese)
+
+### 🔧 Technical Details
+
+- **Database Models**:
+  - `SessionTagModel`: Session tagging support
+  - `MessageBookmarkModel`: Message bookmark support
+
+- **Backend APIs**:
+  - Tag CRUD operations
+  - Bookmark CRUD operations
+  - Filter sessions by tags
+  - List bookmarks by session
+
+- **Frontend Components**:
+  - `SessionTag`: Tag display component
+  - `TagInput`: Tag input with suggestions
+  - `TagFilter`: Tag-based filter UI
+  - `BookmarkButton`: Message bookmark toggle
+  - `BookmarkPanel`: Bookmark list panel
+
+### 🧪 Testing
+
+- Frontend: 686 tests passed (32 files)
+- TypeScript check passed
+- ESLint passed (0 errors)
+
+## [3.49.0] - 2026-03-07
+
+### ✨ Features
+
+- **Session Switching Shortcuts**: Quick keyboard navigation between recent sessions
+  - `Ctrl/Cmd + 1`: Switch to most recent session
+  - `Ctrl/Cmd + 2`: Switch to second most recent session
+  - `Ctrl/Cmd + 3`: Switch to third most recent session
+  - Cross-platform support (Windows/macOS)
+  - Full i18n support (English/Chinese)
+
+### 🔧 Technical Details
+
+- **useKeyboardShortcuts Hook**:
+  - Extended with `onSwitchSession` callback
+  - 0-indexed session switching logic
+  - Added to `KEYBOARD_SHORTCUTS` constant for help display
+
+### 🧪 Testing
+
+- 8 new test cases for session switching shortcuts
+- All keyboard-related tests: 31 passed
+
 ## [3.48.0] - 2026-03-07
 
 ### ✨ Features

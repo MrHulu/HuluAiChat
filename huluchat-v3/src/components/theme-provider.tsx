@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, useContext, useState, useLayoutEffect } from "react"
 
 type Theme = "dark" | "light" | "system"
 
@@ -30,8 +30,27 @@ export function ThemeProvider({
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
   )
 
-  useEffect(() => {
+  // Use useLayoutEffect to prevent flash of wrong theme
+  useLayoutEffect(() => {
     const root = window.document.documentElement
+
+    // Remove no-transitions class after initial mount
+    // This prevents flash during initial load but enables smooth transitions afterwards
+    const removeNoTransitions = () => {
+      root.classList.remove("no-transitions")
+    }
+
+    // Add no-transitions class before theme change on initial load
+    if (!root.classList.contains("no-transitions") && !sessionStorage.getItem("theme-loaded")) {
+      root.classList.add("no-transitions")
+      sessionStorage.setItem("theme-loaded", "true")
+      // Remove after a short delay
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          removeNoTransitions()
+        })
+      })
+    }
 
     root.classList.remove("light", "dark")
 
@@ -63,6 +82,7 @@ export function ThemeProvider({
   )
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useTheme = () => {
   const context = useContext(ThemeProviderContext)
 

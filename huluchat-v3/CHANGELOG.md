@@ -4,6 +4,51 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [3.50.0] - 2026-03-07
+
+### Added
+- **Session Tags**: Organize conversations with custom tags
+  - Add/remove tags to any session
+  - Filter sessions by tag in sidebar
+  - TagInput component with autocomplete
+  - TagFilter component for quick filtering
+
+- **Message Bookmarks**: Mark important messages for quick access
+  - Bookmark any message in a conversation
+  - BookmarkPanel shows all bookmarks in current session
+  - Click bookmark to scroll to message with highlight effect
+  - Hover on message to reveal bookmark button
+
+### Components
+- `SessionTag`: Tag display component with delete support
+- `TagInput`: Tag input with autocomplete suggestions
+- `TagFilter`: Tag filter buttons for session list
+- `BookmarkButton`: Toggle bookmark on messages
+- `BookmarkPanel`: List bookmarks with jump-to-message
+
+### Backend
+- `SessionTagModel`: SQLite model for session tags
+- `MessageBookmarkModel`: SQLite model for message bookmarks
+- REST API endpoints for tags and bookmarks CRUD
+
+### Technical
+- 24 new tests for tags and bookmarks components
+- i18n translations for EN/ZH
+- Database migration for new tables
+
+## [3.49.0] - 2026-03-07
+
+### Added
+- **Session Quick Switch**: Fast switching between recent sessions
+  - Ctrl+1/2/3 to switch to 3 most recent sessions
+  - Visual feedback on shortcut press
+  - Works globally in app
+
+### Technical
+- Extended `useKeyboardShortcuts` hook with `onSwitchSession` callback
+- i18n translations for EN/ZH
+- 8 new test cases for keyboard shortcuts
+
 ## [3.48.0] - 2026-03-07
 
 ### Added

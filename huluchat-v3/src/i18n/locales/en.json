@@ -1,4 +1,29 @@
 {
+  "accessibility": {
+    "skipToMain": "Skip to main content",
+    "formError": "Form has errors",
+    "fieldRequired": "This field is required",
+    "fieldInvalid": "Please enter a valid value"
+  },
+  "select": {
+    "scrollUp": "Scroll up",
+    "scrollDown": "Scroll down"
+  },
+  "errorBoundary": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. Please try again.",
+    "tryAgain": "Try Again",
+    "goHome": "Go Home"
+  },
+  "mermaid": {
+    "loading": "Loading chart...",
+    "error": "Chart rendering error",
+    "label": "Chart diagram"
+  },
+  "math": {
+    "formula": "Math formula",
+    "error": "Math formula error"
+  },
   "common": {
     "save": "Save",
     "cancel": "Cancel",
@@ -8,6 +33,16 @@
     "loading": "Loading...",
     "error": "Error",
     "success": "Success"
+  },
+  "dialog": {
+    "close": "Close"
+  },
+  "skeleton": {
+    "loading": "Loading..."
+  },
+  "loading": {
+    "loading": "Loading",
+    "processing": "Processing"
   },
   "sidebar": {
     "chats": "Chats",
@@ -23,7 +58,11 @@
     "expandSidebar": "Expand sidebar",
     "collapseSidebar": "Collapse sidebar",
     "deleteFolder": "Delete folder",
-    "deleteFolderConfirm": "Are you sure you want to delete this folder? Sessions will be moved to Uncategorized."
+    "deleteFolderConfirm": "Are you sure you want to delete this folder? Sessions will be moved to Uncategorized.",
+    "folderWithName": "{{name}} ({{count}} sessions)",
+    "expandFolder": "Expand folder",
+    "collapseFolder": "Collapse folder",
+    "sessionCount": "{{count}} sessions"
   },
   "chat": {
     "you": "You",
@@ -52,6 +91,7 @@
     "startConversation": "Start a conversation",
     "startConversationHint": "Send a message to begin chatting with AI",
     "thinking": "Thinking...",
+    "messageList": "Chat messages",
     "messageUpdated": "Message updated",
     "messageUpdateFailed": "Failed to update message",
     "connecting": "Connecting...",
@@ -60,11 +100,34 @@
     "connectionError": "Connection Error",
     "uploadImage": "Upload image",
     "removeImage": "Remove image",
+    "uploadedImages": "Uploaded images",
+    "uploadedImage": "Uploaded image {{index}}",
+    "uploadFile": "Upload file",
+    "removeFile": "Remove file",
+    "uploadedFiles": "Uploaded files",
+    "uploadedFile": "Uploaded file {{name}}",
+    "dropImage": "Drop image here",
+    "dropFile": "Drop files or images here",
+    "bookmarks": "Bookmarks",
+    "addBookmark": "Add bookmark",
+    "removeBookmark": "Remove bookmark",
+    "bookmarkAdded": "Bookmark added",
+    "bookmarkRemoved": "Bookmark removed",
+    "bookmarkError": "Failed to update bookmark",
+    "bookmarkLoadError": "Failed to load bookmarks",
+    "noBookmarks": "No bookmarks in this chat",
+    "exportJSON": "Export as JSON",
+    "exportMarkdown": "Export as Markdown",
+    "exportSuccess": "Bookmarks exported successfully",
+    "exportError": "Failed to export bookmarks",
+    "exportBookmarks": "Export bookmarks",
+    "jumpToBookmark": "Jump to bookmark: {{content}}",
     "voice": {
       "startRecording": "Start voice input",
       "stopRecording": "Stop recording",
       "notSupported": "Voice input not supported in this browser"
-    }
+    },
+    "streaming": "Streaming..."
   },
   "settings": {
     "title": "Settings",
@@ -83,14 +146,27 @@
     "modelParameters": "Model Parameters",
     "temperature": "Temperature",
     "temperatureHint": "Lower = more focused, Higher = more creative",
+    "temperatureValue": "{{value}} - Temperature",
     "topP": "Top P",
     "topPHint": "Nucleus sampling threshold",
+    "topPValue": "{{value}} - Top P",
     "maxTokens": "Max Tokens",
     "maxTokensHint": "Maximum length of AI response",
+    "maxTokensMinError": "Minimum value is 256",
+    "maxTokensMaxError": "Maximum value is 128000",
+    "fieldInvalid": "Please enter a valid number",
     "connectionSuccessful": "Connection successful",
     "connectionFailed": "Connection failed",
     "settingsSaved": "Settings saved successfully",
-    "settingsSaveFailed": "Failed to save settings"
+    "settingsSaveFailed": "Failed to save settings",
+    "invalidUrl": "Please enter a valid URL",
+    "invalidUrlProtocol": "URL must start with http:// or https://",
+    "customModelId": "Custom Model ID",
+    "customModelPlaceholder": "e.g., glm-4, qwen-max, moonshot-v1",
+    "customModelHint": "Enter the model ID provided by your API service",
+    "customModelRequired": "Please enter a custom model ID",
+    "customModelName": "Custom Model",
+    "customModelDescription": "Use a custom model ID (e.g., GLM-4, Qwen)"
   },
   "plugins": {
     "title": "Plugins",
@@ -153,32 +229,33 @@
     "refreshStatus": "Refresh status"
   },
   "update": {
-    "available": "Update Available",
-    "newVersion": "A new version ({{version}}) is available!",
-    "download": "Download",
+    "notificationLabel": "Update notification",
+    "checking": "Checking for updates...",
+    "downloading": "Downloading update...",
+    "downloadProgress": "Download progress",
+    "available": "v{{version}} available",
+    "newVersion": "New version available",
+    "updateNow": "Update Now",
     "later": "Later",
+    "download": "Download",
     "installing": "Installing update...",
     "installed": "Update installed! Restarting..."
   },
   "keyboard": {
     "title": "Keyboard Shortcuts",
+    "description": "View all available keyboard shortcuts to navigate the app efficiently",
+    "shortcutsList": "List of keyboard shortcuts",
+    "shortcutKey": "{{action}}: {{key}}",
     "newChat": "New chat",
     "search": "Search chats",
     "settings": "Open settings",
     "toggleSidebar": "Toggle sidebar",
+    "switchSession": "Switch to recent session",
     "send": "Send message",
     "newLine": "New line in message",
     "close": "Close dialog",
     "showHelp": "Show keyboard shortcuts",
     "pressToOpen": "Press {{key1}} or {{key2}} to open this help anytime"
-  },
-  "update": {
-    "checking": "Checking for updates...",
-    "downloading": "Downloading update...",
-    "newVersion": "New version available",
-    "available": "v{{version}} available",
-    "updateNow": "Update Now",
-    "later": "Later"
   },
   "export": {
     "title": "Export Chat",
@@ -195,6 +272,8 @@
     "es": "Español"
   },
   "modelSelector": {
+    "loading": "Loading...",
+    "selectModel": "Select model",
     "cloudModels": "Cloud Models",
     "localModels": "Local Models (Ollama)",
     "ollamaOffline": "Ollama Offline",
@@ -202,12 +281,18 @@
   },
   "templates": {
     "title": "Prompt Templates",
+    "description": "Select a template to quickly start a conversation with a predefined prompt",
     "newTemplate": "+ New Template",
     "all": "All",
     "name": "Name",
     "namePlaceholder": "Template name",
     "content": "Content",
     "contentPlaceholder": "Template content. Use {variable} for placeholders.",
+    "edit": "Edit template",
+    "delete": "Delete template",
+    "categoriesLabel": "Template categories",
+    "templateList": "Available templates",
+    "selectTemplate": "Select {{name}} template",
     "categories": {
       "writing": "Writing",
       "coding": "Coding",
@@ -232,13 +317,16 @@
     "today": "Today",
     "yesterday": "Yesterday",
     "daysAgo": "{{count}} days ago",
+    "selectSession": "Select session: {{title}}",
     "exportSession": "Export session",
     "moveToFolder": "Move to folder",
     "uncategorized": "Uncategorized",
     "deleteSession": "Delete session",
     "markdown": "Markdown (.md)",
     "json": "JSON (.json)",
-    "plainText": "Plain Text (.txt)"
+    "plainText": "Plain Text (.txt)",
+    "tags": "Tags",
+    "moreTags": "+{{count}} more tags"
   },
   "theme": {
     "toggle": "Toggle theme",
@@ -267,7 +355,8 @@
     "toggleTheme": "Toggle Theme",
     "settings": "Settings",
     "showHelp": "Keyboard Shortcuts",
-    "openCommandPalette": "Open Command Palette"
+    "openCommandPalette": "Open Command Palette",
+    "searchInput": "Search commands"
   },
   "rag": {
     "title": "Document Chat (Experimental)",
@@ -284,6 +373,7 @@
     "noDocuments": "No documents uploaded",
     "chunks": "{{count}} chunks",
     "delete": "Delete",
+    "deleteDocument": "Delete document {{filename}}",
     "deleteConfirm": "Are you sure you want to delete this document?",
     "deleting": "Deleting...",
     "deleteError": "Failed to delete document",
@@ -309,6 +399,9 @@
     "skip": "Skip",
     "next": "Next",
     "getStarted": "Get Started",
+    "stepIndicator": "Step navigation",
+    "stepLabel": "Step {{step}}: {{title}}",
+    "stepProgress": "Step {{current}} of {{total}}",
     "emptyState": {
       "title": "Start a conversation",
       "hint": "Type a message below to begin chatting with AI",
@@ -316,5 +409,27 @@
       "tip2": "📄 Upload a document to chat with it",
       "tip3": "⚙️ Configure API settings in Settings"
     }
+  },
+  "tags": {
+    "addTag": "Add tag...",
+    "tag": "Tag",
+    "selected": "selected",
+    "filterByTag": "Filter by tag",
+    "filterActive": "{{count}} tags selected",
+    "clear": "Clear",
+    "clearSelection": "Clear all selected tags",
+    "selectTag": "Select tag {{tag}}",
+    "deselectTag": "Deselect tag {{tag}}",
+    "maxTagsReached": "Maximum 5 tags per session",
+    "suggestions": "Tag suggestions"
+  },
+  "bookmarks": {
+    "title": "Bookmarks",
+    "add": "Add bookmark",
+    "remove": "Remove bookmark",
+    "note": "Note",
+    "notePlaceholder": "Add a note...",
+    "noBookmarks": "No bookmarks yet",
+    "bookmarked": "Bookmarked"
   }
 }

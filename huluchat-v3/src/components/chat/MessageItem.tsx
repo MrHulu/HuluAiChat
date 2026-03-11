@@ -4,10 +4,11 @@
  */
 import { useState, useRef, useEffect, memo, useCallback, useMemo, type ReactElement } from "react";
 import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { cn } from "@/lib/utils";
 import { Message } from "@/api/client";
 import { Button } from "@/components/ui/button";
-import { Pencil, Check, X } from "lucide-react";
+import { Pencil, Check, X, Bookmark, BookmarkCheck } from "lucide-react";
 import { CodeBlock } from "./CodeBlock";
 import { MermaidBlock } from "./MermaidBlock";
 import ReactMarkdown from "react-markdown";
@@ -47,6 +48,10 @@ export interface MessageItemProps {
   message: Message;
   isStreaming?: boolean;
   onEdit?: (messageId: string, newContent: string) => Promise<void>;
+  // Bookmark props
+  isBookmarked?: boolean;
+  bookmarkId?: string;
+  onBookmarkToggle?: (messageId: string, isBookmarked: boolean, bookmarkId?: string) => void;
 }
 
 // Stable plugin references (defined outside component to avoid recreation)
@@ -88,13 +93,34 @@ function extractCodeInfo(children: React.ReactNode): { language: string; codeCon
 
 /**
  * Streaming cursor component - separated to avoid unnecessary re-renders
+ * Enhanced with smooth breathing animation (Cycle #194)
  */
 const StreamingCursor = memo(function StreamingCursor({ isStreaming }: { isStreaming?: boolean }) {
   if (!isStreaming) return null;
-  return <span className="inline-block w-2 h-4 ml-1 bg-current animate-pulse" aria-label="Streaming..." />;
+  return (
+    <span
+      className={cn(
+        "inline-block w-2 h-4 ml-1 rounded-sm",
+        "bg-primary/80",
+        "animate-[typingCursor_1s_ease-in-out_infinite]",
+        "will-change-opacity",
+        // Dark mode glow effect
+        "dark:bg-primary/90",
+        "dark:shadow-[0_0_8px_oklch(0.488_0.243_264.376/0.5)]"
+      )}
+      aria-label={i18n.t("chat.streaming")}
+    />
+  );
 });
 
-export const MessageItem = memo(function MessageItem({ message, isStreaming, onEdit }: MessageItemProps) {
+export const MessageItem = memo(function MessageItem({
+  message,
+  isStreaming,
+  onEdit,
+  isBookmarked = false,
+  bookmarkId,
+  onBookmarkToggle,
+}: MessageItemProps) {
   const { t } = useTranslation();
   const isUser = message.role === "user";
   const hasImages = message.images && message.images.length > 0;
@@ -204,7 +230,7 @@ export const MessageItem = memo(function MessageItem({ message, isStreaming, onE
             className={cn(
               isBlock
                 ? "block text-sm"
-                : "bg-zinc-200 dark:bg-zinc-700 px-1.5 py-0.5 rounded text-xs"
+                : "bg-muted px-1.5 py-0.5 rounded text-xs"
             )}
           >
             {children}
@@ -236,16 +262,21 @@ export const MessageItem = memo(function MessageItem({ message, isStreaming, onE
       role="article"
       aria-label={isUser ? t("chat.you") : t("chat.ai")}
       className={cn(
-        "group flex w-full mb-4",
+        "group flex w-full mb-4 animate-list-enter",
         isUser ? "justify-end" : "justify-start"
       )}
     >
       <div
         className={cn(
           "max-w-[80%] rounded-2xl px-4 py-3 relative",
+          "shadow-sm hover:shadow-md transition-all duration-200 ease-out",
+          "hover:scale-[1.005] active:scale-[0.995]",
           isUser
-            ? "bg-primary text-primary-foreground ml-12"
-            : "bg-muted text-foreground mr-12"
+            ? "bg-primary text-primary-foreground ml-12 hover:bg-primary/90 dark:shadow-primary/20 dark:hover:shadow-primary/30"
+            : "bg-muted text-foreground mr-12 border-l-4 border-primary/30 hover:bg-muted/80",
+          // Dark mode enhancements - more visible borders and backgrounds
+          "dark:shadow-lg dark:hover:shadow-xl",
+          !isUser && "dark:border-primary/60 dark:bg-muted/70 dark:hover:bg-muted/90 dark:shadow-black/20 dark:hover:shadow-black/30"
         )}
       >
         {/* 头像标识 */}
@@ -256,27 +287,66 @@ export const MessageItem = memo(function MessageItem({ message, isStreaming, onE
           )}
         >
           <span>{isUser ? t("chat.you") : t("chat.ai")}</span>
-          {/* Edit button for user messages */}
-          {isUser && onEdit && !isEditing && (
-            <button
-              onClick={handleStartEdit}
-              aria-label={t("chat.editMessage")}
-              className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-primary-foreground/10 rounded"
-            >
-              <Pencil className="w-3 h-3" />
-            </button>
-          )}
+          <div className="flex items-center gap-1">
+            {/* Bookmark button for all messages - Cycle #204 icon micro-interaction */}
+            {onBookmarkToggle && !isEditing && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onBookmarkToggle(message.id, isBookmarked, bookmarkId);
+                }}
+                aria-label={isBookmarked ? t("chat.removeBookmark") : t("chat.addBookmark")}
+                aria-pressed={isBookmarked}
+                className={cn(
+                  "group/bookmark transition-all p-1 rounded",
+                  "opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  isBookmarked && "opacity-100",
+                  isBookmarked
+                    ? "text-primary hover:text-primary/80"
+                    : isUser
+                      ? "hover:bg-primary-foreground/10 text-primary-foreground/70"
+                      : "hover:bg-accent text-muted-foreground"
+                )}
+              >
+                {isBookmarked ? (
+                  <BookmarkCheck className="w-3 h-3 transition-transform duration-200 ease-out group-hover/bookmark:scale-110" aria-hidden="true" />
+                ) : (
+                  <Bookmark className="w-3 h-3 transition-transform duration-200 ease-out group-hover/bookmark:scale-110" aria-hidden="true" />
+                )}
+              </button>
+            )}
+            {/* Edit button for user messages - Cycle #204 icon micro-interaction */}
+            {isUser && onEdit && !isEditing && (
+              <button
+                onClick={handleStartEdit}
+                aria-label={t("chat.editMessage")}
+                className={cn(
+                  "group/edit opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity p-1 rounded",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  "hover:bg-primary-foreground/10"
+                )}
+              >
+                <Pencil className="w-3 h-3 transition-transform duration-200 ease-out group-hover/edit:rotate-12" aria-hidden="true" />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* 图片显示（仅用户消息） */}
         {isUser && hasImages && (
-          <div className="flex flex-wrap gap-2 mb-2">
+          <div
+            className="flex flex-wrap gap-2 mb-2"
+            role="group"
+            aria-label={t("chat.uploadedImages")}
+          >
             {message.images!.map((image, index) => (
               <img
                 key={index}
                 src={image.image_url.url}
-                alt={`Upload ${index + 1}`}
-                className="max-w-[200px] max-h-[200px] object-cover rounded-lg"
+                alt={t("chat.uploadedImage", { index: index + 1 })}
+                className="max-w-[200px] max-h-[200px] object-cover rounded-lg animate-list-enter"
+                style={{ animationDelay: `${index * 50}ms` }}
               />
             ))}
           </div>
@@ -333,17 +403,16 @@ export const MessageItem = memo(function MessageItem({ message, isStreaming, onE
               "text-sm leading-relaxed break-words",
               // Markdown 样式
               "prose prose-sm dark:prose-invert max-w-none",
-              // 代码块样式
+              // 代码块样式 - 使用主题变量
               "[&_.hljs]:bg-transparent [&_.hljs]:p-0",
-              "[&_pre]:bg-zinc-900 [&_pre]:rounded-lg [&_pre]:p-3 [&_pre]:overflow-x-auto",
-              "[&_code:not(.hljs)]:bg-zinc-200 [&_code:not(.hljs)]:dark:bg-zinc-700",
-              "[&_code:not(.hljs)]:px-1.5 [&_code:not(.hljs)]:py-0.5",
+              "[&_pre]:bg-muted [&_pre]:rounded-lg [&_pre]:p-3 [&_pre]:overflow-x-auto [&_pre]:border [&_pre]:border-border",
+              "[&_code:not(.hljs)]:bg-muted [&_code:not(.hljs)]:px-1.5 [&_code:not(.hljs)]:py-0.5",
               "[&_code:not(.hljs)]:rounded [&_code:not(.hljs)]:text-xs",
-              // 表格样式
+              // 表格样式 - 使用主题变量
               "[&_table]:w-full [&_table]:border-collapse",
-              "[&_th]:border [&_th]:border-zinc-300 [&_th]:dark:border-zinc-600",
-              "[&_th]:px-2 [&_th]:py-1 [&_th]:bg-zinc-100 [&_th]:dark:bg-zinc-800",
-              "[&_td]:border [&_td]:border-zinc-300 [&_td]:dark:border-zinc-600",
+              "[&_th]:border [&_th]:border-border",
+              "[&_th]:px-2 [&_th]:py-1 [&_th]:bg-muted",
+              "[&_td]:border [&_td]:border-border",
               "[&_td]:px-2 [&_td]:py-1",
               // 用户消息样式覆盖
               isUser && "[&_code:not(.hljs)]:bg-primary-foreground/20"

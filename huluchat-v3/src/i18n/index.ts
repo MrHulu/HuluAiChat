@@ -148,6 +148,9 @@ const getInitialLanguage = (): string => {
 const initI18n = async (): Promise<void> => {
   const initialLang = getInitialLanguage();
 
+  // Set HTML lang attribute for screen readers (a11y - Cycle #222)
+  document.documentElement.lang = initialLang;
+
   // Load only the initial language before init
   const initialTranslations = await importLocale(initialLang);
   loadedLanguages.add(initialLang);
@@ -181,6 +184,8 @@ export const changeLanguage = async (lang: LanguageCode): Promise<boolean> => {
   if (success) {
     await i18n.changeLanguage(lang);
     localStorage.setItem('huluchat-language', lang);
+    // Update HTML lang attribute for screen readers (a11y - Cycle #222)
+    document.documentElement.lang = lang;
     console.log(`[i18n] Changed language to: ${lang}`);
     return true;
   }
@@ -189,5 +194,8 @@ export const changeLanguage = async (lang: LanguageCode): Promise<boolean> => {
 
 // Export init function
 export const initI18nLazy = initI18n;
+
+// Export global t function for use outside React components
+export const t = i18n.t.bind(i18n);
 
 export default i18n;

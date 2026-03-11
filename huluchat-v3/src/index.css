@@ -21,12 +21,12 @@
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: hsl(210 40% 98%);
+  --destructive-foreground: oklch(0.98 0.01 264);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
   --radius: 0.625rem;
-  --sidebar-background: hsl(0 0% 98%);
+  --sidebar-background: oklch(0.98 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
   --sidebar-primary-foreground: oklch(0.985 0 0);
@@ -40,6 +40,16 @@
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
   --sidebar: oklch(0.985 0 0);
+  /* Semantic status colors - Light mode */
+  --success: oklch(0.72 0.19 142.5);
+  --success-foreground: oklch(0.98 0 0);
+  --success-muted: oklch(0.95 0.05 142.5);
+  --warning: oklch(0.75 0.15 85);
+  --warning-foreground: oklch(0.2 0 0);
+  --warning-muted: oklch(0.95 0.05 85);
+  --error: oklch(0.6 0.22 25);
+  --error-foreground: oklch(0.98 0 0);
+  --error-muted: oklch(0.95 0.05 25);
 }
 
 .dark {
@@ -58,24 +68,35 @@
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: hsl(210 40% 98%);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --sidebar-background: hsl(240 5.9% 10%);
+  --destructive-foreground: oklch(0.98 0.01 264);
+  /* Enhanced border and input visibility for dark mode */
+  --border: oklch(1 0 0 / 25%);
+  --input: oklch(1 0 0 / 30%);
+  --ring: oklch(0.6 0.15 264);
+  --sidebar-background: oklch(0.18 0.01 264);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.269 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-border: oklch(1 0 0 / 20%);
+  --sidebar-ring: oklch(0.6 0.15 264);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
   --sidebar: oklch(0.205 0 0);
+  /* Semantic status colors - Dark mode */
+  --success: oklch(0.75 0.17 142.5);
+  --success-foreground: oklch(0.15 0 0);
+  --success-muted: oklch(0.3 0.08 142.5);
+  --warning: oklch(0.78 0.13 85);
+  --warning-foreground: oklch(0.15 0 0);
+  --warning-muted: oklch(0.3 0.06 85);
+  --error: oklch(0.65 0.2 25);
+  --error-foreground: oklch(0.98 0 0);
+  --error-muted: oklch(0.3 0.08 25);
 }
 
 /* Step 2: Map Variables to Tailwind Utilities */
@@ -117,6 +138,16 @@
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
+  /* Semantic status colors */
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-muted: var(--success-muted);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-muted: var(--warning-muted);
+  --color-error: var(--error);
+  --color-error-foreground: var(--error-foreground);
+  --color-error-muted: var(--error-muted);
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
@@ -128,9 +159,1201 @@
     @apply border-border;
     @apply border-border outline-ring/50;
   }
+
+  /* Theme transition - smooth color changes when switching themes (Cycle #188) */
+  html {
+    transition:
+      background-color 0.3s ease-out,
+      color 0.3s ease-out;
+  }
+
+  html *,
+  html *::before,
+  html *::after {
+    transition:
+      background-color 0.2s ease-out,
+      border-color 0.2s ease-out,
+      box-shadow 0.2s ease-out,
+      color 0.15s ease-out;
+  }
+
+  /* Disable transitions during initial page load to prevent flash */
+  html.no-transitions,
+  html.no-transitions *,
+  html.no-transitions *::before,
+  html.no-transitions *::after {
+    transition: none !important;
+  }
+
   body {
     background-color: var(--background);
     color: var(--foreground);
     @apply bg-background text-foreground;
+  }
+}
+
+/* Step 4: Custom Scrollbar - Dark Mode Enhanced */
+@layer utilities {
+  /* Custom scrollbar for webkit browsers */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--muted-foreground) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: var(--muted-foreground);
+    border-radius: 3px;
+    opacity: 0.5;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: var(--foreground);
+    opacity: 0.8;
+  }
+
+  /* Dark mode scrollbar - enhanced visibility */
+  .dark .scrollbar-thin {
+    scrollbar-color: oklch(0.5 0 0 / 0.5) transparent;
+  }
+
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: oklch(0.5 0 0 / 0.5);
+    border-radius: 3px;
+  }
+
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: oklch(0.6 0 0 / 0.7);
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hidden {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Step 5: Animation System - Unified Standards */
+@layer utilities {
+  /* ═══════════════════════════════════════════════════════════════
+   * ♿ Reduced Motion Support - Accessibility First
+   * ═══════════════════════════════════════════════════════════════ */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+
+    .animate-shimmer {
+      animation: none !important;
+      background: var(--muted);
+    }
+
+    .animate-spin,
+    .animate-pulse,
+    .animate-ping {
+      animation: none !important;
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🚀 Animation Performance - Hardware Acceleration
+   * ═══════════════════════════════════════════════════════════════ */
+  .animate-spin {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  .animate-pulse {
+    will-change: opacity;
+  }
+
+  .animate-ping {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🎬 Animation Duration Standards
+   * ═══════════════════════════════════════════════════════════════ */
+  --duration-fast: 0.1s;     /* Micro-interactions: hover, focus */
+  --duration-normal: 0.2s;   /* Standard transitions: buttons, cards */
+  --duration-slow: 0.3s;     /* Complex transitions: modals, panels */
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🎯 Transition Utilities (Use these for consistency)
+   * ═══════════════════════════════════════════════════════════════ */
+  .transition-fast {
+    transition: all 0.1s ease-out;
+  }
+
+  .transition-normal {
+    transition: all 0.2s ease-out;
+  }
+
+  .transition-slow {
+    transition: all 0.3s ease-out;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🔘 Button Interaction Feedback
+   * ═══════════════════════════════════════════════════════════════ */
+  .btn-press {
+    transition: transform 0.1s ease-out, background-color 0.15s ease-out;
+  }
+
+  .btn-press:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 📋 List Item Animations - Unified to core animation library
+   * ═══════════════════════════════════════════════════════════════ */
+  .animate-list-enter {
+    animation: listEnter 0.2s ease-out forwards;
+  }
+
+  @keyframes listEnter {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Staggered list animation delay classes */
+  .stagger-1 { animation-delay: 0.05s; }
+  .stagger-2 { animation-delay: 0.1s; }
+  .stagger-3 { animation-delay: 0.15s; }
+  .stagger-4 { animation-delay: 0.2s; }
+  .stagger-5 { animation-delay: 0.25s; }
+
+  /* Fade in animation for loading states */
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Smooth scale animation for buttons */
+  .animate-scale-in {
+    animation: scaleIn 0.15s ease-out forwards;
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Shimmer effect for loading placeholders - GPU Accelerated */
+  .animate-shimmer {
+    position: relative;
+    overflow: hidden;
+    will-change: transform;
+    transform: translateZ(0);
+  }
+
+  .animate-shimmer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      oklch(1 0 0 / 0.08) 50%,
+      transparent 100%
+    );
+    animation: shimmerSlide 1.8s ease-in-out infinite;
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  /* Dark mode shimmer - more visible */
+  .dark .animate-shimmer::after {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      oklch(1 0 0 / 0.06) 50%,
+      transparent 100%
+    );
+  }
+
+  @keyframes shimmerSlide {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  /* Smooth transition for interactive elements */
+  .transition-smooth {
+    transition: all 0.2s ease-in-out;
+  }
+
+  /* Dot pulse animation for loading */
+  @keyframes dotPulse {
+    0%, 80%, 100% {
+      transform: scale(0.6);
+      opacity: 0.4;
+    }
+    40% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* Wave animation for loading */
+  @keyframes wave {
+    0%, 40%, 100% {
+      transform: scaleY(0.4);
+      opacity: 0.5;
+    }
+    20% {
+      transform: scaleY(1);
+      opacity: 1;
+    }
+  }
+
+  /* AI Thinking pulse animation - smooth breathing effect */
+  @keyframes thinkingPulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.4;
+    }
+    50% {
+      transform: scale(1.2);
+      opacity: 1;
+    }
+  }
+
+  /* AI typing cursor animation */
+  @keyframes typingCursor {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🔔 Shake Animation - One-time micro-interaction (Cycle #204)
+   * ═══════════════════════════════════════════════════════════════ */
+  .shake-once {
+    animation: shakeOnce 0.3s ease-out;
+  }
+
+  @keyframes shakeOnce {
+    0%, 100% {
+      transform: rotate(0deg);
+    }
+    25% {
+      transform: rotate(-8deg);
+    }
+    75% {
+      transform: rotate(8deg);
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * ✅ Success Animation - Pulse feedback (Cycle #232)
+   * ═══════════════════════════════════════════════════════════════ */
+  .animate-success {
+    animation: successPulse 0.4s ease-out;
+  }
+
+  @keyframes successPulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  /* Success checkmark animation */
+  .animate-check {
+    animation: checkDraw 0.3s ease-out forwards;
+  }
+
+  @keyframes checkDraw {
+    0% {
+      stroke-dashoffset: 24;
+      opacity: 0;
+    }
+    100% {
+      stroke-dashoffset: 0;
+      opacity: 1;
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🎯 Bounce Animation - Playful entrance (Cycle #232)
+   * ═══════════════════════════════════════════════════════════════ */
+  .animate-bounce-in {
+    animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  @keyframes bounceIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+    70% {
+      transform: scale(0.9);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Subtle bounce for icons */
+  .animate-bounce-subtle {
+    animation: bounceSubtle 0.5s ease-out;
+  }
+
+  @keyframes bounceSubtle {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-4px);
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 📤 Slide Animations - Directional transitions (Cycle #232)
+   * ═══════════════════════════════════════════════════════════════ */
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out forwards;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slide-down {
+    animation: slideDown 0.3s ease-out forwards;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slide-left {
+    animation: slideLeft 0.3s ease-out forwards;
+  }
+
+  @keyframes slideLeft {
+    from {
+      opacity: 0;
+      transform: translateX(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .animate-slide-right {
+    animation: slideRight 0.3s ease-out forwards;
+  }
+
+  @keyframes slideRight {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🌟 Pop Animation - Attention grabber (Cycle #232)
+   * ═══════════════════════════════════════════════════════════════ */
+  .animate-pop {
+    animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  @keyframes popIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    70% {
+      transform: scale(1.1);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Wiggle animation for attention */
+  .animate-wiggle {
+    animation: wiggle 0.5s ease-in-out;
+  }
+
+  @keyframes wiggle {
+    0%, 100% {
+      transform: rotate(0deg);
+    }
+    20% {
+      transform: rotate(-3deg);
+    }
+    40% {
+      transform: rotate(3deg);
+    }
+    60% {
+      transform: rotate(-2deg);
+    }
+    80% {
+      transform: rotate(2deg);
+    }
+  }
+
+  /* Shake subtle - for error feedback (Cycle #232) */
+  .animate-shake-subtle {
+    animation: shakeSubtle 0.4s ease-out;
+  }
+
+  @keyframes shakeSubtle {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    20% {
+      transform: translateX(-4px);
+    }
+    40% {
+      transform: translateX(4px);
+    }
+    60% {
+      transform: translateX(-3px);
+    }
+    80% {
+      transform: translateX(3px);
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+ * 🌙 Dark Mode Enhancements
+ * ═══════════════════════════════════════════════════════════════ */
+@layer base {
+  /* Dark mode text selection */
+  .dark ::selection {
+    background-color: oklch(0.488 0.243 264.376 / 0.4);
+    color: oklch(0.98 0 0);
+  }
+
+  .dark ::-moz-selection {
+    background-color: oklch(0.488 0.243 264.376 / 0.4);
+    color: oklch(0.98 0 0);
+  }
+
+  /* Dark mode focus ring - enhanced visibility */
+  .dark *:focus-visible {
+    outline-color: oklch(0.6 0.15 264);
+    outline-width: 2px;
+    outline-offset: 2px;
+  }
+
+  /* Dark mode subtle glow for interactive elements */
+  .dark .glow-subtle {
+    box-shadow: 0 0 20px oklch(0.488 0.243 264.376 / 0.1);
+  }
+
+  /* Dark mode card hover glow */
+  .dark .card-hover-glow:hover {
+    box-shadow:
+      0 0 0 1px oklch(1 0 0 / 10%),
+      0 4px 16px oklch(0 0 0 / 0.3),
+      0 0 32px oklch(0.488 0.243 264.376 / 0.05);
+  }
+
+  /* Dark mode border enhancement */
+  .dark .border-subtle {
+    border-color: oklch(1 0 0 / 12%);
+  }
+
+  .dark .border-hover:hover {
+    border-color: oklch(1 0 0 / 20%);
+  }
+
+  /* Dark mode input enhancement */
+  .dark input:focus,
+  .dark textarea:focus {
+    border-color: oklch(0.6 0.15 264);
+    box-shadow: 0 0 0 2px oklch(0.6 0.15 264 / 0.25);
+  }
+
+  /* Dark mode shadow depth */
+  .dark .shadow-depth {
+    box-shadow:
+      0 1px 2px oklch(0 0 0 / 0.2),
+      0 2px 4px oklch(0 0 0 / 0.15),
+      0 4px 8px oklch(0 0 0 / 0.1);
+  }
+
+  .dark .shadow-depth-lg {
+    box-shadow:
+      0 2px 4px oklch(0 0 0 / 0.2),
+      0 4px 8px oklch(0 0 0 / 0.15),
+      0 8px 16px oklch(0 0 0 / 0.1),
+      0 16px 32px oklch(0 0 0 / 0.05);
+  }
+
+  /* Dark mode glass effect */
+  .dark .glass {
+    background: oklch(0.2 0 0 / 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid oklch(1 0 0 / 8%);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🌙 Dark Mode - Enhanced Visual Consistency (Cycle #167)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Dark mode separator/divider - more visible */
+  .dark .divider-subtle {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      oklch(1 0 0 / 15%) 20%,
+      oklch(1 0 0 / 15%) 80%,
+      transparent
+    );
+    height: 1px;
+  }
+
+  /* Dark mode hover states - enhanced feedback */
+  .dark .hover-lift:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px oklch(0 0 0 / 0.3);
+  }
+
+  /* Dark mode active states - tactile feedback */
+  .dark .active-press:active {
+    transform: scale(0.98);
+  }
+
+  /* Dark mode selection highlight for list items */
+  .dark .item-selected {
+    background: oklch(0.35 0.08 264 / 0.3);
+    border-left: 2px solid oklch(0.55 0.2 264);
+  }
+
+  /* Dark mode subtle gradient backgrounds */
+  .dark .bg-gradient-subtle {
+    background: linear-gradient(
+      180deg,
+      oklch(0.18 0 0) 0%,
+      oklch(0.15 0 0) 100%
+    );
+  }
+
+  /* Dark mode text hierarchy */
+  .dark .text-primary-high {
+    color: oklch(0.95 0 0);
+  }
+
+  .dark .text-primary-medium {
+    color: oklch(0.8 0 0);
+  }
+
+  .dark .text-primary-low {
+    color: oklch(0.6 0 0);
+  }
+
+  /* Dark mode status indicator glow */
+  .dark .status-online {
+    box-shadow: 0 0 8px oklch(0.72 0.19 142.5 / 0.6);
+  }
+
+  .dark .status-offline {
+    box-shadow: 0 0 8px oklch(0.5 0 0 / 0.3);
+  }
+
+  /* Dark mode interactive card styling */
+  .dark .interactive-card {
+    background: oklch(0.2 0 0);
+    border: 1px solid oklch(1 0 0 / 8%);
+    transition: all 0.2s ease-out;
+  }
+
+  .dark .interactive-card:hover {
+    background: oklch(0.22 0 0);
+    border-color: oklch(1 0 0 / 15%);
+    box-shadow: 0 4px 16px oklch(0 0 0 / 0.25);
+  }
+
+  /* Dark mode button hover glow */
+  .dark .btn-glow:hover {
+    box-shadow: 0 0 12px oklch(0.488 0.243 264.376 / 0.25);
+  }
+
+  /* Dark mode scrollbar track - subtle contrast */
+  .dark .scrollbar-track-dark::-webkit-scrollbar-track {
+    background: oklch(0.12 0 0);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🔍 Dark Mode - Search Highlight Enhancement (Cycle #170)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Search highlight in dark mode - more visible with better contrast */
+  .dark mark,
+  .dark .search-highlight {
+    background: linear-gradient(
+      90deg,
+      oklch(0.55 0.2 264 / 0.35),
+      oklch(0.55 0.2 264 / 0.45)
+    );
+    color: oklch(0.95 0 0);
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    box-shadow: 0 0 0 1px oklch(0.55 0.2 264 / 0.3);
+  }
+
+  /* Primary highlight for active/first match */
+  .dark mark.active-match,
+  .dark .search-highlight-active {
+    background: linear-gradient(
+      90deg,
+      oklch(0.6 0.22 264 / 0.5),
+      oklch(0.6 0.22 264 / 0.6)
+    );
+    box-shadow: 0 0 0 1px oklch(0.6 0.22 264 / 0.5);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🔲 Dark Mode - Border Enhancement (Cycle #173)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Session list items - more visible hover state */
+  .dark [role="listitem"]:hover {
+    background: oklch(0.25 0.02 264 / 0.5);
+  }
+
+  /* Dropdown menus - enhanced border and shadow */
+  .dark [role="menu"] {
+    background: oklch(0.2 0 0);
+    border-color: oklch(1 0 0 / 12%);
+    box-shadow:
+      0 4px 12px oklch(0 0 0 / 0.4),
+      0 0 0 1px oklch(1 0 0 / 5%);
+  }
+
+  /* Dialog content - enhanced shadow */
+  .dark [role="dialog"] {
+    box-shadow:
+      0 0 0 1px oklch(1 0 0 / 8%),
+      0 8px 32px oklch(0 0 0 / 0.5),
+      0 0 64px oklch(0.488 0.243 264.376 / 0.05);
+  }
+
+  /* Tooltip - subtle glow */
+  .dark [role="tooltip"] {
+    background: oklch(0.25 0 0);
+    border: 1px solid oklch(1 0 0 / 10%);
+    box-shadow: 0 4px 12px oklch(0 0 0 / 0.3);
+  }
+
+  /* Tab buttons - enhanced active state */
+  .dark [role="tab"][data-state="active"] {
+    background: oklch(0.25 0 0);
+    box-shadow: inset 0 -2px 0 oklch(0.55 0.2 264);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * ✨ Dark Mode - Interaction Feedback (Cycle #173)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Button glow effect on hover */
+  .dark .btn-primary-glow:hover {
+    box-shadow:
+      0 0 20px oklch(0.488 0.243 264.376 / 0.3),
+      0 0 40px oklch(0.488 0.243 264.376 / 0.1);
+  }
+
+  /* Icon button subtle background */
+  .dark button[size="icon"]:hover:not(:disabled) {
+    background: oklch(0.25 0 0 / 0.8);
+  }
+
+  /* Session item active indicator */
+  .dark .session-active {
+    background: linear-gradient(
+      90deg,
+      oklch(0.35 0.1 264 / 0.2),
+      transparent
+    );
+    border-left: 2px solid oklch(0.55 0.2 264);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🌫️ Dark Mode - Shadow Depth System (Cycle #173)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Elevation level 1 - subtle lift */
+  .dark .elevation-1 {
+    box-shadow:
+      0 1px 2px oklch(0 0 0 / 0.2),
+      0 0 0 1px oklch(1 0 0 / 5%);
+  }
+
+  /* Elevation level 2 - card level */
+  .dark .elevation-2 {
+    box-shadow:
+      0 2px 4px oklch(0 0 0 / 0.2),
+      0 4px 8px oklch(0 0 0 / 0.15),
+      0 0 0 1px oklch(1 0 0 / 5%);
+  }
+
+  /* Elevation level 3 - floating elements */
+  .dark .elevation-3 {
+    box-shadow:
+      0 4px 8px oklch(0 0 0 / 0.25),
+      0 8px 16px oklch(0 0 0 / 0.15),
+      0 16px 32px oklch(0 0 0 / 0.1),
+      0 0 0 1px oklch(1 0 0 / 5%);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 📝 Dark Mode - Form Elements Enhancement (Cycle #173)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Input fields - enhanced focus state */
+  .dark input:focus-visible,
+  .dark textarea:focus-visible {
+    border-color: oklch(0.55 0.2 264);
+    box-shadow:
+      0 0 0 2px oklch(0.55 0.2 264 / 0.25),
+      0 0 8px oklch(0.55 0.2 264 / 0.15);
+  }
+
+  /* Dark mode caret (cursor) color - enhanced visibility (Cycle #203) */
+  .dark input,
+  .dark textarea {
+    caret-color: oklch(0.7 0.15 264);
+  }
+
+  /* Dark mode placeholder - slightly brighter for better visibility */
+  .dark input::placeholder,
+  .dark textarea::placeholder {
+    color: oklch(0.5 0 0 / 0.7);
+  }
+
+  .dark input::-webkit-input-placeholder,
+  .dark textarea::-webkit-input-placeholder {
+    color: oklch(0.5 0 0 / 0.7);
+  }
+
+  .dark input::-moz-placeholder,
+  .dark textarea::-moz-placeholder {
+    color: oklch(0.5 0 0 / 0.7);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * ✨ Dark Mode - Chat Input Enhancement (Cycle #191)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Chat input container - subtle inner glow when focused */
+  .dark .chat-input-container:focus-within {
+    background: oklch(0.18 0 0);
+    box-shadow:
+      inset 0 1px 0 oklch(1 0 0 / 5%),
+      0 0 0 1px oklch(0.5 0.15 264 / 0.2),
+      0 -8px 32px -8px oklch(0.5 0.15 264 / 0.08);
+  }
+
+  /* Chat input textarea - enhanced glow */
+  .dark textarea:focus {
+    border-color: oklch(0.55 0.2 264 / 0.8);
+    box-shadow:
+      0 0 0 1px oklch(0.55 0.2 264 / 0.3),
+      0 0 16px oklch(0.5 0.2 264 / 0.12),
+      inset 0 1px 0 oklch(1 0 0 / 3%);
+  }
+
+  /* Send button - glowing effect when active */
+  .dark .chat-send-button:not(:disabled):hover {
+    box-shadow:
+      0 0 20px oklch(0.5 0.2 264 / 0.3),
+      0 0 40px oklch(0.5 0.2 264 / 0.1);
+  }
+
+  .dark .chat-send-button:not(:disabled):active {
+    box-shadow:
+      0 0 12px oklch(0.5 0.2 264 / 0.25);
+  }
+
+  /* Icon buttons in chat input - subtle glow on hover */
+  .dark .chat-input-icon-btn:hover:not(:disabled) {
+    background: oklch(0.28 0.05 264 / 0.4);
+    box-shadow: 0 0 8px oklch(0.5 0.15 264 / 0.15);
+  }
+
+  /* Image preview container - enhanced border */
+  .dark .image-preview-item {
+    border-color: oklch(1 0 0 / 10%);
+    box-shadow: 0 2px 8px oklch(0 0 0 / 0.25);
+  }
+
+  .dark .image-preview-item:hover {
+    border-color: oklch(0.5 0.15 264 / 0.4);
+    box-shadow: 0 4px 12px oklch(0 0 0 / 0.3);
+  }
+
+  /* Select trigger - enhanced styling */
+  .dark [data-slot="select-trigger"] {
+    border-color: oklch(1 0 0 / 15%);
+    background: oklch(0.18 0 0);
+  }
+
+  .dark [data-slot="select-trigger"]:hover {
+    border-color: oklch(1 0 0 / 25%);
+    background: oklch(0.2 0 0);
+  }
+
+  /* Range slider - enhanced track */
+  .dark input[type="range"] {
+    background: oklch(0.3 0 0);
+  }
+
+  .dark input[type="range"]::-webkit-slider-thumb {
+    background: oklch(0.55 0.2 264);
+    box-shadow: 0 0 8px oklch(0.55 0.2 264 / 0.4);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🏷️ Dark Mode - Badge & Tag Enhancement (Cycle #173)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Tags - more visible in dark mode */
+  .dark .tag-item {
+    background: oklch(0.25 0.05 264);
+    border: 1px solid oklch(0.4 0.1 264 / 0.5);
+    color: oklch(0.85 0 0);
+  }
+
+  .dark .tag-item:hover {
+    background: oklch(0.3 0.08 264);
+    border-color: oklch(0.5 0.15 264);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 📊 Dark Mode - Code Block Enhancement (Cycle #173)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Code block container */
+  .dark pre {
+    background: oklch(0.15 0 0);
+    border: 1px solid oklch(1 0 0 / 8%);
+    box-shadow: inset 0 1px 0 oklch(1 0 0 / 3%);
+  }
+
+  /* Inline code */
+  .dark code:not(.hljs) {
+    background: oklch(0.25 0 0);
+    border: 1px solid oklch(1 0 0 / 5%);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 📁 Dark Mode - Upload/Drop Zone Enhancement (Cycle #175)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Drag and drop zone */
+  .dark [role="button"][aria-label*="select"],
+  .dark [role="button"][aria-label*="upload"] {
+    border-color: oklch(1 0 0 / 15%);
+    background: oklch(0.18 0 0 / 0.5);
+  }
+
+  .dark [role="button"][aria-label*="select"]:hover,
+  .dark [role="button"][aria-label*="upload"]:hover {
+    border-color: oklch(0.55 0.2 264 / 0.5);
+    background: oklch(0.2 0 0 / 0.6);
+  }
+
+  .dark [role="button"][aria-label*="select"]:focus-visible,
+  .dark [role="button"][aria-label*="upload"]:focus-visible {
+    border-color: oklch(0.55 0.2 264);
+    box-shadow: 0 0 0 2px oklch(0.55 0.2 264 / 0.25);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🔍 Dark Mode - Command Palette Enhancement (Cycle #175)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Command input */
+  .dark [data-slot="command-input-wrapper"] {
+    border-color: oklch(1 0 0 / 8%);
+    background: oklch(0.18 0 0);
+  }
+
+  /* Command items - enhanced hover */
+  .dark [data-slot="command-item"] {
+    border-radius: 0.5rem;
+  }
+
+  .dark [data-slot="command-item"][data-selected="true"] {
+    background: oklch(0.28 0.05 264 / 0.6);
+    box-shadow: inset 0 0 0 1px oklch(0.5 0.15 264 / 0.3);
+  }
+
+  /* Command separator */
+  .dark [data-slot="command-separator"] {
+    background: oklch(1 0 0 / 8%);
+  }
+
+  /* Command group heading */
+  .dark [data-slot="command-group"] [cmdk-group-heading] {
+    color: oklch(0.6 0 0);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 📋 Dark Mode - Document List Enhancement (Cycle #175)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Document list items */
+  .dark [aria-labelledby*="document"] li,
+  .dark [aria-labelledby="rag-documents-heading"] li {
+    background: oklch(0.2 0 0 / 0.4);
+    border: 1px solid transparent;
+  }
+
+  .dark [aria-labelledby*="document"] li:hover,
+  .dark [aria-labelledby="rag-documents-heading"] li:hover {
+    background: oklch(0.25 0 0 / 0.6);
+    border-color: oklch(1 0 0 / 8%);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🎯 Dark Mode - Empty State Enhancement (Cycle #175)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Empty state text */
+  .dark [role="status"]:not([aria-busy="true"]) {
+    color: oklch(0.55 0 0);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🔘 Dark Mode - Toggle Button Enhancement (Cycle #175)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Icon toggle buttons */
+  .dark button[variant="ghost"]:hover:not(:disabled) {
+    background: oklch(0.25 0 0 / 0.6);
+  }
+
+  .dark button[size="icon"]:active:not(:disabled) {
+    transform: scale(0.95);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 📊 Dark Mode - Skeleton/Loading Enhancement (Cycle #175)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Skeleton shimmer in dark mode */
+  .dark [aria-busy="true"][role="status"] {
+    background: oklch(0.22 0 0);
+  }
+
+  /* Loading overlay backdrop */
+  .dark .fixed.inset-0.z-50 {
+    background: oklch(0.1 0 0 / 0.85);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 🔔 Dark Mode - Sonner Toast Enhancement (Cycle #177)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Toast container */
+  .dark [data-sonner-toaster] {
+    --normal-bg: oklch(0.22 0 0);
+    --normal-border: oklch(1 0 0 / 10%);
+    --normal-text: oklch(0.95 0 0);
+    --success-bg: oklch(0.22 0.05 142.5);
+    --success-border: oklch(0.4 0.15 142.5 / 0.5);
+    --success-text: oklch(0.95 0 0);
+    --error-bg: oklch(0.25 0.08 25);
+    --error-border: oklch(0.5 0.2 25 / 0.5);
+    --error-text: oklch(0.95 0 0);
+    --warning-bg: oklch(0.28 0.08 85);
+    --warning-border: oklch(0.5 0.15 85 / 0.5);
+    --warning-text: oklch(0.95 0 0);
+    --info-bg: oklch(0.22 0.08 264);
+    --info-border: oklch(0.45 0.15 264 / 0.5);
+    --info-text: oklch(0.95 0 0);
+  }
+
+  /* Toast item base */
+  .dark [data-sonner-toast] {
+    background: var(--normal-bg);
+    border: 1px solid var(--normal-border);
+    box-shadow:
+      0 4px 12px oklch(0 0 0 / 0.35),
+      0 0 0 1px oklch(1 0 0 / 3%);
+    color: var(--normal-text);
+    border-radius: 0.75rem;
+  }
+
+  /* Success toast */
+  .dark [data-sonner-toast][data-type="success"] {
+    background: var(--success-bg);
+    border-color: var(--success-border);
+  }
+
+  .dark [data-sonner-toast][data-type="success"] [data-icon] {
+    color: oklch(0.72 0.19 142.5);
+  }
+
+  /* Error toast */
+  .dark [data-sonner-toast][data-type="error"] {
+    background: var(--error-bg);
+    border-color: var(--error-border);
+  }
+
+  .dark [data-sonner-toast][data-type="error"] [data-icon] {
+    color: oklch(0.65 0.22 25);
+  }
+
+  /* Warning toast */
+  .dark [data-sonner-toast][data-type="warning"] {
+    background: var(--warning-bg);
+    border-color: var(--warning-border);
+  }
+
+  .dark [data-sonner-toast][data-type="warning"] [data-icon] {
+    color: oklch(0.75 0.15 85);
+  }
+
+  /* Info toast */
+  .dark [data-sonner-toast][data-type="info"] {
+    background: var(--info-bg);
+    border-color: var(--info-border);
+  }
+
+  .dark [data-sonner-toast][data-type="info"] [data-icon] {
+    color: oklch(0.6 0.18 264);
+  }
+
+  /* Toast title */
+  .dark [data-sonner-title] {
+    font-weight: 600;
+    color: oklch(0.95 0 0);
+  }
+
+  /* Toast description */
+  .dark [data-sonner-description] {
+    color: oklch(0.75 0 0);
+  }
+
+  /* Close button */
+  .dark [data-sonner-close-button] {
+    background: oklch(0.3 0 0 / 0.5);
+    border: 1px solid oklch(1 0 0 / 8%);
+    color: oklch(0.7 0 0);
+    transition: all 0.15s ease-out;
+  }
+
+  .dark [data-sonner-close-button]:hover {
+    background: oklch(0.35 0 0 / 0.8);
+    color: oklch(0.9 0 0);
+    border-color: oklch(1 0 0 / 15%);
+  }
+
+  .dark [data-sonner-close-button]:focus-visible {
+    outline: 2px solid oklch(0.55 0.2 264);
+    outline-offset: 2px;
+  }
+
+  /* Toast action button */
+  .dark [data-sonner-action] {
+    background: oklch(0.3 0 0);
+    border: 1px solid oklch(1 0 0 / 10%);
+    color: oklch(0.9 0 0);
+    transition: all 0.15s ease-out;
+  }
+
+  .dark [data-sonner-action]:hover {
+    background: oklch(0.35 0 0);
+    border-color: oklch(1 0 0 / 20%);
+  }
+
+  /* Toast progress bar */
+  .dark [data-sonner-toast] [data-progress-bar] {
+    background: oklch(1 0 0 / 15%);
+  }
+
+  .dark [data-sonner-toast][data-type="success"] [data-progress-bar] {
+    background: oklch(0.72 0.19 142.5 / 0.3);
+  }
+
+  .dark [data-sonner-toast][data-type="error"] [data-progress-bar] {
+    background: oklch(0.65 0.22 25 / 0.3);
   }
 }

@@ -2,7 +2,7 @@
  * Settings Dialog Component
  * API Key configuration, model selection, Ollama settings, and plugin management
  */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
@@ -33,7 +33,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui/Select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   getSettings,
@@ -69,13 +69,16 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
   // Settings state
   const [apiKey, setApiKey] = useState("");
   const [baseUrl, setBaseUrl] = useState("");
+  const [baseUrlError, setBaseUrlError] = useState<string | null>(null);
   const [model, setModel] = useState("");
+  const [customModel, setCustomModel] = useState(""); // Custom model ID input
   const [hasApiKey, setHasApiKey] = useState(false);
 
   // Model parameters state
   const [temperature, setTemperature] = useState(0.7);
   const [topP, setTopP] = useState(1.0);
   const [maxTokens, setMaxTokens] = useState(4096);
+  const [maxTokensError, setMaxTokensError] = useState<string | null>(null);
 
   // Models
   const [models, setModels] = useState<ModelInfo[]>([]);
@@ -89,16 +92,8 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
   const [ollamaTestResult, setOllamaTestResult] = useState<{ success: boolean; message: string } | null>(null);
   const [refreshingOllama, setRefreshingOllama] = useState(false);
 
-  // Load settings on open
-  useEffect(() => {
-    if (open) {
-      loadSettings();
-      loadModels();
-      loadOllamaStatus();
-    }
-  }, [open]);
-
-  const loadOllamaStatus = async () => {
+  // Define callbacks first (before useEffect that uses them)
+  const loadOllamaStatus = useCallback(async () => {
     try {
       const [status, models] = await Promise.all([
         getOllamaStatus(),
@@ -113,14 +108,13 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
       console.error("Failed to load Ollama status:", error);
       setOllamaAvailable(false);
     }
-  };
+  }, []);
 
-  const loadSettings = async () => {
+  const loadSettings = useCallback(async () => {
     setLoading(true);
     try {
       const settings = await getSettings();
       setBaseUrl(settings.openai_base_url || "");
-      setModel(settings.openai_model);
       setHasApiKey(settings.has_api_key);
       // Load model parameters
       setTemperature(settings.temperature ?? 0.7);
@@ -129,20 +123,81 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
       if (settings.has_api_key) {
         setApiKey(""); // Don't show the actual key
       }
+
+      // Load models first to check if current model is in the list
+      const modelList = await getModels();
+      // Add custom model option for Settings dialog (not shown in ModelSelector)
+      const modelsWithCustom: ModelInfo[] = [
+        ...modelList,
+        {
+          id: "custom",
+          name: t("settings.customModelName"),
+          description: t("settings.customModelDescription"),
+          provider: "openai",
+        },
+      ];
+      setModels(modelsWithCustom);
+
+      // Check if current model is in the predefined list
+      const modelInList = modelList.some((m) => m.id === settings.openai_model);
+      if (modelInList) {
+        setModel(settings.openai_model);
+        setCustomModel("");
+      } else if (settings.openai_model) {
+        // Model not in list, treat as custom
+        setModel("custom");
+        setCustomModel(settings.openai_model);
+      } else {
+        setModel("");
+        setCustomModel("");
+      }
     } catch (error) {
       console.error("Failed to load settings:", error);
     } finally {
       setLoading(false);
     }
+  }, [t]);
+
+  // Load settings on open
+  useEffect(() => {
+    if (open) {
+      loadSettings();
+      loadOllamaStatus();
+    }
+  }, [open, loadSettings, loadOllamaStatus]);
+
+  // Validate URL format
+  const validateBaseUrl = (url: string): string | null => {
+    if (!url.trim()) return null; // Empty is valid (will use default)
+
+    try {
+      const parsed = new URL(url);
+      if (!parsed.protocol.startsWith("http")) {
+        return t("settings.invalidUrlProtocol");
+      }
+      return null;
+    } catch {
+      return t("settings.invalidUrl");
+    }
   };
 
-  const loadModels = async () => {
-    try {
-      const modelList = await getModels();
-      setModels(modelList);
-    } catch (error) {
-      console.error("Failed to load models:", error);
-    }
+  const handleBaseUrlChange = (value: string) => {
+    setBaseUrl(value);
+    setBaseUrlError(validateBaseUrl(value));
+  };
+
+  // Validate Max Tokens range (256 - 128000)
+  const validateMaxTokens = (value: number): string | null => {
+    if (isNaN(value)) return t("settings.fieldInvalid");
+    if (value < 256) return t("settings.maxTokensMinError");
+    if (value > 128000) return t("settings.maxTokensMaxError");
+    return null;
+  };
+
+  const handleMaxTokensChange = (value: string) => {
+    const numValue = parseInt(value, 10);
+    setMaxTokens(numValue || 0);
+    setMaxTokensError(validateMaxTokens(numValue));
   };
 
   const handleSave = async () => {
@@ -160,7 +215,15 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
         updateData.openai_base_url = baseUrl.trim();
       }
 
-      if (model) {
+      // Handle custom model vs predefined model
+      if (model === "custom") {
+        if (!customModel.trim()) {
+          toast.error(t("settings.customModelRequired"));
+          setSaving(false);
+          return;
+        }
+        updateData.openai_model = customModel.trim();
+      } else if (model) {
         updateData.openai_model = model;
       }
 
@@ -236,8 +299,8 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <Settings className="h-5 w-5" />
+        <Button variant="ghost" size="icon" aria-label={t("settings.title")} className="group/settings">
+          <Settings className="h-5 w-5 transition-transform duration-300 ease-out group-hover/settings:rotate-45" aria-hidden="true" />
           <span className="sr-only">{t("settings.title")}</span>
         </Button>
       </DialogTrigger>
@@ -250,8 +313,9 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
         </DialogHeader>
 
         {loading ? (
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          <div className="flex items-center justify-center py-8" role="status" aria-live="polite">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" aria-hidden="true" />
+            <span className="sr-only">{t("common.loading")}</span>
           </div>
         ) : (
           <Tabs defaultValue="api" className="w-full">
@@ -294,18 +358,30 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                   type="url"
                   placeholder={t("settings.baseUrlPlaceholder")}
                   value={baseUrl}
-                  onChange={(e) => setBaseUrl(e.target.value)}
+                  onChange={(e) => handleBaseUrlChange(e.target.value)}
+                  aria-invalid={!!baseUrlError}
+                  aria-errormessage={baseUrlError ? "baseUrl-error" : undefined}
+                  aria-describedby={baseUrlError ? "baseUrl-error" : "baseUrl-hint"}
                 />
-                <p className="text-xs text-muted-foreground">
-                  {t("settings.baseUrlHint")}
-                </p>
+                {baseUrlError ? (
+                  <p id="baseUrl-error" className="text-xs text-destructive" role="alert">
+                    {baseUrlError}
+                  </p>
+                ) : (
+                  <p id="baseUrl-hint" className="text-xs text-muted-foreground">
+                    {t("settings.baseUrlHint")}
+                  </p>
+                )}
               </div>
 
               {/* Model Selection */}
               <div className="grid gap-2">
                 <Label htmlFor="model">{t("settings.model")}</Label>
                 <Select value={model} onValueChange={setModel}>
-                  <SelectTrigger>
+                  <SelectTrigger
+                    id="model"
+                    aria-describedby={model ? "model-description" : undefined}
+                  >
                     <SelectValue placeholder={t("settings.selectModel")} />
                   </SelectTrigger>
                   <SelectContent>
@@ -318,12 +394,30 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                     ))}
                   </SelectContent>
                 </Select>
-                {model && (
-                  <p className="text-xs text-muted-foreground">
+                {model && model !== "custom" && (
+                  <p id="model-description" className="text-xs text-muted-foreground">
                     {models.find((m) => m.id === model)?.description}
                   </p>
                 )}
               </div>
+
+              {/* Custom Model Input - shown when "custom" is selected */}
+              {model === "custom" && (
+                <div className="grid gap-2 animate-slide-down">
+                  <Label htmlFor="customModel">{t("settings.customModelId")}</Label>
+                  <Input
+                    id="customModel"
+                    type="text"
+                    placeholder={t("settings.customModelPlaceholder")}
+                    value={customModel}
+                    onChange={(e) => setCustomModel(e.target.value)}
+                    aria-describedby="customModel-hint"
+                  />
+                  <p id="customModel-hint" className="text-xs text-muted-foreground">
+                    {t("settings.customModelHint")}
+                  </p>
+                </div>
+              )}
 
               {/* Model Parameters */}
               <div className="border-t pt-4 mt-2">
@@ -336,7 +430,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                 <div className="grid gap-2 mb-4">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="temperature" className="text-sm">{t("settings.temperature")}</Label>
-                    <span className="text-xs text-muted-foreground">{temperature.toFixed(2)}</span>
+                    <span className="text-xs text-muted-foreground" aria-hidden="true">{temperature.toFixed(2)}</span>
                   </div>
                   <Input
                     id="temperature"
@@ -347,8 +441,10 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                     value={temperature}
                     onChange={(e) => setTemperature(parseFloat(e.target.value))}
                     className="h-2 w-full cursor-pointer"
+                    aria-describedby="temperature-hint"
+                    aria-valuetext={t("settings.temperatureValue", { value: temperature.toFixed(2) })}
                   />
-                  <p className="text-xs text-muted-foreground">
+                  <p id="temperature-hint" className="text-xs text-muted-foreground">
                     {t("settings.temperatureHint")}
                   </p>
                 </div>
@@ -357,7 +453,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                 <div className="grid gap-2 mb-4">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="topP" className="text-sm">{t("settings.topP")}</Label>
-                    <span className="text-xs text-muted-foreground">{topP.toFixed(2)}</span>
+                    <span className="text-xs text-muted-foreground" aria-hidden="true">{topP.toFixed(2)}</span>
                   </div>
                   <Input
                     id="topP"
@@ -368,8 +464,10 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                     value={topP}
                     onChange={(e) => setTopP(parseFloat(e.target.value))}
                     className="h-2 w-full cursor-pointer"
+                    aria-describedby="topp-hint"
+                    aria-valuetext={t("settings.topPValue", { value: topP.toFixed(2) })}
                   />
-                  <p className="text-xs text-muted-foreground">
+                  <p id="topp-hint" className="text-xs text-muted-foreground">
                     {t("settings.topPHint")}
                   </p>
                 </div>
@@ -384,27 +482,38 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                     max="128000"
                     step="256"
                     value={maxTokens}
-                    onChange={(e) => setMaxTokens(parseInt(e.target.value) || 4096)}
+                    onChange={(e) => handleMaxTokensChange(e.target.value)}
+                    aria-invalid={!!maxTokensError}
+                    aria-errormessage={maxTokensError ? "maxTokens-error" : undefined}
+                    aria-describedby={maxTokensError ? "maxTokens-error" : "maxtokens-hint"}
                   />
-                  <p className="text-xs text-muted-foreground">
-                    {t("settings.maxTokensHint")}
-                  </p>
+                  {maxTokensError ? (
+                    <p id="maxTokens-error" className="text-xs text-destructive" role="alert">
+                      {maxTokensError}
+                    </p>
+                  ) : (
+                    <p id="maxtokens-hint" className="text-xs text-muted-foreground">
+                      {t("settings.maxTokensHint")}
+                    </p>
+                  )}
                 </div>
               </div>
 
               {/* Test Result */}
               {testResult && (
                 <div
-                  className={`flex items-center gap-2 p-3 rounded-md ${
+                  role="status"
+                  aria-live="polite"
+                  className={`flex items-center gap-2 p-3 rounded-md animate-slide-up ${
                     testResult.success
-                      ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-                      : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                      ? "bg-success-muted text-success-foreground"
+                      : "bg-error-muted text-error-foreground"
                   }`}
                 >
                   {testResult.success ? (
-                    <Check className="h-4 w-4" />
+                    <Check className="h-4 w-4 animate-bounce-in" aria-hidden="true" />
                   ) : (
-                    <AlertCircle className="h-4 w-4" />
+                    <AlertCircle className="h-4 w-4 animate-shake-subtle" aria-hidden="true" />
                   )}
                   <span className="text-sm">{testResult.message}</span>
                 </div>
@@ -422,28 +531,32 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                   href="https://ollama.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1"
+                  className="group/link text-xs text-muted-foreground hover:text-primary flex items-center gap-1"
                 >
                   {t("ollama.download")}
-                  <ExternalLink className="h-3 w-3" />
+                  <ExternalLink className="h-3 w-3 transition-transform duration-200 ease-out group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />
                 </a>
               </div>
 
               {/* Ollama Status Card */}
               <div
-                className={`flex items-center justify-between p-3 rounded-lg border mb-3 ${
+                role="status"
+                aria-live="polite"
+                aria-label={ollamaAvailable ? t("ollama.online") : t("ollama.offline")}
+                className={`flex items-center justify-between p-3 rounded-lg border mb-3 transition-all duration-200 ${
                   ollamaAvailable
-                    ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800"
-                    : "bg-gray-50 dark:bg-gray-900/20"
+                    ? "bg-success-muted/50 border-success/30 dark:bg-success-muted/20 dark:border-success/25 dark:shadow-sm dark:shadow-success/10"
+                    : "bg-muted dark:bg-muted/50 dark:border-white/5"
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className={`flex items-center justify-center w-8 h-8 rounded-full ${
+                    className={`flex items-center justify-center w-8 h-8 rounded-full transition-colors duration-200 ${
                       ollamaAvailable
-                        ? "bg-green-100 text-green-600 dark:bg-green-900/50 dark:text-green-400"
-                        : "bg-gray-200 text-gray-400 dark:bg-gray-800 dark:text-gray-500"
+                        ? "bg-success/20 text-success dark:bg-success/25 dark:text-success"
+                        : "bg-muted text-muted-foreground dark:bg-muted/60"
                     }`}
+                    aria-hidden="true"
                   >
                     <Server className="h-4 w-4" />
                   </div>
@@ -466,10 +579,13 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                   variant="ghost"
                   size="icon"
                   onClick={handleRefreshOllama}
-                  className="h-8 w-8"
+                  aria-label={t("ollama.refreshStatus")}
+                  aria-busy={refreshingOllama}
+                  className="group/refresh h-8 w-8"
                 >
                   <Loader2
-                    className={`h-4 w-4 ${refreshingOllama ? "animate-spin" : ""}`}
+                    className={`h-4 w-4 transition-transform duration-300 ease-out ${refreshingOllama ? "animate-spin" : "group-hover/refresh:rotate-180"}`}
+                    aria-hidden="true"
                   />
                   <span className="sr-only">{t("ollama.refreshStatus")}</span>
                 </Button>
@@ -480,10 +596,11 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                 <div className="mb-3">
                   <p className="text-xs text-muted-foreground mb-2">{t("ollama.installedModels")}</p>
                   <div className="flex flex-wrap gap-1.5">
-                    {ollamaModels.map((m) => (
+                    {ollamaModels.map((m, index) => (
                       <span
                         key={m.name}
-                        className="inline-flex items-center px-2 py-1 rounded-md bg-muted text-xs"
+                        className="inline-flex items-center px-2 py-1 rounded-md bg-muted dark:bg-muted/60 dark:border dark:border-white/10 text-xs animate-list-enter"
+                        style={{ animationDelay: `${index * 50}ms` }}
                       >
                         {m.name}
                       </span>
@@ -495,16 +612,18 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
               {/* Ollama Test Result */}
               {ollamaTestResult && (
                 <div
+                  role="status"
+                  aria-live="polite"
                   className={`flex items-center gap-2 p-3 rounded-md mb-3 ${
                     ollamaTestResult.success
-                      ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-                      : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
+                      ? "bg-success-muted text-success-foreground"
+                      : "bg-error-muted text-error-foreground"
                   }`}
                 >
                   {ollamaTestResult.success ? (
-                    <Check className="h-4 w-4" />
+                    <Check className="h-4 w-4" aria-hidden="true" />
                   ) : (
-                    <AlertCircle className="h-4 w-4" />
+                    <AlertCircle className="h-4 w-4" aria-hidden="true" />
                   )}
                   <span className="text-sm">{ollamaTestResult.message}</span>
                 </div>
@@ -516,10 +635,11 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                 size="sm"
                 onClick={handleTestOllama}
                 disabled={testingOllama}
+                aria-busy={testingOllama}
                 className="w-full"
               >
                 {testingOllama ? (
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" aria-hidden="true" />
                 ) : null}
                 {t("ollama.testConnection")}
               </Button>
@@ -533,15 +653,15 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
         )}
 
         <DialogFooter className="flex gap-2">
-          <Button variant="outline" onClick={handleTest} disabled={testing || !hasApiKey}>
+          <Button variant="outline" onClick={handleTest} disabled={testing || !hasApiKey} aria-busy={testing}>
             {testing ? (
-              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              <Loader2 className="h-4 w-4 animate-spin mr-2" aria-hidden="true" />
             ) : null}
             {t("common.test")}
           </Button>
-          <Button onClick={handleSave} disabled={saving}>
+          <Button onClick={handleSave} disabled={saving} aria-busy={saving}>
             {saving ? (
-              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              <Loader2 className="h-4 w-4 animate-spin mr-2" aria-hidden="true" />
             ) : null}
             {t("common.save")}
           </Button>

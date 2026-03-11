@@ -152,7 +152,7 @@ describe("OllamaStatus", () => {
         />
       );
 
-      const dot = container.querySelector(".bg-green-500");
+      const dot = container.querySelector(".bg-success");
       expect(dot).toBeInTheDocument();
       expect(screen.getByText(/3.*Online/)).toBeInTheDocument();
     });
@@ -165,7 +165,7 @@ describe("OllamaStatus", () => {
         />
       );
 
-      const dot = container.querySelector(".bg-gray-400");
+      const dot = container.querySelector(".bg-muted-foreground");
       expect(dot).toBeInTheDocument();
       expect(screen.getByText(/Offline/)).toBeInTheDocument();
     });
@@ -214,8 +214,8 @@ describe("OllamaStatus", () => {
         />
       );
 
-      const greenDot = container.querySelector(".bg-green-500");
-      expect(greenDot).not.toBeInTheDocument();
+      const successDot = container.querySelector(".bg-success");
+      expect(successDot).not.toBeInTheDocument();
     });
   });
 });

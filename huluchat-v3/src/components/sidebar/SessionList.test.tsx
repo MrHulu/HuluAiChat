@@ -9,6 +9,7 @@ import * as apiClient from "@/api/client";
 vi.mock("@/api/client", () => ({
   searchSessions: vi.fn().mockResolvedValue([]),
   moveSessionToFolder: vi.fn(),
+  listAllTags: vi.fn().mockResolvedValue([]),
 }));
 
 const createSession = (id: string, title: string, folderId?: string): Session => ({
@@ -51,28 +52,28 @@ describe("SessionList", () => {
     it("should render collapsed sidebar when isCollapsed is true", () => {
       render(<SessionList {...defaultProps} isCollapsed={true} />);
 
-      expect(screen.getByTitle("Expand sidebar")).toBeInTheDocument();
+      expect(screen.getByLabelText("Expand sidebar")).toBeInTheDocument();
     });
 
     it("should call onToggleCollapse when expand button clicked", () => {
       const onToggleCollapse = vi.fn();
       render(<SessionList {...defaultProps} isCollapsed={true} onToggleCollapse={onToggleCollapse} />);
 
-      fireEvent.click(screen.getByTitle("Expand sidebar"));
+      fireEvent.click(screen.getByLabelText("Expand sidebar"));
       expect(onToggleCollapse).toHaveBeenCalled();
     });
 
     it("should show new chat button in collapsed state", () => {
       render(<SessionList {...defaultProps} isCollapsed={true} />);
 
-      expect(screen.getByTitle("New Chat")).toBeInTheDocument();
+      expect(screen.getByLabelText("New Chat")).toBeInTheDocument();
     });
 
     it("should call onCreateSession when new chat clicked in collapsed state", () => {
       const onCreateSession = vi.fn();
       render(<SessionList {...defaultProps} isCollapsed={true} onCreateSession={onCreateSession} />);
 
-      fireEvent.click(screen.getByTitle("New Chat"));
+      fireEvent.click(screen.getByLabelText("New Chat"));
       expect(onCreateSession).toHaveBeenCalled();
     });
   });
@@ -88,7 +89,7 @@ describe("SessionList", () => {
       const onToggleCollapse = vi.fn();
       render(<SessionList {...defaultProps} onToggleCollapse={onToggleCollapse} />);
 
-      fireEvent.click(screen.getByTitle("Collapse sidebar"));
+      fireEvent.click(screen.getByLabelText("Collapse sidebar"));
       expect(onToggleCollapse).toHaveBeenCalled();
     });
   });
@@ -154,11 +155,12 @@ describe("SessionList", () => {
   });
 
   describe("Session List", () => {
-    it("should show loading spinner when isLoading is true", () => {
+    it("should show loading skeleton when isLoading is true", () => {
       render(<SessionList {...defaultProps} isLoading={true} />);
 
-      const spinner = document.querySelector(".animate-spin");
-      expect(spinner).toBeInTheDocument();
+      // Skeleton items have animate-shimmer class (custom animation)
+      const skeletons = document.querySelectorAll(".animate-shimmer");
+      expect(skeletons.length).toBeGreaterThan(0);
     });
 
     it("should render sessions", () => {
@@ -209,7 +211,7 @@ describe("SessionList", () => {
     it("should show new folder input when + button clicked", () => {
       render(<SessionList {...defaultProps} />);
 
-      const newFolderButton = screen.getByTitle("New folder");
+      const newFolderButton = screen.getByLabelText("New folder");
       fireEvent.click(newFolderButton);
 
       expect(screen.getByPlaceholderText("Folder name...")).toBeInTheDocument();
@@ -220,7 +222,7 @@ describe("SessionList", () => {
       render(<SessionList {...defaultProps} onCreateFolder={onCreateFolder} />);
 
       // Click new folder button
-      fireEvent.click(screen.getByTitle("New folder"));
+      fireEvent.click(screen.getByLabelText("New folder"));
 
       // Enter folder name
       const input = screen.getByPlaceholderText("Folder name...");
@@ -370,10 +372,10 @@ describe("SessionList", () => {
       const sessions = [createSession("1", "Work Session", "f1")];
       render(<SessionList {...defaultProps} folders={folders} sessions={sessions} />);
 
-      // Find the chevron button and click it
+      // Find the chevron button and click it (lucide ChevronRight icon)
       const chevronButtons = document.querySelectorAll("button");
       const chevronButton = Array.from(chevronButtons).find(
-        (btn) => btn.querySelector("svg path[d*='m9 18 6-6-6-6']")
+        (btn) => btn.querySelector("svg[class*='lucide-chevron-right']")
       );
 
       if (chevronButton) {
@@ -573,7 +575,7 @@ describe("SessionList", () => {
       render(<SessionList {...defaultProps} />);
 
       // Click new folder button
-      fireEvent.click(screen.getByTitle("New folder"));
+      fireEvent.click(screen.getByLabelText("New folder"));
 
       const input = screen.getByPlaceholderText("Folder name...");
       expect(input).toBeInTheDocument();
@@ -589,7 +591,7 @@ describe("SessionList", () => {
       render(<SessionList {...defaultProps} />);
 
       // Click new folder button
-      fireEvent.click(screen.getByTitle("New folder"));
+      fireEvent.click(screen.getByLabelText("New folder"));
 
       const input = screen.getByPlaceholderText("Folder name...");
       fireEvent.change(input, { target: { value: "New" } });
@@ -920,7 +922,7 @@ describe("SessionList", () => {
       fireEvent.click(screen.getByText("Work"));
 
       // Find and click delete button
-      const deleteButton = screen.getByTitle("Delete session");
+      const deleteButton = screen.getByLabelText("Delete session");
       fireEvent.click(deleteButton);
       expect(onDeleteSession).toHaveBeenCalledWith("1");
     });
@@ -943,7 +945,7 @@ describe("SessionList", () => {
       await user.click(screen.getByText("Work"));
 
       // Find and click export button
-      const exportButton = screen.getByTitle("Export session");
+      const exportButton = screen.getByLabelText("Export session");
       await user.click(exportButton);
       await waitFor(() => {
         expect(screen.getByText("Markdown (.md)")).toBeInTheDocument();
@@ -971,7 +973,7 @@ describe("SessionList", () => {
       // Session should be visible in filtered view
       expect(screen.getByText("Work Session")).toBeInTheDocument();
       // Move button should be available (testing that props are passed)
-      expect(screen.getByTitle("Move to folder")).toBeInTheDocument();
+      expect(screen.getByLabelText("Move to folder")).toBeInTheDocument();
     });
   });
 
@@ -1001,7 +1003,7 @@ describe("SessionList", () => {
       // Now session should be visible
       expect(screen.getByText("Work Session")).toBeInTheDocument();
       // Move button should be available (testing that props are passed)
-      expect(screen.getByTitle("Move to folder")).toBeInTheDocument();
+      expect(screen.getByLabelText("Move to folder")).toBeInTheDocument();
     });
 
     it("should handle session export in expanded folder", async () => {
@@ -1028,7 +1030,7 @@ describe("SessionList", () => {
       }
 
       // Find export button and click
-      const exportButton = screen.getByTitle("Export session");
+      const exportButton = screen.getByLabelText("Export session");
       await user.click(exportButton);
       await waitFor(() => {
         expect(screen.getByText("JSON (.json)")).toBeInTheDocument();
@@ -1071,7 +1073,7 @@ describe("SessionList", () => {
       render(<SessionList {...defaultProps} sessions={sessions} onDeleteSession={onDeleteSession} />);
 
       // Find and click delete button
-      const deleteButton = screen.getByTitle("Delete session");
+      const deleteButton = screen.getByLabelText("Delete session");
       fireEvent.click(deleteButton);
       expect(onDeleteSession).toHaveBeenCalledWith("1");
     });
@@ -1128,7 +1130,7 @@ describe("SessionList", () => {
       }
 
       // Find and click delete button
-      const deleteButton = screen.getByTitle("Delete session");
+      const deleteButton = screen.getByLabelText("Delete session");
       fireEvent.click(deleteButton);
       expect(onDeleteSession).toHaveBeenCalledWith("1");
     });

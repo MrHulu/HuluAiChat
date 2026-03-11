@@ -3,6 +3,7 @@
  * 数学公式渲染组件，支持 KaTeX
  */
 import { useMemo, memo } from "react";
+import { useTranslation } from "react-i18next";
 import katex from "katex";
 import "katex/dist/katex.min.css";
 import { cn } from "@/lib/utils";
@@ -18,6 +19,8 @@ export const MathBlock = memo(function MathBlock({
   inline = false,
   className,
 }: MathBlockProps) {
+  const { t } = useTranslation();
+
   const { html, error } = useMemo(() => {
     try {
       const rendered = katex.renderToString(math, {
@@ -27,27 +30,31 @@ export const MathBlock = memo(function MathBlock({
       return { html: rendered, error: null };
     } catch (err) {
       console.error("KaTeX rendering error:", err);
-      const errorMsg = err instanceof Error ? err.message : "Math rendering error";
+      const errorMsg = err instanceof Error ? err.message : t("math.error");
       return { html: "", error: errorMsg };
     }
-  }, [math, inline]);
+  }, [math, inline, t]);
 
   // 错误处理 - block 模式显示详细错误
   if (error && !inline) {
     return (
       <div
+        role="alert"
+        aria-label={t("math.error")}
         className={cn(
-          "p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800",
+          "p-4 rounded-lg bg-error-muted/50 border border-error/30",
+          "animate-bounce-in",
+          "dark:bg-error-muted/30 dark:border-error/40 dark:shadow-sm dark:shadow-error/10",
           className
         )}
       >
-        <div className="text-red-600 dark:text-red-400 text-sm font-medium mb-2">
-          Math Error
+        <div className="text-error text-sm font-medium mb-2">
+          {t("math.error")}
         </div>
-        <pre className="text-xs text-red-500 dark:text-red-300 overflow-x-auto">
+        <pre className="text-xs text-error/80 overflow-x-auto">
           {math}
         </pre>
-        <div className="text-xs text-red-400 dark:text-red-500 mt-2">
+        <div className="text-xs text-error/60 mt-2">
           {error}
         </div>
       </div>
@@ -58,7 +65,9 @@ export const MathBlock = memo(function MathBlock({
   if (error && inline) {
     return (
       <span
-        className={cn("text-red-500 dark:text-red-400", className)}
+        role="alert"
+        aria-label={`${t("math.error")}: ${error}`}
+        className={cn("text-error", className)}
         title={error}
       >
         {math}
@@ -71,6 +80,8 @@ export const MathBlock = memo(function MathBlock({
 
   return (
     <Wrapper
+      role={inline ? undefined : "img"}
+      aria-label={`${t("math.formula")}: ${math}`}
       className={inline ? className : cn("katex-display", className)}
       dangerouslySetInnerHTML={{ __html: html }}
     />

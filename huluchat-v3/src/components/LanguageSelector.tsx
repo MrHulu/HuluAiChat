@@ -6,6 +6,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Globe, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,6 +14,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { supportedLanguages, changeLanguage, type LanguageCode } from "@/i18n";
 
 export function LanguageSelector() {
@@ -38,35 +44,53 @@ export function LanguageSelector() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          title={t("languageSelector.changeLanguage")}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
-          ) : (
-            <Globe className="h-5 w-5" />
-          )}
-          <span className="sr-only">{t("languageSelector.language")}</span>
-        </Button>
-      </DropdownMenuTrigger>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              disabled={isLoading}
+              aria-label={t("languageSelector.changeLanguage")}
+              className="relative dark:hover:shadow-[0_0_12px_oklch(0.5_0.15_264/0.2)] dark:hover:bg-primary/10 dark:active:shadow-[0_0_8px_oklch(0.5_0.15_264/0.15)]"
+            >
+              <Globe className={cn(
+                "h-5 w-5 transition-all duration-200",
+                isLoading && "opacity-0 scale-75"
+              )} aria-hidden="true" />
+              <Loader2 className={cn(
+                "absolute h-5 w-5 animate-spin transition-all duration-200",
+                !isLoading && "opacity-0 scale-75",
+                isLoading && "opacity-100 scale-100"
+              )} aria-hidden="true" />
+              <span className="sr-only">{t("languageSelector.language")}</span>
+            </Button>
+          </DropdownMenuTrigger>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{t("languageSelector.changeLanguage")}</p>
+        </TooltipContent>
+      </Tooltip>
       <DropdownMenuContent align="end">
-        {supportedLanguages.map((lang) => (
+        {supportedLanguages.map((lang, index) => (
           <DropdownMenuItem
             key={lang.code}
             onClick={() => handleLanguageChange(lang.code)}
             disabled={isLoading}
-            className={i18n.language === lang.code ? "bg-accent" : ""}
+            aria-current={i18n.language === lang.code ? "true" : undefined}
+            className={cn(
+              "transition-all duration-200 ease-out",
+              "animate-list-enter",
+              i18n.language === lang.code && "bg-accent"
+            )}
+            style={{ animationDelay: `${index * 50}ms` }}
           >
             <span className="mr-2">{lang.nativeName}</span>
             {loadingLang === lang.code && (
-              <Loader2 className="ml-auto h-3 w-3 animate-spin" />
+              <Loader2 className="ml-auto h-3 w-3 animate-spin" aria-hidden="true" />
             )}
             {i18n.language === lang.code && loadingLang !== lang.code && (
-              <span className="ml-auto text-xs text-muted-foreground">✓</span>
+              <span className="ml-auto text-xs text-muted-foreground animate-bounce-in">✓</span>
             )}
           </DropdownMenuItem>
         ))}

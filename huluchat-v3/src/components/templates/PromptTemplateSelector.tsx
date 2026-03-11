@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -152,6 +153,7 @@ export function PromptTemplateSelector({
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>{t("templates.title")}</DialogTitle>
+          <DialogDescription>{t("templates.description")}</DialogDescription>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
@@ -169,51 +171,57 @@ export function PromptTemplateSelector({
 
         <div className="flex flex-1 overflow-hidden">
           {/* Category Filter */}
-          <div className="w-48 border-r border-border pr-2 overflow-y-auto">
+          <nav className="w-48 border-r border-border pr-2 overflow-y-auto dark:border-white/10" aria-label={t("templates.categoriesLabel")}>
             <Button
               variant={selectedCategory === null ? "secondary" : "ghost"}
-              className="w-full justify-start mb-1"
+              className="w-full justify-start mb-1 transition-all duration-200 ease-out animate-list-enter"
+              style={{ animationDelay: '0ms' }}
               onClick={() => setSelectedCategory(null)}
+              aria-pressed={selectedCategory === null}
             >
               {t("templates.all")}
             </Button>
-            {(Object.keys(CATEGORY_ICONS) as TemplateCategory[]).map((category) => (
+            {(Object.keys(CATEGORY_ICONS) as TemplateCategory[]).map((category, index) => (
               <Button
                 key={category}
                 variant={selectedCategory === category ? "secondary" : "ghost"}
-                className="w-full justify-start mb-1"
+                className="w-full justify-start mb-1 transition-all duration-200 ease-out animate-list-enter"
+                style={{ animationDelay: `${(index + 1) * 50}ms` }}
                 onClick={() => setSelectedCategory(category)}
+                aria-pressed={selectedCategory === category}
               >
-                <span className="mr-2">{CATEGORY_ICONS[category]}</span>
+                <span className="mr-2" aria-hidden="true">{CATEGORY_ICONS[category]}</span>
                 {getCategoryLabel(category)}
               </Button>
             ))}
-          </div>
+          </nav>
 
           {/* Template List / Editor */}
           <div className="flex-1 overflow-y-auto p-4">
             {loading ? (
-              <div className="flex items-center justify-center h-32">
+              <div className="flex items-center justify-center h-32 animate-fade-in" role="status" aria-live="polite">
                 <span className="text-muted-foreground">{t("common.loading")}</span>
               </div>
             ) : editingTemplate ? (
-              <div className="space-y-4">
+              <div className="space-y-4 animate-slide-left">
                 <div>
-                  <label className="text-sm font-medium mb-1">{t("templates.name")}</label>
+                  <label htmlFor="template-name" className="text-sm font-medium mb-1 block">{t("templates.name")}</label>
                   <input
+                    id="template-name"
                     type="text"
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     placeholder={t("templates.namePlaceholder")}
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-1">{t("templates.content")}</label>
+                  <label htmlFor="template-content" className="text-sm font-medium mb-1 block">{t("templates.content")}</label>
                   <textarea
+                    id="template-content"
                     value={editContent}
                     onChange={(e) => setEditContent(e.target.value)}
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[200px]"
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-[200px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     placeholder={t("templates.contentPlaceholder")}
                   />
                 </div>
@@ -247,18 +255,32 @@ export function PromptTemplateSelector({
                       <span>{CATEGORY_ICONS[category as TemplateCategory]}</span>
                       <span>{getCategoryLabel(category as TemplateCategory)}</span>
                     </h4>
-                    <div className="space-y-2">
-                      {templates.map((template) => (
+                    <div className="space-y-2" role="list" aria-label={t("templates.templateList")}>
+                      {templates.map((template, index) => (
                         <div
                           key={template.id}
+                          role="listitem"
+                          tabIndex={0}
+                          style={{ animationDelay: `${index * 50}ms` }}
                           className={cn(
-                            "p-3 rounded-lg border cursor-pointer transition-colors",
-                            "hover:bg-accent hover:border-accent-foreground",
+                            "p-3 rounded-lg border cursor-pointer transition-all duration-200",
+                            "hover:bg-accent hover:border-primary/30 hover:shadow-sm hover:scale-[1.01]",
+                            "active:scale-[0.99]",
+                            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                             template.is_builtin
-                              ? "border-border"
-                              : "border-dashed"
+                              ? "border-border dark:border-white/10"
+                              : "border-dashed dark:border-white/15",
+                            "dark:hover:bg-accent/40 dark:hover:shadow-black/10",
+                            "animate-list-enter"
                           )}
                           onClick={() => handleSelect(template)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              handleSelect(template);
+                            }
+                          }}
+                          aria-label={t("templates.selectTemplate", { name: template.name })}
                         >
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
@@ -272,7 +294,8 @@ export function PromptTemplateSelector({
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-6 w-6 p-0"
+                                  className="group/edit h-6 w-6 p-0"
+                                  aria-label={t("templates.edit")}
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     startEditing(template);
@@ -288,6 +311,8 @@ export function PromptTemplateSelector({
                                     strokeWidth="2"
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
+                                    aria-hidden="true"
+                                    className="transition-transform duration-200 group-hover/edit:scale-110"
                                   >
                                     <path d="M17 3a2.85 2.83 0 1 1 4 4L3.5 13.5 4 4 12.5 2.5 0 0 5.5 6.5L12 21l6.5-6.5-6.5-6.5z" />
                                   </svg>
@@ -295,7 +320,8 @@ export function PromptTemplateSelector({
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-6 w-6 p-0 text-destructive"
+                                  className="group/delete h-6 w-6 p-0 text-destructive"
+                                  aria-label={t("templates.delete")}
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     handleDeleteTemplate(template);
@@ -311,6 +337,8 @@ export function PromptTemplateSelector({
                                     strokeWidth="2"
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
+                                    aria-hidden="true"
+                                    className="transition-transform duration-200 group-hover/delete:scale-110"
                                   >
                                     <path d="M3 6h18" />
                                     <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />

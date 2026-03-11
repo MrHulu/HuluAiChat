@@ -1,4 +1,29 @@
 {
+  "accessibility": {
+    "skipToMain": "跳转到主内容",
+    "formError": "表单有错误",
+    "fieldRequired": "此字段为必填项",
+    "fieldInvalid": "请输入有效的值"
+  },
+  "select": {
+    "scrollUp": "向上滚动",
+    "scrollDown": "向下滚动"
+  },
+  "errorBoundary": {
+    "title": "出现了一些问题",
+    "description": "发生了意外错误，请重试。",
+    "tryAgain": "重试",
+    "goHome": "返回首页"
+  },
+  "mermaid": {
+    "loading": "加载图表中...",
+    "error": "图表渲染错误",
+    "label": "图表"
+  },
+  "math": {
+    "formula": "数学公式",
+    "error": "数学公式错误"
+  },
   "common": {
     "save": "保存",
     "cancel": "取消",
@@ -8,6 +33,16 @@
     "loading": "加载中...",
     "error": "错误",
     "success": "成功"
+  },
+  "dialog": {
+    "close": "关闭"
+  },
+  "skeleton": {
+    "loading": "加载中..."
+  },
+  "loading": {
+    "loading": "加载中",
+    "processing": "处理中"
   },
   "sidebar": {
     "chats": "聊天",
@@ -23,7 +58,11 @@
     "expandSidebar": "展开侧边栏",
     "collapseSidebar": "收起侧边栏",
     "deleteFolder": "删除文件夹",
-    "deleteFolderConfirm": "确定要删除此文件夹吗？聊天将移至未分类。"
+    "deleteFolderConfirm": "确定要删除此文件夹吗？聊天将移至未分类。",
+    "folderWithName": "{{name}}（{{count}} 个会话）",
+    "expandFolder": "展开文件夹",
+    "collapseFolder": "折叠文件夹",
+    "sessionCount": "{{count}} 个会话"
   },
   "chat": {
     "you": "你",
@@ -52,6 +91,7 @@
     "startConversation": "开始对话",
     "startConversationHint": "发送消息开始与 AI 聊天",
     "thinking": "思考中...",
+    "messageList": "聊天消息列表",
     "messageUpdated": "消息已更新",
     "messageUpdateFailed": "更新消息失败",
     "connecting": "连接中...",
@@ -60,11 +100,34 @@
     "connectionError": "连接错误",
     "uploadImage": "上传图片",
     "removeImage": "移除图片",
+    "uploadedImages": "已上传图片",
+    "uploadedImage": "已上传图片 {{index}}",
+    "uploadFile": "上传文件",
+    "removeFile": "移除文件",
+    "uploadedFiles": "已上传文件",
+    "uploadedFile": "已上传文件 {{name}}",
+    "dropImage": "拖放图片到这里",
+    "dropFile": "拖放文件或图片到这里",
+    "bookmarks": "书签",
+    "addBookmark": "添加书签",
+    "removeBookmark": "移除书签",
+    "bookmarkAdded": "书签已添加",
+    "bookmarkRemoved": "书签已移除",
+    "bookmarkError": "书签操作失败",
+    "bookmarkLoadError": "加载书签失败",
+    "noBookmarks": "当前对话暂无书签",
+    "exportJSON": "导出为 JSON",
+    "exportMarkdown": "导出为 Markdown",
+    "exportSuccess": "书签导出成功",
+    "exportError": "导出书签失败",
+    "exportBookmarks": "导出书签",
+    "jumpToBookmark": "跳转到书签：{{content}}",
     "voice": {
       "startRecording": "开始语音输入",
       "stopRecording": "停止录音",
       "notSupported": "当前浏览器不支持语音输入"
-    }
+    },
+    "streaming": "正在输入..."
   },
   "settings": {
     "title": "设置",
@@ -80,14 +143,27 @@
     "modelParameters": "模型参数",
     "temperature": "温度",
     "temperatureHint": "低=更专注，高=更有创意",
+    "temperatureValue": "{{value}} 温度",
     "topP": "Top P",
     "topPHint": "核采样阈值",
+    "topPValue": "{{value}} Top P",
     "maxTokens": "最大令牌数",
     "maxTokensHint": "AI 响应的最大长度",
+    "maxTokensMinError": "最小值为 256",
+    "maxTokensMaxError": "最大值为 128000",
+    "fieldInvalid": "请输入有效的数字",
     "connectionSuccessful": "连接成功",
     "connectionFailed": "连接失败",
     "settingsSaved": "设置已保存",
-    "settingsSaveFailed": "保存设置失败"
+    "settingsSaveFailed": "保存设置失败",
+    "invalidUrl": "请输入有效的 URL",
+    "invalidUrlProtocol": "URL 必须以 http:// 或 https:// 开头",
+    "customModelId": "自定义模型 ID",
+    "customModelPlaceholder": "例如: glm-4, qwen-max, moonshot-v1",
+    "customModelHint": "输入您的 API 服务提供的模型 ID",
+    "customModelRequired": "请输入自定义模型 ID",
+    "customModelName": "自定义模型",
+    "customModelDescription": "使用自定义模型 ID（例如 GLM-4、Qwen）"
   },
   "plugins": {
     "title": "插件",
@@ -150,32 +226,33 @@
     "refreshStatus": "刷新状态"
   },
   "update": {
-    "available": "有可用更新",
-    "newVersion": "新版本（{{version}}）可用！",
-    "download": "下载",
+    "notificationLabel": "更新通知",
+    "checking": "检查更新中...",
+    "downloading": "下载更新中...",
+    "downloadProgress": "下载进度",
+    "available": "v{{version}} 可用",
+    "newVersion": "发现新版本",
+    "updateNow": "立即更新",
     "later": "稍后",
+    "download": "下载",
     "installing": "正在安装更新...",
     "installed": "更新已安装！正在重启..."
   },
   "keyboard": {
     "title": "键盘快捷键",
+    "description": "查看所有可用的键盘快捷键，高效导航应用程序",
+    "shortcutsList": "快捷键列表",
+    "shortcutKey": "{{action}}：{{key}}",
     "newChat": "新建聊天",
     "search": "搜索聊天",
     "settings": "打开设置",
     "toggleSidebar": "切换侧边栏",
+    "switchSession": "切换到最近会话",
     "send": "发送消息",
     "newLine": "消息换行",
     "close": "关闭对话框",
     "showHelp": "显示快捷键帮助",
     "pressToOpen": "按 {{key1}} 或 {{key2}} 随时打开此帮助"
-  },
-  "update": {
-    "checking": "检查更新中...",
-    "downloading": "下载更新中...",
-    "newVersion": "发现新版本",
-    "available": "v{{version}} 可用",
-    "updateNow": "立即更新",
-    "later": "稍后"
   },
   "export": {
     "title": "导出聊天",
@@ -192,6 +269,8 @@
     "es": "Español"
   },
   "modelSelector": {
+    "loading": "加载中...",
+    "selectModel": "选择模型",
     "cloudModels": "云端模型",
     "localModels": "本地模型（Ollama）",
     "ollamaOffline": "Ollama 离线",
@@ -199,12 +278,18 @@
   },
   "templates": {
     "title": "提示词模板",
+    "description": "选择一个模板，快速开始预设提示词的对话",
     "newTemplate": "+ 新建模板",
     "all": "全部",
     "name": "名称",
     "namePlaceholder": "模板名称",
     "content": "内容",
     "contentPlaceholder": "模板内容。使用 {变量名} 作为占位符。",
+    "edit": "编辑模板",
+    "delete": "删除模板",
+    "categoriesLabel": "模板分类",
+    "templateList": "可用模板列表",
+    "selectTemplate": "选择 {{name}} 模板",
     "categories": {
       "writing": "写作",
       "coding": "编程",
@@ -229,13 +314,16 @@
     "today": "今天",
     "yesterday": "昨天",
     "daysAgo": "{{count}} 天前",
+    "selectSession": "选择会话：{{title}}",
     "exportSession": "导出会话",
     "moveToFolder": "移至文件夹",
     "uncategorized": "未分类",
     "deleteSession": "删除会话",
     "markdown": "Markdown (.md)",
     "json": "JSON (.json)",
-    "plainText": "纯文本 (.txt)"
+    "plainText": "纯文本 (.txt)",
+    "tags": "标签",
+    "moreTags": "+{{count}} 个标签"
   },
   "theme": {
     "toggle": "切换主题",
@@ -264,7 +352,8 @@
     "toggleTheme": "切换主题",
     "settings": "设置",
     "showHelp": "键盘快捷键",
-    "openCommandPalette": "打开命令面板"
+    "openCommandPalette": "打开命令面板",
+    "searchInput": "搜索命令"
   },
   "rag": {
     "title": "文档对话（实验性）",
@@ -281,6 +370,7 @@
     "noDocuments": "未上传文档",
     "chunks": "{{count}} 个片段",
     "delete": "删除",
+    "deleteDocument": "删除文档 {{filename}}",
     "deleteConfirm": "确定要删除此文档吗？",
     "deleting": "删除中...",
     "deleteError": "删除文档失败",
@@ -306,6 +396,9 @@
     "skip": "跳过",
     "next": "下一步",
     "getStarted": "开始使用",
+    "stepIndicator": "步骤导航",
+    "stepLabel": "第 {{step}} 步：{{title}}",
+    "stepProgress": "第 {{current}} 步，共 {{total}} 步",
     "emptyState": {
       "title": "开始对话",
       "hint": "在下方输入消息开始与 AI 聊天",
@@ -313,5 +406,27 @@
       "tip2": "📄 上传文档与它对话",
       "tip3": "⚙️ 在设置中配置 API"
     }
+  },
+  "tags": {
+    "addTag": "添加标签...",
+    "tag": "标签",
+    "selected": "已选",
+    "filterByTag": "按标签筛选",
+    "filterActive": "已选 {{count}} 个标签",
+    "clear": "清除",
+    "clearSelection": "清除所有已选标签",
+    "selectTag": "选择标签 {{tag}}",
+    "deselectTag": "取消选择标签 {{tag}}",
+    "maxTagsReached": "每个会话最多 5 个标签",
+    "suggestions": "标签建议"
+  },
+  "bookmarks": {
+    "title": "书签",
+    "add": "添加书签",
+    "remove": "移除书签",
+    "note": "备注",
+    "notePlaceholder": "添加备注...",
+    "noBookmarks": "暂无书签",
+    "bookmarked": "已添加书签"
   }
 }

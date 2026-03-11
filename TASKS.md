@@ -1,23 +1,75 @@
 # 任务清单
 
 ## 进行中
-<!-- 当前正在处理的任务 -->
+<!-- 当前没有进行中的任务 -->
 
 ## 待开始
 <!-- 新任务添加到这里 -->
-- [ ] **TASK-116**: 🎬 准备 Product Hunt 发布素材（截图、视频）- 等待 Boss
+- [ ] **TASK-129**: 🚀 规划并开发 v3.52.0 - README 优化（暂缓）
+  - 状态：已调整
+  - 原内容：官网上线 + README 优化
+  - ⚠️ **调整原因**：Boss 要求先做文件上传功能
+  - ⚠️ **官网发布推迟**：素材未准备好
+
+- [ ] **TASK-122**: 🎨 UI/UX 美化优化（持续进行）
+  - 状态：长期任务，持续进行
+  - 方向：界面美化、交互优化、视觉一致性
+
+- [ ] **TASK-116**: 🎬 准备 Product Hunt 发布素材(截图、视频) - 等待 Boss
+
+## 已取消
+- [x] ~~**TASK-127**: 🎤 用户访谈招募~~ ❌ **Boss 决定取消** - 暂停并删除相关内容
+- [x] ~~**TASK-120**: 📊 添加用户行为埋点~~ ❌ **Boss 决定取消** - 隐私优先原则
+
+## ⚠️ 永久禁止事项（Boss 明确要求）
+- ❌ **禁止功能**：用户行为埋点、数据追踪、遥测功能、使用统计
+- 📋 **原则**：隐私优先（Privacy-First），用户数据不上传、不收集
+- 🚫 **执行**：任何版本规划或开发都不得包含上述功能
+- 📄 **文档**：CLAUDE.md 和 PROMPT.md 已明确记录此要求
 
 ## 已完成
+- [x] **TASK-130**: 📎 添加文件上传功能（文档、代码等）✅ 2026-03-11
+  - Phase 1: 文件上传 UI（支持多文件、拖拽）✅
+  - Phase 2: 文件预览（显示文件名、大小、类型）✅
+  - Phase 3: API 集成（发送给后端）✅
+  - Phase 4: 测试和优化 ✅
+  - 前端：ChatInput 添加文件上传按钮、拖拽支持、预览组件
+  - 后端：MessageModel 添加 files 字段、chat.py 处理文件附件
+  - 支持文件类型：PDF、TXT、MD、CSV、JSON、JS、TS、JSX、TSX、HTML、CSS、XML、DOC、DOCX、XLS、XLSX
+  - 最大文件大小：20MB，最多 5 个文件
+
+- [x] **TASK-128**: ⚙ 支持自定义模型配置（智谱、中转 API 等）✅ 2026-03-10
+  - SettingsDialog 添加 "Custom Model" 选项
+  - 选择 Custom 时显示输入框让用户输入模型 ID
+  - 支持任意 OpenAI 兼容 API 的模型（智谱 GLM、通义千问、Moonshot 等）
+  - i18n EN/ZH 翻译
+
+- [x] **TASK-121**: 💻 开发 v3.50.0 - 会话标签/消息书签功能 ✅ 2026-03-07
+  - Phase 1: 数据库 Schema 设计（tags, bookmarks 表）✅
+  - Phase 2: 会话标签 UI（打标签、按标签筛选）✅
+  - Phase 3: 消息书签 UI（标记重要消息、快速跳转）✅
+  - Phase 4: 发布 v3.50.0 ✅
+
+- [x] **TASK-119**: 💻 开发 v3.49.0 - 键盘快捷键优化 ✅ 2026-03-07
+  - Phase 1: Ctrl+1/2/3 快速切换最近会话 ✅
+  - Phase 2: 发布 v3.49.0 ✅
+  - PR #170 已合并
+  - GitHub Release v3.49.0 已创建
+  - https://github.com/MrHulu/HuluAiChat/releases/tag/v3.49.0
+  - 注：命令面板增强推迟到后续版本（根据 Critic 建议）
+
 - [x] **TASK-118**: 🚀 发布 v3.48.0（GitHub Release + 桌面构建）✅ 2026-03-07
   - 版本号更新：tauri.conf.json, Cargo.toml
   - CHANGELOG.md 更新
   - GitHub Release v3.48.0 已创建
-  - https://github.com/MrHulu/HuluAiChat/releases/tag/v3.48.0
+  - https://github.com/MrHuluAiChat/releases/tag/v3.48.0
+
 - [x] **TASK-117**: 🚀 开发 v3.48.0 - 智能引导系统 ✅ 2026-03-07
   - WelcomeDialog 组件（3 步引导）
   - i18n EN/ZH 翻译
   - localStorage 首次启动检测
   - PR #164 已合并
+
 - [x] **TASK-115**: 📝 优化 GitHub README（营销优化）✅ 2026-03-07
   - 添加 shields.io badges (release, license, platform)
   - 添加新功能：RAG 智能问答、插件系统
@@ -39,6 +91,7 @@
 - [x] **TASK-113**: 🚀 规划 v3.47.0（自主决策）✅ 2026-03-07
   - 版本号已更新为 3.47.0
   - CHANGELOG 已更新
+
 - [x] **TASK-112**: 📱 手机版构建调研（团队协作）✅ 2026-03-07
   - Boss 决策：暂不开发手机版
   - 决策原因：聚焦桌面版，资源有限
@@ -47,7 +100,7 @@
 - [x] **TASK-104**: 🌐 官网部署配置（Cloudflare secrets）✅ 2026-03-07
   - GitHub Secrets 已配置:
     - CLOUDFLARE_API_TOKEN ✅
-    - CLOUDFLARE_ACCOUNT_ID ✅
+    CLOUDFLARE_ACCOUNT_ID ✅
   - GitHub Actions workflow 已就绪
   - 下次推送将自动部署
 

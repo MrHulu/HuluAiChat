@@ -1,30 +1,75 @@
 #!/usr/bin/env python3
 """
-邮件发送脚本 - 从环境变量读取 SMTP 配置
-环境变量由 .claude/settings.json 的 env 字段自动注入
+邮件发送脚本
+
+配置优先级：
+1. .claude/settings.json 的 env 字段（优先）
+2. 系统环境变量（备选）
 """
 
 import os
 import sys
+import json
 import smtplib
+from pathlib import Path
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+
+# 缓存 settings.json 内容
+_settings_cache = None
+
+
+def load_settings() -> dict:
+    """加载 settings.json 的 env 字段"""
+    global _settings_cache
+    if _settings_cache is not None:
+        return _settings_cache
+
+    settings_path = Path(__file__).parent.parent / ".claude" / "settings.json"
+    if settings_path.exists():
+        try:
+            with open(settings_path, "r", encoding="utf-8") as f:
+                settings = json.load(f)
+                _settings_cache = settings.get("env", {})
+                return _settings_cache
+        except Exception as e:
+            print(f"⚠️ 读取 settings.json 失败: {e}")
+    _settings_cache = {}
+    return _settings_cache
+
+
+def get_config(key: str, default: str = None) -> str:
+    """
+    获取配置值
+
+    优先级：
+    1. settings.json 的 env 字段
+    2. 系统环境变量
+    """
+    # 1. 先从 settings.json 获取
+    settings = load_settings()
+    value = settings.get(key)
+    if value:
+        return value
+
+    # 2. 再从环境变量获取
+    return os.environ.get(key, default)
 
 
 def send_email(subject: str, body: str, to: str = None) -> bool:
     """发送邮件"""
 
     # 收件人（默认发给自己）
-    to = to or os.environ.get("EMAIL_TO", "boss@example.com")
+    to = to or get_config("EMAIL_TO") or get_config("EMAIL_TO_DEFAULT", "boss@example.com")
 
     # 发件人
-    sender = os.environ.get("EMAIL_FROM", "noreply@example.com")
+    sender = get_config("EMAIL_FROM", "noreply@example.com")
 
-    # SMTP 配置
-    smtp_host = os.environ.get("SMTP_HOST")
-    smtp_port = int(os.environ.get("SMTP_PORT", "587"))
-    smtp_user = os.environ.get("SMTP_USER")
-    smtp_pass = os.environ.get("SMTP_PASSWORD")
+    # SMTP 配置（支持多种变量名）
+    smtp_host = get_config("SMTP_HOST") or get_config("SMTP_SERVER") or get_config("EMAIL_SMTP_SERVER")
+    smtp_port = int(get_config("SMTP_PORT") or get_config("EMAIL_SMTP_PORT", "587"))
+    smtp_user = get_config("SMTP_USER") or get_config("SMTP_USERNAME") or get_config("EMAIL_USERNAME")
+    smtp_pass = get_config("SMTP_PASSWORD") or get_config("EMAIL_PASSWORD")
 
     if smtp_host and smtp_user and smtp_pass:
         try:

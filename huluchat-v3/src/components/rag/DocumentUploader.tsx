@@ -104,11 +104,32 @@ export function DocumentUploader({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if ((e.key === "Enter" || e.key === " ") && !disabled && !isUploading) {
+      e.preventDefault();
+      fileInputRef.current?.click();
+    }
+  };
+
   return (
     <div
+      role="button"
+      tabIndex={disabled ? -1 : 0}
+      aria-label={t("rag.selectFile")}
+      aria-disabled={disabled || isUploading}
       className={cn(
-        "border-2 border-dashed rounded-lg p-4 transition-colors cursor-pointer",
-        isDragging && "border-primary bg-primary/5",
+        "group/uploader border-2 border-dashed rounded-lg p-4 transition-all duration-200 ease-out cursor-pointer",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "hover:border-primary/50 hover:bg-muted/30",
+        // Dark mode enhancements - Cycle #195
+        "dark:border-white/15 dark:bg-white/[0.02]",
+        "dark:hover:border-primary/40 dark:hover:bg-white/[0.04] dark:hover:shadow-lg dark:hover:shadow-primary/5",
+        "dark:focus-visible:border-primary/60 dark:focus-visible:bg-white/[0.03]",
+        "dark:focus-visible:shadow-[0_0_16px_oklch(0.5_0.15_264/0.2)]",
+        // Dragging state with glow effect - Cycle #195
+        isDragging && "border-primary bg-primary/5 scale-[1.01]",
+        isDragging && "dark:border-primary/60 dark:bg-primary/10",
+        isDragging && "dark:shadow-[0_0_24px_oklch(0.5_0.2_264/0.25),0_4px_16px_oklch(0_0_0/0.2)]",
         disabled && "opacity-50 cursor-not-allowed",
         className
       )}
@@ -116,6 +137,7 @@ export function DocumentUploader({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       onClick={handleClick}
+      onKeyDown={handleKeyDown}
     >
       <input
         ref={fileInputRef}
@@ -129,16 +151,17 @@ export function DocumentUploader({
       <div className="flex flex-col items-center gap-2 text-center">
         {isUploading ? (
           <>
-            <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-            <span className="text-sm text-muted-foreground">{t("rag.uploading")}</span>
+            <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+            <span className="text-sm text-muted-foreground" role="status" aria-live="polite">{t("rag.uploading")}</span>
           </>
         ) : (
           <>
             <svg
-              className="w-8 h-8 text-muted-foreground"
+              className="w-8 h-8 text-muted-foreground transition-transform duration-200 group-hover/uploader:-translate-y-0.5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"

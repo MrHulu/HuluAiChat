@@ -6,10 +6,12 @@ import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { KEYBOARD_SHORTCUTS } from "@/hooks/useKeyboardShortcuts";
+import { cn } from "@/lib/utils";
 
 interface KeyboardHelpDialogProps {
   open: boolean;
@@ -35,26 +37,46 @@ export function KeyboardHelpDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <span className="text-lg">⌨️</span>
+            <span className="text-lg" aria-hidden="true">⌨️</span>
             {t("keyboard.title")}
           </DialogTitle>
+          <DialogDescription>
+            {t("keyboard.description")}
+          </DialogDescription>
         </DialogHeader>
         <div className="mt-4">
-          <div className="space-y-2">
+          <ul
+            className="space-y-2"
+            role="list"
+            aria-label={t("keyboard.shortcutsList")}
+          >
             {KEYBOARD_SHORTCUTS.map((shortcut, index) => (
-              <div
+              <li
                 key={index}
-                className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+                className={cn(
+                  "flex items-center justify-between py-2 px-3 rounded-lg",
+                  "bg-muted/50 hover:bg-muted",
+                  "transition-all duration-200 ease-out",
+                  "animate-list-enter",
+                  "dark:bg-muted/30 dark:hover:bg-muted/50 dark:border dark:border-white/5"
+                )}
+                style={{ animationDelay: `${index * 30}ms` }}
               >
                 <span className="text-sm text-muted-foreground">
                   {t(shortcut.descriptionKey)}
                 </span>
-                <kbd className="px-2 py-1 text-xs font-mono bg-background rounded border shadow-sm">
+                <kbd
+                  className="px-2 py-1 text-xs font-mono bg-background rounded border shadow-sm transition-all duration-200 ease-out hover:border-primary/50 dark:bg-muted/60 dark:border-white/15 dark:shadow-black/20 dark:hover:border-primary/40"
+                  aria-label={t("keyboard.shortcutKey", {
+                    action: t(shortcut.descriptionKey),
+                    key: isMac ? shortcut.mac : shortcut.windows
+                  })}
+                >
                   {isMac ? shortcut.mac : shortcut.windows}
                 </kbd>
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
           <p className="mt-4 text-xs text-muted-foreground text-center">
             {t("keyboard.pressToOpen", {
               key1: <kbd className="px-1 py-0.5 text-xs font-mono bg-muted rounded">?</kbd>,

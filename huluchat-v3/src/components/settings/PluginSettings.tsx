@@ -69,13 +69,13 @@ function getStateBadgeVariant(state: PluginInstance["state"]): "default" | "seco
 function StateIcon({ state }: { state: PluginInstance["state"] }) {
   switch (state) {
     case "active":
-      return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+      return <CheckCircle2 className="h-4 w-4 text-green-500" aria-hidden="true" />;
     case "inactive":
-      return <Power className="h-4 w-4 text-muted-foreground" />;
+      return <Power className="h-4 w-4 text-muted-foreground" aria-hidden="true" />;
     case "activating":
-      return <Loader2 className="h-4 w-4 animate-spin text-primary" />;
+      return <Loader2 className="h-4 w-4 animate-spin text-primary" aria-hidden="true" />;
     case "error":
-      return <AlertCircle className="h-4 w-4 text-destructive" />;
+      return <AlertCircle className="h-4 w-4 text-destructive" aria-hidden="true" />;
     default:
       return null;
   }
@@ -111,7 +111,7 @@ function PluginCard({
   const hasUpdate = updateInfo?.hasUpdate ?? false;
 
   return (
-    <Card>
+    <Card className="transition-all duration-200 hover:shadow-md hover:border-primary/20 dark:hover:shadow-[0_0_12px_oklch(0.4_0.1_264/0.2)] dark:hover:border-primary/30">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-base flex items-center gap-2">
@@ -157,10 +157,10 @@ function PluginCard({
               href={plugin.manifest.homepage}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary"
+              className="group/link flex items-center gap-1 text-xs text-muted-foreground hover:text-primary"
             >
               {t("plugins.homepage")}
-              <ExternalLink className="h-3 w-3" />
+              <ExternalLink className="h-3 w-3 transition-transform duration-200 ease-out group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />
             </a>
           )}
 
@@ -175,9 +175,9 @@ function PluginCard({
             </div>
           )}
 
-          {/* Error message */}
+          {/* Error message - Cycle #182: dark mode glow */}
           {plugin.error && (
-            <div className="flex items-start gap-2 p-2 rounded-md bg-destructive/10 text-destructive text-sm">
+            <div className="flex items-start gap-2 p-2 rounded-md bg-destructive/10 text-destructive text-sm dark:bg-destructive/20 dark:shadow-[inset_0_0_8px_oklch(0.55_0.22_25/0.15)]">
               <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
               <span className="line-clamp-2">{plugin.error}</span>
             </div>
@@ -239,12 +239,12 @@ function PluginCard({
                   size="sm"
                   onClick={onUpdate}
                   disabled={isProcessing || updateState === "downloading" || updateState === "installing"}
-                  className="h-8"
+                  className="group/update h-8"
                 >
                   {updateState === "downloading" || updateState === "installing" ? (
                     <Loader2 className="h-3 w-3 animate-spin mr-1" />
                   ) : (
-                    <Download className="h-3 w-3 mr-1" />
+                    <Download className="h-3 w-3 mr-1 transition-transform duration-200 ease-out group-hover/update:translate-y-0.5" />
                   )}
                   {t("plugins.update")}
                 </Button>
@@ -256,12 +256,12 @@ function PluginCard({
                   size="sm"
                   onClick={onCheckUpdate}
                   disabled={isProcessing || updateState === "checking"}
-                  className="h-8"
+                  className="group/check h-8"
                 >
                   {updateState === "checking" ? (
                     <Loader2 className="h-3 w-3 animate-spin" />
                   ) : (
-                    <RefreshCw className="h-3 w-3" />
+                    <RefreshCw className="h-3 w-3 transition-transform duration-300 ease-out group-hover/check:rotate-180" />
                   )}
                   <span className="sr-only">{t("plugins.checkUpdate")}</span>
                 </Button>
@@ -277,10 +277,11 @@ function PluginCard({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                    className="group/trash h-8 w-8 text-muted-foreground hover:text-destructive"
                     disabled={isProcessing || isActive}
+                    aria-label={t("plugins.uninstall")}
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-4 w-4 transition-transform duration-200 ease-out group-hover/trash:scale-110" aria-hidden="true" />
                     <span className="sr-only">{t("plugins.uninstall")}</span>
                   </Button>
                 </AlertDialogTrigger>
@@ -409,20 +410,31 @@ function DropZone({
 
   return (
     <div
-      className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+      role="button"
+      tabIndex={0}
+      aria-label={t("plugins.dropToInstall")}
+      aria-busy={isInstalling}
+      aria-disabled={isInstalling}
+      className={`border-2 border-dashed rounded-lg p-6 text-center transition-all duration-200 ${
         isDragOver
-          ? "border-primary bg-primary/5"
-          : "border-border hover:border-primary/50"
-      }`}
+          ? "border-primary bg-primary/10 scale-[1.02] dark:shadow-[0_0_16px_oklch(0.5_0.15_264/0.3)]"
+          : "border-border hover:border-primary/50 hover:bg-muted/50 dark:hover:border-primary/30 dark:hover:shadow-[0_0_8px_oklch(0.4_0.1_264/0.2)]"
+      } ${isInstalling ? "opacity-50 cursor-wait" : ""}`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleBrowseClick();
+        }
+      }}
     >
       <div className="flex flex-col items-center gap-3">
         {isInstalling ? (
-          <Loader2 className="h-8 w-8 text-muted-foreground animate-spin" />
+          <Loader2 className="h-8 w-8 text-muted-foreground animate-spin" aria-hidden="true" />
         ) : (
-          <Upload className="h-8 w-8 text-muted-foreground" />
+          <Upload className="h-8 w-8 text-muted-foreground transition-transform duration-200 ease-out group-hover:scale-105" aria-hidden="true" />
         )}
         <div>
           <p className="text-sm font-medium">{t("plugins.dropToInstall")}</p>
@@ -435,8 +447,9 @@ function DropZone({
           size="sm"
           onClick={handleBrowseClick}
           disabled={isInstalling}
+          className="group/browse"
         >
-          <FolderOpen className="h-4 w-4 mr-2" />
+          <FolderOpen className="h-4 w-4 mr-2 transition-transform duration-200 ease-out group-hover/browse:scale-110" aria-hidden="true" />
           {t("plugins.browseFolder")}
         </Button>
       </div>
@@ -560,7 +573,7 @@ export function PluginSettings() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-8">
+      <div className="flex items-center justify-center py-8 animate-fade-in">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         <span className="ml-2 text-sm text-muted-foreground">{t("plugins.loading")}</span>
       </div>
@@ -569,7 +582,7 @@ export function PluginSettings() {
 
   if (!isInitialized) {
     return (
-      <div className="flex flex-col items-center justify-center py-8 text-center">
+      <div className="flex flex-col items-center justify-center py-8 text-center animate-bounce-in">
         <AlertCircle className="h-8 w-8 text-destructive mb-2" />
         <p className="text-sm text-muted-foreground">{error || t("plugins.initFailed")}</p>
       </div>
@@ -587,8 +600,8 @@ export function PluginSettings() {
             {t("plugins.installed", { count: plugins.length })}
           </Badge>
         </div>
-        <Button variant="ghost" size="sm" onClick={refreshPlugins}>
-          <RefreshCw className="h-4 w-4" />
+        <Button variant="ghost" size="sm" onClick={refreshPlugins} className="group/refresh">
+          <RefreshCw className="h-4 w-4 transition-transform duration-300 ease-out group-hover/refresh:rotate-180" />
           <span className="sr-only">{t("plugins.refresh")}</span>
         </Button>
       </div>
@@ -598,26 +611,31 @@ export function PluginSettings() {
 
       {/* Plugin list */}
       {plugins.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-8 text-center border rounded-lg">
+        <div className="flex flex-col items-center justify-center py-8 text-center border rounded-lg animate-bounce-in">
           <Puzzle className="h-8 w-8 text-muted-foreground mb-2" />
           <p className="text-sm text-muted-foreground">{t("plugins.noPlugins")}</p>
           <p className="text-xs text-muted-foreground mt-1">{t("plugins.installHint")}</p>
         </div>
       ) : (
         <div className="grid gap-3">
-          {plugins.map((plugin) => (
-            <PluginCard
+          {plugins.map((plugin, index) => (
+            <div
               key={plugin.manifest.id}
-              plugin={plugin}
-              updateInfo={updateInfos.get(plugin.manifest.id) ?? null}
-              updateState={updateStates.get(plugin.manifest.id) ?? "idle"}
-              onActivate={() => handleActivate(plugin.manifest.id)}
-              onDeactivate={() => handleDeactivate(plugin.manifest.id)}
-              onUninstall={() => handleUninstall(plugin.manifest.id)}
-              onCheckUpdate={() => handleCheckUpdate(plugin.manifest.id)}
-              onUpdate={() => handleUpdate(plugin.manifest.id)}
-              isProcessing={processingId === plugin.manifest.id}
-            />
+              className="animate-list-enter"
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
+              <PluginCard
+                plugin={plugin}
+                updateInfo={updateInfos.get(plugin.manifest.id) ?? null}
+                updateState={updateStates.get(plugin.manifest.id) ?? "idle"}
+                onActivate={() => handleActivate(plugin.manifest.id)}
+                onDeactivate={() => handleDeactivate(plugin.manifest.id)}
+                onUninstall={() => handleUninstall(plugin.manifest.id)}
+                onCheckUpdate={() => handleCheckUpdate(plugin.manifest.id)}
+                onUpdate={() => handleUpdate(plugin.manifest.id)}
+                isProcessing={processingId === plugin.manifest.id}
+              />
+            </div>
           ))}
         </div>
       )}

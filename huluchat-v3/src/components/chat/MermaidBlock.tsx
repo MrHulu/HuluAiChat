@@ -4,6 +4,7 @@
  * 使用动态导入实现懒加载，减小初始包体积
  */
 import { useEffect, useState, memo, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/components/theme-provider";
 
@@ -51,6 +52,7 @@ export const MermaidBlock = memo(function MermaidBlock({
   chart,
   className,
 }: MermaidBlockProps) {
+  const { t } = useTranslation();
   const [svg, setSvg] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -72,13 +74,13 @@ export const MermaidBlock = memo(function MermaidBlock({
       setError(null);
     } catch (err) {
       console.error("Mermaid rendering error:", err);
-      const errorMsg = err instanceof Error ? err.message : "Chart rendering error";
+      const errorMsg = err instanceof Error ? err.message : t("mermaid.error");
       setError(errorMsg);
       setSvg("");
     } finally {
       setLoading(false);
     }
-  }, [chart, id, mermaidTheme]);
+  }, [chart, id, mermaidTheme, t]);
 
   useEffect(() => {
     if (chart.trim()) {
@@ -89,18 +91,22 @@ export const MermaidBlock = memo(function MermaidBlock({
   if (error) {
     return (
       <div
+        role="alert"
+        aria-label={t("mermaid.error")}
         className={cn(
-          "p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800",
+          "p-4 rounded-lg bg-error-muted/50 border border-error/30",
+          "animate-bounce-in",
+          "dark:bg-error-muted/30 dark:border-error/40 dark:shadow-sm dark:shadow-error/10",
           className
         )}
       >
-        <div className="text-red-600 dark:text-red-400 text-sm font-medium mb-2">
-          Chart Error
+        <div className="text-error text-sm font-medium mb-2">
+          {t("mermaid.error")}
         </div>
-        <pre className="text-xs text-red-500 dark:text-red-300 overflow-x-auto">
+        <pre className="text-xs text-error/80 overflow-x-auto">
           {chart}
         </pre>
-        <div className="text-xs text-red-400 dark:text-red-500 mt-2">
+        <div className="text-xs text-error/60 mt-2">
           {error}
         </div>
       </div>
@@ -110,14 +116,19 @@ export const MermaidBlock = memo(function MermaidBlock({
   if (loading) {
     return (
       <div
+        aria-busy="true"
+        aria-live="polite"
+        aria-label={t("mermaid.loading")}
         className={cn(
           "mermaid-container flex justify-center items-center p-4 rounded-lg",
-          "bg-zinc-50 dark:bg-zinc-900",
+          "bg-muted animate-fade-in",
+          "dark:bg-muted/40 dark:border dark:border-white/10",
           className
         )}
       >
-        <div className="text-zinc-400 dark:text-zinc-500 text-sm animate-pulse">
-          Loading chart...
+        <div className="flex items-center gap-2 text-muted-foreground text-sm">
+          <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+          <span>{t("mermaid.loading")}</span>
         </div>
       </div>
     );
@@ -125,9 +136,13 @@ export const MermaidBlock = memo(function MermaidBlock({
 
   return (
     <div
+      role="img"
+      aria-label={`${t("mermaid.label")}: ${chart.substring(0, 50)}...`}
       className={cn(
         "mermaid-container flex justify-center p-4 rounded-lg",
-        "bg-zinc-50 dark:bg-zinc-900 overflow-x-auto",
+        "bg-muted overflow-x-auto",
+        "animate-fade-in",
+        "dark:bg-muted/40 dark:border dark:border-white/10 dark:shadow-sm dark:shadow-black/10",
         className
       )}
       dangerouslySetInnerHTML={{ __html: svg }}

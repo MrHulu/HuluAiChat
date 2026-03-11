@@ -18,6 +18,8 @@ class MessageModel(Base):
     content: Mapped[str] = mapped_column()
     # Store images as JSON string: [{"type": "image_url", "image_url": {"url": "data:..."}}]
     images: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    # Store files as JSON string: [{"id": "...", "name": "...", "type": "...", "size": 123, "content": "data:..."}]
+    files: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
 
 

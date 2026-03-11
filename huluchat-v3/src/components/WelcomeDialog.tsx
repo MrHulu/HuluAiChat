@@ -65,32 +65,65 @@ export function WelcomeDialog({ open, onOpenChange, onComplete }: WelcomeDialogP
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-xl">{t(step.titleKey)}</DialogTitle>
-          <DialogDescription className="text-base pt-2">
+          <DialogTitle
+            key={`title-${step.key}`}
+            className="text-xl animate-slide-up"
+          >
+            {t(step.titleKey)}
+          </DialogTitle>
+          <DialogDescription
+            key={`desc-${step.key}`}
+            className="text-base pt-2 animate-slide-up"
+            style={{ animationDelay: "75ms" }}
+          >
             {t(step.descKey)}
           </DialogDescription>
         </DialogHeader>
 
         {/* Step indicator */}
-        <div className="flex justify-center gap-2 py-4">
-          {steps.map((_, index) => (
-            <div
+        <div
+          className="flex justify-center gap-2 py-4"
+          role="navigation"
+          aria-label={t("welcome.stepIndicator")}
+        >
+          {steps.map((s, index) => (
+            <button
               key={index}
+              type="button"
+              onClick={() => setCurrentStep(index)}
+              aria-current={index === currentStep ? "step" : undefined}
+              aria-label={t("welcome.stepLabel", { step: index + 1, title: t(s.titleKey) })}
               className={cn(
-                "w-2 h-2 rounded-full transition-colors",
+                "w-2 h-2 rounded-full transition-all duration-200 ease-out",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                "hover:scale-125 active:scale-110",
+                "animate-bounce-in",
                 index === currentStep
-                  ? "bg-primary"
+                  ? "bg-primary w-6 dark:shadow-lg dark:shadow-primary/30"
                   : index < currentStep
-                    ? "bg-primary/50"
-                    : "bg-muted"
+                    ? "bg-primary/50 hover:bg-primary/70 dark:bg-primary/40 dark:hover:bg-primary/60"
+                    : "bg-muted hover:bg-muted-foreground/30 dark:bg-muted/60 dark:hover:bg-muted-foreground/40"
               )}
+              style={{ animationDelay: `${index * 100}ms` }}
             />
           ))}
         </div>
 
-        {/* Icon display */}
-        <div className="flex justify-center py-6">
-          <span className="text-6xl">{step.icon}</span>
+        {/* Icon display with animation */}
+        <div className="flex justify-center py-6" aria-hidden="true">
+          <div className="w-24 h-24 flex items-center justify-center rounded-2xl bg-muted/50 dark:bg-muted/30 dark:border dark:border-white/10 dark:shadow-lg dark:shadow-black/20">
+            <span
+              key={step.key}
+              className="text-6xl animate-bounce-in"
+            >
+              {step.icon}
+            </span>
+          </div>
+        </div>
+
+        {/* Progress info for screen readers */}
+        <div className="sr-only" aria-live="polite">
+          {t("welcome.stepProgress", { current: currentStep + 1, total: steps.length })}
         </div>
 
         {/* Action buttons */}

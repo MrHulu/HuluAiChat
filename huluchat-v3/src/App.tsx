@@ -13,6 +13,8 @@ import { KeyboardHelpDialog } from "@/components/keyboard/KeyboardHelpDialog";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { CommandPalette } from "@/components/command";
 import { WelcomeDialog } from "@/components/WelcomeDialog";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { useSession, useKeyboardShortcuts, useFolders } from "@/hooks";
 import { exportSession, moveSessionToFolder, ExportFormat } from "@/api/client";
 
@@ -153,6 +155,11 @@ function App() {
     onNewSession: handleCreateSession,
     onToggleSidebar: () => setSidebarCollapsed((prev) => !prev),
     onOpenSettings: () => setSettingsOpen(true),
+    onSwitchSession: (index: number) => {
+      if (sessions[index]) {
+        selectSession(sessions[index].id);
+      }
+    },
   });
 
   // F1 和 ? 键打开快捷键帮助
@@ -200,8 +207,19 @@ function App() {
   }, [handleHelpKeyDown, handleCommandPaletteKeyDown]);
 
   return (
-    <>
-      <Toaster position="top-center" richColors closeButton />
+    <TooltipProvider>
+      <Toaster
+        position="top-center"
+        richColors
+        closeButton
+        toastOptions={{
+          classNames: {
+            toast: "animate-slide-down",
+            success: "animate-success",
+            error: "animate-shake-subtle",
+          },
+        }}
+      />
       <UpdateNotification />
       <WelcomeDialog
         open={welcomeOpen}
@@ -220,6 +238,13 @@ function App() {
         onShowHelp={() => setKeyboardHelpOpen(true)}
       />
       <div className="flex h-screen bg-background text-foreground">
+      {/* Skip to main content link - Accessibility enhancement */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+      >
+        {t("accessibility.skipToMain")}
+      </a>
       {/* 侧边栏 */}
       <SessionList
         sessions={sessions}
@@ -241,10 +266,13 @@ function App() {
       {/* 主内容区 */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* 顶部导航栏 */}
-        <header className="flex items-center justify-between px-4 py-3 border-b border-border bg-background/50 backdrop-blur-sm">
+        <header
+          className="flex items-center justify-between px-4 py-3 border-b border-border bg-background/50 dark:bg-background/80 dark:backdrop-blur-md dark:shadow-[0_4px_24px_-8px_rgba(0,0,0,0.4)] backdrop-blur-sm"
+          role="banner"
+        >
           <div className="flex items-center gap-3">
-            <h1 className="text-lg font-bold">HuluChat</h1>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+            <h1 className="text-lg font-bold dark:text-foreground/95">HuluChat</h1>
+            <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium dark:bg-primary/20 dark:text-primary dark:shadow-[0_0_12px_rgba(var(--primary),0.15)] dark:border dark:border-primary/20">
               v{version}
             </span>
           </div>
@@ -258,12 +286,14 @@ function App() {
         </header>
 
         {/* 聊天区域 */}
-        <main className="flex-1 min-h-0">
-          <ChatView sessionId={currentSession?.id || null} />
+        <main id="main-content" className="flex-1 min-h-0" tabIndex={-1}>
+          <ErrorBoundary>
+            <ChatView sessionId={currentSession?.id || null} />
+          </ErrorBoundary>
         </main>
       </div>
     </div>
-    </>
+    </TooltipProvider>
   );
 }
 
