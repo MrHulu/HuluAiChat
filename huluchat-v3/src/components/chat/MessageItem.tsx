@@ -326,13 +326,23 @@ export const MessageItem = memo(function MessageItem({
     );
   }, [isUser, message.content, markdownComponents]);
 
+  // Double-click to quote - Cycle #146
+  const handleDoubleClick = useCallback(() => {
+    if (onQuote && !isEditing && !isStreaming) {
+      onQuote(message);
+    }
+  }, [onQuote, isEditing, isStreaming, message]);
+
   return (
     <div
       role="article"
       aria-label={isUser ? t("chat.you") : t("chat.ai")}
+      onDoubleClick={handleDoubleClick}
+      title={t("chat.doubleClickToQuote")}
       className={cn(
         "group flex w-full mb-4 animate-list-enter",
-        isUser ? "justify-end" : "justify-start"
+        isUser ? "justify-end" : "justify-start",
+        onQuote && !isEditing && !isStreaming && "cursor-pointer"
       )}
     >
       <div

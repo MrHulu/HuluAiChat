@@ -155,7 +155,8 @@
     "showMoreLines": "Show all {{count}} lines",
     "quote": "Quote",
     "quotingMessage": "Quoting message",
-    "cancelQuote": "Cancel quote"
+    "cancelQuote": "Cancel quote",
+    "doubleClickToQuote": "Double-click to quote"
   },
   "settings": {
     "title": "Settings",
