@@ -354,11 +354,38 @@ export const MessageItem = memo(function MessageItem({
           "shadow-sm hover:shadow-md transition-all duration-200 ease-out",
           "hover:scale-[1.005] active:scale-[0.995]",
           isUser
-            ? "bg-primary text-primary-foreground ml-12 hover:bg-primary/90 dark:shadow-primary/20 dark:hover:shadow-primary/30"
-            : "bg-muted text-foreground mr-12 border-l-4 border-primary/30 hover:bg-muted/80",
-          // Dark mode enhancements - more visible borders and backgrounds
-          "dark:shadow-lg dark:hover:shadow-xl",
-          !isUser && "dark:border-primary/60 dark:bg-muted/70 dark:hover:bg-muted/90 dark:shadow-black/20 dark:hover:shadow-black/30"
+            ? cn(
+                // 用户消息 - 渐变背景
+                "bg-gradient-to-br from-primary to-primary/90",
+                "text-primary-foreground ml-12",
+                "hover:from-primary/95 hover:to-primary/85",
+                // 阴影效果
+                "shadow-primary/15 hover:shadow-primary/25",
+                // 深色模式增强
+                "dark:from-primary dark:to-primary/80",
+                "dark:hover:from-primary/95 dark:hover:to-primary/70",
+                "dark:shadow-primary/20 dark:hover:shadow-primary/40",
+                "dark:shadow-[0_4px_16px_oklch(0.488_0.243_264.376/0.2)]",
+                "dark:hover:shadow-[0_6px_24px_oklch(0.488_0.243_264.376/0.3)]"
+              )
+            : cn(
+                // AI 消息 - 层次感设计
+                "bg-muted text-foreground mr-12",
+                "border-l-4 border-primary/40",
+                "hover:bg-muted/85 hover:border-primary/60",
+                // 阴影效果
+                "shadow-black/5 hover:shadow-black/10",
+                // 深色模式增强
+                "dark:border-primary/70",
+                "dark:bg-gradient-to-r dark:from-muted/80 dark:to-muted/60",
+                "dark:hover:from-muted/95 dark:hover:to-muted/80",
+                "dark:shadow-[0_2px_12px_oklch(0_0_0/0.15),inset_0_1px_0_oklch(1_0_0/0.05)]",
+                "dark:hover:shadow-[0_4px_20px_oklch(0_0_0/0.2),inset_0_1px_0_oklch(1_0_0/0.08)]",
+                // 左侧发光边框
+                "dark:hover:shadow-[0_4px_20px_oklch(0_0_0/0.2),-4px_0_16px_-4px_oklch(0.5_0.2_264/0.1)]"
+              ),
+          // 通用动画增强
+          "dark:shadow-lg dark:hover:shadow-xl"
         )}
       >
         {/* 头像标识和时间戳 */}
