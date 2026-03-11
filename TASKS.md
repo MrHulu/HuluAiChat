@@ -12,7 +12,12 @@
   - 开发环境 CSP：支持 Vite dev server
   - 允许资源：本地 API、WebSocket、Ollama、OpenAI API
   - Cycle #164
-- [ ] **TASK-162**: 🔧 提取 API_BASE 到环境变量
+- [x] **TASK-162**: 🔧 提取 API_BASE 到环境变量 ✅ 2026-03-12
+  - 添加 VITE_API_BASE 环境变量支持
+  - 创建 .env.example 文档
+  - 更新 WebSocket URL 生成逻辑
+  - Cycle #164
+- [ ] **TASK-163**: 🩺 添加后端 sidecar 进程健康监控和自动重启
 - [ ] **TASK-163**: 🩺 添加后端 sidecar 进程健康监控和自动重启
 - [ ] **TASK-164**: 🔐 添加更新签名验证
 - [ ] **TASK-165**: 🔄 实现 WebSocket 指数退避重连策略
