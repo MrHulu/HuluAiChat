@@ -140,11 +140,18 @@
       "hoursAgo": "{{count}} 小时前",
       "yesterday": "昨天",
       "daysAgo": "{{count}} 天前"
-    }
+    },
+    "imageTooLarge": "{{name}} 文件过大（最大 {{max}}）",
+    "fileTooLarge": "{{name}} 文件过大（最大 {{max}}）",
+    "maxImagesReached": "最多只能上传 {{max}} 张图片",
+    "maxFilesReached": "最多只能上传 {{max}} 个文件"
   },
   "settings": {
     "title": "设置",
     "description": "配置您的 API 设置和偏好。",
+    "tabApi": "API",
+    "tabOllama": "Ollama",
+    "tabPlugins": "插件",
     "apiKey": "API 密钥",
     "apiKeyPlaceholder": "sk-...",
     "apiKeySet": "已设置 API 密钥。输入新密钥以更新。",
