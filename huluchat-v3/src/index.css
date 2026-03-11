@@ -1419,4 +1419,195 @@
   .dark [data-sonner-toast][data-type="error"] [data-progress-bar] {
     background: oklch(0.65 0.22 25 / 0.3);
   }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 💭 Dark Mode - Thinking Indicator Glow Animation (Cycle #132)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* AI Thinking indicator - pulsing glow effect */
+  .dark .thinking-indicator-glow {
+    animation: thinkingGlow 2s ease-in-out infinite;
+  }
+
+  @keyframes thinkingGlow {
+    0%, 100% {
+      box-shadow:
+        0 0 16px oklch(0.488 0.243 264.376 / 0.12),
+        0 0 32px oklch(0.488 0.243 264.376 / 0.06),
+        inset 0 1px 0 oklch(1 0 0 / 5%);
+    }
+    50% {
+      box-shadow:
+        0 0 24px oklch(0.488 0.243 264.376 / 0.2),
+        0 0 48px oklch(0.488 0.243 264.376 / 0.1),
+        inset 0 1px 0 oklch(1 0 0 / 5%);
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * ✏️ Dark Mode - Chat Input Focus Ring Enhancement (Cycle #132)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Chat input wrapper - animated gradient border on focus */
+  .dark .chat-input-focus-ring:focus-within {
+    box-shadow:
+      0 0 0 1px oklch(0.5 0.15 264 / 0.3),
+      0 0 24px oklch(0.5 0.15 264 / 0.1),
+      inset 0 1px 0 oklch(1 0 0 / 5%);
+  }
+
+  /* Chat input focus ring - gradient animation */
+  .dark .chat-input-focus-ring::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    padding: 2px;
+    background: linear-gradient(
+      135deg,
+      oklch(0.55 0.2 264),
+      oklch(0.6 0.25 200),
+      oklch(0.55 0.2 264)
+    );
+    background-size: 200% 200%;
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
+    pointer-events: none;
+  }
+
+  .dark .chat-input-focus-ring:focus-within::before {
+    opacity: 1;
+    animation: focusRingGradient 3s ease-in-out infinite;
+  }
+
+  @keyframes focusRingGradient {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 📋 Dark Mode - Session Item Hover Enhancement (Cycle #132)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Session item action slide-in animation */
+  .session-action-enter {
+    animation: sessionActionSlide 0.2s ease-out forwards;
+  }
+
+  @keyframes sessionActionSlide {
+    from {
+      opacity: 0;
+      transform: translateX(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* Session item hover gradient - left edge highlight */
+  .dark .session-hover-gradient::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 40%;
+    background: linear-gradient(
+      90deg,
+      oklch(0.35 0.1 264 / 0.15) 0%,
+      transparent 100%
+    );
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
+    pointer-events: none;
+    border-radius: inherit;
+  }
+
+  .dark .session-hover-gradient:hover::before {
+    opacity: 1;
+  }
+
+  /* Active session indicator pulse */
+  .dark .session-active-indicator {
+    position: relative;
+  }
+
+  .dark .session-active-indicator::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 20%;
+    bottom: 20%;
+    width: 3px;
+    background: linear-gradient(
+      180deg,
+      oklch(0.55 0.2 264),
+      oklch(0.65 0.25 264),
+      oklch(0.55 0.2 264)
+    );
+    background-size: 100% 200%;
+    border-radius: 0 2px 2px 0;
+    animation: activeIndicatorPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes activeIndicatorPulse {
+    0%, 100% {
+      background-position: 0% 0%;
+      opacity: 0.8;
+    }
+    50% {
+      background-position: 0% 100%;
+      opacity: 1;
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * ⚙️ Dark Mode - Settings Tab Transition Enhancement (Cycle #132)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Tab content transition animation */
+  .tabs-content-enter {
+    animation: tabContentFade 0.25s ease-out forwards;
+  }
+
+  @keyframes tabContentFade {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Tab indicator glow for active tab */
+  .dark .tab-active-glow[data-state="active"] {
+    box-shadow:
+      inset 0 -2px 0 oklch(0.55 0.2 264),
+      0 2px 8px oklch(0.5 0.15 264 / 0.1);
+  }
+
+  /* Settings card hover effect */
+  .dark .settings-card {
+    transition: all 0.2s ease-out;
+  }
+
+  .dark .settings-card:hover {
+    background: oklch(0.22 0 0);
+    border-color: oklch(1 0 0 / 12%);
+  }
 }

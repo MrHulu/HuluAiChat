@@ -116,7 +116,10 @@ export function SessionItem({
         // Dark mode enhancements
         "dark:hover:bg-muted/40 dark:hover:shadow-none",
         // Dark mode active session glow (Cycle #193)
-        isActive && "dark:bg-accent/80 dark:border-l-2 dark:border-primary/50 dark:shadow-[0_0_16px_oklch(0.5_0.15_264/0.15),inset_0_1px_0_oklch(1_0_0/0.05)]"
+        isActive && "dark:bg-accent/80 dark:border-l-2 dark:border-primary/50 dark:shadow-[0_0_16px_oklch(0.5_0.15_264/0.15),inset_0_1px_0_oklch(1_0_0/0.05)]",
+        // Cycle #132 - Session hover & active animations
+        "relative session-hover-gradient",
+        isActive && "session-active-indicator"
       )}
     >
       <div className="flex-1 min-w-0">
@@ -152,7 +155,7 @@ export function SessionItem({
       </div>
 
       {/* Action buttons */}
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 session-action-enter">
         {/* Export button - Cycle #204 icon micro-interaction */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

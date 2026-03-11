@@ -329,7 +329,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
             </TabsList>
 
             {/* API Settings Tab */}
-            <TabsContent value="api" className="space-y-4 py-4">
+            <TabsContent value="api" className="space-y-4 py-4 tabs-content-enter">
               {/* API Key */}
               <div className="grid gap-2">
                 <Label htmlFor="apiKey">{t("settings.apiKey")}</Label>
@@ -521,7 +521,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
             </TabsContent>
 
             {/* Ollama Settings Tab */}
-            <TabsContent value="ollama" className="space-y-4 py-4">
+            <TabsContent value="ollama" className="space-y-4 py-4 tabs-content-enter">
               <div className="flex items-center justify-between mb-3">
                 <Label className="flex items-center gap-2">
                   <Server className="h-4 w-4" />
@@ -646,7 +646,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
             </TabsContent>
 
             {/* Plugins Tab */}
-            <TabsContent value="plugins" className="py-4">
+            <TabsContent value="plugins" className="py-4 tabs-content-enter">
               <PluginSettings />
             </TabsContent>
           </Tabs>

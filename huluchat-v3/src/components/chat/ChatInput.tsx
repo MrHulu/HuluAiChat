@@ -445,7 +445,7 @@ export const ChatInput = memo(function ChatInput({
           lang={i18n.language}
         />
 
-        <div className="flex-1 relative">
+        <div className="flex-1 relative chat-input-focus-ring rounded-lg">
           <textarea
             ref={textareaRef}
             value={value}
