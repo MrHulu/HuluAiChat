@@ -2,7 +2,7 @@
  * SessionList Component
  * 会话列表侧边栏，支持文件夹分组和标签筛选
  */
-import { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from "react";
 import { useTranslation } from "react-i18next";
 import {
   PanelLeftClose,
@@ -55,22 +55,31 @@ export interface SessionListProps {
 // Session tags state type
 type SessionTagsMap = Record<string, string[]>;
 
-export function SessionList({
-  sessions,
-  folders,
-  currentSessionId,
-  isLoading,
-  onSelectSession,
-  onCreateSession,
-  onDeleteSession,
-  onExportSession,
-  onCreateFolder,
-  onDeleteFolder,
-  onRenameFolder,
-  onMoveSession,
-  isCollapsed = false,
-  onToggleCollapse,
-}: SessionListProps) {
+// Exported methods for parent components
+export interface SessionListRef {
+  focusSearch: () => void;
+}
+
+export const SessionList = forwardRef<SessionListRef, SessionListProps>(
+  (
+    {
+      sessions,
+      folders,
+      currentSessionId,
+      isLoading,
+      onSelectSession,
+      onCreateSession,
+      onDeleteSession,
+      onExportSession,
+      onCreateFolder,
+      onDeleteFolder,
+      onRenameFolder,
+      onMoveSession,
+      isCollapsed = false,
+      onToggleCollapse,
+    },
+    ref
+  ) => {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SessionSearchResult[] | null>(null);
@@ -82,6 +91,16 @@ export function SessionList({
   const [editingFolderName, setEditingFolderName] = useState("");
   const [activeFolderFilter, setActiveFolderFilter] = useState<string | null>(null);
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Expose focusSearch method to parent
+  useImperativeHandle(ref, () => ({
+    focusSearch: () => {
+      if (!isCollapsed && searchInputRef.current) {
+        searchInputRef.current.focus();
+      }
+    },
+  }), [isCollapsed]);
 
   // Tag-related state
   const [sessionTags, setSessionTags] = useState<SessionTagsMap>({});
@@ -342,6 +361,7 @@ export function SessionList({
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" aria-hidden="true" />
           <Input
+            ref={searchInputRef}
             type="search"
             placeholder={t("sidebar.searchChats")}
             value={searchQuery}
@@ -609,7 +629,8 @@ export function SessionList({
       </div>
     </div>
   );
-}
+  }
+);
 
 /**
  * Folder Item Component

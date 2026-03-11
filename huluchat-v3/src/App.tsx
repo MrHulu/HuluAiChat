@@ -2,12 +2,12 @@
  * HuluChat v3 - Main App
  * Tauri + React + FastAPI AI Chat Application
  */
-import { useState, useEffect, useCallback, lazy, Suspense } from "react";
+import { useState, useEffect, useCallback, useRef, lazy, Suspense } from "react";
 import { Toaster, toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ChatView } from "@/components/chat";
-import { SessionList } from "@/components/sidebar";
+import { SessionList, type SessionListRef } from "@/components/sidebar";
 import { UpdateNotification } from "@/components/UpdateNotification";
 import { KeyboardHelpDialog } from "@/components/keyboard/KeyboardHelpDialog";
 import { LanguageSelector } from "@/components/LanguageSelector";
@@ -35,6 +35,7 @@ function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [keyboardHelpOpen, setKeyboardHelpOpen] = useState(false);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const sessionListRef = useRef<SessionListRef>(null);
 
   // Welcome dialog state - check if first time user
   const [welcomeOpen, setWelcomeOpen] = useState(() => {
@@ -197,14 +198,32 @@ function App() {
     }
   }, []);
 
+  // / 键聚焦搜索框（不在输入框中时）
+  const handleSearchFocusKeyDown = useCallback((event: KeyboardEvent) => {
+    if (event.key === "/") {
+      const target = event.target as HTMLElement;
+      const isInputFocused =
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable;
+
+      if (!isInputFocused && !sidebarCollapsed) {
+        event.preventDefault();
+        sessionListRef.current?.focusSearch();
+      }
+    }
+  }, [sidebarCollapsed]);
+
   useEffect(() => {
     window.addEventListener("keydown", handleHelpKeyDown);
     window.addEventListener("keydown", handleCommandPaletteKeyDown);
+    window.addEventListener("keydown", handleSearchFocusKeyDown);
     return () => {
       window.removeEventListener("keydown", handleHelpKeyDown);
       window.removeEventListener("keydown", handleCommandPaletteKeyDown);
+      window.removeEventListener("keydown", handleSearchFocusKeyDown);
     };
-  }, [handleHelpKeyDown, handleCommandPaletteKeyDown]);
+  }, [handleHelpKeyDown, handleCommandPaletteKeyDown, handleSearchFocusKeyDown]);
 
   return (
     <TooltipProvider>
@@ -247,6 +266,7 @@ function App() {
       </a>
       {/* 侧边栏 */}
       <SessionList
+        ref={sessionListRef}
         sessions={sessions}
         folders={folders}
         currentSessionId={currentSession?.id || null}

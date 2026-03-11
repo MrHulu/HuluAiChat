@@ -4,6 +4,7 @@
  */
 import { useState, useRef, useEffect, useCallback, memo, type KeyboardEvent } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { LayoutTemplate, Send, ImagePlus, X, Loader2, Paperclip, FileText, FileCode, File } from "lucide-react";
@@ -100,10 +101,13 @@ export const ChatInput = memo(function ChatInput({
       const file = fileList[i];
       if (!file.type.startsWith("image/")) continue;
       if (file.size > MAX_IMAGE_SIZE) {
-        console.warn(`Image ${file.name} is too large (max 10MB)`);
+        toast.error(t("chat.imageTooLarge", { name: file.name, max: "10MB" }));
         continue;
       }
-      if (images.length + newImages.length >= MAX_IMAGES) break;
+      if (images.length + newImages.length >= MAX_IMAGES) {
+        toast.warning(t("chat.maxImagesReached", { max: MAX_IMAGES }));
+        break;
+      }
 
       const reader = new FileReader();
       reader.onload = (event) => {
@@ -129,11 +133,14 @@ export const ChatInput = memo(function ChatInput({
       if (file.type.startsWith("image/")) continue;
       // Check file size
       if (file.size > MAX_FILE_SIZE) {
-        console.warn(`File ${file.name} is too large (max 20MB)`);
+        toast.error(t("chat.fileTooLarge", { name: file.name, max: "20MB" }));
         continue;
       }
       // Check if max files reached
-      if (files.length >= MAX_FILES) break;
+      if (files.length >= MAX_FILES) {
+        toast.warning(t("chat.maxFilesReached", { max: MAX_FILES }));
+        break;
+      }
 
       const reader = new FileReader();
       reader.onload = (event) => {
