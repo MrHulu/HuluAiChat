@@ -145,6 +145,9 @@
   "settings": {
     "title": "设置",
     "description": "配置您的 API 设置和偏好。",
+    "tabApi": "API",
+    "tabOllama": "Ollama",
+    "tabPlugins": "插件",
     "apiKey": "API 密钥",
     "apiKeyPlaceholder": "sk-...",
     "apiKeySet": "已设置 API 密钥。输入新密钥以更新。",
