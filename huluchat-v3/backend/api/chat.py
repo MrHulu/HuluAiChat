@@ -13,6 +13,13 @@ from core.database import get_session as get_db_session
 from models.schemas import MessageModel
 from services.openai_service import openai_service
 from services.ollama_service import ollama_service
+from services.mcp_service import mcp_service
+from services.mcp_tool_adapter import (
+    mcp_tools_to_openai_format,
+    parse_mcp_tool_call,
+    format_tool_call_message,
+    build_tool_result_message,
+)
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -212,6 +219,8 @@ async def chat_websocket(
             temperature = data.get("temperature")  # None means use default
             top_p = data.get("top_p")  # None means use default
             max_tokens = data.get("max_tokens")  # None means use default
+            # Get MCP enable flag
+            use_mcp = data.get("use_mcp", True)  # Enable MCP tools by default
 
             # Allow empty content if images or files are provided
             if not user_content.strip() and not images and not files:
@@ -272,7 +281,22 @@ async def chat_websocket(
                     })
                     continue
 
-            # Stream AI response
+            # Get MCP tools if enabled
+            mcp_tools = None
+            server_configs = {}
+            if use_mcp and not is_ollama:  # MCP tools only work with OpenAI-compatible APIs
+                try:
+                    mcp_tools_raw = await mcp_service.get_all_tools()
+                    if mcp_tools_raw:
+                        mcp_tools = mcp_tools_to_openai_format(mcp_tools_raw)
+                        # Store server configs for name lookup
+                        servers = await mcp_service.list_servers()
+                        server_configs = {s.id: s for s in servers}
+                        logger.info(f"Loaded {len(mcp_tools)} MCP tools from {len(mcp_tools_raw)} servers")
+                except Exception as e:
+                    logger.warning(f"Failed to load MCP tools: {e}")
+
+            # Stream AI response with potential tool calls
             full_response = ""
             try:
                 # Build kwargs for service call based on service type
@@ -286,6 +310,10 @@ async def chat_websocket(
                 if not is_ollama and max_tokens is not None:
                     service_kwargs["max_tokens"] = int(max_tokens)
 
+                # Add MCP tools if available
+                if mcp_tools:
+                    service_kwargs["tools"] = mcp_tools
+
                 async for chunk in service.stream_chat(**service_kwargs):
                     if chunk.error:
                         await manager.send_json(session_id, {
@@ -293,6 +321,107 @@ async def chat_websocket(
                             "content": chunk.error,
                         })
                         break
+
+                    # Handle tool calls
+                    if chunk.has_tool_calls and chunk.tool_calls:
+                        tool_results = []
+                        for tc in chunk.tool_calls:
+                            # Parse server_id and tool_name
+                            parsed = parse_mcp_tool_call(tc.function_name)
+                            if not parsed:
+                                logger.warning(f"Unknown tool call format: {tc.function_name}")
+                                continue
+
+                            server_id, tool_name = parsed
+                            server_config = server_configs.get(server_id)
+
+                            # Notify client about tool call
+                            await manager.send_json(session_id, format_tool_call_message(
+                                server_name=server_config.name if server_config else server_id,
+                                tool_name=tool_name,
+                                status="calling"
+                            ))
+
+                            # Execute the tool
+                            try:
+                                # Parse arguments from JSON string
+                                arguments = json.loads(tc.function_arguments) if isinstance(tc.function_arguments, str) else tc.function_arguments
+                                result = await mcp_service.call_tool(server_id, tool_name, arguments)
+
+                                # Notify client about result
+                                await manager.send_json(session_id, format_tool_call_message(
+                                    server_name=server_config.name if server_config else server_id,
+                                    tool_name=tool_name,
+                                    status="success" if result.success else "error",
+                                    result=result.content if result.success else None,
+                                    error=result.error if not result.success else None
+                                ))
+
+                                tool_results.append(build_tool_result_message(
+                                    tool_call_id=tc.id,
+                                    content=result.content if result.success else f"Error: {result.error}"
+                                ))
+
+                            except Exception as e:
+                                logger.error(f"Tool execution failed: {e}")
+                                await manager.send_json(session_id, format_tool_call_message(
+                                    server_name=server_config.name if server_config else server_id,
+                                    tool_name=tool_name,
+                                    status="error",
+                                    error=str(e)
+                                ))
+                                tool_results.append(build_tool_result_message(
+                                    tool_call_id=tc.id,
+                                    content=f"Error: {str(e)}"
+                                ))
+
+                        # If we have tool results, continue the conversation
+                        if tool_results:
+                            # Add assistant message with tool calls to history
+                            assistant_tool_msg = {
+                                "role": "assistant",
+                                "content": None,
+                                "tool_calls": [
+                                    {
+                                        "id": tc.id,
+                                        "type": "function",
+                                        "function": {
+                                            "name": tc.function_name,
+                                            "arguments": tc.function_arguments
+                                        }
+                                    }
+                                    for tc in chunk.tool_calls
+                                    if parse_mcp_tool_call(tc.function_name)
+                                ]
+                            }
+                            extended_history = history + [assistant_tool_msg] + tool_results
+
+                            # Continue streaming with tool results
+                            service_kwargs["messages"] = extended_history
+                            service_kwargs["tools"] = mcp_tools  # Keep tools available
+
+                            async for cont_chunk in service.stream_chat(**service_kwargs):
+                                if cont_chunk.error:
+                                    await manager.send_json(session_id, {
+                                        "type": "error",
+                                        "content": cont_chunk.error,
+                                    })
+                                    break
+
+                                if cont_chunk.is_done:
+                                    if full_response:
+                                        await save_message(db, session_id, "assistant", full_response)
+                                    await manager.send_json(session_id, {
+                                        "type": "stream_end",
+                                        "session_id": session_id,
+                                    })
+                                elif cont_chunk.content:
+                                    full_response += cont_chunk.content
+                                    await manager.send_json(session_id, {
+                                        "type": "stream_chunk",
+                                        "content": cont_chunk.content,
+                                    })
+                        continue
 
                     if chunk.is_done:
                         # Save the complete assistant response
@@ -302,7 +431,7 @@ async def chat_websocket(
                             "type": "stream_end",
                             "session_id": session_id,
                         })
-                    else:
+                    elif chunk.content:
                         full_response += chunk.content
                         await manager.send_json(session_id, {
                             "type": "stream_chunk",

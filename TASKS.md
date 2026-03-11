@@ -49,7 +49,14 @@
   - 更新 SettingsDialog.tsx 添加 MCP Tab
   - Server 卡片、添加对话框、连接管理
   - Cycle #165
-- [ ] **TASK-170**: 🔗 集成 MCP tool calling 与现有聊天流
+- [x] **TASK-170**: 🔗 集成 MCP tool calling 与现有聊天流 ✅ 2026-03-12
+  - 创建 services/mcp_tool_adapter.py（MCP → OpenAI 格式转换）
+  - 修改 services/openai_service.py 支持 tools 参数和 tool_calls
+  - 修改 api/chat.py 集成 MCP tools 和 tool calling 流程
+  - 更新 useChat hook 添加 toolCalls 状态
+  - 更新 ChatView 添加 ToolCallsIndicator 组件
+  - 添加 i18n 翻译（EN/ZH）
+  - Cycle #166
 - [ ] **TASK-171**: 🌐 添加 MCP i18n 支持（EN/ZH）
 - [ ] **TASK-172**: 📚 编写 MCP 使用文档
 

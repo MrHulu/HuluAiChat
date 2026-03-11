@@ -13,6 +13,14 @@ export interface StreamingMessage {
   isStreaming: boolean;
 }
 
+export interface ToolCall {
+  server_name: string;
+  tool_name: string;
+  status: "calling" | "success" | "error";
+  result?: string;
+  error?: string;
+}
+
 export interface ChatParameters {
   temperature?: number;
   top_p?: number;
@@ -22,8 +30,9 @@ export interface ChatParameters {
 export interface UseChatReturn {
   messages: Message[];
   streamingMessage: StreamingMessage | null;
+  toolCalls: ToolCall[];
   connectionStatus: ConnectionStatus;
-  sendMessage: (content: string, model?: string, params?: ChatParameters, images?: ImageContent[], files?: FileAttachment[]) => void;
+  sendMessage: (content: string, model?: string, params?: ChatParameters, images?: ImageContent[], files?: FileAttachment[], useMcp?: boolean) => void;
   regenerateMessage: (assistantMessageId: string) => void;
   deleteMessage: (messageId: string) => Promise<void>;
   isLoading: boolean;
@@ -33,16 +42,22 @@ export interface UseChatReturn {
 
 // WebSocket 消息类型
 interface WSMessage {
-  type: "message" | "stream_start" | "stream_chunk" | "stream_end" | "error" | "history";
+  type: "message" | "stream_start" | "stream_chunk" | "stream_end" | "error" | "history" | "tool_call";
   content?: string;
   message_id?: string;
   messages?: Message[];
   error?: string;
+  // Tool call fields
+  server_name?: string;
+  tool_name?: string;
+  status?: "calling" | "success" | "error";
+  result?: string;
 }
 
 export function useChat(sessionId: string | null): UseChatReturn {
   const [messages, setMessages] = useState<Message[]>([]);
   const [streamingMessage, setStreamingMessage] = useState<StreamingMessage | null>(null);
+  const [toolCalls, setToolCalls] = useState<ToolCall[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const currentSessionIdRef = useRef<string | null>(null);
@@ -137,6 +152,34 @@ export function useChat(sessionId: string | null): UseChatReturn {
           setMessages((prev) => [...prev, newMessage]);
           setStreamingMessage(null);
         }
+        // Clear tool calls when stream ends
+        setToolCalls([]);
+        break;
+      }
+
+      case "tool_call": {
+        // Handle tool call status updates
+        if (msg.server_name && msg.tool_name && msg.status) {
+          const toolCall: ToolCall = {
+            server_name: msg.server_name,
+            tool_name: msg.tool_name,
+            status: msg.status,
+            result: msg.result,
+            error: msg.error,
+          };
+          setToolCalls((prev) => {
+            // Update existing or add new
+            const existingIndex = prev.findIndex(
+              (tc) => tc.server_name === toolCall.server_name && tc.tool_name === toolCall.tool_name
+            );
+            if (existingIndex >= 0) {
+              const updated = [...prev];
+              updated[existingIndex] = toolCall;
+              return updated;
+            }
+            return [...prev, toolCall];
+          });
+        }
         break;
       }
 
@@ -177,7 +220,7 @@ export function useChat(sessionId: string | null): UseChatReturn {
   }, [sessionId, loadHistory]);
 
   const sendMessage = useCallback(
-    (content: string, model?: string, params?: ChatParameters, images?: ImageContent[], files?: FileAttachment[]) => {
+    (content: string, model?: string, params?: ChatParameters, images?: ImageContent[], files?: FileAttachment[], useMcp?: boolean) => {
       // Allow empty content if images or files are provided
       if ((!content.trim() && !images?.length && !files?.length) || connectionStatus !== "connected") {
         return;
@@ -195,6 +238,9 @@ export function useChat(sessionId: string | null): UseChatReturn {
       };
       setMessages((prev) => [...prev, userMessage]);
 
+      // Clear previous tool calls
+      setToolCalls([]);
+
       // 发送到后端（包含可选的模型参数、图片和文件）
       send({
         type: "message",
@@ -205,6 +251,7 @@ export function useChat(sessionId: string | null): UseChatReturn {
         temperature: params?.temperature,
         top_p: params?.top_p,
         max_tokens: params?.max_tokens,
+        use_mcp: useMcp !== false, // Default to true
       });
 
       setIsLoading(true);
@@ -271,6 +318,7 @@ export function useChat(sessionId: string | null): UseChatReturn {
   return {
     messages,
     streamingMessage,
+    toolCalls,
     connectionStatus,
     sendMessage,
     regenerateMessage,
