@@ -7,9 +7,11 @@
   - 修复: 依赖改为 `[t, images.length]` 和 `[t, files.length]`
   - Cycle #150
 
-- [ ] **TASK-151**: 🚀 发布 GitHub Release（最新版本）
+- [x] **TASK-151**: 🚀 发布 GitHub Release（最新版本）✅ 2026-03-11
   - 原因: Boss 需要最新版本准备素材
   - 前置: TASK-150 ✅ 完成，可以发布
+  - 发布: https://github.com/MrHulu/HuluAiChat/releases/tag/v3.52.0
+  - Cycle #150
 
 ## 进行中
 - [x] **TASK-129**: 🚀 README 优化 ✅ 2026-03-11
