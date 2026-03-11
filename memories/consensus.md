@@ -1,18 +1,19 @@
 # Auto Company Consensus
 
-> 最后更新: 2026-03-12 - Cycle #164
+> 最后更新: 2026-03-12 - Cycle #165
 
 ---
 
 ## 当前状态
-🔧 **Phase 1 基础修复进行中** - TASK-161/162/165/166 已完成，TASK-163 阻塞
+🚀 **Phase 2 MCP 支持进行中** - TASK-167 已完成，进入 MCP 实现
 
 ---
 
 ## Next Action
-> **Phase 1 可执行任务已全部完成**:
-> - TASK-163/164: 需要 Rust 编译（⚠️ 阻塞：内存不足）
-> - 可考虑进入 Phase 2: MCP 支持
+> **TASK-168: 实现 Python MCP Client**
+> - 安装 mcp SDK
+> - 创建 MCP Service 和 Client
+> - 实现 Server 管理 API
 
 ---
 
@@ -26,6 +27,34 @@
 ---
 
 ## 最近完成
+
+### TASK-167: MCP 架构设计（Cycle #165）
+
+**完成时间**: 2026-03-12
+
+**产出**: `docs/cto/mcp-architecture.md`
+
+**架构内容**:
+1. **系统架构**: 前端 MCP Settings Tab + 后端 MCP Service + MCP Servers
+2. **后端设计**:
+   - `api/mcp.py` - REST API 端点
+   - `services/mcp_service.py` - 核心服务
+   - `models/mcp_server.py` - 数据模型
+3. **前端设计**:
+   - `MCPSettings.tsx` - 设置面板
+   - API Client 扩展
+4. **Tool Calling 集成**: 修改 Chat 流程支持 AI 自动调用 MCP tools
+5. **依赖**: `mcp>=1.0.0` Python SDK
+
+**MVP 范围**:
+- stdio 传输（P0）
+- Server 配置管理（P0）
+- Tool Calling 集成（P0）
+- HTTP/SSE 传输（P1）
+
+**结果**: 架构设计完成，可开始实现
+
+---
 
 ### TASK-166: 请求超时配置（Cycle #164）
 
@@ -156,8 +185,8 @@
 - **当前版本**: v3.54.0
 - **下一版本**: v3.55.0
 - **进行中任务**: 0 个
-- **待开始任务**: 22 个（21 新 + TASK-116）
-- **已完成任务计数**: 11 (本次周期)
+- **待开始任务**: 21 个（20 新 + TASK-116）
+- **已完成任务计数**: 12 (本次周期)
 
 ---
 
@@ -178,7 +207,8 @@
 ### Phase 2: MCP 支持 (核心差异化)
 | 任务 | 描述 | 状态 |
 |------|------|------|
-| TASK-167 ~ 172 | MCP 集成（6个任务） | 待开始 |
+| TASK-167 | MCP 架构设计 | ✅ 已完成 |
+| TASK-168 ~ 172 | MCP 实现（5个任务） | 待开始 |
 
 ### Phase 3: 用户功能
 | 任务 | 描述 | 状态 |
@@ -208,7 +238,7 @@
 
 ---
 
-*更新时间: 2026-03-12 - Cycle #163*
+*更新时间: 2026-03-12 - Cycle #165*
 
 ---
 
@@ -232,3 +262,9 @@
 - WebSocket 指数退避重连
 - OpenAI/Ollama 请求超时配置
 - **TASK-163/164 阻塞**: Rust 编译内存不足
+
+**Cycle #165** - 完成 TASK-167（MCP 架构设计）
+- 创建 `docs/cto/mcp-architecture.md`
+- 定义后端 MCP Service 结构
+- 定义前端 MCP Settings 面板
+- 设计 Tool Calling 集成流程
