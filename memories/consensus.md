@@ -5,15 +5,15 @@
 ---
 
 ## 当前状态
-🚀 **Phase 2 MCP 支持进行中** - TASK-167/168 已完成，进入前端面板开发
+🚀 **Phase 2 MCP 支持进行中** - TASK-167/168/169 已完成，进入 Tool Calling 集成
 
 ---
 
 ## Next Action
-> **TASK-169: 创建 MCP 设置面板（Settings 新 Tab）**
-> - 创建 MCPSettings.tsx 组件
-> - 更新 SettingsDialog.tsx 添加 MCP Tab
-> - 扩展 API Client 添加 MCP 函数
+> **TASK-170: 集成 MCP tool calling 与现有聊天流**
+> - 修改 Chat API 传递 MCP tools 到 OpenAI
+> - 处理 OpenAI tool_calls 响应
+> - 执行 MCP tools 并返回结果
 
 ---
 
@@ -27,6 +27,37 @@
 ---
 
 ## 最近完成
+
+### TASK-169: MCP 设置面板（Cycle #165）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- `src/api/client.ts` - MCP API 函数
+- `src/components/settings/MCPSettings.tsx` - MCP 设置组件
+- `src/components/settings/SettingsDialog.tsx` - 添加 MCP Tab
+
+**实现内容**:
+1. **API Client 扩展**:
+   - MCPServerConfig, MCPServerStatus, MCPTool 类型
+   - listMCPServers, addMCPServer, deleteMCPServer
+   - connectMCPServer, disconnectMCPServer, getMCPAllStatus
+   - callMCPTool, connectAllMCPServers
+
+2. **MCPSettings 组件**:
+   - Server 列表和状态显示
+   - 添加/删除 Server 对话框
+   - 连接/断开按钮
+   - Tools 列表展示
+   - 状态刷新和批量连接
+
+3. **SettingsDialog 更新**:
+   - 添加 MCP Tab（4 列布局）
+   - 导入 Cpu 图标
+
+**结果**: MCP 前端面板完成，可开始 Tool Calling 集成
+
+---
 
 ### TASK-168: Python MCP Client 实现（Cycle #165）
 
@@ -213,8 +244,8 @@
 - **当前版本**: v3.54.0
 - **下一版本**: v3.55.0
 - **进行中任务**: 0 个
-- **待开始任务**: 20 个（19 新 + TASK-116）
-- **已完成任务计数**: 13 (本次周期)
+- **待开始任务**: 19 个（18 新 + TASK-116）
+- **已完成任务计数**: 14 (本次周期)
 
 ---
 
@@ -237,7 +268,8 @@
 |------|------|------|
 | TASK-167 | MCP 架构设计 | ✅ 已完成 |
 | TASK-168 | Python MCP Client | ✅ 已完成 |
-| TASK-169 ~ 172 | 前端/集成/文档（4个任务） | 待开始 |
+| TASK-169 | MCP 设置面板 | ✅ 已完成 |
+| TASK-170 ~ 172 | 集成/文档（3个任务） | 待开始 |
 
 ### Phase 3: 用户功能
 | 任务 | 描述 | 状态 |
@@ -292,9 +324,12 @@
 - OpenAI/Ollama 请求超时配置
 - **TASK-163/164 阻塞**: Rust 编译内存不足
 
-**Cycle #165** - 完成 TASK-167/168（MCP 架构设计 + Python Client 实现）
+**Cycle #165** - 完成 TASK-167/168/169（MCP 架构设计 + Python Client + 前端面板）
 - 创建 `docs/cto/mcp-architecture.md` 架构文档
 - 实现 `models/mcp_server.py` 数据模型
 - 实现 `services/mcp_service.py` 核心服务
 - 实现 `api/mcp.py` REST API 端点
 - 安装 mcp SDK v1.26.0
+- 创建 `MCPSettings.tsx` 前端组件
+- 扩展 API Client 添加 MCP 函数
+- 更新 SettingsDialog 添加 MCP Tab

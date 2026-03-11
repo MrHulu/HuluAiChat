@@ -808,3 +808,236 @@ export function downloadBlob(blob: Blob, filename: string): void {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
+// ============== MCP APIs ==============
+
+/**
+ * MCP Server transport type
+ */
+export type MCPTransportType = "stdio" | "http" | "sse";
+
+/**
+ * MCP Server configuration
+ */
+export interface MCPServerConfig {
+  id: string;
+  name: string;
+  description?: string;
+  transport: MCPTransportType;
+  command?: string;
+  args?: string[];
+  env?: Record<string, string>;
+  url?: string;
+  enabled: boolean;
+  auto_connect: boolean;
+}
+
+/**
+ * MCP Server configuration for creation
+ */
+export interface MCPServerConfigCreate {
+  name: string;
+  description?: string;
+  transport: MCPTransportType;
+  command?: string;
+  args?: string[];
+  env?: Record<string, string>;
+  url?: string;
+  enabled?: boolean;
+  auto_connect?: boolean;
+}
+
+/**
+ * MCP Server configuration for update
+ */
+export interface MCPServerConfigUpdate {
+  name?: string;
+  description?: string;
+  transport?: MCPTransportType;
+  command?: string;
+  args?: string[];
+  env?: Record<string, string>;
+  url?: string;
+  enabled?: boolean;
+  auto_connect?: boolean;
+}
+
+/**
+ * MCP Tool definition
+ */
+export interface MCPTool {
+  name: string;
+  description: string;
+  inputSchema: Record<string, unknown>;
+}
+
+/**
+ * MCP Resource definition
+ */
+export interface MCPResource {
+  uri: string;
+  name: string;
+  description?: string;
+  mime_type?: string;
+}
+
+/**
+ * MCP Server status
+ */
+export interface MCPServerStatus {
+  id: string;
+  name: string;
+  connected: boolean;
+  tools: MCPTool[];
+  resources: MCPResource[];
+  error?: string;
+}
+
+/**
+ * MCP tool call request
+ */
+export interface MCPToolCall {
+  server_id: string;
+  tool_name: string;
+  arguments: Record<string, unknown>;
+}
+
+/**
+ * MCP tool call result
+ */
+export interface MCPToolResult {
+  success: boolean;
+  content: string;
+  error?: string;
+}
+
+/**
+ * All servers status response
+ */
+export interface MCPAllStatus {
+  servers: MCPServerStatus[];
+  total_tools: number;
+  connected_count: number;
+}
+
+/**
+ * List all MCP servers
+ */
+export async function listMCPServers(): Promise<MCPServerConfig[]> {
+  const response = await fetch(`${API_BASE}/mcp/servers`);
+  return response.json();
+}
+
+/**
+ * Add a new MCP server
+ */
+export async function addMCPServer(
+  config: MCPServerConfigCreate
+): Promise<MCPServerConfig> {
+  const response = await fetch(`${API_BASE}/mcp/servers`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(config),
+  });
+  return response.json();
+}
+
+/**
+ * Update an MCP server
+ */
+export async function updateMCPServer(
+  id: string,
+  config: MCPServerConfigUpdate
+): Promise<MCPServerConfig> {
+  const response = await fetch(`${API_BASE}/mcp/servers/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(config),
+  });
+  return response.json();
+}
+
+/**
+ * Delete an MCP server
+ */
+export async function deleteMCPServer(id: string): Promise<void> {
+  await fetch(`${API_BASE}/mcp/servers/${id}`, { method: "DELETE" });
+}
+
+/**
+ * Connect to an MCP server
+ */
+export async function connectMCPServer(id: string): Promise<MCPServerStatus> {
+  const response = await fetch(`${API_BASE}/mcp/servers/${id}/connect`, {
+    method: "POST",
+  });
+  return response.json();
+}
+
+/**
+ * Disconnect from an MCP server
+ */
+export async function disconnectMCPServer(id: string): Promise<void> {
+  await fetch(`${API_BASE}/mcp/servers/${id}/disconnect`, { method: "POST" });
+}
+
+/**
+ * Get status of an MCP server
+ */
+export async function getMCPServerStatus(id: string): Promise<MCPServerStatus> {
+  const response = await fetch(`${API_BASE}/mcp/servers/${id}/status`);
+  return response.json();
+}
+
+/**
+ * Get tools available on an MCP server
+ */
+export async function getMCPServerTools(id: string): Promise<MCPTool[]> {
+  const response = await fetch(`${API_BASE}/mcp/servers/${id}/tools`);
+  return response.json();
+}
+
+/**
+ * Call an MCP tool
+ */
+export async function callMCPTool(call: MCPToolCall): Promise<MCPToolResult> {
+  const response = await fetch(`${API_BASE}/mcp/tools/call`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(call),
+  });
+  return response.json();
+}
+
+/**
+ * Get status of all MCP servers
+ */
+export async function getMCPAllStatus(): Promise<MCPAllStatus> {
+  const response = await fetch(`${API_BASE}/mcp/status`);
+  return response.json();
+}
+
+/**
+ * Connect to all enabled MCP servers
+ */
+export async function connectAllMCPServers(): Promise<MCPServerStatus[]> {
+  const response = await fetch(`${API_BASE}/mcp/connect-all`, {
+    method: "POST",
+  });
+  return response.json();
+}
+
+/**
+ * Disconnect from all MCP servers
+ */
+export async function disconnectAllMCPServers(): Promise<void> {
+  await fetch(`${API_BASE}/mcp/disconnect-all`, { method: "POST" });
+}
+
+/**
+ * Get all tools from all connected servers
+ */
+export async function getAllMCPTools(): Promise<Record<string, MCPTool[]>> {
+  const response = await fetch(`${API_BASE}/mcp/tools`);
+  return response.json();
+}
