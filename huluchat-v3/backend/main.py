@@ -29,7 +29,7 @@ app = FastAPI(
 # CORS for Tauri frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:1420", "tauri://localhost"],
+    allow_origins=["http://localhost:1420", "tauri://localhost", "https://tauri.localhost"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -44,3 +44,10 @@ app.include_router(settings.router, prefix="/api/settings", tags=["settings"])
 app.include_router(templates.router, prefix="/api/templates", tags=["templates"])
 app.include_router(tags.router, prefix="/api", tags=["tags"])
 app.include_router(bookmarks.router, prefix="/api", tags=["bookmarks"])
+
+
+if __name__ == "__main__":
+    import uvicorn
+    from core.config import settings as app_settings
+
+    uvicorn.run(app, host=app_settings.host, port=app_settings.port)
