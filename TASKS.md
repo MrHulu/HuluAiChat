@@ -3,20 +3,6 @@
 ## 🔴 紧急任务（阻塞 Boss 工作）
 - 无
 
-## 进行中
-- [ ] **TASK-156**: 🔧 修复 GitHub Release Workflow URL 错误 + 发布 v3.54.0
-  - **问题**: `.github/workflows/release.yml` 中 `latest.json` 的 GitHub URL 错误
-  - **错误**: `https://github.com/MrHulu/HuluChat/...` 
-  - **正确**: `https://github.com/MrHulu/HuluAiChat/...`
-  - **影响**: 自动更新功能无法正确下载新版本
-  - **修复内容**:
-    - darwin-x86_64 URL: `HuluChat_${VERSION}_x64.dmg`
-    - darwin-aarch64 URL: `HuluChat_${VERSION}_aarch64.dmg`
-    - linux-x86_64 URL: `HuluChat_${VERSION}_amd64.AppImage`
-    - windows-x86_64 URL: `HuluChat_${VERSION}_x64_en-US.msi`
-  - **发布**: 修复后发布 v3.54.0
-  - **Cycle**: #156
-
 ## 待开始
 <!-- 新任务添加到这里 -->
 - [ ] **TASK-122**: 🎨 UI/UX 美化优化（持续进行）
@@ -26,6 +12,12 @@
 - [ ] **TASK-116**: 🎬 准备 Product Hunt 发布素材(截图、视频) - 等待 Boss
 
 ## 已完成（最近）
+- [x] **TASK-156**: 🔧 修复 GitHub Release Workflow URL 错误 + 发布 v3.54.0 ✅ 2026-03-12
+  - 修复 `.github/workflows/release.yml` 中的 GitHub URL
+  - `MrHulu/HuluChat` → `MrHulu/HuluAiChat`
+  - 发布 v3.54.0
+  - Cycle #156
+
 - [x] **TASK-155**: ✨ 添加消息删除功能 ✅ 2026-03-11
   - 后端: DELETE /{session_id}/messages/{message_id} 端点
   - 前端: API 客户端、useChat hook、MessageItem 组件
