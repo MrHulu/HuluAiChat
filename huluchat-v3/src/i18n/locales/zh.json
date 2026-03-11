@@ -154,7 +154,12 @@
     "quote": "引用",
     "quotingMessage": "正在引用消息",
     "cancelQuote": "取消引用",
-    "doubleClickToQuote": "双击引用消息"
+    "doubleClickToQuote": "双击引用消息",
+    "deleteMessage": "删除消息",
+    "messageDeleted": "消息已删除",
+    "deleteMessageConfirm": "确定要删除这条消息吗？",
+    "confirmDelete": "是的，删除",
+    "cancel": "取消"
   },
   "settings": {
     "title": "设置",

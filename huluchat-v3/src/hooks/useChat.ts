@@ -5,7 +5,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { useWebSocket, ConnectionStatus } from "./useWebSocket";
-import { Message, getSessionMessages, ImageContent, FileAttachment } from "@/api/client";
+import { Message, getSessionMessages, ImageContent, FileAttachment, deleteMessage as apiDeleteMessage } from "@/api/client";
 
 export interface StreamingMessage {
   id: string;
@@ -25,6 +25,7 @@ export interface UseChatReturn {
   connectionStatus: ConnectionStatus;
   sendMessage: (content: string, model?: string, params?: ChatParameters, images?: ImageContent[], files?: FileAttachment[]) => void;
   regenerateMessage: (assistantMessageId: string) => void;
+  deleteMessage: (messageId: string) => Promise<void>;
   isLoading: boolean;
   isLoadingHistory: boolean;
   refreshMessages: () => void;
@@ -247,12 +248,33 @@ export function useChat(sessionId: string | null): UseChatReturn {
     [messages, send]
   );
 
+  // 删除消息
+  const deleteMessageHandler = useCallback(
+    async (messageId: string) => {
+      if (!sessionId) return;
+
+      try {
+        await apiDeleteMessage(sessionId, messageId);
+        // 从本地状态移除消息
+        setMessages((prev) => prev.filter((m) => m.id !== messageId));
+        toast.success("Message deleted");
+      } catch (error) {
+        console.error("Failed to delete message:", error);
+        toast.error("Failed to delete message", {
+          description: "Please try again",
+        });
+      }
+    },
+    [sessionId]
+  );
+
   return {
     messages,
     streamingMessage,
     connectionStatus,
     sendMessage,
     regenerateMessage,
+    deleteMessage: deleteMessageHandler,
     isLoading,
     isLoadingHistory,
     refreshMessages,

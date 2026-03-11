@@ -78,7 +78,7 @@ function ConnectionIndicator({ status }: { status: ConnectionStatus }) {
 
 export function ChatView({ sessionId }: ChatViewProps) {
   const { t } = useTranslation();
-  const { messages, streamingMessage, connectionStatus, sendMessage, regenerateMessage, isLoading, refreshMessages } =
+  const { messages, streamingMessage, connectionStatus, sendMessage, regenerateMessage, deleteMessage, isLoading, refreshMessages } =
     useChat(sessionId);
   const { currentModel, models, setModel, isLoading: isLoadingModels, parameters } = useModel();
 
@@ -306,6 +306,7 @@ export function ChatView({ sessionId }: ChatViewProps) {
         isRegenerating={isLoading}
         onSuggestionClick={handleSuggestionClick}
         onQuote={handleQuote}
+        onDelete={deleteMessage}
       />
 
       {/* Bookmark Panel - with slide-in animation */}

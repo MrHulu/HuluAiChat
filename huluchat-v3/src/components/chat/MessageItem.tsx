@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Message } from "@/api/client";
 import { Button } from "@/components/ui/button";
-import { Pencil, Check, X, Bookmark, BookmarkCheck, Copy, Clock, RefreshCw, Quote } from "lucide-react";
+import { Pencil, Check, X, Bookmark, BookmarkCheck, Copy, Clock, RefreshCw, Quote, Trash2 } from "lucide-react";
 import { CodeBlock } from "./CodeBlock";
 import { MermaidBlock } from "./MermaidBlock";
 import ReactMarkdown from "react-markdown";
@@ -104,6 +104,8 @@ export interface MessageItemProps {
   isRegenerating?: boolean;
   // Quote props
   onQuote?: (message: Message) => void;
+  // Delete props
+  onDelete?: (messageId: string) => void;
 }
 
 // Stable plugin references (defined outside component to avoid recreation)
@@ -175,6 +177,7 @@ export const MessageItem = memo(function MessageItem({
   onRegenerate,
   isRegenerating = false,
   onQuote,
+  onDelete,
 }: MessageItemProps) {
   const { t } = useTranslation();
   const isUser = message.role === "user";
@@ -497,6 +500,27 @@ export const MessageItem = memo(function MessageItem({
                 )}
               >
                 <Quote className="w-3 h-3 transition-transform duration-200 ease-out group-hover/quote:scale-110 group-hover/quote:-rotate-12" aria-hidden="true" />
+              </button>
+            )}
+            {/* Delete button for all messages - Cycle #155 */}
+            {onDelete && !isEditing && !isStreaming && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(message.id);
+                }}
+                aria-label={t("chat.deleteMessage")}
+                className={cn(
+                  "group/delete transition-all p-1 rounded",
+                  "opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  isUser
+                    ? "hover:bg-primary-foreground/10 text-primary-foreground/70"
+                    : "hover:bg-accent text-muted-foreground",
+                  "hover:text-destructive"
+                )}
+              >
+                <Trash2 className="w-3 h-3 transition-transform duration-200 ease-out group-hover/delete:scale-110" aria-hidden="true" />
               </button>
             )}
           </div>

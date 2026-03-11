@@ -172,6 +172,23 @@ export async function updateMessage(
 }
 
 /**
+ * Delete a message from a session
+ */
+export async function deleteMessage(
+  sessionId: string,
+  messageId: string
+): Promise<{ status: string; message_id: string }> {
+  const response = await fetch(
+    `${API_BASE}/chat/${sessionId}/messages/${messageId}`,
+    { method: "DELETE" }
+  );
+  if (!response.ok) {
+    throw new Error(`Failed to delete message: ${response.statusText}`);
+  }
+  return response.json();
+}
+
+/**
  * Create WebSocket connection for chat
  */
 export function createChatWebSocket(sessionId: string): WebSocket {
