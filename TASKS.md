@@ -1,16 +1,42 @@
 # 任务清单
 
+## 🔴 紧急任务（阻塞 Boss 工作）
+- [x] **TASK-152**: 🐛 设置页模型下拉框为空 ✅ 2026-03-11
+  - 问题: main.py 缺少服务器启动代码
+  - 修复: 添加 `if __name__ == "__main__": uvicorn.run()` 启动服务器
+  - 同时添加 `https://tauri.localhost` 到 CORS 允许列表
+  - Cycle #153
+
+- [x] **TASK-153**: 🐛 自动更新功能 URL 错误 ✅ 2026-03-11
+  - 问题: `generate-latest-json.js` 生成的文件名格式不正确
+  - 修复: 重写脚本，按实际 GitHub Release 文件名格式生成
+  - Windows: `HuluChat_${version}_x64_en-US.msi`
+  - macOS: `HuluChat_${version}_${arch}.dmg`
+  - Linux: `HuluChat_${version}_amd64.AppImage`
+  - Cycle #153
+
+- [x] **TASK-150**: 🔧 修复 CI - ESLint 错误 ✅ 2026-03-11
+  - 文件: `ChatInput.tsx` Line 101, 132
+  - 问题: `useCallback` 依赖数组不正确
+  - 修复: 依赖改为 `[t, images.length]` 和 `[t, files.length]`
+  - Cycle #150
+
+- [x] **TASK-151**: 🚀 发布 GitHub Release（最新版本）✅ 2026-03-11
+  - 原因: Boss 需要最新版本准备素材
+  - 前置: TASK-150 ✅ 完成，可以发布
+  - 发布: https://github.com/MrHulu/HuluAiChat/releases/tag/v3.52.0
+  - Cycle #150
+
 ## 进行中
-<!-- 当前没有进行中的任务 -->
+- [x] **TASK-129**: 🚀 README 优化 ✅ 2026-03-11
+  - 修复缺失的图片引用（Demo GIF、截图占位符）
+  - 更新功能列表（添加文件上传、消息引用、交互增强等）
+  - 优化营销文案（Why HuluChat 部分）
+  - **修正 GitHub URL**：`MrHulu/HuluChat` → `MrHulu/HuluAiChat`
+  - Cycle #150
 
 ## 待开始
 <!-- 新任务添加到这里 -->
-- [ ] **TASK-129**: 🚀 规划并开发 v3.52.0 - README 优化（暂缓）
-  - 状态：已调整
-  - 原内容：官网上线 + README 优化
-  - ⚠️ **调整原因**：Boss 要求先做文件上传功能
-  - ⚠️ **官网发布推迟**：素材未准备好
-
 - [ ] **TASK-122**: 🎨 UI/UX 美化优化（持续进行）
   - 状态：长期任务，持续进行
   - 方向：界面美化、交互优化、视觉一致性
@@ -28,6 +54,14 @@
 - 📄 **文档**：CLAUDE.md 和 PROMPT.md 已明确记录此要求
 
 ## 已完成
+- [x] **TASK-122**: 🎨 UI/UX 美化优化 - 消息发送成功反馈 ✅ 2026-03-11
+  - ChatInput 添加发送成功反馈动画
+  - 发送按钮短暂显示 Check 图标 + "已发送" 文字
+  - 1.5 秒后自动恢复正常状态
+  - i18n EN/ZH 翻译
+  - 新增 3 个测试用例
+  - Cycle #149
+
 - [x] **TASK-122**: 🎨 UI/UX 美化优化 - 按钮涟漪效果 ✅ 2026-03-11
   - 新增 Ripple 组件实现点击涟漪动画
   - Button 组件集成 Ripple 效果

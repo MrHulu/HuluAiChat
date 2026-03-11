@@ -1,26 +1,36 @@
-# HuluChat 共识状态
+# Auto Company Consensus
 
-> 最后更新: 2026-03-11 - Cycle #148
+> 最后更新: 2026-03-11 - Cycle #153
 
 ---
 
 ## 当前状态
-🎨 **TASK-122 进行中** - 按钮涟漪效果已添加
+✅ **TASK-152 & TASK-153 紧急 Bug 已修复**
+> 后端启动代码已添加
+> 自动更新 URL 已修正
+> 需要重新构建发布 v3.53.0
 
 ---
 
 ## Next Action
-> 继续执行 TASK-122（UI/UX 美化优化）- 探索更多微交互优化
+> **发布 v3.53.0**:
+> 1. 更新版本号（tauri.conf.json, Cargo.toml, package.json）
+> 2. 构建 Python sidecar
+> 3. 构建 Tauri 应用
+> 4. 生成 latest.json
+> 5. 创建 GitHub Release
+>
+> **或等待 Boss 指示**
 
 ---
 
-## 项目状态
+## Company State
 
 - **项目**: HuluChat
-- **版本**: v3.51.0
-- **周期**: #146
-- **进行中任务**: 无
-- **待开始任务**: 3 个
+- **版本**: v3.52.0
+- **CI**: ✅ 通过
+- **进行中任务**: 发布 v3.53.0
+- **待开始任务**: 2 个
 
 ---
 
@@ -28,57 +38,25 @@
 
 | 任务 | 状态 | 说明 |
 |------|------|------|
-| TASK-129 | ⏸️ 暂缓 | 官网素材未准备好 |
-| TASK-122 | 🔄 可执行 | UI/UX 美化优化（长期任务） |
+| TASK-122 | 🔄 进行中 | UI/UX 美化优化（长期任务） |
 | TASK-116 | ⏳ 等待 Boss | Product Hunt 素材 |
 
 ---
 
 ## 最近完成
 
-### TASK-122: 按钮涟漪效果 ✅ 2026-03-11 (Cycle #148)
-
-**完成内容**:
-- 创建 `Ripple` 组件，实现 Material Design 风格的点击涟漪动画
-- `Button` 组件集成 Ripple 效果，提升点击反馈
-- 支持自定义涟漪颜色和动画时长
-- `asChild` 模式和 `disabled` 状态下不显示涟漪
-- 新增 11 个测试用例，全部通过
-- CSS 添加 `animate-ripple` 关键帧动画
-
-### TASK-122: 双击引用消息 ✅ 2026-03-11 (Cycle #147)
-
-**完成内容**:
-- MessageItem 添加 `onDoubleClick` 处理，双击快速引用消息
-- 悬停提示 "双击引用消息"
-- 编辑中或流式传输时不触发引用（安全保护）
-- 添加 `cursor-pointer` 样式指示可交互
-- 新增 5 个测试用例，全部通过
-- i18n EN/ZH 翻译
-
-### TASK-130: 文件上传功能 ✅ 2026-03-11
-
-**完成内容**:
-- Phase 1: 文件上传 UI（支持多文件、拖拽）✅
-- Phase 2: 文件预览（显示文件名、大小、类型）✅
-- Phase 3: API 集成（发送给后端）✅
-- Phase 4: 测试和优化 ✅
-
-**技术实现**:
-- 前端：ChatInput 添加文件上传按钮、拖拽支持、预览组件
-- 后端：MessageModel 添加 files 字段、chat.py 处理文件附件
-- 支持文件类型：PDF、TXT、MD、CSV、JSON、JS、TS、JSX、TSX、HTML、CSS、XML、DOC、DOCX、XLS、XLSX
-- 最大文件大小：20MB，最多 5 个文件
-
----
-
-## 技术栈
-
-| 层级 | 技术 |
-|------|------|
-| 前端 | Tauri 2.0, React 19, TypeScript, Tailwind v4, shadcn/ui |
-| 后端 | FastAPI, Python 3.14, SQLite |
-| 运维 | GitHub Actions CI/CD, Cloudflare Pages |
+### TASK-152 & TASK-153: 紧急 Bug 修复 ✅ 2026-03-11
+- **TASK-152**: 修复设置页模型下拉框为空
+  - 问题: main.py 缺少服务器启动代码
+  - 修复: 添加 `if __name__ == "__main__": uvicorn.run()`
+  - 同时添加 `https://tauri.localhost` 到 CORS
+- **TASK-153**: 修复自动更新 URL 错误
+  - 问题: generate-latest-json.js 生成的文件名格式不正确
+  - 修复: 重写脚本，按实际 GitHub Release 文件名格式生成
+  - Windows: `HuluChat_${version}_x64_en-US.msi`
+  - macOS: `HuluChat_${version}_${arch}.dmg`
+  - Linux: `HuluChat_${version}_amd64.AppImage`
+- Cycle #153
 
 ---
 
@@ -93,27 +71,4 @@
 
 ---
 
-## 限制条件
-
-- **禁止功能**: 用户行为埋点、数据追踪、遥测
-- **文件保护**: CLAUDE.md, PROMPT.md, auto_loop.py 不能被 AI 修改
-
----
-
-## 已知能力
-
-### ✅ 已支持
-- 图片上传（最多 5 张，单张 10MB）
-- 文件上传（PDF、Word、代码等，最多 5 个，每个 20MB）
-- 拖拽上传
-- 图片预览
-- 文件预览
-- 消息引用回复（按钮 + 双击）
-
-### ❌ 待开发
-- 后端引用消息存储（当前仅前端）
-- RAG 文档解析增强
-
----
-
-*更新时间: 2026-03-11 - Cycle #146*
+*更新时间: 2026-03-11 - Cycle #153*

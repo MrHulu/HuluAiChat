@@ -1,10 +1,22 @@
 {
-  "version": "3.8.0",
-  "date": "2026-03-04T00:00:00.000Z",
+  "version": "3.52.0",
+  "date": "2026-03-11T14:48:54.650Z",
   "platforms": {
     "x86_64-pc-windows-msvc": {
       "signature": "",
-      "url": "https://github.com/MrHulu/HuluAiChat/releases/download/v3.8.0/HuluChat_3.8.0_x86_64.msi"
+      "url": "https://github.com/MrHulu/HuluAiChat/releases/download/v3.52.0/HuluChat_3.52.0_x64_en-US.msi"
+    },
+    "x86_64-apple-darwin": {
+      "signature": "",
+      "url": "https://github.com/MrHulu/HuluAiChat/releases/download/v3.52.0/HuluChat_3.52.0_x64.dmg"
+    },
+    "aarch64-apple-darwin": {
+      "signature": "",
+      "url": "https://github.com/MrHulu/HuluAiChat/releases/download/v3.52.0/HuluChat_3.52.0_aarch64.dmg"
+    },
+    "x86_64-unknown-linux-gnu": {
+      "signature": "",
+      "url": "https://github.com/MrHulu/HuluAiChat/releases/download/v3.52.0/HuluChat_3.52.0_amd64.AppImage"
     }
   }
 }

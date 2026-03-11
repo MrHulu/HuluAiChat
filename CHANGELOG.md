@@ -2,7 +2,7 @@
 
 All notable changes to HuluChat will be documented in this file.
 
-## [3.52.0] - 2026-03-10
+## [3.52.0] - 2026-03-11
 
 ### ✨ Features
 
@@ -10,6 +10,11 @@ All notable changes to HuluChat will be documented in this file.
   - New "Custom Model" option in model selector
   - Free-form input for custom model IDs
   - Support for Zhipu GLM, Tongyi Qianwen, Moonshot, and other providers
+  - Full i18n support (English/Chinese)
+
+- **UI/UX Enhancements**:
+  - **Button Ripple Effect**: Material Design-style ripple animation on click
+  - **Send Success Feedback**: Visual confirmation when message is sent (checkmark + "Sent")
   - Full i18n support (English/Chinese)
 
 ### 🚀 Infrastructure
@@ -24,12 +29,15 @@ All notable changes to HuluChat will be documented in this file.
   - Hero section with clear value proposition
   - Feature highlights with visual hierarchy
   - Updated badges and download links
+  - Fixed GitHub URL references
   - Better SEO and discoverability
 
 ### 🧪 Testing
 
 - **Complete Test Coverage**: All major components tested
-  - 1498+ tests passing
+  - 760+ tests passing
+  - New tests for Ripple component (11 tests)
+  - New tests for send success feedback (3 tests)
   - UI components: Button, Input, Select, Dialog, CommandPalette, etc.
   - Feature components: PluginSettings, LanguageSelector, PromptTemplateSelector
 
