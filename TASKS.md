@@ -36,7 +36,13 @@
   - 包含后端服务设计、前端组件设计、API 端点设计
   - Tool Calling 集成流程
   - Cycle #165
-- [ ] **TASK-168**: 🐍 实现 Python MCP client（使用 mcp SDK）
+- [x] **TASK-168**: 🐍 实现 Python MCP client（使用 mcp SDK）✅ 2026-03-12
+  - 安装 mcp SDK (v1.26.0)
+  - 创建 models/mcp_server.py (数据模型)
+  - 创建 services/mcp_service.py (核心服务)
+  - 创建 api/mcp.py (REST API 端点)
+  - 更新 main.py 添加 MCP 路由
+  - Cycle #165
 - [ ] **TASK-169**: ⚙️ 创建 MCP 设置面板（Settings 新 Tab）
 - [ ] **TASK-170**: 🔗 集成 MCP tool calling 与现有聊天流
 - [ ] **TASK-171**: 🌐 添加 MCP i18n 支持（EN/ZH）
