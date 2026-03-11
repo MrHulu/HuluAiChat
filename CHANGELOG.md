@@ -2,6 +2,20 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [3.53.0] - 2026-03-11
+
+### 🐛 Bug Fixes
+
+- **TASK-152**: Fixed model dropdown empty in settings page
+  - Added missing `uvicorn.run()` call in `main.py`
+  - Added `https://tauri.localhost` to CORS origins
+
+- **TASK-153**: Fixed auto-update URL format
+  - Rewrote `generate-latest-json.js` to match actual GitHub Release filenames
+  - Windows: `HuluChat_${version}_x64_en-US.msi`
+  - macOS: `HuluChat_${version}_${arch}.dmg`
+  - Linux: `HuluChat_${version}_amd64.AppImage`
+
 ## [3.52.0] - 2026-03-11
 
 ### ✨ Features
