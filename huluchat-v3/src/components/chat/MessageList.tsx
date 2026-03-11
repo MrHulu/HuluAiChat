@@ -1,11 +1,12 @@
 /**
  * MessageList Component
- * 消息列表展示，支持流式消息和虚拟列表优化
+ * 消息列表展示，支持流式消息、虚拟列表优化和日期分组
  */
-import { useState, useEffect, useRef, useCallback, useImperativeHandle, forwardRef } from "react";
+import { useState, useEffect, useRef, useCallback, useImperativeHandle, forwardRef, useMemo } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Message } from "@/api/client";
 import { MessageItem } from "./MessageItem";
+import { DateSeparator } from "./DateSeparator";
 import { StreamingMessage } from "@/hooks/useChat";
 import { ThinkingLoaderImmersive } from "@/components/ui/loading";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -46,6 +47,43 @@ export function estimateMessageHeight(content: string): number {
   return baseHeight + lines * 24 + codeHeight;
 }
 
+/**
+ * 获取消息的日期键（用于分组）
+ */
+function getMessageDateKey(dateString: string): string {
+  const date = new Date(dateString);
+  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+}
+
+/**
+ * 虚拟列表项类型
+ */
+type VirtualItem =
+  | { type: "message"; message: Message; index: number }
+  | { type: "separator"; date: string };
+
+/**
+ * 构建虚拟列表项（包含日期分隔符）
+ */
+function buildVirtualItems(messages: Message[]): VirtualItem[] {
+  const items: VirtualItem[] = [];
+  let lastDateKey: string | null = null;
+
+  messages.forEach((message, index) => {
+    const dateKey = getMessageDateKey(message.created_at);
+
+    // 如果日期变化，插入分隔符
+    if (dateKey !== lastDateKey) {
+      items.push({ type: "separator", date: message.created_at });
+      lastDateKey = dateKey;
+    }
+
+    items.push({ type: "message", message, index });
+  });
+
+  return items;
+}
+
 export const MessageList = forwardRef<MessageListRef, MessageListProps>(function MessageList(
   { messages, streamingMessage, isLoading, onEditMessage, bookmarkedMessages, onBookmarkToggle, onSuggestionClick },
   ref
@@ -55,6 +93,9 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
   const bottomRef = useRef<HTMLDivElement>(null);
   const messageRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+
+  // 构建虚拟列表项（包含日期分隔符）
+  const virtualItems = useMemo(() => buildVirtualItems(messages), [messages]);
 
   // Expose scrollToMessage method via ref
   useImperativeHandle(ref, () => ({
@@ -73,11 +114,18 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
 
   // 虚拟列表配置
   const virtualizer = useVirtualizer({
-    count: messages.length,
+    count: virtualItems.length,
     getScrollElement: () => parentRef.current,
     estimateSize: useCallback((index: number) => {
-      return estimateMessageHeight(messages[index]?.content || "");
-    }, [messages]),
+      const item = virtualItems[index];
+      if (item?.type === "separator") {
+        return 48; // 日期分隔符高度
+      }
+      if (item?.type === "message") {
+        return estimateMessageHeight(item.message.content);
+      }
+      return 60;
+    }, [virtualItems]),
     overscan: 5, // 预渲染 5 条消息
   });
 
@@ -152,42 +200,69 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
         }}
       >
         {virtualizer.getVirtualItems().map((virtualItem) => {
-          const message = messages[virtualItem.index];
-          const bookmarkId = bookmarkedMessages?.get(message.id);
-          const isBookmarked = bookmarkId !== undefined;
-          return (
-            <div
-              key={message.id}
-              data-index={virtualItem.index}
-              ref={(el) => {
-                // Store ref for scroll-to-message
-                if (el) {
-                  messageRefs.current.set(message.id, el);
-                } else {
-                  messageRefs.current.delete(message.id);
-                }
-                // Also pass to virtualizer for measurement
-                virtualizer.measureElement(el);
-              }}
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                transform: `translateY(${virtualItem.start}px)`,
-                transition: "ring 0.3s ease",
-              }}
-              className="rounded-lg"
-            >
-              <MessageItem
-                message={message}
-                onEdit={onEditMessage}
-                isBookmarked={isBookmarked}
-                bookmarkId={bookmarkId}
-                onBookmarkToggle={onBookmarkToggle}
-              />
-            </div>
-          );
+          const item = virtualItems[virtualItem.index];
+
+          // 渲染日期分隔符
+          if (item?.type === "separator") {
+            return (
+              <div
+                key={`separator-${virtualItem.index}`}
+                data-index={virtualItem.index}
+                ref={(el) => virtualizer.measureElement(el)}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  transform: `translateY(${virtualItem.start}px)`,
+                }}
+              >
+                <DateSeparator date={item.date} />
+              </div>
+            );
+          }
+
+          // 渲染消息
+          if (item?.type === "message") {
+            const message = item.message;
+            const bookmarkId = bookmarkedMessages?.get(message.id);
+            const isBookmarked = bookmarkId !== undefined;
+            return (
+              <div
+                key={message.id}
+                data-index={virtualItem.index}
+                ref={(el) => {
+                  // Store ref for scroll-to-message
+                  if (el) {
+                    messageRefs.current.set(message.id, el);
+                  } else {
+                    messageRefs.current.delete(message.id);
+                  }
+                  // Also pass to virtualizer for measurement
+                  virtualizer.measureElement(el);
+                }}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  transform: `translateY(${virtualItem.start}px)`,
+                  transition: "ring 0.3s ease",
+                }}
+                className="rounded-lg"
+              >
+                <MessageItem
+                  message={message}
+                  onEdit={onEditMessage}
+                  isBookmarked={isBookmarked}
+                  bookmarkId={bookmarkId}
+                  onBookmarkToggle={onBookmarkToggle}
+                />
+              </div>
+            );
+          }
+
+          return null;
         })}
       </div>
 

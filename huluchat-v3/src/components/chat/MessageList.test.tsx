@@ -438,21 +438,30 @@ describe("MessageList", () => {
       // The estimateSize callback should have been captured
       expect(capturedEstimateSize).not.toBeNull();
 
-      // Test that estimateSize returns correct heights for each message
+      // Test that estimateSize returns correct heights for each item
+      // With date separators, the structure is:
+      // Index 0: date separator (48px)
+      // Index 1: first message
+      // Index 2: second message
       if (capturedEstimateSize) {
-        const height0 = capturedEstimateSize(0);
-        const height1 = capturedEstimateSize(1);
+        const height0 = capturedEstimateSize(0); // Date separator
+        const height1 = capturedEstimateSize(1); // First message
+        const height2 = capturedEstimateSize(2); // Second message
 
-        // Both heights should be positive
+        // All heights should be positive
         expect(height0).toBeGreaterThan(0);
         expect(height1).toBeGreaterThan(0);
+        expect(height2).toBeGreaterThan(0);
+
+        // Index 0 is the date separator (48px)
+        expect(height0).toBe(48);
 
         // Longer message should have greater height
-        expect(height1).toBeGreaterThan(height0);
+        expect(height2).toBeGreaterThan(height1);
 
-        // Verify heights match estimateMessageHeight function
-        expect(height0).toBe(estimateMessageHeight("Short"));
-        expect(height1).toBe(estimateMessageHeight("This is a much longer message content that definitely spans multiple lines and should result in a greater height estimation"));
+        // Verify heights match estimateMessageHeight function for messages
+        expect(height1).toBe(estimateMessageHeight("Short"));
+        expect(height2).toBe(estimateMessageHeight("This is a much longer message content that definitely spans multiple lines and should result in a greater height estimation"));
       }
     });
 
@@ -469,11 +478,15 @@ describe("MessageList", () => {
       expect(capturedEstimateSize).not.toBeNull();
 
       if (capturedEstimateSize) {
-        // Test valid index
+        // Test valid index 0 (date separator)
         const height0 = capturedEstimateSize(0);
-        expect(height0).toBeGreaterThan(0);
+        expect(height0).toBe(48); // Date separator height
 
-        // Test out-of-bounds index (should use fallback empty string)
+        // Test valid index 1 (message)
+        const height1 = capturedEstimateSize(1);
+        expect(height1).toBeGreaterThan(0);
+
+        // Test out-of-bounds index (should use fallback)
         const heightOutOfBounds = capturedEstimateSize(999);
         expect(heightOutOfBounds).toBe(60); // Base height for empty content
       }
