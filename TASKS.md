@@ -31,7 +31,11 @@
   - Cycle #164
 
 ### Phase 2: MCP 支持 (核心功能)
-- [ ] **TASK-167**: 🏗️ 设计 MCP 架构（前端面板 + 后端 client）
+- [x] **TASK-167**: 🏗️ 设计 MCP 架构（前端面板 + 后端 client）✅ 2026-03-12
+  - 架构设计文档: docs/cto/mcp-architecture.md
+  - 包含后端服务设计、前端组件设计、API 端点设计
+  - Tool Calling 集成流程
+  - Cycle #165
 - [ ] **TASK-168**: 🐍 实现 Python MCP client（使用 mcp SDK）
 - [ ] **TASK-169**: ⚙️ 创建 MCP 设置面板（Settings 新 Tab）
 - [ ] **TASK-170**: 🔗 集成 MCP tool calling 与现有聊天流
