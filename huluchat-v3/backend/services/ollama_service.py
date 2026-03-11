@@ -21,9 +21,14 @@ class OllamaService:
 
     @property
     def client(self) -> httpx.AsyncClient:
-        """Lazy initialization of HTTP client."""
+        """Lazy initialization of HTTP client with configurable timeout."""
         if self._client is None:
-            timeout = httpx.Timeout(settings.ollama_timeout, connect=10.0)
+            timeout = httpx.Timeout(
+                connect=settings.http_connect_timeout,
+                read=settings.ollama_timeout,
+                write=settings.ollama_timeout,
+                pool=settings.http_connect_timeout,
+            )
             self._client = httpx.AsyncClient(
                 base_url=self._base_url,
                 timeout=timeout,

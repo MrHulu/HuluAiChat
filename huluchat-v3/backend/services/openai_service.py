@@ -4,7 +4,8 @@ from typing import AsyncIterator, Optional, Union, List
 from dataclasses import dataclass
 
 from openai import AsyncOpenAI
-from openai import APIConnectionError, APIStatusError
+from openai import APIConnectionError, APIStatusError, APITimeoutError
+import httpx
 
 from core.config import settings
 
@@ -31,13 +32,21 @@ class OpenAIService:
 
     @property
     def client(self) -> AsyncOpenAI:
-        """Lazy initialization of OpenAI client."""
+        """Lazy initialization of OpenAI client with configurable timeout."""
         if self._client is None:
             if not settings.openai_api_key:
                 raise ValueError("OpenAI API key not configured")
+            # Configure timeout for OpenAI requests
+            timeout = httpx.Timeout(
+                connect=settings.http_connect_timeout,
+                read=settings.openai_timeout,
+                write=settings.http_read_timeout,
+                pool=settings.http_connect_timeout,
+            )
             self._client = AsyncOpenAI(
                 api_key=settings.openai_api_key,
                 base_url=settings.openai_base_url,
+                timeout=timeout,
             )
         return self._client
 
@@ -88,6 +97,10 @@ class OpenAIService:
             logger.error(f"API connection error: {e}")
             yield StreamChunk(content="", error=f"连接失败: {str(e)}")
 
+        except APITimeoutError as e:
+            logger.error(f"API timeout error: {e}")
+            yield StreamChunk(content="", error=f"请求超时，请稍后重试")
+
         except APIStatusError as e:
             logger.error(f"API status error: {e.status_code} {e.message}")
             yield StreamChunk(content="", error=f"请求失败: {e.message}")
@@ -117,12 +130,21 @@ def get_client_for_provider(provider: str) -> AsyncOpenAI:
     Raises:
         ValueError: If provider is unknown or API key not configured
     """
+    # Configure timeout for all providers
+    timeout = httpx.Timeout(
+        connect=settings.http_connect_timeout,
+        read=settings.openai_timeout,
+        write=settings.http_read_timeout,
+        pool=settings.http_connect_timeout,
+    )
+
     if provider == "deepseek":
         if not settings.deepseek_api_key:
             raise ValueError("DeepSeek API key not configured")
         return AsyncOpenAI(
             api_key=settings.deepseek_api_key,
             base_url=settings.deepseek_base_url,
+            timeout=timeout,
         )
     elif provider == "openai":
         if not settings.openai_api_key:
@@ -130,11 +152,20 @@ def get_client_for_provider(provider: str) -> AsyncOpenAI:
         return AsyncOpenAI(
             api_key=settings.openai_api_key,
             base_url=settings.openai_base_url,
+            timeout=timeout,
         )
     elif provider == "ollama":
+        # Use longer timeout for Ollama (local inference may be slow)
+        ollama_timeout = httpx.Timeout(
+            connect=settings.http_connect_timeout,
+            read=settings.ollama_timeout,
+            write=settings.ollama_timeout,
+            pool=settings.http_connect_timeout,
+        )
         return AsyncOpenAI(
             api_key="ollama",  # Ollama doesn't need a real API key
             base_url=f"{settings.ollama_base_url}/v1",
+            timeout=ollama_timeout,
         )
     else:
         raise ValueError(f"Unknown provider: {provider}")
