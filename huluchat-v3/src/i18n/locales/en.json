@@ -122,6 +122,7 @@
     "bookmarkError": "Failed to update bookmark",
     "bookmarkLoadError": "Failed to load bookmarks",
     "noBookmarks": "No bookmarks in this chat",
+    "scrollToBottom": "Scroll to bottom",
     "exportJSON": "Export as JSON",
     "exportMarkdown": "Export as Markdown",
     "exportSuccess": "Bookmarks exported successfully",
