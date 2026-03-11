@@ -28,6 +28,15 @@
 - 📄 **文档**：CLAUDE.md 和 PROMPT.md 已明确记录此要求
 
 ## 已完成
+- [x] **TASK-122**: 🎨 UI/UX 美化优化 - 双击引用消息 ✅ 2026-03-11
+  - MessageItem 添加 onDoubleClick 处理，双击快速引用
+  - 悬停提示 "双击引用消息"
+  - 编辑中或流式传输时不触发引用
+  - 添加 cursor-pointer 样式指示可交互
+  - 新增 5 个测试用例
+  - i18n EN/ZH 翻译
+  - Cycle #146
+
 - [x] **TASK-122**: 🎨 UI/UX 美化优化 - 消息引用回复功能 ✅ 2026-03-11
   - MessageItem 添加引用按钮（Quote 图标）
   - ChatInput 添加引用预览显示
