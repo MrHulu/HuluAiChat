@@ -36,7 +36,7 @@ describe("EmptyState", () => {
     );
 
     expect(smContainer.firstChild).toHaveClass("py-4");
-    expect(lgContainer.firstChild).toHaveClass("p-8");
+    expect(lgContainer.firstChild).toHaveClass("p-10");
   });
 
   it("has correct accessibility attributes", () => {
