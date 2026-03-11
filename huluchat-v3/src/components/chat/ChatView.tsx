@@ -15,6 +15,7 @@ import {
   updateMessage,
   ImageContent,
   FileAttachment,
+  Message,
   queryRAGDocuments,
   listRAGDocuments,
   getSessionBookmarks,
@@ -92,6 +93,9 @@ export function ChatView({ sessionId }: ChatViewProps) {
   const [isBookmarkPanelOpen, setIsBookmarkPanelOpen] = useState(false);
   const [bookmarkedMessages, setBookmarkedMessages] = useState<Map<string, string>>(new Map());
 
+  // Quote state - Cycle #145
+  const [quoteMessage, setQuoteMessage] = useState<Message | null>(null);
+
   // Load bookmarks when session changes
   const loadBookmarks = useCallback(async () => {
     if (!sessionId) return;
@@ -146,6 +150,15 @@ export function ChatView({ sessionId }: ChatViewProps) {
     messageListRef.current?.scrollToMessage(messageId);
   };
 
+  // Quote handlers - Cycle #145
+  const handleQuote = useCallback((message: Message) => {
+    setQuoteMessage(message);
+  }, []);
+
+  const handleCancelQuote = useCallback(() => {
+    setQuoteMessage(null);
+  }, []);
+
   // Check for documents when RAG panel opens
   const checkDocuments = async () => {
     try {
@@ -169,6 +182,9 @@ export function ChatView({ sessionId }: ChatViewProps) {
   const isDisabled = connectionStatus !== "connected" || isLoading;
 
   const handleSend = async (content: string, images?: ImageContent[], files?: FileAttachment[]) => {
+    // Clear quote after sending - Cycle #145
+    setQuoteMessage(null);
+
     // If RAG is enabled and we have documents, query for context
     if (isRAGPanelOpen && hasDocuments) {
       try {
@@ -289,6 +305,7 @@ export function ChatView({ sessionId }: ChatViewProps) {
         onRegenerate={regenerateMessage}
         isRegenerating={isLoading}
         onSuggestionClick={handleSuggestionClick}
+        onQuote={handleQuote}
       />
 
       {/* Bookmark Panel - with slide-in animation */}
@@ -321,6 +338,8 @@ export function ChatView({ sessionId }: ChatViewProps) {
             ? t("chat.selectSessionToChat")
             : t("chat.typeMessage")
         }
+        quoteMessage={quoteMessage}
+        onCancelQuote={handleCancelQuote}
       />
     </div>
   );

@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Message } from "@/api/client";
 import { Button } from "@/components/ui/button";
-import { Pencil, Check, X, Bookmark, BookmarkCheck, Copy, Clock, RefreshCw } from "lucide-react";
+import { Pencil, Check, X, Bookmark, BookmarkCheck, Copy, Clock, RefreshCw, Quote } from "lucide-react";
 import { CodeBlock } from "./CodeBlock";
 import { MermaidBlock } from "./MermaidBlock";
 import ReactMarkdown from "react-markdown";
@@ -102,6 +102,8 @@ export interface MessageItemProps {
   // Regenerate props
   onRegenerate?: (messageId: string) => void;
   isRegenerating?: boolean;
+  // Quote props
+  onQuote?: (message: Message) => void;
 }
 
 // Stable plugin references (defined outside component to avoid recreation)
@@ -172,6 +174,7 @@ export const MessageItem = memo(function MessageItem({
   onBookmarkToggle,
   onRegenerate,
   isRegenerating = false,
+  onQuote,
 }: MessageItemProps) {
   const { t } = useTranslation();
   const isUser = message.role === "user";
@@ -464,6 +467,26 @@ export const MessageItem = memo(function MessageItem({
                 )}
               >
                 <Pencil className="w-3 h-3 transition-transform duration-200 ease-out group-hover/edit:rotate-12" aria-hidden="true" />
+              </button>
+            )}
+            {/* Quote/Reply button for all messages - Cycle #145 */}
+            {onQuote && !isEditing && !isStreaming && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onQuote(message);
+                }}
+                aria-label={t("chat.quote")}
+                className={cn(
+                  "group/quote transition-all p-1 rounded",
+                  "opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  isUser
+                    ? "hover:bg-primary-foreground/10 text-primary-foreground/70"
+                    : "hover:bg-accent text-muted-foreground"
+                )}
+              >
+                <Quote className="w-3 h-3 transition-transform duration-200 ease-out group-hover/quote:scale-110 group-hover/quote:-rotate-12" aria-hidden="true" />
               </button>
             )}
           </div>

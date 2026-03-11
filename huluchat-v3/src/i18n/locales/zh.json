@@ -149,7 +149,10 @@
     "characterCount": "{{count}} 字符",
     "expandCode": "展开代码",
     "collapseCode": "折叠代码",
-    "showMoreLines": "显示全部 {{count}} 行"
+    "showMoreLines": "显示全部 {{count}} 行",
+    "quote": "引用",
+    "quotingMessage": "正在引用消息",
+    "cancelQuote": "取消引用"
   },
   "settings": {
     "title": "设置",
