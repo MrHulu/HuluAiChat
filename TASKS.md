@@ -28,6 +28,14 @@
 - 📄 **文档**：CLAUDE.md 和 PROMPT.md 已明确记录此要求
 
 ## 已完成
+- [x] **TASK-122**: 🎨 UI/UX 美化优化 - 按钮涟漪效果 ✅ 2026-03-11
+  - 新增 Ripple 组件实现点击涟漪动画
+  - Button 组件集成 Ripple 效果
+  - 支持自定义颜色和动画时长
+  - asChild 模式不显示涟漪
+  - 新增 11 个测试用例
+  - Cycle #147
+
 - [x] **TASK-122**: 🎨 UI/UX 美化优化 - 双击引用消息 ✅ 2026-03-11
   - MessageItem 添加 onDoubleClick 处理，双击快速引用
   - 悬停提示 "双击引用消息"
