@@ -674,6 +674,51 @@
     }
   }
 
+  /* ═══════════════════════════════════════════════════════════════
+   * 🌈 Gradient Pulse Animation - WelcomeDialog enhancement (Cycle #130)
+   * ═══════════════════════════════════════════════════════════════ */
+  .animate-gradient-pulse {
+    animation: gradientPulse 3s ease-in-out infinite;
+    background-size: 200% 200%;
+  }
+
+  @keyframes gradientPulse {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  /* Glow ring animation for icons */
+  .animate-glow-ring {
+    animation: glowRing 2s ease-in-out infinite;
+  }
+
+  @keyframes glowRing {
+    0%, 100% {
+      box-shadow: 0 0 20px oklch(0.5 0.15 264 / 0.15);
+    }
+    50% {
+      box-shadow: 0 0 40px oklch(0.5 0.15 264 / 0.3);
+    }
+  }
+
+  /* Float animation for welcome icons */
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
   /* Shake subtle - for error feedback (Cycle #232) */
   .animate-shake-subtle {
     animation: shakeSubtle 0.4s ease-out;
