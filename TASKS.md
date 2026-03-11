@@ -28,6 +28,13 @@
 - 📄 **文档**：CLAUDE.md 和 PROMPT.md 已明确记录此要求
 
 ## 已完成
+- [x] **TASK-122**: 🎨 UI/UX 美化优化 - 消息复制按钮 ✅ 2026-03-11
+  - MessageItem 组件添加复制按钮
+  - 点击复制消息内容到剪贴板
+  - 复制成功显示 toast 提示
+  - 复制后图标变为对勾，2 秒后恢复
+  - Cycle #135
+
 - [x] **TASK-122**: 🎨 UI/UX 美化优化 - 空状态快捷提示 ✅ 2026-03-11
   - EmptyState 组件添加 hints 和 action 属性
   - MessageList 空状态显示快捷提示词
