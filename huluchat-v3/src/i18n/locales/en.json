@@ -90,6 +90,12 @@
     "selectSessionToChat": "Select a session to start chatting...",
     "startConversation": "Start a conversation",
     "startConversationHint": "Send a message to begin chatting with AI",
+    "suggestionHints": [
+      "Write a poem",
+      "Explain quantum computing",
+      "Help me code",
+      "Translate to Chinese"
+    ],
     "thinking": "Thinking...",
     "messageList": "Chat messages",
     "messageUpdated": "Message updated",

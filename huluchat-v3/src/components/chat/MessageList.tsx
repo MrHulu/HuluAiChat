@@ -24,6 +24,8 @@ export interface MessageListProps {
   // Bookmark props
   bookmarkedMessages?: Map<string, string>; // messageId -> bookmarkId
   onBookmarkToggle?: (messageId: string, isBookmarked: boolean, bookmarkId?: string) => void;
+  // Suggestion hints props
+  onSuggestionClick?: (suggestion: string) => void;
 }
 
 /**
@@ -44,7 +46,7 @@ export function estimateMessageHeight(content: string): number {
 }
 
 export const MessageList = forwardRef<MessageListRef, MessageListProps>(function MessageList(
-  { messages, streamingMessage, isLoading, onEditMessage, bookmarkedMessages, onBookmarkToggle },
+  { messages, streamingMessage, isLoading, onEditMessage, bookmarkedMessages, onBookmarkToggle, onSuggestionClick },
   ref
 ) {
   const { t } = useTranslation();
@@ -88,6 +90,9 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
 
   // 空状态
   if (messages.length === 0 && !streamingMessage) {
+    // Get suggestion hints from i18n
+    const suggestionHints = t("chat.suggestionHints", { returnObjects: true }) as string[];
+
     return (
       <div className="flex-1 flex items-center justify-center" role="status">
         <EmptyState
@@ -96,6 +101,8 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
           description={t("chat.startConversationHint")}
           size="lg"
           animated={true}
+          hints={onSuggestionClick ? suggestionHints : undefined}
+          onHintClick={onSuggestionClick}
         />
       </div>
     );
