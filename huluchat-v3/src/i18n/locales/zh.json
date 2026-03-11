@@ -133,7 +133,14 @@
       "stopRecording": "停止录音",
       "notSupported": "当前浏览器不支持语音输入"
     },
-    "streaming": "正在输入..."
+    "streaming": "正在输入...",
+    "time": {
+      "justNow": "刚刚",
+      "minutesAgo": "{{count}} 分钟前",
+      "hoursAgo": "{{count}} 小时前",
+      "yesterday": "昨天",
+      "daysAgo": "{{count}} 天前"
+    }
   },
   "settings": {
     "title": "设置",
