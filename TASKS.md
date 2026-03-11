@@ -28,6 +28,13 @@
 - 📄 **文档**：CLAUDE.md 和 PROMPT.md 已明确记录此要求
 
 ## 已完成
+- [x] **TASK-122**: 🎨 UI/UX 美化优化 - 消息引用回复功能 ✅ 2026-03-11
+  - MessageItem 添加引用按钮（Quote 图标）
+  - ChatInput 添加引用预览显示
+  - ChatView 添加引用状态管理
+  - i18n EN/ZH 翻译
+  - Cycle #145
+
 - [x] **TASK-122**: 🎨 UI/UX 美化优化 - AI 消息重新生成按钮 ✅ 2026-03-11
   - useChat hook 添加 regenerateMessage 函数
   - MessageItem 组件添加重新生成按钮（仅 AI 消息显示）
