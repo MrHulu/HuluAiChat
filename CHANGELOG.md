@@ -2,9 +2,31 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [3.54.0] - 2026-03-12
+
+### 🎨 UI/UX Enhancements
+
+- **Empty State Component Enhancement**:
+  - Improved visual hierarchy with decorative background glows for large size
+  - Enhanced dark mode effects with subtle gradients and shadows
+  - Better text contrast and depth
+  - Added relative positioning for proper layering
+  - Improved hint button hover effects
+
+- **Message Bubble Enhancement**:
+  - User messages: Gradient background with deeper shadow and glow effects
+  - AI messages: Enhanced left border with shadow and glow on hover
+  - Better visual feedback on interaction
+
+### 🧹 Code Cleanup
+
+- Removed unused `screen` import in `ripple.test.tsx`
+
+---
+
 ## [3.53.0] - 2026-03-11
 
-### 🐛 Bug Fixes
+
 
 - **TASK-152**: Fixed model dropdown empty in settings page
   - Added missing `uvicorn.run()` call in `main.py`
