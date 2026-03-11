@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Message } from "@/api/client";
 import { Button } from "@/components/ui/button";
-import { Pencil, Check, X, Bookmark, BookmarkCheck, Copy, Clock } from "lucide-react";
+import { Pencil, Check, X, Bookmark, BookmarkCheck, Copy, Clock, RefreshCw } from "lucide-react";
 import { CodeBlock } from "./CodeBlock";
 import { MermaidBlock } from "./MermaidBlock";
 import ReactMarkdown from "react-markdown";
@@ -99,6 +99,9 @@ export interface MessageItemProps {
   isBookmarked?: boolean;
   bookmarkId?: string;
   onBookmarkToggle?: (messageId: string, isBookmarked: boolean, bookmarkId?: string) => void;
+  // Regenerate props
+  onRegenerate?: (messageId: string) => void;
+  isRegenerating?: boolean;
 }
 
 // Stable plugin references (defined outside component to avoid recreation)
@@ -167,6 +170,8 @@ export const MessageItem = memo(function MessageItem({
   isBookmarked = false,
   bookmarkId,
   onBookmarkToggle,
+  onRegenerate,
+  isRegenerating = false,
 }: MessageItemProps) {
   const { t } = useTranslation();
   const isUser = message.role === "user";
@@ -418,6 +423,33 @@ export const MessageItem = memo(function MessageItem({
                 ) : (
                   <Bookmark className="w-3 h-3 transition-transform duration-200 ease-out group-hover/bookmark:scale-110" aria-hidden="true" />
                 )}
+              </button>
+            )}
+            {/* Regenerate button for AI messages - Cycle #143 */}
+            {!isUser && onRegenerate && !isEditing && !isStreaming && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRegenerate(message.id);
+                }}
+                aria-label={t("chat.regenerate")}
+                disabled={isRegenerating}
+                className={cn(
+                  "group/regenerate transition-all p-1 rounded",
+                  "opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  "hover:bg-accent text-muted-foreground hover:text-foreground",
+                  isRegenerating && "opacity-100 cursor-wait"
+                )}
+              >
+                <RefreshCw
+                  className={cn(
+                    "w-3 h-3 transition-transform duration-200 ease-out",
+                    "group-hover/regenerate:scale-110 group-hover/regenerate:rotate-180",
+                    isRegenerating && "animate-spin"
+                  )}
+                  aria-hidden="true"
+                />
               </button>
             )}
             {/* Edit button for user messages - Cycle #204 icon micro-interaction */}
