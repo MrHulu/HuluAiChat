@@ -5,6 +5,38 @@
 
 ## 待开始
 <!-- 新任务添加到这里 -->
+
+### Phase 1: 基础修复 (阻塞问题)
+- [ ] **TASK-160**: 🐛 修复测试内存溢出 - 拆分 App.test.tsx (1708行)，配置 Vitest 内存限制
+- [ ] **TASK-161**: 🔒 实现 Content Security Policy (CSP)
+- [ ] **TASK-162**: 🔧 提取 API_BASE 到环境变量
+- [ ] **TASK-163**: 🩺 添加后端 sidecar 进程健康监控和自动重启
+- [ ] **TASK-164**: 🔐 添加更新签名验证
+- [ ] **TASK-165**: 🔄 实现 WebSocket 指数退避重连策略
+- [ ] **TASK-166**: ⏱️ 添加 OpenAI/Ollama 请求超时配置
+
+### Phase 2: MCP 支持 (核心功能)
+- [ ] **TASK-167**: 🏗️ 设计 MCP 架构（前端面板 + 后端 client）
+- [ ] **TASK-168**: 🐍 实现 Python MCP client（使用 mcp SDK）
+- [ ] **TASK-169**: ⚙️ 创建 MCP 设置面板（Settings 新 Tab）
+- [ ] **TASK-170**: 🔗 集成 MCP tool calling 与现有聊天流
+- [ ] **TASK-171**: 🌐 添加 MCP i18n 支持（EN/ZH）
+- [ ] **TASK-172**: 📚 编写 MCP 使用文档
+
+### Phase 3: 用户功能增强
+- [ ] **TASK-173**: 🔍 智能消息搜索（跨会话搜索）
+- [ ] **TASK-174**: 📝 会话摘要与智能标题（AI 自动生成）
+- [ ] **TASK-175**: 📤 增强型导出（多选消息导出）- v3.56.0
+- [ ] **TASK-176**: 💬 提示词变量系统（模板变量插值）- v3.56.0
+- [ ] **TASK-177**: 🧠 本地偏好学习（模型推荐）- v3.56.0
+
+### 技术债务
+- [ ] **TASK-178**: 🗃️ 迁移到 Alembic 数据库迁移
+- [ ] **TASK-179**: ⚡ ChromaDB 异步化包装
+- [ ] **TASK-180**: 📊 添加复合数据库索引
+- [ ] **TASK-181**: 🔑 API Key 存储改用系统钥匙串
+
+### 等待 Boss
 - [ ] **TASK-116**: 🎬 准备 Product Hunt 发布素材(截图、视频) - 等待 Boss
 
 ## 已完成（最近）
