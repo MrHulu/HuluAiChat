@@ -109,12 +109,20 @@ export function WelcomeDialog({ open, onOpenChange, onComplete }: WelcomeDialogP
           ))}
         </div>
 
-        {/* Icon display with animation */}
+        {/* Icon display with enhanced animation */}
         <div className="flex justify-center py-6" aria-hidden="true">
-          <div className="w-24 h-24 flex items-center justify-center rounded-2xl bg-muted/50 dark:bg-muted/30 dark:border dark:border-white/10 dark:shadow-lg dark:shadow-black/20">
+          <div className={cn(
+            "w-24 h-24 flex items-center justify-center rounded-2xl",
+            "bg-gradient-to-br from-muted/60 to-muted/30",
+            "transition-all duration-300",
+            // Enhanced dark mode with animated glow - Cycle #130
+            "dark:bg-gradient-to-br dark:from-primary/10 dark:to-primary/5",
+            "dark:border dark:border-primary/20",
+            "dark:animate-glow-pulse"
+          )}>
             <span
               key={step.key}
-              className="text-6xl animate-bounce-in"
+              className="text-6xl animate-bounce-in animate-float"
             >
               {step.icon}
             </span>
