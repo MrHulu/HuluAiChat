@@ -2,7 +2,7 @@
  * MessageList Component
  * 消息列表展示，支持流式消息和虚拟列表优化
  */
-import { useEffect, useRef, useCallback, useImperativeHandle, forwardRef } from "react";
+import { useState, useEffect, useRef, useCallback, useImperativeHandle, forwardRef } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Message } from "@/api/client";
 import { MessageItem } from "./MessageItem";
@@ -11,6 +11,7 @@ import { ThinkingLoaderImmersive } from "@/components/ui/loading";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
+import { ArrowDown } from "lucide-react";
 
 export interface MessageListRef {
   scrollToMessage: (messageId: string) => void;
@@ -53,6 +54,7 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
   const parentRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const messageRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
 
   // Expose scrollToMessage method via ref
   useImperativeHandle(ref, () => ({
@@ -87,6 +89,31 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages.length, streamingMessage?.content]);
+
+  // 监听滚动，显示/隐藏滚动到底部按钮 - Cycle #139
+  useEffect(() => {
+    const scrollElement = parentRef.current;
+    if (!scrollElement) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = scrollElement;
+      // 距离底部超过 150px 时显示按钮
+      const isNearBottom = scrollHeight - scrollTop - clientHeight < 150;
+      setShowScrollToBottom(!isNearBottom);
+    };
+
+    scrollElement.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll(); // 初始检查
+
+    return () => {
+      scrollElement.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  // 滚动到底部 - Cycle #139
+  const scrollToBottom = useCallback(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, []);
 
   // 空状态
   if (messages.length === 0 && !streamingMessage) {
@@ -203,6 +230,29 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
 
       {/* 滚动锚点 */}
       <div ref={bottomRef} />
+
+      {/* 滚动到底部按钮 - Cycle #139 */}
+      {showScrollToBottom && (
+        <button
+          onClick={scrollToBottom}
+          aria-label={t("chat.scrollToBottom")}
+          className={cn(
+            "absolute bottom-6 right-6 z-10",
+            "flex items-center justify-center",
+            "w-10 h-10 rounded-full",
+            "bg-primary text-primary-foreground shadow-lg",
+            "hover:bg-primary/90 hover:scale-110",
+            "active:scale-95",
+            "transition-all duration-200 ease-out",
+            "animate-in fade-in zoom-in duration-200",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            // Dark mode enhancements
+            "dark:shadow-[0_4px_20px_oklch(0.488_0.243_264.376/0.4)]"
+          )}
+        >
+          <ArrowDown className="w-5 h-5" aria-hidden="true" />
+        </button>
+      )}
     </div>
   );
 });
