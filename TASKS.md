@@ -7,7 +7,11 @@
 <!-- 新任务添加到这里 -->
 
 ### Phase 1: 基础修复 (阻塞问题)
-- [ ] **TASK-161**: 🔒 实现 Content Security Policy (CSP)
+- [x] **TASK-161**: 🔒 实现 Content Security Policy (CSP) ✅ 2026-03-12
+  - 生产环境 CSP：严格策略
+  - 开发环境 CSP：支持 Vite dev server
+  - 允许资源：本地 API、WebSocket、Ollama、OpenAI API
+  - Cycle #164
 - [ ] **TASK-162**: 🔧 提取 API_BASE 到环境变量
 - [ ] **TASK-163**: 🩺 添加后端 sidecar 进程健康监控和自动重启
 - [ ] **TASK-164**: 🔐 添加更新签名验证
