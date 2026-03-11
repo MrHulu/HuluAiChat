@@ -385,3 +385,28 @@ async def update_message(
         "content": message.content,
         "created_at": message.created_at.isoformat(),
     }
+
+
+@router.delete("/{session_id}/messages/{message_id}")
+async def delete_message(
+    session_id: str,
+    message_id: str,
+    db: AsyncSession = Depends(get_db_session),
+):
+    """Delete a message from a session."""
+    from fastapi import HTTPException
+
+    result = await db.execute(
+        select(MessageModel)
+        .where(MessageModel.id == message_id)
+        .where(MessageModel.session_id == session_id)
+    )
+    message = result.scalar_one_or_none()
+
+    if not message:
+        raise HTTPException(status_code=404, detail="Message not found")
+
+    await db.delete(message)
+    await db.commit()
+
+    return {"status": "deleted", "message_id": message_id}

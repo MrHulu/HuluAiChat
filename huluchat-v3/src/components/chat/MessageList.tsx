@@ -33,6 +33,8 @@ export interface MessageListProps {
   onSuggestionClick?: (suggestion: string) => void;
   // Quote props - Cycle #145
   onQuote?: (message: Message) => void;
+  // Delete props
+  onDelete?: (messageId: string) => void;
 }
 
 /**
@@ -90,7 +92,7 @@ function buildVirtualItems(messages: Message[]): VirtualItem[] {
 }
 
 export const MessageList = forwardRef<MessageListRef, MessageListProps>(function MessageList(
-  { messages, streamingMessage, isLoading, onEditMessage, bookmarkedMessages, onBookmarkToggle, onRegenerate, isRegenerating, onSuggestionClick, onQuote },
+  { messages, streamingMessage, isLoading, onEditMessage, bookmarkedMessages, onBookmarkToggle, onRegenerate, isRegenerating, onSuggestionClick, onQuote, onDelete },
   ref
 ) {
   const { t } = useTranslation();
@@ -265,6 +267,7 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
                   onRegenerate={onRegenerate}
                   isRegenerating={isRegenerating}
                   onQuote={onQuote}
+                  onDelete={onDelete}
                 />
               </div>
             );

@@ -157,7 +157,12 @@
     "quote": "Quote",
     "quotingMessage": "Quoting message",
     "cancelQuote": "Cancel quote",
-    "doubleClickToQuote": "Double-click to quote"
+    "doubleClickToQuote": "Double-click to quote",
+    "deleteMessage": "Delete message",
+    "messageDeleted": "Message deleted",
+    "deleteMessageConfirm": "Are you sure you want to delete this message?",
+    "confirmDelete": "Yes, delete",
+    "cancel": "Cancel"
   },
   "settings": {
     "title": "Settings",
