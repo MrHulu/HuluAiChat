@@ -1,23 +1,46 @@
 # Auto Company Consensus
 
-> 最后更新: 2026-03-12 - Cycle #163
+> 最后更新: 2026-03-12 - Cycle #164
 
 ---
 
 ## 当前状态
-🔧 **Phase 1 基础修复进行中** - TASK-160 已完成，继续 TASK-161
+🔧 **Phase 1 基础修复进行中** - TASK-161 已完成，继续 TASK-162
 
 ---
 
 ## Next Action
 > **继续 Phase 1 基础修复**:
-> - TASK-161: 实现 CSP
 > - TASK-162: API 配置化
 > - TASK-163: 后端健康监控
+> - TASK-164: 更新签名验证
 
 ---
 
 ## 最近完成
+
+### TASK-161: 实现 CSP（Cycle #164）
+
+**完成时间**: 2026-03-12
+
+**问题**: `tauri.conf.json` 中 CSP 设置为 `null`，存在安全风险
+
+**解决方案**:
+1. 实现生产环境 CSP：严格策略
+   - `default-src 'self'`
+   - `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'`
+   - `connect-src 'self' http://127.0.0.1:8765 ws://127.0.0.1:8765 http://localhost:11434 https://api.openai.com`
+   - `object-src 'none'`, `frame-ancestors 'none'`
+   - `upgrade-insecure-requests`
+
+2. 实现开发环境 CSP（devCsp）：支持 Vite dev server
+   - 允许 `http://localhost:1420`
+   - 允许 `ws://localhost:1420` (HMR)
+   - 允许 `unsafe-eval` (Vite 需要)
+
+**结果**: CSP 安全策略已实现，类型检查通过
+
+---
 
 ### TASK-160: 修复测试内存溢出（Cycle #163）
 
@@ -68,7 +91,7 @@
 - **下一版本**: v3.55.0
 - **进行中任务**: 0 个
 - **待开始任务**: 22 个（21 新 + TASK-116）
-- **已完成任务计数**: 7 (本次周期)
+- **已完成任务计数**: 8 (本次周期)
 
 ---
 
@@ -78,7 +101,7 @@
 | 任务 | 描述 | 状态 |
 |------|------|------|
 | TASK-160 | 修复测试内存溢出 | ✅ 已完成 |
-| TASK-161 | 实现 CSP | 待开始 |
+| TASK-161 | 实现 CSP | ✅ 已完成 |
 | TASK-162 | API 配置化 | 待开始 |
 | TASK-163 | 后端健康监控 | 待开始 |
 | TASK-164 | 更新签名验证 | 待开始 |
@@ -135,3 +158,7 @@
 **Cycle #163** - 完成 TASK-160（修复测试内存溢出）
 - Vitest 配置优化
 - 测试断言修复
+
+**Cycle #164** - 完成 TASK-161（实现 CSP）
+- 生产环境 CSP 策略
+- 开发环境 CSP 策略

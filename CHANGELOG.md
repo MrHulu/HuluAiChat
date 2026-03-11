@@ -2,6 +2,17 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [3.55.0] - 2026-03-12 (In Progress)
+
+### 🔒 Security
+
+- **TASK-161**: Implemented Content Security Policy (CSP)
+  - Production CSP: Strict policy for built application
+  - Development CSP: Relaxed policy for Vite dev server
+  - Allowed resources: Local API, WebSocket, Ollama, OpenAI API
+  - Blocked: `object-src 'none'`, `frame-ancestors 'none'`
+  - Added `upgrade-insecure-requests` for production
+
 ## [3.54.0] - 2026-03-12
 
 ### 🎨 UI/UX Enhancements
