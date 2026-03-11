@@ -10,6 +10,7 @@ import { RAGPanel } from "@/components/rag";
 import { BookmarkPanel } from "./BookmarkPanel";
 import { useChat, useModel } from "@/hooks";
 import { ConnectionStatus } from "@/hooks/useWebSocket";
+import { ToolCall } from "@/hooks/useChat";
 import { cn } from "@/lib/utils";
 import {
   updateMessage,
@@ -24,7 +25,7 @@ import {
 } from "@/api/client";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { Bookmark } from "lucide-react";
+import { Bookmark, CheckCircle, XCircle, Loader2 } from "lucide-react";
 
 export interface ChatViewProps {
   sessionId: string | null;
@@ -76,9 +77,58 @@ function ConnectionIndicator({ status }: { status: ConnectionStatus }) {
   );
 }
 
+function ToolCallsIndicator({ toolCalls }: { toolCalls: ToolCall[] }) {
+  const { t } = useTranslation();
+
+  if (toolCalls.length === 0) return null;
+
+  return (
+    <div className="px-4 py-2 border-b border-border bg-muted/30">
+      <div className="space-y-1.5">
+        {toolCalls.map((tc, index) => (
+          <div
+            key={`${tc.server_name}-${tc.tool_name}-${index}`}
+            className="flex items-center gap-2 text-xs"
+          >
+            {tc.status === "calling" && (
+              <>
+                <Loader2 className="h-3.5 w-3.5 text-primary animate-spin" />
+                <span className="text-muted-foreground">
+                  {t("chat.toolCalling", { server: tc.server_name, tool: tc.tool_name })}
+                </span>
+              </>
+            )}
+            {tc.status === "success" && (
+              <>
+                <CheckCircle className="h-3.5 w-3.5 text-success" />
+                <span className="text-muted-foreground">
+                  {t("chat.toolSuccess", { server: tc.server_name, tool: tc.tool_name })}
+                </span>
+              </>
+            )}
+            {tc.status === "error" && (
+              <>
+                <XCircle className="h-3.5 w-3.5 text-error" />
+                <span className="text-muted-foreground">
+                  {t("chat.toolError", { server: tc.server_name, tool: tc.tool_name })}
+                </span>
+                {tc.error && (
+                  <span className="text-error truncate max-w-[200px]" title={tc.error}>
+                    : {tc.error}
+                  </span>
+                )}
+              </>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function ChatView({ sessionId }: ChatViewProps) {
   const { t } = useTranslation();
-  const { messages, streamingMessage, connectionStatus, sendMessage, regenerateMessage, deleteMessage, isLoading, refreshMessages } =
+  const { messages, streamingMessage, toolCalls, connectionStatus, sendMessage, regenerateMessage, deleteMessage, isLoading, refreshMessages } =
     useChat(sessionId);
   const { currentModel, models, setModel, isLoading: isLoadingModels, parameters } = useModel();
 
@@ -308,6 +358,9 @@ export function ChatView({ sessionId }: ChatViewProps) {
         onQuote={handleQuote}
         onDelete={deleteMessage}
       />
+
+      {/* Tool Calls Indicator */}
+      <ToolCallsIndicator toolCalls={toolCalls} />
 
       {/* Bookmark Panel - with slide-in animation */}
       {isBookmarkPanelOpen && sessionId && (

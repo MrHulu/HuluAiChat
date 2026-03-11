@@ -162,7 +162,10 @@
     "messageDeleted": "Message deleted",
     "deleteMessageConfirm": "Are you sure you want to delete this message?",
     "confirmDelete": "Yes, delete",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "toolCalling": "Calling {{server}}: {{tool}}...",
+    "toolSuccess": "{{server}}: {{tool}} completed",
+    "toolError": "{{server}}: {{tool}} failed"
   },
   "settings": {
     "title": "Settings",

@@ -16,8 +16,6 @@ import {
   Terminal,
   Globe,
   Loader2,
-  Check,
-  X,
   ExternalLink,
   Wrench,
 } from "lucide-react";
@@ -50,7 +48,6 @@ import {
   type MCPServerConfig,
   type MCPServerConfigCreate,
   type MCPServerStatus,
-  type MCPAllStatus,
   type MCPTransportType,
 } from "@/api/client";
 

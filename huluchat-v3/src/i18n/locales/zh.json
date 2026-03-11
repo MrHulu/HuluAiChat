@@ -159,7 +159,10 @@
     "messageDeleted": "消息已删除",
     "deleteMessageConfirm": "确定要删除这条消息吗？",
     "confirmDelete": "是的，删除",
-    "cancel": "取消"
+    "cancel": "取消",
+    "toolCalling": "正在调用 {{server}}: {{tool}}...",
+    "toolSuccess": "{{server}}: {{tool}} 完成",
+    "toolError": "{{server}}: {{tool}} 失败"
   },
   "settings": {
     "title": "设置",

@@ -1,19 +1,18 @@
 # Auto Company Consensus
 
-> 最后更新: 2026-03-12 - Cycle #165
+> 最后更新: 2026-03-12 - Cycle #166
 
 ---
 
 ## 当前状态
-🚀 **Phase 2 MCP 支持进行中** - TASK-167/168/169 已完成，进入 Tool Calling 集成
+🚀 **Phase 2 MCP 支持进行中** - TASK-167/168/169/170 已完成，核心 Tool Calling 功能已实现
 
 ---
 
 ## Next Action
-> **TASK-170: 集成 MCP tool calling 与现有聊天流**
-> - 修改 Chat API 传递 MCP tools 到 OpenAI
-> - 处理 OpenAI tool_calls 响应
-> - 执行 MCP tools 并返回结果
+> **TASK-171: 添加 MCP i18n 支持（EN/ZH）**
+> - 为 MCP 设置面板添加完整翻译
+> - 或 **TASK-172: 编写 MCP 使用文档**
 
 ---
 
@@ -27,6 +26,45 @@
 ---
 
 ## 最近完成
+
+### TASK-170: MCP Tool Calling 集成（Cycle #166）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- `services/mcp_tool_adapter.py` - MCP tools 格式转换器
+- `services/openai_service.py` - 添加 tools 支持和 tool_calls 处理
+- `api/chat.py` - 集成 MCP tools 和 tool calling 流程
+- `hooks/useChat.ts` - 添加 toolCalls 状态
+- `components/chat/ChatView.tsx` - 添加 ToolCallsIndicator 组件
+- i18n 翻译（EN/ZH）
+
+**实现内容**:
+1. **MCP Tool Adapter**:
+   - `mcp_tools_to_openai_format()` - 转换 MCP tools 到 OpenAI 格式
+   - `parse_mcp_tool_call()` - 从 OpenAI tool_call 解析 server_id 和 tool_name
+   - `format_tool_call_message()` - 格式化 WebSocket 消息
+
+2. **OpenAI Service 更新**:
+   - 添加 `ToolCallDelta` 和 `ToolCall` 数据类
+   - 更新 `StreamChunk` 支持 tool_calls
+   - `stream_chat()` 支持 tools 参数
+   - 处理流式 tool_calls 响应
+
+3. **Chat API 集成**:
+   - 获取 MCP tools 并转换为 OpenAI 格式
+   - 传递 tools 给 AI service
+   - 处理 tool_calls 响应
+   - 执行 MCP tools 并继续对话
+
+4. **前端更新**:
+   - `useChat` hook 添加 toolCalls 状态和处理
+   - `ToolCallsIndicator` 组件显示工具调用状态
+   - 支持 calling/success/error 三种状态
+
+**结果**: MCP Tool Calling 核心功能完成，AI 可以自动调用 MCP tools
+
+---
 
 ### TASK-169: MCP 设置面板（Cycle #165）
 
@@ -244,8 +282,8 @@
 - **当前版本**: v3.54.0
 - **下一版本**: v3.55.0
 - **进行中任务**: 0 个
-- **待开始任务**: 19 个（18 新 + TASK-116）
-- **已完成任务计数**: 14 (本次周期)
+- **待开始任务**: 18 个（17 新 + TASK-116）
+- **已完成任务计数**: 15 (本次周期)
 
 ---
 
@@ -269,7 +307,9 @@
 | TASK-167 | MCP 架构设计 | ✅ 已完成 |
 | TASK-168 | Python MCP Client | ✅ 已完成 |
 | TASK-169 | MCP 设置面板 | ✅ 已完成 |
-| TASK-170 ~ 172 | 集成/文档（3个任务） | 待开始 |
+| TASK-170 | Tool Calling 集成 | ✅ 已完成 |
+| TASK-171 | 添加 MCP i18n | 待开始 |
+| TASK-172 | 编写 MCP 文档 | 待开始 |
 
 ### Phase 3: 用户功能
 | 任务 | 描述 | 状态 |
@@ -299,7 +339,7 @@
 
 ---
 
-*更新时间: 2026-03-12 - Cycle #165*
+*更新时间: 2026-03-12 - Cycle #166*
 
 ---
 
@@ -333,3 +373,11 @@
 - 创建 `MCPSettings.tsx` 前端组件
 - 扩展 API Client 添加 MCP 函数
 - 更新 SettingsDialog 添加 MCP Tab
+
+**Cycle #166** - 完成 TASK-170（MCP Tool Calling 集成）
+- 创建 `services/mcp_tool_adapter.py` 格式转换器
+- 更新 `services/openai_service.py` 支持 tools
+- 更新 `api/chat.py` 集成 tool calling
+- 更新 `useChat.ts` 添加 toolCalls 状态
+- 添加 `ToolCallsIndicator` 组件
+- 添加 i18n 翻译（EN/ZH）
