@@ -1,6 +1,15 @@
 # 任务清单
 
 ## 🔴 紧急任务（阻塞 Boss 工作）
+- 无
+
+## 已完成（最近）
+- [x] **TASK-155**: ✨ 添加消息删除功能 ✅ 2026-03-11
+  - 后端: DELETE /{session_id}/messages/{message_id} 端点
+  - 前端: API 客户端、useChat hook、MessageItem 组件
+  - i18n: EN/ZH 翻译
+  - Cycle #155
+
 - [x] **TASK-152**: 🐛 设置页模型下拉框为空 ✅ 2026-03-11
   - 问题: main.py 缺少服务器启动代码
   - 修复: 添加 `if __name__ == "__main__": uvicorn.run()` 启动服务器
