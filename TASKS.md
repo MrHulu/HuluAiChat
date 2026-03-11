@@ -7,7 +7,6 @@
 <!-- 新任务添加到这里 -->
 
 ### Phase 1: 基础修复 (阻塞问题)
-- [ ] **TASK-160**: 🐛 修复测试内存溢出 - 拆分 App.test.tsx (1708行)，配置 Vitest 内存限制
 - [ ] **TASK-161**: 🔒 实现 Content Security Policy (CSP)
 - [ ] **TASK-162**: 🔧 提取 API_BASE 到环境变量
 - [ ] **TASK-163**: 🩺 添加后端 sidecar 进程健康监控和自动重启
@@ -40,6 +39,11 @@
 - [ ] **TASK-116**: 🎬 准备 Product Hunt 发布素材(截图、视频) - 等待 Boss
 
 ## 已完成（最近）
+- [x] **TASK-160**: 🐛 修复测试内存溢出 ✅ 2026-03-12
+  - 配置 Vitest 使用 forks pool 和 fileParallelism=false
+  - 更新 empty-state.test.tsx 断言匹配新样式
+  - Cycle #163
+
 - [x] **TASK-122**: 🎨 UI/UX 美化优化 ✅ 2026-03-12
   - 状态：已完成
   - 内容：空状态组件增强、消息气泡层次感、按钮发光效果
