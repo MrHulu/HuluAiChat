@@ -187,6 +187,13 @@ describe("SessionItem", () => {
     const deleteButton = screen.getByLabelText("Delete session");
     await user.click(deleteButton);
 
+    // Should show confirmation dialog
+    expect(screen.getByText("Delete Chat?")).toBeInTheDocument();
+
+    // Click the confirm button in the dialog
+    const confirmButton = screen.getByRole("button", { name: /delete session/i });
+    await user.click(confirmButton);
+
     expect(mockOnDelete).toHaveBeenCalledTimes(1);
     expect(mockOnClick).not.toHaveBeenCalled();
   });

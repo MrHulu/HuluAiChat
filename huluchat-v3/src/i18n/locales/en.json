@@ -342,6 +342,8 @@
     "moveToFolder": "Move to folder",
     "uncategorized": "Uncategorized",
     "deleteSession": "Delete session",
+    "confirmDelete": "Delete Chat?",
+    "confirmDeleteDescription": "Are you sure you want to delete \"{{title}}\"? This action cannot be undone.",
     "markdown": "Markdown (.md)",
     "json": "JSON (.json)",
     "plainText": "Plain Text (.txt)",

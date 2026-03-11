@@ -28,6 +28,12 @@
 - 📄 **文档**：CLAUDE.md 和 PROMPT.md 已明确记录此要求
 
 ## 已完成
+- [x] **TASK-122**: 🎨 UI/UX 美化优化 - 会话删除确认对话框 ✅ 2026-03-11
+  - 删除会话时显示确认对话框，防止误删除
+  - 使用 AlertDialog 组件
+  - i18n EN/ZH 翻译
+  - Cycle #139
+
 - [x] **TASK-122**: 🎨 UI/UX 美化优化 - 键盘快捷键 / 聚焦搜索 ✅ 2026-03-11
   - 添加全局键盘快捷键 `/` 聚焦搜索框
   - SessionList 使用 forwardRef 暴露 focusSearch 方法
