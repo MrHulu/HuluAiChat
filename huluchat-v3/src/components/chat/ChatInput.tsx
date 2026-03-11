@@ -537,27 +537,48 @@ export const ChatInput = memo(function ChatInput({
           data-loading={isLoading || undefined}
           data-success={isSendSuccess || undefined}
           className={cn(
-            "chat-send-button px-6 h-12 transition-all duration-200 hover:scale-105 active:scale-95 disabled:hover:scale-100 group",
-            isSendSuccess && "bg-success hover:bg-success animate-success"
+            "chat-send-button",
+            "relative overflow-hidden",
+            "px-6 h-12",
+            "transition-all duration-300 ease-out",
+            "hover:scale-105 active:scale-95",
+            "disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            // Success state styling with pulse animation and glow effect
+            isSendSuccess && "bg-success/90 text-success-foreground animate-success dark:bg-success/80 dark:shadow-[0_0_16px_oklch(0.488_0.243_264.376/0.3),0_0_32px_oklch(0.72_0.19_142.5/0.25)]"
           )}
           aria-label={isLoading ? t("chat.sending") : isSendSuccess ? t("chat.sent") : t("chat.send")}
         >
-          {isLoading ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
-              <span className="mr-2">{t("chat.sending")}</span>
-            </>
-          ) : isSendSuccess ? (
-            <>
-              <Check className="w-4 h-4 animate-check" aria-hidden="true" />
-              <span className="mr-2">{t("chat.sent")}</span>
-            </>
-          ) : (
-            <>
-              <span className="mr-2">{t("chat.send")}</span>
-              <Send className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
-            </>
-          )}
+          {/* Button content with icon animation */}
+          <span className="relative z-10 flex items-center justify-center gap-2">
+            {/* Loading spinner */}
+            {isLoading && (
+              <div className="animate-spin">
+                <Loader2 className="w-5 h-5 text-success-foreground" aria-hidden="true" />
+              </div>
+            )}
+            {/* Success checkmark with bounce animation */}
+            {isSendSuccess && (
+              <div className="animate-bounce-in">
+                <Check className="w-5 h-5 text-success-foreground" aria-hidden="true" />
+              </div>
+            )}
+            {/* Default send icon */}
+            {!isLoading && !isSendSuccess && (
+              <Send className="w-5 h-5 transition-transform duration-300 ease-out group-hover:rotate-12 group-hover:translate-x-1 group-hover:-translate-y-1" />
+            )}
+          </span>
+
+          {/* Button text with fade animation */}
+          <span
+            className={cn(
+              "mr-2 text-sm font-medium",
+              "transition-opacity duration-200",
+              isSendSuccess && "animate-fade-in"
+            )}
+          >
+            {isLoading ? t("chat.sending") : isSendSuccess ? t("chat.sent") : t("chat.send")}
+          </span>
         </Button>
       </div>
       <div id="chat-input-hint" className="text-xs text-muted-foreground mt-2 text-center" aria-live="polite">
