@@ -20,6 +20,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { SessionTag } from "./SessionTag";
 
 export interface SessionItemProps {
@@ -47,6 +57,7 @@ export function SessionItem({
 }: SessionItemProps) {
   const { t } = useTranslation();
   const [isExporting, setIsExporting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -67,6 +78,11 @@ export function SessionItem({
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
+    setShowDeleteConfirm(true);
+  };
+
+  const handleConfirmDelete = () => {
+    setShowDeleteConfirm(false);
     onDelete?.();
   };
 
@@ -262,6 +278,24 @@ export function SessionItem({
         </button>
       </div>
     </div>
+
+    {/* Delete Confirmation Dialog - Cycle #139 */}
+    <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+      <AlertDialogContent size="sm">
+        <AlertDialogHeader>
+          <AlertDialogTitle>{t("sessionItem.confirmDelete")}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {t("sessionItem.confirmDeleteDescription", { title: session.title || t("sessionItem.newChat") })}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+          <AlertDialogAction variant="destructive" onClick={handleConfirmDelete}>
+            {t("sessionItem.deleteSession")}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   </div>
   );
 }
