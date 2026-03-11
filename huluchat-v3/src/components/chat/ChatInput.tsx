@@ -474,6 +474,23 @@ export const ChatInput = memo(function ChatInput({
               "transition-all duration-200 ease-out"
             )}
           />
+          {/* Character Counter - Cycle #142 */}
+          {value.length > 0 && (
+            <div
+              className={cn(
+                "absolute bottom-1 right-2 text-[10px] select-none pointer-events-none",
+                "transition-colors duration-200",
+                value.length > 8000
+                  ? "text-destructive font-medium"
+                  : value.length > 4000
+                    ? "text-amber-500 dark:text-amber-400"
+                    : "text-muted-foreground/60"
+              )}
+              aria-label={t("chat.characterCount", { count: value.length })}
+            >
+              {value.length.toLocaleString()}
+            </div>
+          )}
         </div>
         <Button
           onClick={handleSend}

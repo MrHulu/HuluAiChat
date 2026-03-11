@@ -263,4 +263,46 @@ describe("ChatInput", () => {
       expect(sendButton).not.toHaveAttribute("data-loading");
     });
   });
+
+  describe("character counter", () => {
+    it("should not show character counter when input is empty", () => {
+      render(<ChatInput onSend={mockOnSend} />);
+
+      // Character counter should not be visible
+      expect(screen.queryByLabelText(/characters/i)).not.toBeInTheDocument();
+    });
+
+    it("should show character counter when input has content", async () => {
+      const user = userEvent.setup();
+      render(<ChatInput onSend={mockOnSend} />);
+
+      const input = screen.getByPlaceholderText("Type a message...");
+      await user.type(input, "Hello");
+
+      // Character counter should be visible
+      expect(screen.getByLabelText("5 characters")).toBeInTheDocument();
+    });
+
+    it("should update character count as user types", async () => {
+      const user = userEvent.setup();
+      render(<ChatInput onSend={mockOnSend} />);
+
+      const input = screen.getByPlaceholderText("Type a message...");
+      await user.type(input, "Hello World");
+
+      expect(screen.getByLabelText("11 characters")).toBeInTheDocument();
+    });
+
+    it("should clear character counter after sending message", async () => {
+      const user = userEvent.setup();
+      render(<ChatInput onSend={mockOnSend} />);
+
+      const input = screen.getByPlaceholderText("Type a message...");
+      await user.type(input, "Test message{enter}");
+
+      expect(mockOnSend).toHaveBeenCalled();
+      // After sending, counter should be gone
+      expect(screen.queryByLabelText(/characters/i)).not.toBeInTheDocument();
+    });
+  });
 });

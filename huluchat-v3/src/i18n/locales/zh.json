@@ -145,7 +145,8 @@
     "imageTooLarge": "{{name}} 文件过大（最大 {{max}}）",
     "fileTooLarge": "{{name}} 文件过大（最大 {{max}}）",
     "maxImagesReached": "最多只能上传 {{max}} 张图片",
-    "maxFilesReached": "最多只能上传 {{max}} 个文件"
+    "maxFilesReached": "最多只能上传 {{max}} 个文件",
+    "characterCount": "{{count}} 字符"
   },
   "settings": {
     "title": "设置",
