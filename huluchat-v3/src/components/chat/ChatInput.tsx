@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { LayoutTemplate, Send, ImagePlus, X, Loader2, Paperclip, FileText, FileCode, File, Quote } from "lucide-react";
+import { LayoutTemplate, Send, ImagePlus, X, Loader2, Paperclip, FileText, FileCode, File, Quote, Check } from "lucide-react";
 import {
   PromptTemplateSelector,
 } from "@/components/templates/PromptTemplateSelector";
@@ -67,6 +67,7 @@ export const ChatInput = memo(function ChatInput({
   const [images, setImages] = useState<ImageContent[]>([]);
   const [files, setFiles] = useState<FileAttachment[]>([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [isSendSuccess, setIsSendSuccess] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -249,6 +250,9 @@ export const ChatInput = memo(function ChatInput({
       setValue("");
       setImages([]);
       setFiles([]);
+      // Show send success feedback
+      setIsSendSuccess(true);
+      setTimeout(() => setIsSendSuccess(false), 1500);
       // 重置高度并保持聚焦
       if (textareaRef.current) {
         textareaRef.current.style.height = "auto";
@@ -531,13 +535,22 @@ export const ChatInput = memo(function ChatInput({
           onClick={handleSend}
           disabled={disabled || isLoading || (!value.trim() && images.length === 0 && files.length === 0)}
           data-loading={isLoading || undefined}
-          className="chat-send-button px-6 h-12 transition-all duration-200 hover:scale-105 active:scale-95 disabled:hover:scale-100 group"
-          aria-label={isLoading ? t("chat.sending") : t("chat.send")}
+          data-success={isSendSuccess || undefined}
+          className={cn(
+            "chat-send-button px-6 h-12 transition-all duration-200 hover:scale-105 active:scale-95 disabled:hover:scale-100 group",
+            isSendSuccess && "bg-success hover:bg-success animate-success"
+          )}
+          aria-label={isLoading ? t("chat.sending") : isSendSuccess ? t("chat.sent") : t("chat.send")}
         >
           {isLoading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
               <span className="mr-2">{t("chat.sending")}</span>
+            </>
+          ) : isSendSuccess ? (
+            <>
+              <Check className="w-4 h-4 animate-check" aria-hidden="true" />
+              <span className="mr-2">{t("chat.sent")}</span>
             </>
           ) : (
             <>

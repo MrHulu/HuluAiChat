@@ -305,4 +305,46 @@ describe("ChatInput", () => {
       expect(screen.queryByLabelText(/characters/i)).not.toBeInTheDocument();
     });
   });
+
+  describe("send success feedback", () => {
+    it("should show success state after sending message", async () => {
+      const user = userEvent.setup();
+      render(<ChatInput onSend={mockOnSend} />);
+
+      const input = screen.getByPlaceholderText("Type a message...");
+      await user.type(input, "Hello{enter}");
+
+      // Should show "Sent" label
+      expect(screen.getByRole("button", { name: /sent/i })).toBeInTheDocument();
+      // Should have success data attribute
+      expect(screen.getByRole("button", { name: /sent/i })).toHaveAttribute("data-success");
+    });
+
+    it("should return to normal state after success animation", async () => {
+      render(<ChatInput onSend={mockOnSend} />);
+
+      const input = screen.getByPlaceholderText("Type a message...");
+      await userEvent.type(input, "Hello{enter}");
+
+      // Should show success state
+      expect(screen.getByRole("button", { name: /sent/i })).toBeInTheDocument();
+
+      // Wait for the 1500ms timeout to pass
+      await waitFor(
+        () => {
+          expect(screen.getByRole("button", { name: /send/i })).toBeInTheDocument();
+        },
+        { timeout: 2000 }
+      );
+    });
+
+    it("should not show success state when isLoading is true", () => {
+      render(<ChatInput onSend={mockOnSend} isLoading={true} />);
+
+      // Should show loading state, not success
+      const sendButton = screen.getByRole("button", { name: /sending/i });
+      expect(sendButton).toBeInTheDocument();
+      expect(sendButton).not.toHaveAttribute("data-success");
+    });
+  });
 });
