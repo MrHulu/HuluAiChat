@@ -5,21 +5,20 @@
 ---
 
 ## 当前状态
-🔧 **Phase 1 基础修复进行中** - TASK-161/162/165 已完成，TASK-163 阻塞
+🔧 **Phase 1 基础修复进行中** - TASK-161/162/165/166 已完成，TASK-163 阻塞
 
 ---
 
 ## Next Action
-> **继续 Phase 1 基础修复**:
-> - TASK-166: 请求超时配置（Python 后端，可执行）
-> - TASK-163: 后端健康监控（⚠️ 阻塞：Rust 编译内存不足）
-> - TASK-164: 更新签名验证（需要 Rust 编译，同样阻塞）
+> **Phase 1 可执行任务已全部完成**:
+> - TASK-163/164: 需要 Rust 编译（⚠️ 阻塞：内存不足）
+> - 可考虑进入 Phase 2: MCP 支持
 
 ---
 
 ## ⚠️ 阻塞问题
 
-**TASK-163 (Rust sidecar 监控) 无法完成**:
+**TASK-163/164 (Rust 相关任务) 无法完成**:
 - 系统内存不足，页面文件太小
 - Rust 编译失败：`页面文件太小，无法完成操作。 (os error 1455)`
 - 需要 Boss 重启系统或增加页面文件大小
@@ -27,6 +26,28 @@
 ---
 
 ## 最近完成
+
+### TASK-166: 请求超时配置（Cycle #164）
+
+**完成时间**: 2026-03-12
+
+**问题**: OpenAI/Ollama 请求没有显式超时配置，可能导致无限等待
+
+**解决方案**:
+1. 在 `config.py` 添加新配置项：
+   - `openai_timeout`: OpenAI/DeepSeek API 超时（默认 120s）
+   - `http_connect_timeout`: HTTP 连接超时（默认 10s）
+   - `http_read_timeout`: HTTP 读取超时（默认 60s）
+2. 更新 `openai_service.py`：
+   - 使用 `httpx.Timeout` 配置超时
+   - 添加 `APITimeoutError` 错误处理
+   - 为所有 provider（OpenAI, DeepSeek, Ollama）配置超时
+3. 更新 `ollama_service.py`：
+   - 使用统一的超时配置
+
+**结果**: 所有 API 请求现在都有可配置的超时
+
+---
 
 ### TASK-165: WebSocket 指数退避重连（Cycle #164）
 
@@ -136,7 +157,7 @@
 - **下一版本**: v3.55.0
 - **进行中任务**: 0 个
 - **待开始任务**: 22 个（21 新 + TASK-116）
-- **已完成任务计数**: 10 (本次周期) ⚠️ **达到发邮件阈值**
+- **已完成任务计数**: 11 (本次周期)
 
 ---
 
@@ -151,6 +172,7 @@
 | TASK-163 | 后端健康监控 | ⚠️ 阻塞（内存不足） |
 | TASK-164 | 更新签名验证 | 待开始 |
 | TASK-165 | WebSocket 重连优化 | ✅ 已完成 |
+| TASK-166 | 请求超时配置 | ✅ 已完成 |
 | TASK-166 | 请求超时配置 | 待开始 |
 
 ### Phase 2: MCP 支持 (核心差异化)
@@ -204,8 +226,9 @@
 - Vitest 配置优化
 - 测试断言修复
 
-**Cycle #164** - 完成 TASK-161/162/165（CSP + API 配置化 + WebSocket 退避）
+**Cycle #164** - 完成 TASK-161/162/165/166（CSP + API 配置化 + WebSocket 退避 + 超时配置）
 - CSP 安全策略实现
 - API 环境变量配置
 - WebSocket 指数退避重连
-- **TASK-163 阻塞**: Rust 编译内存不足
+- OpenAI/Ollama 请求超时配置
+- **TASK-163/164 阻塞**: Rust 编译内存不足

@@ -29,6 +29,13 @@ All notable changes to HuluChat will be documented in this file.
   - Backwards compatible with existing `reconnectInterval` option
   - Added new test cases for backoff behavior
 
+- **TASK-166**: Added configurable request timeouts for OpenAI/Ollama
+  - New config options: `openai_timeout`, `http_connect_timeout`, `http_read_timeout`
+  - OpenAI client now uses configurable timeouts (default: 120s read, 10s connect)
+  - Ollama client uses same configurable timeouts
+  - Added `APITimeoutError` handling in OpenAI service
+  - All providers (OpenAI, DeepSeek, Ollama) have proper timeout configuration
+
 ## [3.54.0] - 2026-03-12
 
 ### 🎨 UI/UX Enhancements

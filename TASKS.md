@@ -24,7 +24,11 @@
   - 添加 jitter 避免同时重连
   - 向后兼容 reconnectInterval 参数
   - Cycle #164
-- [ ] **TASK-166**: ⏱️ 添加 OpenAI/Ollama 请求超时配置
+- [x] **TASK-166**: ⏱️ 添加 OpenAI/Ollama 请求超时配置 ✅ 2026-03-12
+  - 新增配置：openai_timeout、http_connect_timeout、http_read_timeout
+  - OpenAI/DeepSeek/Ollama 客户端统一使用可配置超时
+  - 添加 APITimeoutError 错误处理
+  - Cycle #164
 
 ### Phase 2: MCP 支持 (核心功能)
 - [ ] **TASK-167**: 🏗️ 设计 MCP 架构（前端面板 + 后端 client）
