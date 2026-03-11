@@ -1,6 +1,21 @@
 # 任务清单
 
 ## 🔴 紧急任务（阻塞 Boss 工作）
+- [ ] **TASK-152**: 🐛 设置页模型下拉框为空 - **🔴 最高优先级**
+  - 问题: v3.51.0 设置页面的模型选择下拉框完全没有选项
+  - 影响: Boss 无法使用自定义 API 功能，阻塞素材准备工作
+  - 复现: 打开设置页面，查看模型下拉框 → 为空
+  - 相关文件: `SettingsDialog.tsx`、`api/settings.py`、`getModels()` API
+  - 修复后发布 v3.53.0
+
+- [ ] **TASK-153**: 🐛 自动更新功能 fetch 错误 - **🔴 最高优先级**
+  - 问题: `latest.json` 的 URL 全部错误
+  - 错误 1: 仓库路径 `MrHulu/HuluChat` → 应该是 `MrHulu/HuluAiChat`
+  - 错误 2: Windows 文件名 `HuluChat_x64.msi` → 实际是 `HuluChat_x64_en-US.msi`
+  - 错误 3: Linux 文件名 `huluchat_amd64.AppImage` → 实际是 `HuluChat_amd64.AppImage`（大小写）
+  - 相关文件: `generate-latest-json.js` 脚本
+  - 修复后发布 v3.53.0
+
 - [x] **TASK-150**: 🔧 修复 CI - ESLint 错误 ✅ 2026-03-11
   - 文件: `ChatInput.tsx` Line 101, 132
   - 问题: `useCallback` 依赖数组不正确
