@@ -5,7 +5,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { useWebSocket, ConnectionStatus } from "./useWebSocket";
-import { Message, getSessionMessages, ImageContent } from "@/api/client";
+import { Message, getSessionMessages, ImageContent, FileAttachment } from "@/api/client";
 
 export interface StreamingMessage {
   id: string;
@@ -23,7 +23,7 @@ export interface UseChatReturn {
   messages: Message[];
   streamingMessage: StreamingMessage | null;
   connectionStatus: ConnectionStatus;
-  sendMessage: (content: string, model?: string, params?: ChatParameters, images?: ImageContent[]) => void;
+  sendMessage: (content: string, model?: string, params?: ChatParameters, images?: ImageContent[], files?: FileAttachment[]) => void;
   isLoading: boolean;
   isLoadingHistory: boolean;
   refreshMessages: () => void;
@@ -175,9 +175,9 @@ export function useChat(sessionId: string | null): UseChatReturn {
   }, [sessionId, loadHistory]);
 
   const sendMessage = useCallback(
-    (content: string, model?: string, params?: ChatParameters, images?: ImageContent[]) => {
-      // Allow empty content if images are provided
-      if ((!content.trim() && !images?.length) || connectionStatus !== "connected") {
+    (content: string, model?: string, params?: ChatParameters, images?: ImageContent[], files?: FileAttachment[]) => {
+      // Allow empty content if images or files are provided
+      if ((!content.trim() && !images?.length && !files?.length) || connectionStatus !== "connected") {
         return;
       }
 
@@ -188,15 +188,17 @@ export function useChat(sessionId: string | null): UseChatReturn {
         role: "user",
         content: content.trim(),
         images: images,
+        files: files,
         created_at: new Date().toISOString(),
       };
       setMessages((prev) => [...prev, userMessage]);
 
-      // 发送到后端（包含可选的模型参数和图片）
+      // 发送到后端（包含可选的模型参数、图片和文件）
       send({
         type: "message",
         content: content.trim(),
         images: images,
+        files: files,
         model: model,
         temperature: params?.temperature,
         top_p: params?.top_p,

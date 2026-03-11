@@ -67,6 +67,7 @@ async def get_session_messages(
     Returns messages in OpenAI format:
     - Text only: {"role": "user", "content": "text"}
     - With images: {"role": "user", "content": [{"type": "text", ...}, {"type": "image_url", ...}]}
+    - With files: File content is extracted and appended to text content
     """
     result = await db.execute(
         select(MessageModel)
@@ -79,19 +80,79 @@ async def get_session_messages(
     formatted = []
     for m in messages:
         msg = {"role": m.role}
+        content = m.content
+
+        # Handle file attachments - extract text content for AI context
+        if m.files:
+            try:
+                files = json.loads(m.files)
+                file_context = _extract_file_context(files)
+                if file_context:
+                    content = f"{content}\n\n{file_context}" if content else file_context
+            except json.JSONDecodeError:
+                pass
+
         if m.images:
             # Multimodal message with images
             try:
                 images = json.loads(m.images)
-                msg["content"] = [{"type": "text", "text": m.content}] + images
+                msg["content"] = [{"type": "text", "text": content}] + images
             except json.JSONDecodeError:
-                msg["content"] = m.content
+                msg["content"] = content
         else:
-            # Text only message
-            msg["content"] = m.content
+            # Text only message (may include extracted file content)
+            msg["content"] = content
         formatted.append(msg)
 
     return formatted
+
+
+def _extract_file_context(files: list[dict]) -> str:
+    """Extract readable context from file attachments.
+
+    For text files, decode and include content.
+    For binary files, include metadata only.
+    """
+    contexts = []
+    for file in files:
+        name = file.get("name", "unknown")
+        file_type = file.get("type", "")
+        content = file.get("content", "")
+
+        # Check if it's a text-based file type
+        text_types = [
+            "text/", "application/json", "application/javascript",
+            "application/xml", "application/x-www-form-urlencoded"
+        ]
+        is_text = any(t in file_type for t in text_types)
+
+        if is_text and content:
+            try:
+                # Extract text from data URL (data:xxx;base64,yyy)
+                if content.startswith("data:"):
+                    # Handle data URL format
+                    import base64
+                    parts = content.split(",", 1)
+                    if len(parts) == 2:
+                        encoded = parts[1]
+                        decoded = base64.b64decode(encoded).decode("utf-8", errors="replace")
+                        # Limit content length for context
+                        if len(decoded) > 10000:
+                            decoded = decoded[:10000] + "\n... (truncated)"
+                        contexts.append(f"📄 File: {name}\n```\n{decoded}\n```")
+                        continue
+                # Plain text content
+                contexts.append(f"📄 File: {name}\n```\n{content}\n```")
+            except Exception:
+                # If decoding fails, just add file info
+                contexts.append(f"📄 File: {name} ({file_type})")
+        else:
+            # Binary file - just add metadata
+            size = file.get("size", 0)
+            size_str = f"{size} bytes" if size < 1024 else f"{size // 1024} KB"
+            contexts.append(f"📎 File: {name} ({file_type}, {size_str})")
+
+    return "\n\n".join(contexts)
 
 
 async def save_message(
@@ -99,7 +160,8 @@ async def save_message(
     session_id: str,
     role: str,
     content: str,
-    images: Optional[str] = None
+    images: Optional[str] = None,
+    files: Optional[str] = None
 ) -> MessageModel:
     """Save a message to the database.
 
@@ -109,6 +171,7 @@ async def save_message(
         role: 'user' or 'assistant'
         content: Text content
         images: Optional JSON string of image data
+        files: Optional JSON string of file attachments
     """
     message = MessageModel(
         id=str(uuid.uuid4()),
@@ -116,6 +179,7 @@ async def save_message(
         role=role,
         content=content,
         images=images,
+        files=files,
         created_at=datetime.utcnow(),
     )
     db.add(message)
@@ -140,6 +204,8 @@ async def chat_websocket(
             user_content = data.get("content", "")
             # Get images from client (list of base64 data URLs)
             images = data.get("images", [])
+            # Get files from client (list of file attachments)
+            files = data.get("files", [])
             # Get model from client, or use default
             request_model = data.get("model")
             # Get optional parameters from client
@@ -147,15 +213,17 @@ async def chat_websocket(
             top_p = data.get("top_p")  # None means use default
             max_tokens = data.get("max_tokens")  # None means use default
 
-            # Allow empty content if images are provided
-            if not user_content.strip() and not images:
+            # Allow empty content if images or files are provided
+            if not user_content.strip() and not images and not files:
                 continue
 
             # Prepare images for storage (JSON string)
             images_json = json.dumps(images) if images else None
+            # Prepare files for storage (JSON string)
+            files_json = json.dumps(files) if files else None
 
             # Save user message
-            await save_message(db, session_id, "user", user_content, images_json)
+            await save_message(db, session_id, "user", user_content, images_json, files_json)
 
             # Notify client that streaming is starting
             await manager.send_json(session_id, {
@@ -280,6 +348,7 @@ async def get_messages(
                 "role": m.role,
                 "content": m.content,
                 "images": json.loads(m.images) if m.images else None,
+                "files": json.loads(m.files) if m.files else None,
                 "created_at": m.created_at.isoformat(),
             }
             for m in messages
