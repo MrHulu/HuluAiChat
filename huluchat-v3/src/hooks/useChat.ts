@@ -24,6 +24,7 @@ export interface UseChatReturn {
   streamingMessage: StreamingMessage | null;
   connectionStatus: ConnectionStatus;
   sendMessage: (content: string, model?: string, params?: ChatParameters, images?: ImageContent[], files?: FileAttachment[]) => void;
+  regenerateMessage: (assistantMessageId: string) => void;
   isLoading: boolean;
   isLoadingHistory: boolean;
   refreshMessages: () => void;
@@ -217,11 +218,41 @@ export function useChat(sessionId: string | null): UseChatReturn {
     }
   }, [sessionId, loadHistory]);
 
+  // 重新生成 AI 消息
+  const regenerateMessage = useCallback(
+    (assistantMessageId: string) => {
+      // 找到 AI 消息的索引
+      const assistantIndex = messages.findIndex((m) => m.id === assistantMessageId);
+      if (assistantIndex === -1) return;
+
+      // 找到该 AI 消息之前的用户消息
+      for (let i = assistantIndex - 1; i >= 0; i--) {
+        if (messages[i].role === "user") {
+          const userMessage = messages[i];
+          // 删除从用户消息之后的所有消息（包括该 AI 消息）
+          setMessages((prev) => prev.slice(0, i));
+          // 重新发送用户消息
+          send({
+            type: "message",
+            content: userMessage.content.trim(),
+            images: userMessage.images,
+            files: userMessage.files,
+            regenerate: true,
+          });
+          setIsLoading(true);
+          break;
+        }
+      }
+    },
+    [messages, send]
+  );
+
   return {
     messages,
     streamingMessage,
     connectionStatus,
     sendMessage,
+    regenerateMessage,
     isLoading,
     isLoadingHistory,
     refreshMessages,

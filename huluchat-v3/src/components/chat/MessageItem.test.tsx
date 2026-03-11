@@ -361,4 +361,100 @@ describe("MessageItem", () => {
     expect(bubble).toHaveClass("px-4");
     expect(bubble).toHaveClass("py-3");
   });
+
+  // Regenerate button tests - Cycle #143
+  describe("regenerate button", () => {
+    it("should show regenerate button for assistant messages when onRegenerate is provided", () => {
+      const message = createMessage("assistant", "AI response");
+      const onRegenerate = vi.fn();
+
+      render(<MessageItem message={message} onRegenerate={onRegenerate} />);
+
+      // Find the regenerate button by aria-label
+      const regenerateButton = screen.getByLabelText("Regenerate");
+      expect(regenerateButton).toBeInTheDocument();
+    });
+
+    it("should not show regenerate button for user messages", () => {
+      const message = createMessage("user", "User message");
+      const onRegenerate = vi.fn();
+
+      render(<MessageItem message={message} onRegenerate={onRegenerate} />);
+
+      // Regenerate button should not exist for user messages
+      const regenerateButton = screen.queryByLabelText("Regenerate");
+      expect(regenerateButton).not.toBeInTheDocument();
+    });
+
+    it("should not show regenerate button when onRegenerate is not provided", () => {
+      const message = createMessage("assistant", "AI response");
+
+      render(<MessageItem message={message} />);
+
+      const regenerateButton = screen.queryByLabelText("Regenerate");
+      expect(regenerateButton).not.toBeInTheDocument();
+    });
+
+    it("should not show regenerate button during streaming", () => {
+      const message = createMessage("assistant", "Streaming response");
+      const onRegenerate = vi.fn();
+
+      render(
+        <MessageItem
+          message={message}
+          onRegenerate={onRegenerate}
+          isStreaming={true}
+        />
+      );
+
+      const regenerateButton = screen.queryByLabelText("Regenerate");
+      expect(regenerateButton).not.toBeInTheDocument();
+    });
+
+    it("should call onRegenerate when button is clicked", () => {
+      const message = createMessage("assistant", "AI response");
+      const onRegenerate = vi.fn();
+
+      render(<MessageItem message={message} onRegenerate={onRegenerate} />);
+
+      const regenerateButton = screen.getByLabelText("Regenerate");
+      regenerateButton.click();
+
+      expect(onRegenerate).toHaveBeenCalledWith(message.id);
+      expect(onRegenerate).toHaveBeenCalledTimes(1);
+    });
+
+    it("should disable button when isRegenerating is true", () => {
+      const message = createMessage("assistant", "AI response");
+      const onRegenerate = vi.fn();
+
+      render(
+        <MessageItem
+          message={message}
+          onRegenerate={onRegenerate}
+          isRegenerating={true}
+        />
+      );
+
+      const regenerateButton = screen.getByLabelText("Regenerate");
+      expect(regenerateButton).toBeDisabled();
+    });
+
+    it("should show spinning animation when regenerating", () => {
+      const message = createMessage("assistant", "AI response");
+      const onRegenerate = vi.fn();
+
+      const { container } = render(
+        <MessageItem
+          message={message}
+          onRegenerate={onRegenerate}
+          isRegenerating={true}
+        />
+      );
+
+      // Check for animate-spin class on the icon
+      const spinningIcon = container.querySelector(".animate-spin");
+      expect(spinningIcon).toBeInTheDocument();
+    });
+  });
 });

@@ -26,6 +26,9 @@ export interface MessageListProps {
   // Bookmark props
   bookmarkedMessages?: Map<string, string>; // messageId -> bookmarkId
   onBookmarkToggle?: (messageId: string, isBookmarked: boolean, bookmarkId?: string) => void;
+  // Regenerate props
+  onRegenerate?: (messageId: string) => void;
+  isRegenerating?: boolean;
   // Suggestion hints props
   onSuggestionClick?: (suggestion: string) => void;
 }
@@ -85,7 +88,7 @@ function buildVirtualItems(messages: Message[]): VirtualItem[] {
 }
 
 export const MessageList = forwardRef<MessageListRef, MessageListProps>(function MessageList(
-  { messages, streamingMessage, isLoading, onEditMessage, bookmarkedMessages, onBookmarkToggle, onSuggestionClick },
+  { messages, streamingMessage, isLoading, onEditMessage, bookmarkedMessages, onBookmarkToggle, onRegenerate, isRegenerating, onSuggestionClick },
   ref
 ) {
   const { t } = useTranslation();
@@ -257,6 +260,8 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
                   isBookmarked={isBookmarked}
                   bookmarkId={bookmarkId}
                   onBookmarkToggle={onBookmarkToggle}
+                  onRegenerate={onRegenerate}
+                  isRegenerating={isRegenerating}
                 />
               </div>
             );
