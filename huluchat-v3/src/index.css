@@ -1419,4 +1419,81 @@
   .dark [data-sonner-toast][data-type="error"] [data-progress-bar] {
     background: oklch(0.65 0.22 25 / 0.3);
   }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * 💭 Dark Mode - Thinking Indicator Glow Animation (Cycle #132)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* AI Thinking indicator - pulsing glow effect */
+  .dark .thinking-indicator-glow {
+    animation: thinkingGlow 2s ease-in-out infinite;
+  }
+
+  @keyframes thinkingGlow {
+    0%, 100% {
+      box-shadow:
+        0 0 16px oklch(0.488 0.243 264.376 / 0.12),
+        0 0 32px oklch(0.488 0.243 264.376 / 0.06),
+        inset 0 1px 0 oklch(1 0 0 / 5%);
+    }
+    50% {
+      box-shadow:
+        0 0 24px oklch(0.488 0.243 264.376 / 0.2),
+        0 0 48px oklch(0.488 0.243 264.376 / 0.1),
+        inset 0 1px 0 oklch(1 0 0 / 5%);
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   * ✏️ Dark Mode - Chat Input Focus Ring Enhancement (Cycle #132)
+   * ═══════════════════════════════════════════════════════════════ */
+
+  /* Chat input wrapper - animated gradient border on focus */
+  .dark .chat-input-focus-ring:focus-within {
+    box-shadow:
+      0 0 0 1px oklch(0.5 0.15 264 / 0.3),
+      0 0 24px oklch(0.5 0.15 264 / 0.1),
+      inset 0 1px 0 oklch(1 0 0 / 5%);
+  }
+
+  /* Chat input focus ring - gradient animation */
+  .dark .chat-input-focus-ring::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    padding: 2px;
+    background: linear-gradient(
+      135deg,
+      oklch(0.55 0.2 264),
+      oklch(0.6 0.25 200),
+      oklch(0.55 0.2 264)
+    );
+    background-size: 200% 200%;
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
+    pointer-events: none;
+  }
+
+  .dark .chat-input-focus-ring:focus-within::before {
+    opacity: 1;
+    animation: focusRingGradient 3s ease-in-out infinite;
+  }
+
+  @keyframes focusRingGradient {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
 }

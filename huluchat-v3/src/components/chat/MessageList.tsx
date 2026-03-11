@@ -187,7 +187,9 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
             "dark:border dark:border-white/10",
             "dark:shadow-[0_4px_16px_oklch(0_0_0/0.25),0_0_24px_oklch(0.488_0.243_264.376/0.08)]",
             "dark:hover:shadow-[0_6px_20px_oklch(0_0_0/0.3),0_0_32px_oklch(0.488_0.243_264.376/0.12)]",
-            "dark:hover:border-primary/20"
+            "dark:hover:border-primary/20",
+            // Thinking glow animation - Cycle #132
+            "dark:thinking-indicator-glow"
           )}>
             <Loading variant="thinking" size="sm" text={t("chat.thinking")} />
           </div>
