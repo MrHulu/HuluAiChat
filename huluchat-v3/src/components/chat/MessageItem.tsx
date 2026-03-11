@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Message } from "@/api/client";
 import { Button } from "@/components/ui/button";
-import { Pencil, Check, X, Bookmark, BookmarkCheck, Copy } from "lucide-react";
+import { Pencil, Check, X, Bookmark, BookmarkCheck, Copy, Clock } from "lucide-react";
 import { CodeBlock } from "./CodeBlock";
 import { MermaidBlock } from "./MermaidBlock";
 import ReactMarkdown from "react-markdown";
@@ -18,6 +18,52 @@ import remarkMath from "remark-math";
 import rehypeHighlight from "rehype-highlight";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
+
+/**
+ * Format timestamp to relative time (e.g., "2 min ago", "Yesterday")
+ */
+function formatRelativeTime(dateString: string, t: (key: string, options?: Record<string, unknown>) => string): string {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffSeconds = Math.floor(diffMs / 1000);
+  const diffMinutes = Math.floor(diffSeconds / 60);
+  const diffHours = Math.floor(diffMinutes / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  // Less than 1 minute
+  if (diffSeconds < 60) {
+    return t("chat.time.justNow");
+  }
+
+  // 1-59 minutes ago
+  if (diffMinutes < 60) {
+    return t("chat.time.minutesAgo", { count: diffMinutes });
+  }
+
+  // 1-23 hours ago
+  if (diffHours < 24) {
+    return t("chat.time.hoursAgo", { count: diffHours });
+  }
+
+  // Yesterday
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  if (date.toDateString() === yesterday.toDateString()) {
+    return t("chat.time.yesterday");
+  }
+
+  // Within 7 days
+  if (diffDays < 7) {
+    return t("chat.time.daysAgo", { count: diffDays });
+  }
+
+  // Format as date (e.g., "Mar 11")
+  return date.toLocaleDateString(i18n.language === "zh" ? "zh-CN" : "en-US", {
+    month: "short",
+    day: "numeric",
+  });
+}
 
 // 只导入需要的 highlight.js 语言（减少体积）
 import hljs from "highlight.js/lib/core";
@@ -294,14 +340,30 @@ export const MessageItem = memo(function MessageItem({
           !isUser && "dark:border-primary/60 dark:bg-muted/70 dark:hover:bg-muted/90 dark:shadow-black/20 dark:hover:shadow-black/30"
         )}
       >
-        {/* 头像标识 */}
+        {/* 头像标识和时间戳 */}
         <div
           className={cn(
             "text-xs font-medium mb-1 flex items-center justify-between",
             isUser ? "text-primary-foreground/70" : "text-muted-foreground"
           )}
         >
-          <span>{isUser ? t("chat.you") : t("chat.ai")}</span>
+          <div className="flex items-center gap-2">
+            <span>{isUser ? t("chat.you") : t("chat.ai")}</span>
+            {/* Timestamp - Cycle #136 */}
+            {!isStreaming && (
+              <span
+                className={cn(
+                  "flex items-center gap-1",
+                  "text-[10px] opacity-0 group-hover:opacity-60 transition-opacity duration-200",
+                  "dark:opacity-0 dark:group-hover:opacity-50"
+                )}
+                title={new Date(message.created_at).toLocaleString()}
+              >
+                <Clock className="w-2.5 h-2.5" aria-hidden="true" />
+                {formatRelativeTime(message.created_at, t)}
+              </span>
+            )}
+          </div>
           <div className="flex items-center gap-1">
             {/* Copy button for all messages */}
             {!isEditing && !isStreaming && (
