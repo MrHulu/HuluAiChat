@@ -5,13 +5,16 @@
 
 ## 待开始
 <!-- 新任务添加到这里 -->
-- [ ] **TASK-122**: 🎨 UI/UX 美化优化（持续进行）
-  - 状态：长期任务，持续进行
-  - 方向：界面美化、交互优化、视觉一致性
-
 - [ ] **TASK-116**: 🎬 准备 Product Hunt 发布素材(截图、视频) - 等待 Boss
 
 ## 已完成（最近）
+- [x] **TASK-122**: 🎨 UI/UX 美化优化 ✅ 2026-03-12
+  - 状态：已完成
+  - 内容：空状态组件增强、消息气泡层次感、按钮发光效果
+  - 所有 UI 组件暗色模式增强
+  - 全局 CSS 暗色模式增强
+  - Cycle #158-160
+
 - [x] **TASK-156**: 🔧 修复 GitHub Release Workflow URL 错误 + 发布 v3.54.0 ✅ 2026-03-12
   - 修复 `.github/workflows/release.yml` 中的 GitHub URL
   - `MrHulu/HuluChat` → `MrHulu/HuluAiChat`
