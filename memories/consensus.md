@@ -10,21 +10,23 @@
 ---
 
 ## Next Action
-> 继续 TASK-122: 实现更多 UI/UX 美化（会话列表悬停、设置 Tab 过渡等）
+> 继续 TASK-122: 可选实现主题切换变形动画（低优先级）或等待下一个周期
 
 ---
 
 ## 最近完成任务
 
-### TASK-122: UI/UX 美化优化 - 思考指示器 + 输入框聚焦 ✅ 2026-03-11
+### TASK-122: UI/UX 美化优化 - Cycle #132 合集 ✅ 2026-03-11
 
-**已完成**:
-- MessageList: AI 思考状态添加脉冲发光动画
-- ChatInput: 输入框聚焦时显示渐变边框动画
-- 新增 CSS keyframes: `thinkingGlow`, `focusRingGradient`
-- 深色模式专属视觉增强
+**已完成（PR #364）**:
+- MessageList: AI 思考状态脉冲发光动画 (`thinkingGlow`)
+- ChatInput: 输入框聚焦渐变边框动画 (`focusRingGradient`)
+- SessionItem: 悬停滑入动画 + 左边缘渐变高亮 + 活动指示器脉冲
+- SettingsDialog: Tab 切换淡入滑动动画 (`tabContentFade`)
 
-**PR**: https://github.com/MrHulu/HuluAiChat/pull/362
+**PR**: https://github.com/MrHulu/HuluAiChat/pull/364
+
+### TASK-122: UI/UX 美化优化 - 发送按钮呼吸灯 ✅ 2026-03-11
 
 ### TASK-122: UI/UX 美化优化 - 发送按钮呼吸灯 ✅ 2026-03-11
 
