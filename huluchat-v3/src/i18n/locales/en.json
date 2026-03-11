@@ -143,7 +143,11 @@
       "yesterday": "Yesterday",
       "daysAgo": "{{count}} day ago",
       "daysAgo_other": "{{count}} days ago"
-    }
+    },
+    "imageTooLarge": "{{name}} is too large (max {{max}})",
+    "fileTooLarge": "{{name}} is too large (max {{max}})",
+    "maxImagesReached": "Maximum {{max}} images allowed",
+    "maxFilesReached": "Maximum {{max}} files allowed"
   },
   "settings": {
     "title": "Settings",

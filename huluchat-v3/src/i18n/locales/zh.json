@@ -140,7 +140,11 @@
       "hoursAgo": "{{count}} 小时前",
       "yesterday": "昨天",
       "daysAgo": "{{count}} 天前"
-    }
+    },
+    "imageTooLarge": "{{name}} 文件过大（最大 {{max}}）",
+    "fileTooLarge": "{{name}} 文件过大（最大 {{max}}）",
+    "maxImagesReached": "最多只能上传 {{max}} 张图片",
+    "maxFilesReached": "最多只能上传 {{max}} 个文件"
   },
   "settings": {
     "title": "设置",
