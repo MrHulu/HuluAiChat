@@ -2,7 +2,8 @@
  * HuluChat API Client
  */
 
-const API_BASE = "http://127.0.0.1:8765/api";
+// API Base URL - configurable via environment variable
+const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:8765/api";
 
 // ============== Ollama Types ==============
 
@@ -192,7 +193,10 @@ export async function deleteMessage(
  * Create WebSocket connection for chat
  */
 export function createChatWebSocket(sessionId: string): WebSocket {
-  return new WebSocket(`ws://127.0.0.1:8765/api/chat/ws/${sessionId}`);
+  // Convert HTTP API base URL to WebSocket URL
+  // e.g., http://127.0.0.1:8765/api -> ws://127.0.0.1:8765/api
+  const wsBase = API_BASE.replace(/^http/, "ws");
+  return new WebSocket(`${wsBase}/chat/ws/${sessionId}`);
 }
 
 // Settings types

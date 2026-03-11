@@ -13,6 +13,14 @@ All notable changes to HuluChat will be documented in this file.
   - Blocked: `object-src 'none'`, `frame-ancestors 'none'`
   - Added `upgrade-insecure-requests` for production
 
+### 🔧 Configuration
+
+- **TASK-162**: Extracted API_BASE to environment variable
+  - Added `VITE_API_BASE` environment variable support
+  - Created `.env.example` for documentation
+  - Added TypeScript types for environment variables
+  - Updated WebSocket URL generation to use environment variable
+
 ## [3.54.0] - 2026-03-12
 
 ### 🎨 UI/UX Enhancements
