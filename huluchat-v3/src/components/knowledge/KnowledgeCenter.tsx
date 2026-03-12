@@ -16,6 +16,7 @@ import { PROMPT_TIPS, type PromptTip } from "@/data/promptTips";
 import { ArticleViewer } from "./ArticleViewer";
 import { FAQList } from "./FAQList";
 import { ShortcutList } from "./ShortcutList";
+import { FeedbackLinks } from "./FeedbackLinks";
 
 interface KnowledgeCenterProps {
   open: boolean;
@@ -175,7 +176,9 @@ export function KnowledgeCenter({
                   {/* 快捷键列表 */}
                   <ShortcutList className="mb-8" />
                   {/* FAQ 列表 */}
-                  <FAQList />
+                  <FAQList className="mb-8" />
+                  {/* 反馈入口 */}
+                  <FeedbackLinks />
                 </>
               ) : articles.length === 0 ? (
                 <p className="text-muted-foreground text-center py-8">
