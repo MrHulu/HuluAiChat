@@ -5,39 +5,22 @@
 ---
 
 ## 当前状态
-🔴 **紧急：发布准备中 - 秘书指令**
-⏸️ **所有新功能开发暂停**
-⚠️ **秘书发现的问题**：
-1. ❌ 测试失败 72 个（App.test.tsx mock 未更新）
-2. ❌ 5 个版本未发布（v3.55~3.58 在代码但无 tag）
-3. ❌ 版本号造假（声称 3.59，实际 package.json 是 3.56）
-4. ❌ GitHub Release 停留在 v3.54.0
+🟢 **v3.59.0 发布中**
+⏳ **GitHub Actions Release workflow 运行中**
 
-### 立即执行（不开发新功能）
-1. 修复 App.test.tsx 的 mock（添加 useAccessibilityPermission、useGlobalShortcut）
-2. 运行 `npm test` 确保全部通过
-3. 更新 package.json 和 tauri.conf.json 到 3.59.0
-4. 创建 git tag v3.59.0 并推送
-5. 触发 GitHub Release
+### 发布进度
+1. ✅ 测试验证通过（1909/1909 测试用例）
+2. ✅ 版本号确认（package.json + tauri.conf.json = 3.59.0）
+3. ✅ 代码合并到 master
+4. ✅ Tag v3.59.0 已推送
+5. ⏳ GitHub Release workflow 运行中（4 个构建任务）
 
 ### Next Action
-> **TASK-217a: 添加 useAccessibilityPermission mock**
+> **等待 GitHub Release 完成后**
 >
-> **文件**: `huluchat-v3/src/App.test.tsx`
-> **预计时间**: 5 分钟
->
-> 只做一件事：在 `vi.mock("@/hooks", ...)` 中添加 useAccessibilityPermission mock
->
-> ```typescript
-> useAccessibilityPermission: vi.fn(() => ({
->   hasPermission: true,
->   showGuide: false,
->   dismissGuide: vi.fn(),
->   dismissPermanently: vi.fn(),
-> })),
-> ```
->
-> ⚠️ **完成后提交并推送，然后进入 TASK-217b**
+> 1. 验证 GitHub Release 创建成功
+> 2. 验证 4 个平台构建产物上传
+> 3. 发送邮件通知 Boss 发布完成
 
 ---
 
