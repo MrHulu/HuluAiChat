@@ -63,6 +63,9 @@
         { "path": "$APPCONFIG/plugins/**" }
       ]
     },
-    "dialog:default"
+    "dialog:default",
+    "global-shortcut:allow-is-registered",
+    "global-shortcut:allow-register",
+    "global-shortcut:allow-unregister"
   ]
 }

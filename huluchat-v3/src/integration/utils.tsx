@@ -12,6 +12,7 @@
 import { render, RenderOptions, RenderResult } from "@testing-library/react";
 import { ReactElement, ReactNode } from "react";
 import { I18nextProvider } from "react-i18next";
+import { describe, beforeAll, afterAll, expect } from "vitest";
 
 // Import the i18n instance from test setup (already configured in setup.ts)
 // This ensures we use the same i18n configuration as unit tests

@@ -340,6 +340,23 @@
     "platformWin": "Windows/Linux shortcuts (use Ctrl key)",
     "privacyNote": "Shortcut preferences are stored locally on your device and never sent to servers."
   },
+  "globalShortcut": {
+    "title": "Global Quick Summon",
+    "description": "Open HuluChat from anywhere with a keyboard shortcut",
+    "defaultShortcut": "Default shortcut",
+    "customize": "Customize shortcut",
+    "enabled": "Enable global shortcut",
+    "disabled": "Global shortcut disabled",
+    "registered": "Shortcut registered",
+    "notRegistered": "Shortcut not registered",
+    "registerError": "Failed to register shortcut",
+    "conflictWithSystem": "May conflict with system shortcut",
+    "systemConflictWarning": "This shortcut may conflict with a system shortcut. Consider using a different combination.",
+    "permissionRequired": "Permission required",
+    "macPermissionHint": "On macOS, you may need to grant Accessibility permission in System Settings > Privacy & Security > Accessibility.",
+    "openSettings": "Open System Settings",
+    "privacyNote": "Global shortcut is handled locally by your operating system."
+  },
   "export": {
     "title": "Export Chat",
     "markdown": "Markdown (.md)",

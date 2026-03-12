@@ -24,3 +24,11 @@ export {
   type BackendHealthState,
   type UseBackendHealthOptions,
 } from "./useBackendHealth";
+export {
+  useGlobalShortcut,
+  formatGlobalShortcut,
+  checkSystemShortcutConflicts,
+  validateShortcut,
+  DEFAULT_GLOBAL_SHORTCUT,
+  type GlobalShortcutConfig,
+} from "./useGlobalShortcut";

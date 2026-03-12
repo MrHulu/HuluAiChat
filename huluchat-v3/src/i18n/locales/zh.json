@@ -337,6 +337,23 @@
     "platformWin": "Windows/Linux 快捷键（使用 Ctrl 键）",
     "privacyNote": "快捷键偏好仅存储在本地设备，不会发送到服务器。"
   },
+  "globalShortcut": {
+    "title": "全局快捷唤起",
+    "description": "使用快捷键随时唤起 HuluChat",
+    "defaultShortcut": "默认快捷键",
+    "customize": "自定义快捷键",
+    "enabled": "已启用全局快捷键",
+    "disabled": "全局快捷键已禁用",
+    "registered": "快捷键已注册",
+    "notRegistered": "快捷键未注册",
+    "registerError": "快捷键注册失败",
+    "conflictWithSystem": "可能与系统快捷键冲突",
+    "systemConflictWarning": "此快捷键可能与系统快捷键冲突，建议使用其他组合键。",
+    "permissionRequired": "需要权限",
+    "macPermissionHint": "在 macOS 上，您可能需要在「系统设置」>「隐私与安全性」>「辅助功能」中授予权限。",
+    "openSettings": "打开系统设置",
+    "privacyNote": "全局快捷键由操作系统本地处理。"
+  },
   "export": {
     "title": "导出聊天",
     "markdown": "Markdown (.md)",
