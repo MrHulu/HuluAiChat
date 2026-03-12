@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api import sessions, chat, health, settings, folders, templates, tags, bookmarks, mcp, preferences
+from api import session_templates
 from core.database import init_db
 
 
@@ -46,6 +47,7 @@ app.include_router(tags.router, prefix="/api", tags=["tags"])
 app.include_router(bookmarks.router, prefix="/api", tags=["bookmarks"])
 app.include_router(mcp.router, prefix="/api", tags=["mcp"])
 app.include_router(preferences.router, prefix="/api/preferences", tags=["preferences"])
+app.include_router(session_templates.router, prefix="/api", tags=["session-templates"])
 
 
 if __name__ == "__main__":

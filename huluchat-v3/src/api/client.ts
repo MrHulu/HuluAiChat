@@ -1183,3 +1183,104 @@ export async function getRecommendedModel(availableModels: string[]): Promise<Re
 export async function clearPreferences(): Promise<void> {
   await fetch(`${API_BASE}/preferences/model-usage`, { method: "DELETE" });
 }
+
+// ============== Session Template APIs (TASK-197) ==============
+
+/**
+ * Session template for quick session creation with preset configurations
+ */
+export interface SessionTemplate {
+  id: string;
+  name: string;
+  description: string | null;
+  icon: string | null;
+  system_prompt: string | null;
+  default_model: string | null;
+  temperature: number | null;
+  top_p: number | null;
+  max_tokens: number | null;
+  mcp_servers: string[] | null;
+  is_builtin: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Session template creation data
+ */
+export interface SessionTemplateCreate {
+  name: string;
+  description?: string;
+  icon?: string;
+  system_prompt?: string;
+  default_model?: string;
+  temperature?: number;
+  top_p?: number;
+  max_tokens?: number;
+  mcp_servers?: string[];
+}
+
+/**
+ * Session template update data
+ */
+export interface SessionTemplateUpdate {
+  name?: string;
+  description?: string;
+  icon?: string;
+  system_prompt?: string;
+  default_model?: string;
+  temperature?: number;
+  top_p?: number;
+  max_tokens?: number;
+  mcp_servers?: string[];
+}
+
+/**
+ * List all session templates (built-in + user-created)
+ */
+export async function listSessionTemplates(): Promise<SessionTemplate[]> {
+  const response = await fetch(`${API_BASE}/session-templates`);
+  return response.json();
+}
+
+/**
+ * Get a specific session template by ID
+ */
+export async function getSessionTemplate(templateId: string): Promise<SessionTemplate> {
+  const response = await fetch(`${API_BASE}/session-templates/${templateId}`);
+  return response.json();
+}
+
+/**
+ * Create a new user session template
+ */
+export async function createSessionTemplate(template: SessionTemplateCreate): Promise<SessionTemplate> {
+  const response = await fetch(`${API_BASE}/session-templates`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(template),
+  });
+  return response.json();
+}
+
+/**
+ * Update a session template
+ */
+export async function updateSessionTemplate(
+  templateId: string,
+  template: SessionTemplateUpdate
+): Promise<SessionTemplate> {
+  const response = await fetch(`${API_BASE}/session-templates/${templateId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(template),
+  });
+  return response.json();
+}
+
+/**
+ * Delete a session template
+ */
+export async function deleteSessionTemplate(templateId: string): Promise<void> {
+  await fetch(`${API_BASE}/session-templates/${templateId}`, { method: "DELETE" });
+}
