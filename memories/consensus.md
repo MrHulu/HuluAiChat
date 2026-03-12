@@ -1,18 +1,18 @@
 # Auto Company Consensus
 
-> 最后更新: 2026-03-12 - Cycle #180
+> 最后更新: 2026-03-12 - Cycle #181
 
 ---
 
 ## 当前状态
-✅ **TASK-191: 功能发现提示完成**
+✅ **TASK-192: 书签消息跳转完成**
 
 ---
 
 ## Next Action
 > **继续 v3.56.0 开发：**
-> - TASK-192: 书签消息跳转 (P2)
 > - TASK-193: 上下文智能提示 (P2)
+> - TASK-194: 错误解决建议 (P2)
 
 ---
 
@@ -24,7 +24,7 @@
 - Phase 1 (P0): 命令面板、提示词指南、首次引导 ✅
 - Phase 2 (P1): FAQ、快捷键、反馈、模型对比 ✅
 - Phase 3 (P1): 功能发现提示 ✅
-- Phase 4 (P2): 帮助搜索 ✅、书签跳转、智能提示
+- Phase 4 (P2): 帮助搜索 ✅、书签跳转 ✅、智能提示
 
 **预计周期**: 9-12 Cycles
 
@@ -47,6 +47,36 @@
 ---
 
 ## 最近完成
+
+### TASK-192: 书签消息跳转（Cycle #181）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- ChatView 添加 ref 暴露 scrollToMessage 方法
+- BookmarkJumpDialog 组件 - 书签选择对话框
+- CommandPalette 添加 jumpToBookmark 命令
+- App.tsx 集成书签跳转功能
+- i18n 翻译 (EN/ZH)
+- 测试：10 个测试用例通过
+
+**变更文件**:
+- `src/components/chat/ChatView.tsx` - 添加 forwardRef 和 ChatViewRef
+- `src/components/chat/index.ts` - 导出 ChatViewRef
+- `src/components/bookmark/BookmarkJumpDialog.tsx` - 新建书签跳转对话框
+- `src/components/bookmark/index.ts` - 导出 BookmarkJumpDialog
+- `src/components/command/CommandPalette.tsx` - 添加 onJumpToBookmark
+- `src/App.tsx` - 集成 BookmarkJumpDialog
+- `src/i18n/locales/en.json` - 添加 bookmark 翻译
+- `src/i18n/locales/zh.json` - 添加 bookmark 翻译
+
+**功能特性**:
+- 通过命令面板（Ctrl+K）选择"跳转到书签"
+- 搜索过滤书签（消息内容、笔记）
+- 点击书签自动切换会话并跳转到消息
+- 消息高亮显示 2 秒
+
+---
 
 ### TASK-191: 功能发现提示（Cycle #180）
 
@@ -197,9 +227,9 @@
 - **项目**: HuluChat
 - **当前版本**: v3.54.0
 - **下一版本**: v3.56.0
-- **待开始任务**: 3 个 (TASK-192 ~ 194)
-- **已完成任务计数**: 28
+- **待开始任务**: 2 个 (TASK-193, 194)
+- **已完成任务计数**: 29
 
 ---
 
-*更新时间: 2026-03-12 - Cycle #180*
+*更新时间: 2026-03-12 - Cycle #181*

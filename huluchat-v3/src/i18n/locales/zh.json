@@ -407,7 +407,8 @@
     "showHelp": "键盘快捷键",
     "openCommandPalette": "打开命令面板",
     "searchInput": "搜索命令",
-    "knowledgeCenter": "知识中心"
+    "knowledgeCenter": "知识中心",
+    "jumpToBookmark": "跳转到书签"
   },
   "rag": {
     "title": "文档对话（实验性）",
@@ -564,6 +565,15 @@
     "taskPlaceholder": "例如：编写代码、设计界面、分析数据",
     "project": "项目",
     "projectPlaceholder": "例如：移动应用、网站、API"
+  },
+  "bookmark": {
+    "jumpTitle": "跳转到书签",
+    "jumpDescription": "选择一个书签跳转到对应消息",
+    "searchPlaceholder": "搜索书签...",
+    "searchLabel": "搜索书签",
+    "noResults": "未找到匹配的书签",
+    "noBookmarks": "暂无书签",
+    "listLabel": "书签列表"
   },
   "knowledge": {
     "title": "知识中心",

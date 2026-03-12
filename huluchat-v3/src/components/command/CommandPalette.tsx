@@ -15,6 +15,7 @@ import {
   HelpCircle,
   FolderPlus,
   BookOpen,
+  Bookmark,
 } from "lucide-react";
 import {
   CommandDialog,
@@ -50,6 +51,7 @@ interface CommandPaletteProps {
   onToggleTheme?: () => void;
   onShowHelp?: () => void;
   onOpenKnowledgeCenter?: () => void;
+  onJumpToBookmark?: () => void;
 }
 
 /**
@@ -72,6 +74,7 @@ export function CommandPalette({
   onToggleTheme,
   onShowHelp,
   onOpenKnowledgeCenter,
+  onJumpToBookmark,
 }: CommandPaletteProps) {
   const { t } = useTranslation();
   const isMac = isMacOS();
@@ -131,6 +134,16 @@ export function CommandPalette({
         labelKey: "command.toggleSidebar",
         shortcut: isMac ? "⌘B" : "Ctrl+B",
         action: onToggleSidebar,
+        group: "navigation",
+      });
+    }
+
+    if (onJumpToBookmark) {
+      cmds.push({
+        id: "jump-bookmark",
+        icon: <Bookmark className="size-4 transition-transform duration-200 data-[selected=true]:scale-110" aria-hidden="true" />,
+        labelKey: "command.jumpToBookmark",
+        action: onJumpToBookmark,
         group: "navigation",
       });
     }
@@ -200,6 +213,7 @@ export function CommandPalette({
     onToggleTheme,
     onShowHelp,
     onOpenKnowledgeCenter,
+    onJumpToBookmark,
     isMac,
   ]);
 

@@ -2,7 +2,7 @@
  * ChatView Component
  * 聊天主界面，整合消息列表和输入框
  */
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 import { MessageList, MessageListRef } from "./MessageList";
 import { ChatInput } from "./ChatInput";
 import { ModelSelector } from "./ModelSelector";
@@ -32,6 +32,13 @@ import { Bookmark, CheckCircle, XCircle, Loader2, ListChecks, Download, X } from
 export interface ChatViewProps {
   sessionId: string | null;
   onSessionUpdated?: () => void;  // Called when session title is updated
+}
+
+/**
+ * ChatView ref interface - exposes methods for parent components
+ */
+export interface ChatViewRef {
+  scrollToMessage: (messageId: string) => void;
 }
 
 function ConnectionIndicator({ status }: { status: ConnectionStatus }) {
@@ -129,7 +136,10 @@ function ToolCallsIndicator({ toolCalls }: { toolCalls: ToolCall[] }) {
   );
 }
 
-export function ChatView({ sessionId, onSessionUpdated }: ChatViewProps) {
+export const ChatView = forwardRef<ChatViewRef, ChatViewProps>(function ChatView(
+  { sessionId, onSessionUpdated },
+  ref
+) {
   const { t } = useTranslation();
   const { messages, streamingMessage, toolCalls, connectionStatus, sendMessage, regenerateMessage, deleteMessage, isLoading, refreshMessages } =
     useChat(sessionId, { onTitleGenerated: onSessionUpdated });
@@ -137,6 +147,13 @@ export function ChatView({ sessionId, onSessionUpdated }: ChatViewProps) {
 
   // Refs
   const messageListRef = useRef<MessageListRef>(null);
+
+  // Expose scrollToMessage via ref for bookmark jump feature
+  useImperativeHandle(ref, () => ({
+    scrollToMessage: (messageId: string) => {
+      messageListRef.current?.scrollToMessage(messageId);
+    },
+  }), []);
 
   // RAG Panel state
   const [isRAGPanelOpen, setIsRAGPanelOpen] = useState(false);
@@ -569,4 +586,4 @@ export function ChatView({ sessionId, onSessionUpdated }: ChatViewProps) {
       />
     </div>
   );
-}
+});
