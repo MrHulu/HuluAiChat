@@ -114,12 +114,15 @@
 **决策修正**: 采纳 Critic 建议，延后多模型对比，改为全局快捷唤起
 
 #### Phase 1: 全局快捷唤起 (P0)
-- [ ] **TASK-211**: ⌨️ 全局热键注册
-  - Tauri global-shortcut 插件集成
-  - 默认快捷键: Ctrl+Shift+Space (Win/Linux), Cmd+Shift+Space (macOS)
-  - 支持自定义快捷键
-  - 冲突检测
-  - 隐私约束：仅本地存储
+- [x] **TASK-211**: ⌨️ 全局热键注册 ✅ 2026-03-12
+  - Tauri global-shortcut 插件集成 ✅
+  - 默认快捷键: Ctrl+Shift+Space (Win/Linux), Cmd+Shift+Space (macOS) ✅
+  - 支持自定义快捷键 ✅
+  - 冲突检测 ✅
+  - 隐私约束：仅本地存储 ✅
+  - i18n 翻译 (EN/ZH) ✅
+  - 测试：18 个测试用例通过 ✅
+  - Cycle #19
 
 - [ ] **TASK-212**: 🪟 快速提问面板
   - 浮动小窗口 UI（400px 宽）

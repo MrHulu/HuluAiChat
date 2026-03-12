@@ -6,19 +6,19 @@
 
 ## 当前状态
 ✅ **v3.58.0 已完成** 🎉
-✅ **v3.59.0 已规划** ✅ **Critic 审核通过**
-⏳ **开始 v3.59.0 开发**
+⏳ **v3.59.0 开发中** (1/6 任务完成)
+🔄 **TASK-211 已完成**
 
 ---
 
 ## Next Action
 
-> **TASK-211: 全局热键注册** - 开始执行
+> **TASK-212: 快速提问面板** - 下一个任务
 >
 > **版本**: v3.59.0
 > **主题**: 全局快捷唤起 + 技术韧性
-> **周期**: Cycle #19
-> **决策修正**: 采纳 Critic 建议，延后多模型对比
+> **周期**: Cycle #20
+> **进度**: 1/6 任务完成
 
 ---
 
@@ -38,7 +38,7 @@
 | 全局快捷唤起 | 强 | 🟢 低 | **采用** |
 
 **MVP 范围** (6 个任务):
-- P0: TASK-211 全局热键、TASK-212 快速面板、TASK-213 剪贴板、TASK-214 权限引导
+- P0: ~~TASK-211 全局热键~~ ✅、TASK-212 快速面板、TASK-213 剪贴板、TASK-214 权限引导
 - P1: TASK-215 Sidecar 监控、TASK-216 WebSocket 优化
 
 **预计周期**: 5-6 Cycles
@@ -47,6 +47,35 @@
 ---
 
 ## 最近完成
+
+### TASK-211: 全局热键注册（Cycle #19）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- Tauri global-shortcut 插件集成 ✅
+- useGlobalShortcut hook（注册/注销/自定义/冲突检测）✅
+- 默认快捷键: Ctrl+Shift+Space (Win/Linux), Cmd+Shift+Space (macOS) ✅
+- 系统快捷键冲突检测 ✅
+- 快捷键验证工具函数 ✅
+- i18n 翻译（EN/ZH）✅
+- 测试：18 个测试用例通过 ✅
+
+**变更文件**:
+- `src-tauri/Cargo.toml` - 添加 tauri-plugin-global-shortcut
+- `src-tauri/src/lib.rs` - 初始化 global-shortcut 插件
+- `src-tauri/capabilities/default.json` - 添加权限
+- `package.json` - 添加 @tauri-apps/plugin-global-shortcut
+- `src/hooks/useGlobalShortcut.ts` - 新建 hook
+- `src/hooks/useGlobalShortcut.test.ts` - 测试文件
+- `src/i18n/locales/en.json` - 添加 globalShortcut 翻译
+- `src/i18n/locales/zh.json` - 添加 globalShortcut 翻译
+
+**验证结果**: 所有 1844 个测试通过（78 个测试文件）
+
+**隐私约束**: 快捷键配置仅存储在 localStorage，不发送到服务器
+
+---
 
 ### TASK-210: 添加集成测试框架（Cycle #18）
 
