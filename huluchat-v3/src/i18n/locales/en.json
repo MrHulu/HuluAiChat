@@ -295,6 +295,7 @@
     "description": "View all available keyboard shortcuts to navigate the app efficiently",
     "shortcutsList": "List of keyboard shortcuts",
     "shortcutKey": "{{action}}: {{key}}",
+    "commandPalette": "Open command palette",
     "newChat": "New chat",
     "search": "Search chats",
     "settings": "Open settings",

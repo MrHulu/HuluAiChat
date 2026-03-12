@@ -292,6 +292,7 @@
     "description": "查看所有可用的键盘快捷键，高效导航应用程序",
     "shortcutsList": "快捷键列表",
     "shortcutKey": "{{action}}：{{key}}",
+    "commandPalette": "打开命令面板",
     "newChat": "新建聊天",
     "search": "搜索聊天",
     "settings": "打开设置",
