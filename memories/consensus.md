@@ -21,8 +21,23 @@
 5. 触发 GitHub Release
 
 ### Next Action
-> **🚫 暂停开发 TASK-215/216**
-> **✅ 执行：TASK-217 修复测试 → TASK-218 发布版本**
+> **TASK-217a: 添加 useAccessibilityPermission mock**
+>
+> **文件**: `huluchat-v3/src/App.test.tsx`
+> **预计时间**: 5 分钟
+>
+> 只做一件事：在 `vi.mock("@/hooks", ...)` 中添加 useAccessibilityPermission mock
+>
+> ```typescript
+> useAccessibilityPermission: vi.fn(() => ({
+>   hasPermission: true,
+>   showGuide: false,
+>   dismissGuide: vi.fn(),
+>   dismissPermanently: vi.fn(),
+> })),
+> ```
+>
+> ⚠️ **完成后提交并推送，然后进入 TASK-217b**
 
 ---
 
