@@ -354,6 +354,20 @@
     "openSettings": "打开系统设置",
     "privacyNote": "全局快捷键由操作系统本地处理。"
   },
+  "quickPanel": {
+    "title": "快速提问",
+    "placeholder": "输入问题...",
+    "hint": "Enter 发送，Shift+Enter 换行，Esc 关闭",
+    "send": "发送",
+    "clear": "清空",
+    "copy": "复制",
+    "copied": "已复制！",
+    "copyFailed": "复制失败",
+    "sendError": "发送消息失败",
+    "thinking": "思考中...",
+    "emptyResponse": "回复将显示在这里",
+    "close": "关闭面板"
+  },
   "export": {
     "title": "导出聊天",
     "markdown": "Markdown (.md)",

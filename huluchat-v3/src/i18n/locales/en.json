@@ -357,6 +357,20 @@
     "openSettings": "Open System Settings",
     "privacyNote": "Global shortcut is handled locally by your operating system."
   },
+  "quickPanel": {
+    "title": "Quick Question",
+    "placeholder": "Type a quick question...",
+    "hint": "Enter to send, Shift+Enter for new line, Esc to close",
+    "send": "Send",
+    "clear": "Clear",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "copyFailed": "Failed to copy",
+    "sendError": "Failed to send message",
+    "thinking": "Thinking...",
+    "emptyResponse": "Response will appear here",
+    "close": "Close panel"
+  },
   "export": {
     "title": "Export Chat",
     "markdown": "Markdown (.md)",
