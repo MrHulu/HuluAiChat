@@ -132,6 +132,12 @@ export const KEYBOARD_SHORTCUTS = [
     windows: "Ctrl+N",
   },
   {
+    key: "Ctrl/Cmd + F",
+    descriptionKey: "keyboard.searchInChat",
+    mac: "⌘F",
+    windows: "Ctrl+F",
+  },
+  {
     key: "Ctrl/Cmd + B",
     descriptionKey: "keyboard.toggleSidebar",
     mac: "⌘B",

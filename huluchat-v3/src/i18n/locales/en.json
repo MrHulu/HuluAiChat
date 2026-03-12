@@ -176,7 +176,17 @@
     "selectedCount": "{{count}} selected",
     "noMessagesSelected": "No messages selected",
     "exportSuccess": "{{count}} messages exported",
-    "exportTxt": "Export as TXT"
+    "exportTxt": "Export as TXT",
+    "search": "Search",
+    "searchInConversation": "Search in conversation",
+    "searchPlaceholder": "Search keywords...",
+    "searchQuery": "Search query",
+    "searchMatchCount": "{{current}} / {{total}}",
+    "searchNoMatch": "No match",
+    "searchCaseSensitive": "Case sensitive",
+    "searchPrev": "Previous match",
+    "searchNext": "Next match",
+    "searchClose": "Close search"
   },
   "settings": {
     "title": "Settings",
@@ -298,6 +308,7 @@
     "commandPalette": "Open command palette",
     "newChat": "New chat",
     "search": "Search chats",
+    "searchInChat": "Search in conversation",
     "settings": "Open settings",
     "toggleSidebar": "Toggle sidebar",
     "switchSession": "Switch to recent session",
