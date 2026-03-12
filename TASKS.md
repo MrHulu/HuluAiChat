@@ -107,31 +107,6 @@
 ## 待开始
 
 ### 🔴 优先任务
-- [ ] **TASK-208**: 🐛 修复多个开发环境问题
-  - **问题 1: BackendStatusIndicator 未集成** ⚠️ 严重
-    - 文件: `src/App.tsx`
-    - 错误: 组件已创建但**未集成到 App.tsx**，导致一直显示"连接中"
-    - 修复: 需要在 App.tsx header 区域添加 `<BackendStatusIndicator />`
-    - 影响: 用户看到错误的状态指示
-  - **问题 2: Python 导入错误**
-    - 文件: `backend/api/bookmarks.py`
-    - 错误: `from models.schemas import SessionModel` - SessionModel 不在 schemas.py
-    - 修复: 改为 `from api.sessions import SessionModel`
-    - **已由秘书临时修复，需要正式提交**
-  - **问题 3: Rust 依赖版本错误**
-    - 文件: `src-tauri/Cargo.toml`
-    - 错误: `tauri-plugin-keyring = "2"` 但 crates.io 只有 0.1.0
-    - 修复: 改为 `tauri-plugin-keyring = "0.1"` 或移除
-    - **用户已临时移除 keyring 依赖**
-  - **问题 4: API Key 保存失败**
-    - 错误信息: `settings.keyringStoreFailed`
-    - 原因: keyring 插件未正确安装/配置
-    - 影响: 用户无法保存 API Key
-  - **问题 5: 端口配置说明**
-    - 前端默认连接: `127.0.0.1:8765`
-    - 后端必须启动在端口 8765，不是 8000
-  - **影响**: 开发环境无法正常启动，影响开发效率
-
 - [ ] **TASK-209**: 🔄 更新模型列表
   - **问题**: 当前模型列表过时，跟不上模型更新速度
   - **当前模型**: GPT-4o, GPT-4-turbo, GPT-3.5-turbo, DeepSeek V3/R1, Claude 3.5 Sonnet/3 Opus
@@ -368,6 +343,15 @@
 - [ ] **TASK-116**: 🎬 准备 Product Hunt 发布素材(截图、视频) - 等待 Boss
 
 ## 已完成（最近）
+- [x] **TASK-208**: 🐛 修复多个开发环境问题 ✅ 2026-03-12
+  - **修复内容**：
+    - BackendStatusIndicator 已集成到 App.tsx header ✅
+    - Python 导入正确（`from api.sessions import SessionModel`）✅
+    - Rust 依赖版本正确（`tauri-plugin-keyring = "0.1"`）✅
+  - **验证结果**：所有 1795 个测试通过
+  - **注意**：API Key 保存失败问题可能需要用户重新安装 keyring 插件
+  - Cycle #16
+
 - [x] **TASK-160**: 🐛 修复测试内存溢出 ✅ 2026-03-12
   - 配置 Vitest 使用 forks pool 和 fileParallelism=false
   - 更新 empty-state.test.tsx 断言匹配新样式
