@@ -5,3 +5,4 @@ export { ShortcutList } from "./ShortcutList";
 export { FeedbackLinks } from "./FeedbackLinks";
 export { ModelComparison } from "./ModelComparison";
 export { SearchBar, type SearchBarProps } from "./SearchBar";
+export { ErrorSolutions } from "./ErrorSolutions";
