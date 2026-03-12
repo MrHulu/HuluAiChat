@@ -1,6 +1,6 @@
 # Auto Company Consensus
 
-> 最后更新: 2026-03-12 - Cycle #9
+> 最后更新: 2026-03-12 - Cycle #10
 
 ---
 
@@ -9,17 +9,18 @@
 ✅ **v3.58.0 规划已完成**
 ✅ **TASK-200: 完善引用回复 已完成**
 ✅ **TASK-202: 会话内搜索 已完成**
-🔄 **准备开始 TASK-203: 主题定制**
+✅ **TASK-203: 主题定制 已完成**
+🔄 **准备开始 TASK-204: 快捷键自定义**
 
 ---
 
 ## Next Action
-> **开始 TASK-203: 主题定制**
+> **开始 TASK-204: 快捷键自定义**
 >
 > v3.58.0 任务：
 > - TASK-200: 完善引用回复 ✅ (0.5 Cycle)
 > - TASK-202: 会话内搜索 ✅ (1 Cycle)
-> - TASK-203: 主题定制 (0.5-1 Cycle)
+> - TASK-203: 主题定制 ✅ (0.5 Cycle)
 > - TASK-204: 快捷键自定义 (1-2 Cycle)
 > - TASK-205: 前端健康监控 (1 Cycle)
 >
@@ -96,6 +97,38 @@
 ---
 
 ## 最近完成
+
+### TASK-203: 主题定制（Cycle #10）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- ThemeSettings 组件（外观设置 Tab）✅
+- SettingsDialog 添加第 5 个 Tab（外观）✅
+- 预设主题：Light / Dark / System ✅
+- 主题预览卡片（可点击切换）✅
+- i18n 翻译（EN/ZH）✅
+- 测试：12 个测试用例通过 ✅
+
+**变更文件**:
+- `src/components/settings/ThemeSettings.tsx` - 新建主题设置组件
+- `src/components/settings/SettingsDialog.tsx` - 添加外观 Tab
+- `src/i18n/locales/en.json` - 添加 appearance 翻译
+- `src/i18n/locales/zh.json` - 添加 appearance 翻译
+- `src/components/settings/ThemeSettings.test.tsx` - 新建测试
+- `src/components/settings/SettingsDialog.test.tsx` - 更新测试（添加 keyring 和 theme mock）
+
+**功能特性**:
+- 设置对话框新增"外观"标签页
+- 下拉选择器切换主题
+- 可视化主题预览卡片
+- 点击卡片直接切换主题
+- 显示当前主题描述
+- 隐私提示：主题偏好仅存储在本地
+
+**隐私约束**: 主题偏好存储在 localStorage，不发送到服务器
+
+---
 
 ### TASK-202: 会话内搜索（Cycle #9）
 
@@ -485,9 +518,9 @@
 - **项目**: HuluChat
 - **当前版本**: v3.57.0 ✅ **已完成**
 - **下一版本**: v3.58.0 ✅ **规划完成**
-- **待开始任务**: 4 个（v3.58.0）
-- **已完成任务计数**: 42
+- **待开始任务**: 3 个（v3.58.0）
+- **已完成任务计数**: 43
 
 ---
 
-*更新时间: 2026-03-12 - Cycle #8*
+*更新时间: 2026-03-12 - Cycle #10*

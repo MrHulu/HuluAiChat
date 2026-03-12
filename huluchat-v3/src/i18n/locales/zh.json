@@ -191,6 +191,7 @@
     "tabApi": "API",
     "tabOllama": "Ollama",
     "tabPlugins": "插件",
+    "tabAppearance": "外观",
     "apiKey": "API 密钥",
     "apiKeyPlaceholder": "sk-...",
     "apiKeySet": "已设置 API 密钥。输入新密钥以更新。",
@@ -414,6 +415,15 @@
     "light": "浅色",
     "dark": "深色",
     "system": "跟随系统"
+  },
+  "appearance": {
+    "title": "外观",
+    "theme": "主题",
+    "selectTheme": "选择主题",
+    "themeLightDescription": "使用浅色主题，界面明亮",
+    "themeDarkDescription": "使用深色主题，减少暗光环境下的眼睛疲劳",
+    "themeSystemDescription": "自动跟随系统的主题设置",
+    "privacyNote": "主题偏好仅存储在本地，不会发送到服务器。"
   },
   "languageSelector": {
     "changeLanguage": "切换语言",

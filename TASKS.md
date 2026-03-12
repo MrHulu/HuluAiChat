@@ -129,11 +129,13 @@
   - Cycle #9
 
 #### Phase 2: 个性化体验 (P1)
-- [ ] **TASK-203**: 🎨 主题定制（仅预设）
-  - SettingsDialog 添加外观 Tab
-  - 预设主题：Light / Dark / System
-  - localStorage 存储主题偏好
-  - 预计：0.5-1 Cycle
+- [x] **TASK-203**: 🎨 主题定制（仅预设） ✅ 2026-03-12
+  - SettingsDialog 添加外观 Tab ✅
+  - 预设主题：Light / Dark / System ✅
+  - localStorage 存储主题偏好 ✅
+  - i18n 翻译（EN/ZH）✅
+  - 测试：12 个测试用例通过 ✅
+  - Cycle #10
 
 - [ ] **TASK-204**: ⌨️ 快捷键自定义
   - SettingsDialog 添加快捷键 Tab

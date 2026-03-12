@@ -20,8 +20,7 @@ import {
   Sliders,
   Puzzle,
   Cpu,
-  Trash2,
-  ShieldCheck,
+  Palette,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -54,9 +53,10 @@ import {
   type ModelInfo,
   type OllamaModel,
 } from "@/api/client";
-import { storeAPIKey, getAPIKey, deleteAPIKey, hasAPIKey } from "@/services/keyring";
+import { storeAPIKey } from "@/services/keyring";
 import { PluginSettings } from "./PluginSettings";
 import { MCPSettings } from "./MCPSettings";
+import { ThemeSettings } from "./ThemeSettings";
 
 interface SettingsDialogProps {
   onSettingsChange?: () => void;
@@ -266,20 +266,6 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
     }
   };
 
-  // Handle clearing API key from keyring
-  const handleClearApiKey = async () => {
-    try {
-      await deleteAPIKey("openai");
-      setHasApiKey(false);
-      setApiKey("");
-      toast.success(t("settings.apiKeyCleared"));
-      onSettingsChange?.();
-    } catch (error) {
-      console.error("Failed to clear API key:", error);
-      toast.error(t("settings.apiKeyClearFailed"));
-    }
-  };
-
   const handleTest = async () => {
     setTesting(true);
     setTestResult(null);
@@ -354,12 +340,16 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
           </div>
         ) : (
           <Tabs defaultValue="api" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="api">{t("settings.tabApi")}</TabsTrigger>
               <TabsTrigger value="ollama">{t("settings.tabOllama")}</TabsTrigger>
               <TabsTrigger value="mcp">
                 <Cpu className="h-4 w-4 mr-1" />
                 MCP
+              </TabsTrigger>
+              <TabsTrigger value="appearance">
+                <Palette className="h-4 w-4 mr-1" />
+                {t("settings.tabAppearance")}
               </TabsTrigger>
               <TabsTrigger value="plugins">
                 <Puzzle className="h-4 w-4 mr-1" />
@@ -687,6 +677,11 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
             {/* MCP Tab */}
             <TabsContent value="mcp" className="py-4">
               <MCPSettings />
+            </TabsContent>
+
+            {/* Appearance Tab */}
+            <TabsContent value="appearance" className="py-4">
+              <ThemeSettings />
             </TabsContent>
 
             {/* Plugins Tab */}
