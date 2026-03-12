@@ -706,6 +706,15 @@
           "answer": "HuluChat checks for updates automatically on startup. When available, you'll see an update notification. Click to download and install. You can also check manually in Settings > About > Check for Updates."
         }
       }
+    },
+    "shortcuts": {
+      "title": "Keyboard Shortcuts",
+      "categories": {
+        "general": "General",
+        "navigation": "Navigation",
+        "editor": "Editor"
+      },
+      "footer": "Press {{key}} with other keys for shortcuts"
     }
   }
 }

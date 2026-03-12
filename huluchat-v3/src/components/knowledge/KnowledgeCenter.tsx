@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { PROMPT_TIPS, type PromptTip } from "@/data/promptTips";
 import { ArticleViewer } from "./ArticleViewer";
 import { FAQList } from "./FAQList";
+import { ShortcutList } from "./ShortcutList";
 
 interface KnowledgeCenterProps {
   open: boolean;
@@ -168,9 +169,14 @@ export function KnowledgeCenter({
           {/* 分类页 - 文章列表 */}
           {selectedCategory && !selectedArticle && (
             <div className="p-4">
-              {/* Help 分类显示 FAQ */}
+              {/* Help 分类显示 FAQ 和快捷键 */}
               {selectedCategory === "help" ? (
-                <FAQList />
+                <>
+                  {/* 快捷键列表 */}
+                  <ShortcutList className="mb-8" />
+                  {/* FAQ 列表 */}
+                  <FAQList />
+                </>
               ) : articles.length === 0 ? (
                 <p className="text-muted-foreground text-center py-8">
                   {t("knowledge.comingSoon")}
