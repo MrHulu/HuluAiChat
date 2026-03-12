@@ -8,7 +8,8 @@
 ✅ **v3.57.0 版本规划完成**
 ✅ **TASK-195: 消息重新生成 - 已完成**
 ✅ **TASK-196: 消息编辑 - 已完成**
-🔄 **待执行: TASK-197 会话模板**
+✅ **TASK-197: 会话模板 - 已完成**
+🔄 **待执行: TASK-198 自定义命令**
 
 ---
 
@@ -20,11 +21,11 @@
 > **MVP 功能集**（5 个）:
 > - TASK-195: 🔄 消息重新生成 ✅
 > - TASK-196: ✏️ 消息编辑 ✅
-> - TASK-197: 📋 会话模板 (待开始)
+> - TASK-197: 📋 会话模板 ✅
 > - TASK-198: ⚡ 自定义命令 (待开始)
 > - TASK-199: 📁 批量会话操作 (待开始)
 >
-> **已完成**: 2/5 功能
+> **已完成**: 3/5 功能
 
 ---
 
@@ -82,6 +83,34 @@
 ---
 
 ## 最近完成
+
+### TASK-197: 会话模板（Cycle #5）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- 后端: SessionTemplateModel 数据模型
+- 后端: CRUD API (/api/session-templates)
+- 内置模板: 通用对话、代码助手、翻译助手、创意写作
+- 前端: API 客户端 + TemplateSelector 组件
+- i18n: 中英文翻译
+
+**变更文件**:
+- `backend/models/templates.py` - SessionTemplateModel 模型
+- `backend/api/session_templates.py` - CRUD API
+- `backend/main.py` - 注册路由
+- `src/api/client.ts` - SessionTemplate 类型 + API 函数
+- `src/components/templates/TemplateSelector.tsx` - 模板选择组件
+- `src/i18n/locales/zh.json` - 中文翻译
+- `src/i18n/locales/en.json` - 英文翻译
+
+**功能特性**:
+- 4 个内置会话模板（通用、代码、翻译、写作）
+- 支持自定义模板
+- 模板包含：系统提示词、默认模型、温度、MCP 服务器
+- 内置模板不可删除/修改
+
+---
 
 ### TASK-196: 消息编辑（Cycle #5）
 

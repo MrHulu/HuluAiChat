@@ -341,6 +341,10 @@
     "categoriesLabel": "模板分类",
     "templateList": "可用模板列表",
     "selectTemplate": "选择 {{name}} 模板",
+    "loading": "加载模板中...",
+    "loadError": "加载模板失败",
+    "sessionTemplates": "会话模板",
+    "sessionTemplateDescription": "选择模板快速创建预设配置的会话",
     "categories": {
       "writing": "写作",
       "coding": "编程",

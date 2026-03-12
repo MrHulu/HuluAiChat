@@ -344,6 +344,10 @@
     "categoriesLabel": "Template categories",
     "templateList": "Available templates",
     "selectTemplate": "Select {{name}} template",
+    "loading": "Loading templates...",
+    "loadError": "Failed to load templates",
+    "sessionTemplates": "Session Templates",
+    "sessionTemplateDescription": "Select a template to quickly create a session with preset configurations",
     "categories": {
       "writing": "Writing",
       "coding": "Coding",
