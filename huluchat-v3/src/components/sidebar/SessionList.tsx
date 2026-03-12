@@ -1,6 +1,6 @@
 /**
  * SessionList Component
- * 会话列表侧边栏，支持文件夹分组和标签筛选
+ * 会话列表侧边栏，支持文件夹分组、标签筛选和批量操作
  */
 import { useState, useMemo, useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from "react";
 import { useTranslation } from "react-i18next";
@@ -11,11 +11,16 @@ import {
   Search,
   X,
   ChevronRight,
+  ChevronLeft,
   FolderOpen,
   MoreVertical,
   ArrowLeft,
   Pencil,
   Trash2,
+  CheckSquare,
+  XCircle,
+  FolderInput,
+  Download,
 } from "lucide-react";
 import {
   Session,
@@ -26,6 +31,9 @@ import {
   moveSessionToFolder,
   getSessionTags,
   listAllTags,
+  batchDeleteSessions,
+  batchMoveSessions,
+  batchExportSessions,
 } from "@/api/client";
 import { SessionItem } from "./SessionItem";
 import { TagFilter } from "./TagFilter";
@@ -33,6 +41,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SkeletonSessionItem } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 
 export interface SessionListProps {
@@ -48,6 +72,7 @@ export interface SessionListProps {
   onDeleteFolder: (id: string) => void;
   onRenameFolder: (id: string, name: string) => void;
   onMoveSession?: (sessionId: string, folderId: string | null) => void;
+  onRefreshSessions?: () => void;
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
 }
@@ -75,6 +100,7 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
       onDeleteFolder,
       onRenameFolder,
       onMoveSession,
+      onRefreshSessions,
       isCollapsed = false,
       onToggleCollapse,
     },
@@ -82,6 +108,11 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
   ) => {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
+  // Batch selection state
+  const [isBatchMode, setIsBatchMode] = useState(false);
+  const [selectedSessionIds, setSelectedSessionIds] = useState<Set<string>>(new Set());
+  const [showBatchDeleteConfirm, setShowBatchDeleteConfirm] = useState(false);
+  const [isBatchOperating, setIsBatchOperating] = useState(false);
   const [searchResults, setSearchResults] = useState<SessionSearchResult[] | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
@@ -155,6 +186,147 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
   const handleTagClick = useCallback((tag: string) => {
     handleTagFilterSelect(tag);
   }, [handleTagFilterSelect]);
+
+  // Batch selection handlers
+  const toggleBatchMode = useCallback(() => {
+    setIsBatchMode((prev) => !prev);
+    setSelectedSessionIds(new Set());
+  }, []);
+
+  const toggleSessionSelection = useCallback((sessionId: string) => {
+    setSelectedSessionIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(sessionId)) {
+        next.delete(sessionId);
+      } else {
+        next.add(sessionId);
+      }
+      return next;
+    });
+  }, []);
+
+  const clearSelection = useCallback(() => {
+    setSelectedSessionIds(new Set());
+  }, []);
+
+  // Batch operations
+  const handleBatchDelete = useCallback(async () => {
+    if (selectedSessionIds.size === 0) return;
+
+    setIsBatchOperating(true);
+    try {
+      await batchDeleteSessions(Array.from(selectedSessionIds));
+      setSelectedSessionIds(new Set());
+      setIsBatchMode(false);
+      onRefreshSessions?.();
+    } catch (error) {
+      console.error("Batch delete failed:", error);
+    } finally {
+      setIsBatchOperating(false);
+      setShowBatchDeleteConfirm(false);
+    }
+  }, [selectedSessionIds, onRefreshSessions]);
+
+  const handleBatchMove = useCallback(async (folderId: string | null) => {
+    if (selectedSessionIds.size === 0) return;
+
+    setIsBatchOperating(true);
+    try {
+      await batchMoveSessions(Array.from(selectedSessionIds), folderId);
+      setSelectedSessionIds(new Set());
+      setIsBatchMode(false);
+      onRefreshSessions?.();
+    } catch (error) {
+      console.error("Batch move failed:", error);
+    } finally {
+      setIsBatchOperating(false);
+    }
+  }, [selectedSessionIds, onRefreshSessions]);
+
+  const handleBatchExport = useCallback(async (format: ExportFormat) => {
+    if (selectedSessionIds.size === 0) return;
+
+    setIsBatchOperating(true);
+    try {
+      const response = await batchExportSessions(Array.from(selectedSessionIds));
+
+      // Generate combined export content
+      const timestamp = new Date().toISOString().split("T")[0];
+      let content: string;
+      let mimeType: string;
+      let extension: string;
+
+      if (format === "json") {
+        content = JSON.stringify(response.sessions, null, 2);
+        mimeType = "application/json";
+        extension = "json";
+      } else if (format === "txt") {
+        content = response.sessions.map((s) => {
+          const lines = [
+            `Title: ${s.session.title}`,
+            `Created: ${s.session.created_at}`,
+            "",
+            "=".repeat(50),
+            "",
+          ];
+          for (const msg of s.messages) {
+            lines.push(`[${msg.role.toUpperCase()}] ${msg.created_at}`);
+            lines.push(msg.content);
+            lines.push("");
+            lines.push("-".repeat(50));
+            lines.push("");
+          }
+          return lines.join("\n");
+        }).join("\n\n" + "=".repeat(50) + "\n\n");
+        mimeType = "text/plain";
+        extension = "txt";
+      } else {
+        // Markdown
+        content = response.sessions.map((s) => {
+          const lines = [
+            `# ${s.session.title}`,
+            "",
+            `> Created: ${s.session.created_at}`,
+            "",
+            "---",
+            "",
+          ];
+          for (const msg of s.messages) {
+            const roleEmoji = msg.role === "user" ? "👤" : "🤖";
+            const roleLabel = msg.role === "user" ? "User" : "Assistant";
+            lines.push(`### ${roleEmoji} ${roleLabel}`);
+            lines.push(`*${msg.created_at}*`);
+            lines.push("");
+            lines.push(msg.content);
+            lines.push("");
+            lines.push("---");
+            lines.push("");
+          }
+          return lines.join("\n");
+        }).join("\n\n---\n\n");
+        mimeType = "text/markdown";
+        extension = "md";
+      }
+
+      // Download
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `huluchat_batch_export_${timestamp}.${extension}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      setSelectedSessionIds(new Set());
+      setIsBatchMode(false);
+    } catch (error) {
+      console.error("Batch export failed:", error);
+    } finally {
+      setIsBatchOperating(false);
+    }
+  }, [selectedSessionIds]);
 
   // Debounced search
   const performSearch = useCallback(async (query: string) => {
@@ -242,6 +414,11 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
 
     return result;
   }, [sessions, sessionsByFolder, searchResults, activeFolderFilter, selectedFilterTags, sessionTags]);
+
+  // Select all visible sessions
+  const selectAllVisible = useCallback(() => {
+    setSelectedSessionIds(new Set(displaySessions.map((s) => s.id)));
+  }, [displaySessions]);
 
   const toggleFolder = (folderId: string) => {
     setExpandedFolders((prev) => {
@@ -345,16 +522,124 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
       </div>
 
       {/* New Chat Button */}
-      <div className="p-3">
+      <div className="p-3 flex gap-2">
         <Button
           onClick={onCreateSession}
-          className="w-full justify-start gap-2"
+          className="flex-1 justify-start gap-2"
           variant="outline"
         >
           <Plus className="w-4 h-4" aria-hidden="true" />
           {t("sidebar.newChat")}
         </Button>
+        {sessions.length > 0 && (
+          <Button
+            onClick={toggleBatchMode}
+            variant={isBatchMode ? "default" : "ghost"}
+            size="icon"
+            className="shrink-0"
+            aria-label={isBatchMode ? t("batch.exitBatchMode") : t("batch.enterBatchMode")}
+            aria-pressed={isBatchMode}
+          >
+            {isBatchMode ? (
+              <XCircle className="w-4 h-4" aria-hidden="true" />
+            ) : (
+              <CheckSquare className="w-4 h-4" aria-hidden="true" />
+            )}
+          </Button>
+        )}
       </div>
+
+      {/* Batch Operations Toolbar */}
+      {isBatchMode && (
+        <div className="px-3 pb-3 animate-slide-down">
+          <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 border border-border">
+            <span className="text-xs text-muted-foreground flex-1">
+              {t("batch.selected", { count: selectedSessionIds.size })}
+            </span>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={selectAllVisible}
+                className="text-xs px-2 py-1 rounded hover:bg-muted transition-colors text-primary"
+                aria-label={t("batch.selectAll")}
+              >
+                {t("batch.selectAll")}
+              </button>
+              <button
+                onClick={clearSelection}
+                className="text-xs px-2 py-1 rounded hover:bg-muted transition-colors"
+                aria-label={t("batch.clearSelection")}
+              >
+                {t("batch.clear")}
+              </button>
+            </div>
+          </div>
+          {selectedSessionIds.size > 0 && (
+            <div className="flex items-center gap-1 mt-2">
+              {/* Move to folder */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="flex-1" disabled={isBatchOperating}>
+                    <FolderInput className="w-3.5 h-3.5 mr-1" aria-hidden="true" />
+                    {t("batch.move")}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuItem onClick={() => handleBatchMove(null)}>
+                    <span className="flex items-center gap-2">
+                      <ChevronLeft className="w-3.5 h-3.5" aria-hidden="true" />
+                      {t("sessionItem.uncategorized")}
+                    </span>
+                  </DropdownMenuItem>
+                  {folders.map((folder) => (
+                    <DropdownMenuItem
+                      key={folder.id}
+                      onClick={() => handleBatchMove(folder.id)}
+                    >
+                      <span className="flex items-center gap-2">
+                        <FolderOpen className="w-3.5 h-3.5" aria-hidden="true" />
+                        {folder.name}
+                      </span>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Export */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="flex-1" disabled={isBatchOperating}>
+                    <Download className="w-3.5 h-3.5 mr-1" aria-hidden="true" />
+                    {t("batch.export")}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuItem onClick={() => handleBatchExport("markdown")}>
+                    {t("sessionItem.markdown")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleBatchExport("json")}>
+                    {t("sessionItem.json")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleBatchExport("txt")}>
+                    {t("sessionItem.plainText")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Delete */}
+              <Button
+                variant="destructive"
+                size="sm"
+                className="flex-1"
+                disabled={isBatchOperating}
+                onClick={() => setShowBatchDeleteConfirm(true)}
+              >
+                <Trash2 className="w-3.5 h-3.5 mr-1" aria-hidden="true" />
+                {t("batch.delete")}
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Search Box */}
       <div className="p-3">
@@ -441,6 +726,9 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
                       onMoveToFolder={handleMoveSession}
                       tags={sessionTags[session.id] || []}
                       onTagClick={handleTagClick}
+                      isBatchMode={isBatchMode}
+                      isSelected={selectedSessionIds.has(session.id)}
+                      onToggleSelection={() => toggleSessionSelection(session.id)}
                     />
                     {matchedMessages.length > 0 && (
                       <div className="ml-4 mt-1 mb-2 space-y-1 animate-slide-down">
@@ -553,6 +841,9 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
                     folders={folders}
                     sessionTags={sessionTags}
                     onTagClick={handleTagClick}
+                    isBatchMode={isBatchMode}
+                    selectedSessionIds={selectedSessionIds}
+                    onToggleSessionSelection={toggleSessionSelection}
                   />
                 </div>
               ))}
@@ -583,6 +874,9 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
                         onMoveToFolder={handleMoveSession}
                         tags={sessionTags[session.id] || []}
                         onTagClick={handleTagClick}
+                        isBatchMode={isBatchMode}
+                        isSelected={selectedSessionIds.has(session.id)}
+                        onToggleSelection={() => toggleSessionSelection(session.id)}
                       />
                     </div>
                   ))}
@@ -618,6 +912,9 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
                         onMoveToFolder={handleMoveSession}
                         tags={sessionTags[session.id] || []}
                         onTagClick={handleTagClick}
+                        isBatchMode={isBatchMode}
+                        isSelected={selectedSessionIds.has(session.id)}
+                        onToggleSelection={() => toggleSessionSelection(session.id)}
                       />
                     </div>
                   ))}
@@ -627,6 +924,28 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
           </>
         )}
       </div>
+
+      {/* Batch Delete Confirmation Dialog */}
+      <AlertDialog open={showBatchDeleteConfirm} onOpenChange={setShowBatchDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("batch.confirmDelete")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("batch.confirmDeleteDescription", { count: selectedSessionIds.size })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={handleBatchDelete}
+              disabled={isBatchOperating}
+            >
+              {isBatchOperating ? t("batch.deleting") : t("batch.delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
   }
@@ -657,6 +976,10 @@ interface FolderItemProps {
   folders: Folder[];
   sessionTags: SessionTagsMap;
   onTagClick: (tag: string) => void;
+  // Batch selection props
+  isBatchMode?: boolean;
+  selectedSessionIds?: Set<string>;
+  onToggleSessionSelection?: (sessionId: string) => void;
 }
 
 function FolderItem({
@@ -681,6 +1004,9 @@ function FolderItem({
   folders,
   sessionTags,
   onTagClick,
+  isBatchMode = false,
+  selectedSessionIds = new Set(),
+  onToggleSessionSelection,
 }: FolderItemProps) {
   const { t } = useTranslation();
   const [showMenu, setShowMenu] = useState(false);
@@ -839,6 +1165,9 @@ function FolderItem({
                 onMoveToFolder={onMoveSession}
                 tags={sessionTags[session.id] || []}
                 onTagClick={onTagClick}
+                isBatchMode={isBatchMode}
+                isSelected={selectedSessionIds.has(session.id)}
+                onToggleSelection={() => onToggleSessionSelection?.(session.id)}
               />
             </div>
           ))}

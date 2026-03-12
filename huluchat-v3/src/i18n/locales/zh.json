@@ -382,6 +382,22 @@
     "tags": "标签",
     "moreTags": "+{{count}} 个标签"
   },
+  "batch": {
+    "enterBatchMode": "进入批量选择模式",
+    "exitBatchMode": "退出批量选择模式",
+    "selected": "已选择 {{count}} 个",
+    "selectAll": "全选",
+    "clear": "清除",
+    "clearSelection": "清除选择",
+    "move": "移动",
+    "export": "导出",
+    "delete": "删除",
+    "select": "选择会话",
+    "deselect": "取消选择",
+    "confirmDelete": "删除所选会话？",
+    "confirmDeleteDescription": "确定要删除 {{count}} 个会话吗？此操作无法撤销。",
+    "deleting": "删除中..."
+  },
   "theme": {
     "toggle": "切换主题",
     "light": "浅色",
