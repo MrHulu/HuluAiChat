@@ -1,4 +1,5 @@
 """Session management API"""
+import logging
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import PlainTextResponse
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,6 +14,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from models.schemas import MessageModel
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 class SessionModel(Base):
@@ -234,6 +236,118 @@ async def move_session_to_folder(
     await db.commit()
     await db.refresh(session)
     return session
+
+
+class SessionTitleUpdate(BaseModel):
+    """Schema for updating session title"""
+    title: str
+
+
+class GeneratedTitle(BaseModel):
+    """Schema for AI-generated title response"""
+    title: str
+    session_id: str
+
+
+@router.put("/{session_id}/title", response_model=SessionResponse)
+async def update_session_title(
+    session_id: str,
+    title_update: SessionTitleUpdate,
+    db: AsyncSession = Depends(get_db_session)
+):
+    """Update a session's title"""
+    result = await db.execute(select(SessionModel).where(SessionModel.id == session_id))
+    session = result.scalar_one_or_none()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    session.title = title_update.title
+    session.updated_at = datetime.utcnow()
+    await db.commit()
+    await db.refresh(session)
+    return session
+
+
+@router.post("/{session_id}/generate-title", response_model=GeneratedTitle)
+async def generate_session_title(
+    session_id: str,
+    db: AsyncSession = Depends(get_db_session)
+):
+    """Generate a title for the session using AI based on conversation content.
+
+    This endpoint analyzes the conversation history and generates a concise,
+    descriptive title (max 50 characters) using the configured AI model.
+    """
+    from services.openai_service import openai_service
+
+    # Get session
+    result = await db.execute(select(SessionModel).where(SessionModel.id == session_id))
+    session = result.scalar_one_or_none()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    # Get messages for this session
+    msg_result = await db.execute(
+        select(MessageModel)
+        .where(MessageModel.session_id == session_id)
+        .order_by(MessageModel.created_at.asc())
+        .limit(10)  # Use first 10 messages for context
+    )
+    messages = msg_result.scalars().all()
+
+    if not messages:
+        # No messages yet, return default
+        return GeneratedTitle(title="New Chat", session_id=session_id)
+
+    # Build conversation summary for title generation
+    conversation_text = "\n".join([
+        f"{msg.role}: {msg.content[:200]}{'...' if len(msg.content) > 200 else ''}"
+        for msg in messages[:5]  # Use first 5 messages
+    ])
+
+    # Generate title using AI
+    try:
+        if not openai_service.is_configured():
+            # Fallback: use first user message as title
+            first_user_msg = next((m for m in messages if m.role == "user"), None)
+            fallback_title = (first_user_msg.content[:50] if first_user_msg else "New Chat")
+            return GeneratedTitle(title=fallback_title, session_id=session_id)
+
+        title_prompt = [
+            {
+                "role": "system",
+                "content": "You are a helpful assistant that generates concise, descriptive titles for conversations. Generate a short title (max 50 characters) that summarizes the main topic. Only respond with the title, nothing else. Use the same language as the conversation."
+            },
+            {
+                "role": "user",
+                "content": f"Generate a short title (max 50 characters) for this conversation:\n\n{conversation_text}"
+            }
+        ]
+
+        generated_title = await openai_service.chat(
+            messages=title_prompt,
+            max_tokens=50,
+            temperature=0.7
+        )
+
+        # Clean up and truncate title
+        title = generated_title.strip().strip('"\'').strip()
+        if len(title) > 50:
+            title = title[:47] + "..."
+
+        # Update session title
+        session.title = title
+        session.updated_at = datetime.utcnow()
+        await db.commit()
+
+        return GeneratedTitle(title=title, session_id=session_id)
+
+    except Exception as e:
+        logger.error(f"Failed to generate title: {e}")
+        # Fallback: use first user message as title
+        first_user_msg = next((m for m in messages if m.role == "user"), None)
+        fallback_title = (first_user_msg.content[:50] if first_user_msg else "New Chat")
+        return GeneratedTitle(title=fallback_title, session_id=session_id)
 
 
 class ExportFormat(str, Enum):

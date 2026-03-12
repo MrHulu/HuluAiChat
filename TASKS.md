@@ -68,8 +68,16 @@
   - Cycle #167
 
 ### Phase 3: 用户功能增强
-- [ ] **TASK-173**: 🔍 智能消息搜索（跨会话搜索）
-- [ ] **TASK-174**: 📝 会话摘要与智能标题（AI 自动生成）
+- [x] **TASK-173**: 🔍 智能消息搜索（跨会话搜索）✅ 2026-03-12
+  - 已存在：后端 `/sessions/search/` API
+  - 已存在：前端 `searchSessions()` + 搜索 UI + 高亮
+  - Cycle #168
+- [x] **TASK-174**: 📝 会话摘要与智能标题（AI 自动生成）✅ 2026-03-12
+  - 后端：PUT /sessions/{id}/title + POST /sessions/{id}/generate-title
+  - 前端：updateSessionTitle() + generateSessionTitle() API
+  - 自动触发：第一次对话完成后自动生成标题
+  - openai_service.py 添加非流式 chat() 方法
+  - Cycle #168
 - [ ] **TASK-175**: 📤 增强型导出（多选消息导出）- v3.56.0
 - [ ] **TASK-176**: 💬 提示词变量系统（模板变量插值）- v3.56.0
 - [ ] **TASK-177**: 🧠 本地偏好学习（模型推荐）- v3.56.0
