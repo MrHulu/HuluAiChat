@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { VERSION, RELEASE_NOTES } from "@/lib/version";
 
 // JSON-LD structured data for SEO
 const jsonLd = {
@@ -19,7 +20,7 @@ const jsonLd = {
     "url": "https://github.com/MrHulu",
   },
   "downloadUrl": "https://github.com/MrHulu/HuluAiChat/releases/latest",
-  "softwareVersion": "3.52.0",
+  "softwareVersion": VERSION,
   "datePublished": "2024-01-01",
   "dateModified": "2026-03-10",
   "aggregateRating": {
@@ -118,7 +119,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-zinc-800/50 border border-zinc-700 rounded-full px-4 py-2 text-sm text-zinc-400 mb-8">
             <span className="text-green-400">●</span>
-            v3.52.0 Released — Custom Models + UI Enhancements
+            v{VERSION} Released — {RELEASE_NOTES}
           </div>
 
           <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-zinc-400 bg-clip-text text-transparent">
