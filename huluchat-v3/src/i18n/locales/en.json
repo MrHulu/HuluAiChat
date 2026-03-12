@@ -890,5 +890,37 @@
         "action": "Switch Model"
       }
     }
+  },
+  "contextualTips": {
+    "moreOptions": "More options",
+    "dismiss": "Dismiss",
+    "dontShowAgain": "Don't show contextual tips",
+    "tips": {
+      "noApiKey": {
+        "title": "Configure API Key",
+        "description": "No API key detected. Set up your key to start chatting with AI.",
+        "action": "Go to Settings"
+      },
+      "noModel": {
+        "title": "Select AI Model",
+        "description": "Please select an AI model to start chatting. Choose from GPT-4, DeepSeek, or local models.",
+        "action": "Select Model"
+      },
+      "emptySession": {
+        "title": "Start a Conversation",
+        "description": "Type a message to start chatting with AI. You can also upload documents for document chat.",
+        "action": "Learn More"
+      },
+      "firstVisit": {
+        "title": "Welcome to HuluChat",
+        "description": "Your privacy-first AI assistant. All data is stored locally - no tracking, no cloud storage.",
+        "action": "Get Started"
+      },
+      "settingsIncomplete": {
+        "title": "Complete Setup",
+        "description": "You've selected a model but haven't configured an API key. Please set up your key to start chatting.",
+        "action": "Configure API"
+      }
+    }
   }
 }

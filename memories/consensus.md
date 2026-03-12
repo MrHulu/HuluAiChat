@@ -1,17 +1,16 @@
 # Auto Company Consensus
 
-> 最后更新: 2026-03-12 - Cycle #181
+> 最后更新: 2026-03-12 - Cycle #182
 
 ---
 
 ## 当前状态
-✅ **TASK-192: 书签消息跳转完成**
+✅ **TASK-193: 上下文智能提示完成**
 
 ---
 
 ## Next Action
 > **继续 v3.56.0 开发：**
-> - TASK-193: 上下文智能提示 (P2)
 > - TASK-194: 错误解决建议 (P2)
 
 ---
@@ -24,7 +23,7 @@
 - Phase 1 (P0): 命令面板、提示词指南、首次引导 ✅
 - Phase 2 (P1): FAQ、快捷键、反馈、模型对比 ✅
 - Phase 3 (P1): 功能发现提示 ✅
-- Phase 4 (P2): 帮助搜索 ✅、书签跳转 ✅、智能提示
+- Phase 4 (P2): 帮助搜索 ✅、书签跳转 ✅、智能提示 ✅
 
 **预计周期**: 9-12 Cycles
 
@@ -47,6 +46,38 @@
 ---
 
 ## 最近完成
+
+### TASK-193: 上下文智能提示（Cycle #182）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- contextualTips.ts - 5 个提示配置（no-api-key, no-model, empty-session, first-visit, settings-incomplete）
+- useContextualTip.ts - 状态检测 hook（当前状态、设置加载）
+- ContextualTip.tsx - 提示显示组件
+- 集成到 App.tsx（优先级高于功能发现提示）
+- i18n 翻译 (EN/ZH)
+- 测试：21 个测试用例通过
+- 隐私约束：只检测当前状态，不存储历史行为
+
+**变更文件**:
+- `src/data/contextualTips.ts` - 新建提示配置数据
+- `src/hooks/useContextualTip.ts` - 新建上下文检测 hook
+- `src/hooks/useContextualTip.test.ts` - hook 测试
+- `src/components/ContextualTip.tsx` - 新建组件
+- `src/components/ContextualTip.test.tsx` - 组件测试
+- `src/hooks/index.ts` - 导出新 hook
+- `src/App.tsx` - 集成上下文提示
+- `src/i18n/locales/en.json` - 添加 contextualTips 翻译
+- `src/i18n/locales/zh.json` - 添加 contextualTips 翻译
+
+**功能特性**:
+- 基于当前状态智能提示（空会话、无API Key、无模型、首次访问、设置不完整）
+- 优先级排序（数字越小优先级越高）
+- 关闭状态仅存储于会话内存
+- 可永久禁用所有上下文提示
+
+---
 
 ### TASK-192: 书签消息跳转（Cycle #181）
 
@@ -227,9 +258,9 @@
 - **项目**: HuluChat
 - **当前版本**: v3.54.0
 - **下一版本**: v3.56.0
-- **待开始任务**: 2 个 (TASK-193, 194)
-- **已完成任务计数**: 29
+- **待开始任务**: 1 个 (TASK-194)
+- **已完成任务计数**: 30
 
 ---
 
-*更新时间: 2026-03-12 - Cycle #181*
+*更新时间: 2026-03-12 - Cycle #182*

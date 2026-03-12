@@ -13,3 +13,8 @@ export {
   type FeatureConfig,
   type UseFeatureDiscoveryReturn,
 } from "./useFeatureDiscovery";
+export {
+  useContextualTip,
+  type ContextState,
+  type UseContextualTipReturn,
+} from "./useContextualTip";

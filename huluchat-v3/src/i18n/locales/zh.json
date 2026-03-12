@@ -887,5 +887,37 @@
         "action": "切换模型"
       }
     }
+  },
+  "contextualTips": {
+    "moreOptions": "更多选项",
+    "dismiss": "关闭提示",
+    "dontShowAgain": "不再显示上下文提示",
+    "tips": {
+      "noApiKey": {
+        "title": "配置 API 密钥",
+        "description": "检测到您还未配置 API 密钥。设置密钥后即可开始与 AI 对话。",
+        "action": "前往设置"
+      },
+      "noModel": {
+        "title": "选择 AI 模型",
+        "description": "请选择一个 AI 模型来开始对话。您可以选择 GPT-4、DeepSeek 或本地模型。",
+        "action": "选择模型"
+      },
+      "emptySession": {
+        "title": "开始新对话",
+        "description": "输入消息开始与 AI 聊天。您也可以上传文档进行文档对话。",
+        "action": "了解更多"
+      },
+      "firstVisit": {
+        "title": "欢迎来到 HuluChat",
+        "description": "您的隐私优先 AI 助手。所有数据保存在本地，无追踪、无云端存储。",
+        "action": "开始使用"
+      },
+      "settingsIncomplete": {
+        "title": "完成设置",
+        "description": "您已选择模型但未配置 API 密钥。请配置密钥以开始对话。",
+        "action": "配置 API"
+      }
+    }
   }
 }

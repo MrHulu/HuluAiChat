@@ -15,10 +15,11 @@ import { CommandPalette } from "@/components/command";
 import { KnowledgeCenter } from "@/components/knowledge";
 import { WelcomeDialog } from "@/components/WelcomeDialog";
 import { FeatureDiscoveryTip } from "@/components/FeatureDiscoveryTip";
+import { ContextualTip } from "@/components/ContextualTip";
 import { BookmarkJumpDialog } from "@/components/bookmark";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
-import { useSession, useKeyboardShortcuts, useFolders, useFeatureDiscovery } from "@/hooks";
+import { useSession, useKeyboardShortcuts, useFolders, useFeatureDiscovery, useContextualTip, useModel } from "@/hooks";
 import { exportSession, moveSessionToFolder, ExportFormat } from "@/api/client";
 
 // Import version from package.json for dynamic version display
@@ -57,14 +58,10 @@ function App() {
     disableTips,
   } = useFeatureDiscovery();
 
-  const handleWelcomeComplete = () => {
-    localStorage.setItem(WELCOME_SHOWN_KEY, "true");
-  };
-
   const {
     sessions,
     currentSession,
-    isLoading,
+    isLoading: isSessionLoading,
     error,
     selectSession,
     createNewSession,
@@ -78,6 +75,27 @@ function App() {
     renameFolder,
     removeFolder,
   } = useFolders();
+
+  // Model hook for contextual tips
+  const { currentModel, models } = useModel();
+
+  // Contextual tip hook - detects current state for smart tips
+  const {
+    currentTip: contextualTip,
+    dismissTip: dismissContextualTip,
+    disableAllTips: disableAllContextualTips,
+  } = useContextualTip({
+    sessionId: currentSession?.id || null,
+    messageCount: 0, // Will be updated by ChatView if needed
+    isLoading: isSessionLoading,
+    currentModel,
+    modelCount: models.length,
+    settingsLoaded: true,
+  });
+
+  const handleWelcomeComplete = () => {
+    localStorage.setItem(WELCOME_SHOWN_KEY, "true");
+  };
 
   // 显示错误 toast
   useEffect(() => {
@@ -308,7 +326,7 @@ function App() {
         sessions={sessions}
         folders={folders}
         currentSessionId={currentSession?.id || null}
-        isLoading={isLoading}
+        isLoading={isSessionLoading}
         onSelectSession={selectSession}
         onCreateSession={handleCreateSession}
         onDeleteSession={handleDeleteSession}
@@ -354,8 +372,36 @@ function App() {
           </ErrorBoundary>
         </main>
 
-        {/* 功能发现提示 - 仅在欢迎流程完成后显示 */}
-        {!welcomeOpen && currentTip && (
+        {/* Contextual tip - 优先显示（基于当前状态） */}
+        {!welcomeOpen && contextualTip && (
+          <div className="p-4 border-t border-border bg-muted/30">
+            <ContextualTip
+              tip={contextualTip}
+              onDismiss={dismissContextualTip}
+              onDisableAll={disableAllContextualTips}
+              onAction={() => {
+                // 根据提示类型执行相应操作
+                switch (contextualTip.id) {
+                  case "no-api-key":
+                  case "no-model":
+                  case "settings-incomplete":
+                    setSettingsOpen(true);
+                    break;
+                  case "empty-session":
+                    // Focus on input - this will be handled by ChatView
+                    break;
+                  case "first-visit":
+                    // Show welcome dialog
+                    setWelcomeOpen(true);
+                    break;
+                }
+              }}
+            />
+          </div>
+        )}
+
+        {/* 功能发现提示 - 仅在欢迎流程完成后且没有上下文提示时显示 */}
+        {!welcomeOpen && !contextualTip && currentTip && (
           <div className="p-4 border-t border-border bg-muted/30">
             <FeatureDiscoveryTip
               feature={currentTip}
