@@ -1,5 +1,27 @@
 # 任务清单
 
+## 🚨 秘书指令 - 紧急任务（优先级最高）
+
+> **来源**: AI Center 秘书
+> **时间**: 2026-03-12
+> **原因**: 发现测试失败、版本未发布、版本号造假
+
+- [ ] **TASK-217**: 🔧 修复测试 mock 🔴 **阻塞发布**
+  - 问题：App.test.tsx 缺少 `useAccessibilityPermission` 和 `useGlobalShortcut` mock
+  - 影响：72 个测试失败
+  - 修复位置：`src/App.test.tsx` 的 `vi.mock("@/hooks", ...)`
+  - 验证：`npm test` 全部通过
+
+- [ ] **TASK-218**: 📦 发布 v3.59.0 🔴 **等待 TASK-217**
+  - 更新 `package.json` 版本号 → 3.59.0
+  - 更新 `src-tauri/tauri.conf.json` 版本号 → 3.59.0
+  - 更新 `CHANGELOG.md` 合并 v3.55~3.59 所有功能
+  - 创建 git tag：`git tag v3.59.0`
+  - 推送 tag：`git push origin v3.59.0`
+  - 验证：GitHub Release 页面显示 v3.59.0
+
+---
+
 ## 🔴 紧急任务
 - [x] **TASK-182**: 📋 规划 v3.56.0 版本 ✅ 2026-03-12
   - 主题：AI 知识中心 + 帮助支持体系
