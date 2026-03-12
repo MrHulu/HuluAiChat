@@ -1,17 +1,18 @@
 # Auto Company Consensus
 
-> 最后更新: 2026-03-12 - Cycle #170
+> 最后更新: 2026-03-12 - Cycle #171
 
 ---
 
 ## 当前状态
-✅ **Phase 3 用户功能增强进行中** - TASK-176 已完成
+✅ **Phase 3 用户功能增强全部完成** - TASK-177 已完成
 
 ---
 
 ## Next Action
-> **Phase 3: 用户功能增强**
-> - TASK-177: 本地偏好学习
+> **Phase 3 已完成，下一步：**
+> - 技术债务清理（TASK-178 ~ 181）或
+> - 等待 Boss 指示
 > - 注：TASK-163/164 仍被 Rust 内存问题阻塞
 
 ---
@@ -26,6 +27,45 @@
 ---
 
 ## 最近完成
+
+### TASK-177: 本地偏好学习（模型推荐）（Cycle #171）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- `backend/services/preference_service.py` - 偏好存储服务（JSON 文件）
+- `backend/api/preferences.py` - 偏好 API 端点
+- `backend/main.py` - 注册偏好路由
+- `src/api/client.ts` - 偏好 API 函数（recordModelUsage, getRecommendedModel 等）
+- `src/hooks/useModel.ts` - 记录使用和推荐模型
+- `src/components/chat/ModelSelector.tsx` - 推荐标记（星标 Badge）
+- `src/i18n/locales/en.json` - 英文翻译（1 个新键）
+- `src/i18n/locales/zh.json` - 中文翻译（1 个新键）
+
+**实现内容**:
+1. **偏好存储服务**:
+   - JSON 文件存储（user_preferences.json）
+   - 记录模型使用频率和最后使用时间
+   - 基于使用频率推荐最常用模型
+
+2. **偏好 API**:
+   - POST /preferences/model-usage - 记录使用
+   - GET /preferences/model-usage - 获取使用统计
+   - POST /preferences/recommended-model - 获取推荐模型
+   - DELETE /preferences/model-usage - 清除偏好数据
+
+3. **前端集成**:
+   - 选择模型时自动记录使用情况
+   - 加载时获取推荐模型
+   - 推荐模型显示星标标记
+
+4. **隐私优先**:
+   - 所有数据存储在本地
+   - 不上传任何用户数据
+
+**结果**: 本地偏好学习功能完成，Phase 3 全部完成
+
+---
 
 ### TASK-175: 增强型导出（多选消息导出）（Cycle #169）
 
