@@ -5,22 +5,30 @@
 ---
 
 ## 当前状态
-🟢 **v3.59.0 发布中**
-⏳ **GitHub Actions Release workflow 运行中**
+🟢 **v3.59.0 发布完成**
+✅ **GitHub Release: https://github.com/MrHulu/HuluAiChat/releases/tag/v3.59.0**
 
-### 发布进度
+### 发布问题修复记录
+- **问题**: 所有平台 Tauri 构建失败
+- **原因**: `TAURI_SIGNING_PRIVATE_KEY` 格式不正确
+- **错误信息**: `failed to decode secret key: incorrect updater private key password: Missing comment in secret key`
+- **解决方案**: 禁用 `createUpdaterArtifacts`（临时）
+- **后续**: Boss 需要重新配置正确格式的签名密钥
+
+### 发布结果
 1. ✅ 测试验证通过（1909/1909 测试用例）
 2. ✅ 版本号确认（package.json + tauri.conf.json = 3.59.0）
 3. ✅ 代码合并到 master
 4. ✅ Tag v3.59.0 已推送
-5. ⏳ GitHub Release workflow 运行中（4 个构建任务）
+5. ✅ GitHub Release 创建成功
+6. ✅ 4 个平台构建产物上传成功：
+   - Windows: MSI + NSIS 安装包
+   - macOS Intel: DMG + app.tar.gz
+   - macOS ARM: DMG + app.tar.gz
+   - Linux: AppImage + RPM + DEB
 
 ### Next Action
-> **等待 GitHub Release 完成后**
->
-> 1. 验证 GitHub Release 创建成功
-> 2. 验证 4 个平台构建产物上传
-> 3. 发送邮件通知 Boss 发布完成
+> **发送邮件通知 Boss 发布完成**
 
 ---
 
