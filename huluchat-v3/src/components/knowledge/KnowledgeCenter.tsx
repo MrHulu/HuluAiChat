@@ -17,6 +17,7 @@ import { ArticleViewer } from "./ArticleViewer";
 import { FAQList } from "./FAQList";
 import { ShortcutList } from "./ShortcutList";
 import { FeedbackLinks } from "./FeedbackLinks";
+import { ModelComparison } from "./ModelComparison";
 
 interface KnowledgeCenterProps {
   open: boolean;
@@ -180,6 +181,9 @@ export function KnowledgeCenter({
                   {/* 反馈入口 */}
                   <FeedbackLinks />
                 </>
+              ) : selectedCategory === "models" ? (
+                /* Models 分类显示模型对比 */
+                <ModelComparison />
               ) : articles.length === 0 ? (
                 <p className="text-muted-foreground text-center py-8">
                   {t("knowledge.comingSoon")}

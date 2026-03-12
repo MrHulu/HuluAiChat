@@ -731,6 +731,102 @@
         "description": "Join discussions and get help from the community"
       },
       "privacyNote": "We don't collect any user data. Your feedback is voluntary."
+    },
+    "models": {
+      "title": "AI Model Guide",
+      "subtitle": "Compare different AI models and choose the best one for your needs",
+      "visitWebsite": "Visit website",
+      "bestFor": "Best for",
+      "selectionTip": "Choose models based on your task complexity, budget, and privacy requirements.",
+      "categories": {
+        "flagship": "Flagship",
+        "standard": "Standard",
+        "budget": "Budget",
+        "local": "Local"
+      },
+      "pricing": {
+        "label": "Price",
+        "free": "Free",
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High"
+      },
+      "speed": {
+        "label": "Speed",
+        "fast": "Fast",
+        "medium": "Medium",
+        "slow": "Slow",
+        "variable": "Varies"
+      },
+      "features": {
+        "multimodal": "Multimodal",
+        "reasoning": "Advanced Reasoning",
+        "codeGeneration": "Code Generation",
+        "longContext": "Long Context",
+        "fastResponse": "Fast Response",
+        "generalPurpose": "General Purpose",
+        "chineseSupport": "Chinese Support",
+        "deepReasoning": "Deep Reasoning",
+        "local": "Local Processing",
+        "privacy": "Privacy First",
+        "offline": "Offline Capable"
+      },
+      "providers": {
+        "openai": {
+          "name": "OpenAI",
+          "description": "Leading AI research lab with GPT series models"
+        },
+        "deepseek": {
+          "name": "DeepSeek",
+          "description": "Cost-effective AI with excellent Chinese support"
+        },
+        "ollama": {
+          "name": "Ollama (Local)",
+          "description": "Run AI models locally on your device"
+        }
+      },
+      "gpt4o": {
+        "name": "GPT-4o",
+        "description": "Most capable model with vision and audio support",
+        "bestFor": "Complex tasks, multimodal input, code analysis",
+        "limitations": "Higher cost, may be slower on complex tasks"
+      },
+      "gpt4": {
+        "name": "GPT-4",
+        "description": "Powerful reasoning and problem-solving",
+        "bestFor": "Complex reasoning, research, professional writing",
+        "limitations": "Higher cost, slower response time"
+      },
+      "gpt35": {
+        "name": "GPT-3.5 Turbo",
+        "description": "Fast and affordable general-purpose model",
+        "bestFor": "Daily chat, translation, simple tasks",
+        "limitations": "Less capable on complex reasoning"
+      },
+      "deepseekChat": {
+        "name": "DeepSeek Chat",
+        "description": "Cost-effective model with great Chinese support",
+        "bestFor": "Chinese content, daily chat, coding",
+        "limitations": "Less known than GPT, newer ecosystem"
+      },
+      "deepseekReasoner": {
+        "name": "DeepSeek Reasoner",
+        "description": "Deep reasoning model with thought process",
+        "bestFor": "Complex problems, math, code debugging",
+        "limitations": "Slower due to reasoning steps"
+      },
+      "llama3": {
+        "name": "Llama 3",
+        "description": "Meta's open-source model, run locally",
+        "bestFor": "Privacy-sensitive tasks, offline use, experimentation",
+        "limitations": "Requires hardware resources, setup needed"
+      },
+      "qwen": {
+        "name": "Qwen (通义千问)",
+        "description": "Alibaba's model with excellent Chinese support",
+        "bestFor": "Chinese tasks, local processing, privacy",
+        "limitations": "Requires hardware resources, setup needed"
+      }
     }
   }
 }

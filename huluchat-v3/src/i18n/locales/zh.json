@@ -728,6 +728,102 @@
         "description": "参与讨论并获取社区帮助"
       },
       "privacyNote": "我们不收集任何用户数据。您的反馈是自愿的。"
+    },
+    "models": {
+      "title": "AI 模型指南",
+      "subtitle": "比较不同的 AI 模型，选择最适合您需求的模型",
+      "visitWebsite": "访问官网",
+      "bestFor": "适用场景",
+      "selectionTip": "根据任务复杂度、预算和隐私需求选择模型。",
+      "categories": {
+        "flagship": "旗舰",
+        "standard": "标准",
+        "budget": "经济",
+        "local": "本地"
+      },
+      "pricing": {
+        "label": "价格",
+        "free": "免费",
+        "low": "低",
+        "medium": "中",
+        "high": "高"
+      },
+      "speed": {
+        "label": "速度",
+        "fast": "快",
+        "medium": "中",
+        "slow": "慢",
+        "variable": "取决于硬件"
+      },
+      "features": {
+        "multimodal": "多模态",
+        "reasoning": "高级推理",
+        "codeGeneration": "代码生成",
+        "longContext": "长上下文",
+        "fastResponse": "快速响应",
+        "generalPurpose": "通用",
+        "chineseSupport": "中文支持",
+        "deepReasoning": "深度推理",
+        "local": "本地处理",
+        "privacy": "隐私优先",
+        "offline": "离线可用"
+      },
+      "providers": {
+        "openai": {
+          "name": "OpenAI",
+          "description": "领先的 AI 研究实验室，提供 GPT 系列模型"
+        },
+        "deepseek": {
+          "name": "DeepSeek",
+          "description": "性价比高的 AI，中文支持优秀"
+        },
+        "ollama": {
+          "name": "Ollama（本地）",
+          "description": "在本地设备运行 AI 模型"
+        }
+      },
+      "gpt4o": {
+        "name": "GPT-4o",
+        "description": "最强大的模型，支持视觉和音频",
+        "bestFor": "复杂任务、多模态输入、代码分析",
+        "limitations": "成本较高，复杂任务可能较慢"
+      },
+      "gpt4": {
+        "name": "GPT-4",
+        "description": "强大的推理和问题解决能力",
+        "bestFor": "复杂推理、研究、专业写作",
+        "limitations": "成本较高，响应时间较慢"
+      },
+      "gpt35": {
+        "name": "GPT-3.5 Turbo",
+        "description": "快速、经济的通用模型",
+        "bestFor": "日常聊天、翻译、简单任务",
+        "limitations": "复杂推理能力较弱"
+      },
+      "deepseekChat": {
+        "name": "DeepSeek Chat",
+        "description": "性价比高，中文支持优秀",
+        "bestFor": "中文内容、日常聊天、编程",
+        "limitations": "知名度不如 GPT，生态较新"
+      },
+      "deepseekReasoner": {
+        "name": "DeepSeek Reasoner",
+        "description": "深度推理模型，展示思考过程",
+        "bestFor": "复杂问题、数学、代码调试",
+        "limitations": "因推理步骤较多，速度较慢"
+      },
+      "llama3": {
+        "name": "Llama 3",
+        "description": "Meta 开源模型，本地运行",
+        "bestFor": "隐私敏感任务、离线使用、实验",
+        "limitations": "需要硬件资源，需要配置"
+      },
+      "qwen": {
+        "name": "Qwen（通义千问）",
+        "description": "阿里模型，中文支持优秀",
+        "bestFor": "中文任务、本地处理、隐私保护",
+        "limitations": "需要硬件资源，需要配置"
+      }
     }
   }
 }
