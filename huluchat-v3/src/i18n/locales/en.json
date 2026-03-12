@@ -196,6 +196,7 @@
     "tabPlugins": "Plugins",
     "tabAppearance": "Appearance",
     "tabShortcuts": "Shortcuts",
+    "tabQuickActions": "Quick Actions",
     "apiKey": "API Key",
     "apiKeyPlaceholder": "sk-...",
     "apiKeySet": "API key is set. Enter a new key to update.",
@@ -229,7 +230,27 @@
     "customModelHint": "Enter the model ID provided by your API service",
     "customModelRequired": "Please enter a custom model ID",
     "customModelName": "Custom Model",
-    "customModelDescription": "Use a custom model ID (e.g., GLM-4, Qwen)"
+    "customModelDescription": "Use a custom model ID (e.g., GLM-4, Qwen)",
+    "quickActions": {
+      "description": "Customize Quick Actions for the Quick Panel. Use {{text}} as placeholder for selected text.",
+      "addAction": "Add Action",
+      "editAction": "Edit Action",
+      "reset": "Reset to Defaults",
+      "name": "Name",
+      "namePlaceholder": "e.g., Translate",
+      "description": "Description",
+      "descriptionPlaceholder": "e.g., Translate text to target language",
+      "icon": "Icon",
+      "category": "Category",
+      "promptTemplate": "Prompt Template",
+      "promptPlaceholder": "e.g., Translate the following text:\n\n{{text}}",
+      "promptHint": "Use {{text}} as placeholder for selected/input text",
+      "saved": "Quick Action saved",
+      "deleted": "Quick Action deleted",
+      "resetSuccess": "Quick Actions reset to defaults",
+      "errorRequired": "Name and Prompt Template are required",
+      "noActions": "No Quick Actions configured"
+    }
   },
   "plugins": {
     "title": "Plugins",
@@ -369,7 +390,46 @@
     "sendError": "Failed to send message",
     "thinking": "Thinking...",
     "emptyResponse": "Response will appear here",
-    "close": "Close panel"
+    "close": "Close panel",
+    "settings": "Settings",
+    "clipboardDetected": "Clipboard content detected",
+    "fromClipboard": "From clipboard",
+    "pasteFromClipboard": "Paste from clipboard",
+    "quickActions": "Quick Actions"
+  },
+  "quickActions": {
+    "translate": {
+      "name": "Translate",
+      "description": "Translate text to target language"
+    },
+    "summarize": {
+      "name": "Summarize",
+      "description": "Summarize key points"
+    },
+    "polish": {
+      "name": "Polish",
+      "description": "Improve writing style"
+    },
+    "explain": {
+      "name": "Explain",
+      "description": "Explain in simple terms"
+    },
+    "codeReview": {
+      "name": "Code Review",
+      "description": "Review code for improvements"
+    },
+    "fixGrammar": {
+      "name": "Fix Grammar",
+      "description": "Fix grammar and spelling errors"
+    },
+    "expand": {
+      "name": "Expand",
+      "description": "Elaborate with more details"
+    },
+    "simplify": {
+      "name": "Simplify",
+      "description": "Make text more concise"
+    }
   },
   "export": {
     "title": "Export Chat",

@@ -22,6 +22,7 @@ import {
   Cpu,
   Palette,
   Keyboard,
+  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -59,6 +60,7 @@ import { PluginSettings } from "./PluginSettings";
 import { MCPSettings } from "./MCPSettings";
 import { ThemeSettings } from "./ThemeSettings";
 import { ShortcutSettings } from "./ShortcutSettings";
+import { QuickActionsSettings } from "./QuickActionsSettings";
 
 interface SettingsDialogProps {
   onSettingsChange?: () => void;
@@ -343,7 +345,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
           </div>
         ) : (
           <Tabs defaultValue="api" className="w-full">
-            <TabsList className="grid w-full grid-cols-6">
+            <TabsList className="grid w-full grid-cols-7">
               <TabsTrigger value="api">{t("settings.tabApi")}</TabsTrigger>
               <TabsTrigger value="ollama">{t("settings.tabOllama")}</TabsTrigger>
               <TabsTrigger value="mcp">
@@ -357,6 +359,10 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
               <TabsTrigger value="shortcuts">
                 <Keyboard className="h-4 w-4 mr-1" />
                 {t("settings.tabShortcuts")}
+              </TabsTrigger>
+              <TabsTrigger value="quickActions">
+                <Zap className="h-4 w-4 mr-1" />
+                {t("settings.tabQuickActions")}
               </TabsTrigger>
               <TabsTrigger value="plugins">
                 <Puzzle className="h-4 w-4 mr-1" />
@@ -694,6 +700,11 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
             {/* Shortcuts Tab */}
             <TabsContent value="shortcuts" className="py-4">
               <ShortcutSettings />
+            </TabsContent>
+
+            {/* Quick Actions Tab */}
+            <TabsContent value="quickActions" className="py-4">
+              <QuickActionsSettings />
             </TabsContent>
 
             {/* Plugins Tab */}

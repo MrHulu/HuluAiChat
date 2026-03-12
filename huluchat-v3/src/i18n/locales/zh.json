@@ -366,7 +366,46 @@
     "sendError": "发送消息失败",
     "thinking": "思考中...",
     "emptyResponse": "回复将显示在这里",
-    "close": "关闭面板"
+    "close": "关闭面板",
+    "settings": "设置",
+    "clipboardDetected": "已检测到剪贴板内容",
+    "fromClipboard": "来自剪贴板",
+    "pasteFromClipboard": "从剪贴板粘贴",
+    "quickActions": "快捷操作"
+  },
+  "quickActions": {
+    "translate": {
+      "name": "翻译",
+      "description": "翻译文本到目标语言"
+    },
+    "summarize": {
+      "name": "摘要",
+      "description": "总结关键要点"
+    },
+    "polish": {
+      "name": "润色",
+      "description": "改善文字表达"
+    },
+    "explain": {
+      "name": "解释",
+      "description": "用简单术语解释"
+    },
+    "codeReview": {
+      "name": "代码审查",
+      "description": "检查代码改进建议"
+    },
+    "fixGrammar": {
+      "name": "修正语法",
+      "description": "修复语法和拼写错误"
+    },
+    "expand": {
+      "name": "扩展",
+      "description": "添加更多细节"
+    },
+    "simplify": {
+      "name": "简化",
+      "description": "使文字更简洁"
+    }
   },
   "export": {
     "title": "导出聊天",

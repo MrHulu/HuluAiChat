@@ -8,12 +8,19 @@
  */
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Send, X, Loader2, Copy, Check } from "lucide-react";
+import { Send, X, Loader2, Copy, Check, Clipboard, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useModel, useWebSocket } from "@/hooks";
 import { createSession, createChatWebSocket } from "@/api/client";
 import { toast } from "sonner";
+import { QuickActions } from "./QuickActions";
+import {
+  loadQuickActions,
+  type QuickAction,
+  processPromptTemplate,
+  DEFAULT_TARGET_LANGUAGE,
+} from "@/data/quickActions";
 
 // WebSocket message type for QuickPanel
 interface QuickWSMessage {
@@ -30,6 +37,8 @@ interface QuickPanelProps {
   onClose: () => void;
   /** Optional initial text (e.g., from clipboard) */
   initialText?: string;
+  /** Callback to open settings for managing Quick Actions */
+  onOpenSettings?: () => void;
 }
 
 /**
@@ -37,7 +46,12 @@ interface QuickPanelProps {
  *
  * A compact floating panel for quick AI interactions
  */
-export function QuickPanel({ isOpen, onClose, initialText = "" }: QuickPanelProps) {
+export function QuickPanel({
+  isOpen,
+  onClose,
+  initialText = "",
+  onOpenSettings,
+}: QuickPanelProps) {
   const { t } = useTranslation();
   const [input, setInput] = useState(initialText);
   const [response, setResponse] = useState("");
@@ -45,10 +59,17 @@ export function QuickPanel({ isOpen, onClose, initialText = "" }: QuickPanelProp
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [quickActions, setQuickActions] = useState<QuickAction[]>([]);
+  const [clipboardDetected, setClipboardDetected] = useState(false);
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const responseRef = useRef("");
   const { currentModel, setModel, models } = useModel();
+
+  // Load Quick Actions on mount
+  useEffect(() => {
+    setQuickActions(loadQuickActions());
+  }, []);
 
   // Create WebSocket URL when session is available
   const wsUrl = sessionId ? createChatWebSocket(sessionId).url : "";
@@ -88,7 +109,7 @@ export function QuickPanel({ isOpen, onClose, initialText = "" }: QuickPanelProp
     url: wsUrl,
     onMessage: handleWSMessage,
     reconnectAttempts: 3,
-    reconnectInterval: 1000,
+    baseDelay: 1000,
   });
 
   // Create a temporary session when panel opens
@@ -105,6 +126,13 @@ export function QuickPanel({ isOpen, onClose, initialText = "" }: QuickPanelProp
     }
   }, [isOpen, sessionId]);
 
+  // Detect clipboard content when panel opens
+  useEffect(() => {
+    if (isOpen && !initialText) {
+      detectClipboardContent();
+    }
+  }, [isOpen, initialText]);
+
   // Focus input when panel opens
   useEffect(() => {
     if (isOpen) {
@@ -112,6 +140,7 @@ export function QuickPanel({ isOpen, onClose, initialText = "" }: QuickPanelProp
       setResponse("");
       setError(null);
       setCopied(false);
+      setClipboardDetected(false);
       responseRef.current = "";
       // Small delay to ensure panel is visible before focusing
       setTimeout(() => {
@@ -132,6 +161,24 @@ export function QuickPanel({ isOpen, onClose, initialText = "" }: QuickPanelProp
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
+  // Detect clipboard content (async)
+  const detectClipboardContent = async () => {
+    try {
+      // Use Tauri clipboard plugin if available
+      const { readText } = await import("@tauri-apps/plugin-clipboard-manager");
+      const clipboardText = await readText();
+
+      if (clipboardText && clipboardText.trim().length > 0) {
+        setInput(clipboardText.trim());
+        setClipboardDetected(true);
+        toast.success(t("quickPanel.clipboardDetected"));
+      }
+    } catch (err) {
+      // Clipboard plugin not available or no content
+      console.debug("Clipboard detection skipped:", err);
+    }
+  };
+
   // Handle send message
   const handleSend = useCallback(async () => {
     if (!input.trim() || isLoading || connectionStatus !== "connected") return;
@@ -149,6 +196,36 @@ export function QuickPanel({ isOpen, onClose, initialText = "" }: QuickPanelProp
     });
   }, [input, isLoading, connectionStatus, currentModel, send]);
 
+  // Handle Quick Action selection
+  const handleActionSelect = useCallback((action: QuickAction) => {
+    const currentText = input.trim();
+    if (!currentText) return;
+
+    // Process the prompt template with the current text
+    const processedPrompt = processPromptTemplate(action.promptTemplate, {
+      text: currentText,
+      target_language: DEFAULT_TARGET_LANGUAGE,
+    });
+
+    setInput(processedPrompt);
+
+    // Auto-send after applying action
+    setTimeout(() => {
+      if (connectionStatus === "connected") {
+        setIsLoading(true);
+        setError(null);
+        setResponse("");
+        responseRef.current = "";
+
+        send({
+          type: "message",
+          content: processedPrompt,
+          model: currentModel,
+        });
+      }
+    }, 100);
+  }, [input, connectionStatus, currentModel, send]);
+
   // Handle Enter key (send on Enter, new line on Shift+Enter)
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -162,12 +239,33 @@ export function QuickPanel({ isOpen, onClose, initialText = "" }: QuickPanelProp
     if (!response) return;
 
     try {
-      await navigator.clipboard.writeText(response);
+      // Try Tauri clipboard first, fallback to web API
+      try {
+        const { writeText } = await import("@tauri-apps/plugin-clipboard-manager");
+        await writeText(response);
+      } catch {
+        await navigator.clipboard.writeText(response);
+      }
       setCopied(true);
       toast.success(t("quickPanel.copied"));
       setTimeout(() => setCopied(false), 2000);
     } catch {
       toast.error(t("quickPanel.copyFailed"));
+    }
+  };
+
+  // Paste from clipboard
+  const handlePaste = async () => {
+    try {
+      const { readText } = await import("@tauri-apps/plugin-clipboard-manager");
+      const clipboardText = await readText();
+      if (clipboardText) {
+        setInput(clipboardText);
+        setClipboardDetected(true);
+      }
+    } catch {
+      // Fallback to default paste behavior
+      document.execCommand("paste");
     }
   };
 
@@ -177,6 +275,7 @@ export function QuickPanel({ isOpen, onClose, initialText = "" }: QuickPanelProp
     setResponse("");
     setError(null);
     setCopied(false);
+    setClipboardDetected(false);
     responseRef.current = "";
     inputRef.current?.focus();
   };
@@ -199,7 +298,7 @@ export function QuickPanel({ isOpen, onClose, initialText = "" }: QuickPanelProp
     >
       <div
         className={cn(
-          "w-[400px] max-h-[500px] rounded-xl shadow-2xl",
+          "w-[400px] max-h-[550px] rounded-xl shadow-2xl",
           "bg-background/95 backdrop-blur-xl border border-border/50",
           "animate-in slide-in-from-top-4 duration-200",
           "flex flex-col overflow-hidden"
@@ -229,35 +328,78 @@ export function QuickPanel({ isOpen, onClose, initialText = "" }: QuickPanelProp
               </span>
             )}
           </div>
-          <Button
-            variant="ghost"
-            size="icon-xs"
-            onClick={onClose}
-            className="text-muted-foreground hover:text-foreground"
-            aria-label={t("quickPanel.close")}
-          >
-            <X className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-1">
+            {onOpenSettings && (
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                onClick={onOpenSettings}
+                className="text-muted-foreground hover:text-foreground"
+                aria-label={t("quickPanel.settings")}
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
+            )}
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              onClick={onClose}
+              className="text-muted-foreground hover:text-foreground"
+              aria-label={t("quickPanel.close")}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Quick Actions bar */}
+        <div className="px-3 py-2 border-b border-border/50 bg-muted/20">
+          <div className="flex items-center justify-between gap-2">
+            <QuickActions
+              actions={quickActions}
+              onActionSelect={handleActionSelect}
+              disabled={isLoading || !input.trim()}
+              compact
+            />
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              onClick={handlePaste}
+              disabled={isLoading}
+              className="text-muted-foreground hover:text-foreground shrink-0"
+              aria-label={t("quickPanel.pasteFromClipboard")}
+            >
+              <Clipboard className="h-3.5 w-3.5" />
+            </Button>
+          </div>
         </div>
 
         {/* Input area */}
         <div className="p-3 border-b border-border/50">
-          <textarea
-            ref={inputRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={t("quickPanel.placeholder")}
-            className={cn(
-              "w-full min-h-[60px] max-h-[120px] p-2 text-sm",
-              "bg-muted/30 border border-border/50 rounded-lg",
-              "placeholder:text-muted-foreground",
-              "focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50",
-              "resize-none"
+          <div className="relative">
+            <textarea
+              ref={inputRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={t("quickPanel.placeholder")}
+              className={cn(
+                "w-full min-h-[60px] max-h-[120px] p-2 text-sm",
+                "bg-muted/30 border border-border/50 rounded-lg",
+                "placeholder:text-muted-foreground",
+                "focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50",
+                "resize-none",
+                clipboardDetected && "ring-1 ring-primary/30"
+              )}
+              rows={2}
+              disabled={isLoading}
+            />
+            {clipboardDetected && (
+              <span className="absolute top-1 right-2 text-[10px] text-primary/70">
+                {t("quickPanel.fromClipboard")}
+              </span>
             )}
-            rows={2}
-            disabled={isLoading}
-          />
+          </div>
           <div className="flex items-center justify-between mt-2">
             <span className="text-xs text-muted-foreground">
               {t("quickPanel.hint")}
