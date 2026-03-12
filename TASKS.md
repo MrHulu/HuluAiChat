@@ -143,10 +143,12 @@
   - 前端: API 客户端 + CustomCommand 类型
   - Cycle #5
 
-- [ ] **TASK-199**: 📁 批量会话操作
+- [x] **TASK-199**: 📁 批量会话操作 ✅ 2026-03-12
   - 批量删除/移动/导出会话
-  - 前端: 批量选择模式 + 工具栏
-  - 预计: 1 Cycle
+  - 后端: batch-delete, batch-move, batch-export API
+  - 前端: 批量选择模式 + 工具栏 + i18n 翻译
+  - 测试: 68 个测试通过
+  - Cycle #6
 
 ---
 

@@ -131,6 +131,106 @@ export async function deleteSession(id: string): Promise<void> {
   await fetch(`${API_BASE}/sessions/${id}`, { method: "DELETE" });
 }
 
+// ============== Batch Operations ==============
+
+/**
+ * Batch delete result
+ */
+export interface BatchDeleteResult {
+  deleted_count: number;
+  errors?: string[];
+}
+
+/**
+ * Batch move result for a single session
+ */
+export interface BatchMoveItemResult {
+  session_id: string;
+  success: boolean;
+  error?: string;
+}
+
+/**
+ * Batch move response
+ */
+export interface BatchMoveResponse {
+  results: BatchMoveItemResult[];
+  success_count: number;
+  failed_count: number;
+}
+
+/**
+ * Export message format
+ */
+export interface ExportMessage {
+  role: string;
+  content: string;
+  created_at: string;
+}
+
+/**
+ * Export data for a single session
+ */
+export interface ExportSessionData {
+  session: Session;
+  messages: ExportMessage[];
+}
+
+/**
+ * Batch export response
+ */
+export interface BatchExportResponse {
+  sessions: ExportSessionData[];
+}
+
+/**
+ * Delete multiple sessions at once
+ */
+export async function batchDeleteSessions(sessionIds: string[]): Promise<BatchDeleteResult> {
+  const response = await fetch(`${API_BASE}/sessions/batch-delete`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ session_ids: sessionIds }),
+  });
+  if (!response.ok) {
+    throw new Error(`Batch delete failed: ${response.statusText}`);
+  }
+  return response.json();
+}
+
+/**
+ * Move multiple sessions to a folder (or root if folderId is null)
+ */
+export async function batchMoveSessions(
+  sessionIds: string[],
+  folderId: string | null
+): Promise<BatchMoveResponse> {
+  const response = await fetch(`${API_BASE}/sessions/batch-move`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ session_ids: sessionIds, folder_id: folderId }),
+  });
+  if (!response.ok) {
+    throw new Error(`Batch move failed: ${response.statusText}`);
+  }
+  return response.json();
+}
+
+/**
+ * Export multiple sessions with all messages
+ */
+export async function batchExportSessions(sessionIds: string[]): Promise<BatchExportResponse> {
+  const response = await fetch(`${API_BASE}/sessions/batch-export`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ session_ids: sessionIds }),
+  });
+  if (!response.ok) {
+    throw new Error(`Batch export failed: ${response.statusText}`);
+  }
+  return response.json();
+}
+
 /**
  * Search sessions by title and message content
  */

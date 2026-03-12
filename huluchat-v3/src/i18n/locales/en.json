@@ -385,6 +385,22 @@
     "tags": "Tags",
     "moreTags": "+{{count}} more tags"
   },
+  "batch": {
+    "enterBatchMode": "Enter batch selection mode",
+    "exitBatchMode": "Exit batch selection mode",
+    "selected": "{{count}} selected",
+    "selectAll": "Select All",
+    "clear": "Clear",
+    "clearSelection": "Clear selection",
+    "move": "Move",
+    "export": "Export",
+    "delete": "Delete",
+    "select": "Select session",
+    "deselect": "Deselect session",
+    "confirmDelete": "Delete Selected Sessions?",
+    "confirmDeleteDescription": "Are you sure you want to delete {{count}} sessions? This action cannot be undone.",
+    "deleting": "Deleting..."
+  },
   "theme": {
     "toggle": "Toggle theme",
     "light": "Light",
