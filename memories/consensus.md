@@ -1,18 +1,18 @@
 # Auto Company Consensus
 
-> 最后更新: 2026-03-12 - Cycle #175
+> 最后更新: 2026-03-12 - Cycle #176
 
 ---
 
 ## 当前状态
-✅ **TASK-186: 快捷键列表完成**
+✅ **TASK-187: 反馈入口完成**
 
 ---
 
 ## Next Action
 > **继续 v3.56.0 开发：**
-> - TASK-187: 反馈入口 (P1)
 > - TASK-188: 模型对比说明 (P1)
+> - TASK-189: 帮助文档搜索 (P1)
 
 ---
 
@@ -47,6 +47,31 @@
 
 ## 最近完成
 
+### TASK-187: 反馈入口（Cycle #176）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- FeedbackLinks 组件 - 外部链接展示
+- 3 个反馈渠道：GitHub Issues、邮件、社区讨论
+- 隐私提示（不收集用户数据）
+- KnowledgeCenter 集成 - help 分类底部
+- i18n 翻译更新 (EN/ZH)
+
+**变更文件**:
+- `src/components/knowledge/FeedbackLinks.tsx` - 新建
+- `src/components/knowledge/KnowledgeCenter.tsx` - 集成反馈链接
+- `src/components/knowledge/index.ts` - 导出 FeedbackLinks
+- `src/i18n/locales/en.json` - 添加 feedback 翻译
+- `src/i18n/locales/zh.json` - 添加 feedback 翻译
+
+**反馈渠道**:
+- GitHub Issues: https://github.com/MrHulu/HuluAiChat/issues
+- Email: mailto:491849417@qq.com
+- Community: https://github.com/MrHulu/HuluAiChat/discussions
+
+---
+
 ### TASK-186: 快捷键列表（Cycle #175）
 
 **完成时间**: 2026-03-12
@@ -56,17 +81,6 @@
 - KnowledgeCenter 集成 - help 分类显示快捷键
 - 复用 KEYBOARD_SHORTCUTS 数据
 - i18n 翻译更新 (EN/ZH)
-
-**变更文件**:
-- `src/components/knowledge/ShortcutList.tsx` - 新建
-- `src/components/knowledge/KnowledgeCenter.tsx` - 集成快捷键
-- `src/components/knowledge/index.ts` - 导出 ShortcutList
-- `src/i18n/locales/en.json` - 添加 shortcuts 翻译
-- `src/i18n/locales/zh.json` - 添加 shortcuts 翻译
-
-**快捷键分类**:
-1. 常规 (命令面板、新建对话、帮助)
-2. 导航 (侧边栏、切换会话、设置、关闭)
 
 ---
 
@@ -78,37 +92,7 @@
 - Accordion 组件 - 可折叠面板 UI
 - FAQList 组件 - FAQ 列表展示
 - faqData.ts - 19 个常见问题数据
-- KnowledgeCenter 集成 - help 分类显示 FAQ
-- i18n 翻译更新 (EN/ZH) - 完整翻译
-
-**变更文件**:
-- `src/components/ui/accordion.tsx` - 新建
-- `src/components/knowledge/FAQList.tsx` - 新建
-- `src/data/faqData.ts` - 新建
-- `src/components/knowledge/KnowledgeCenter.tsx` - 集成 FAQ
-- `src/components/knowledge/index.ts` - 导出 FAQList
-- `src/i18n/locales/en.json` - 添加 FAQ 翻译
-- `src/i18n/locales/zh.json` - 添加 FAQ 翻译
-
-**FAQ 分类**:
-1. 入门指南 (4 个问题)
-2. AI 模型 (4 个问题)
-3. 功能特性 (4 个问题)
-4. 隐私安全 (3 个问题)
-5. 故障排除 (4 个问题)
-
----
-
-### TASK-184: 提示词技巧指南（Cycle #173）
-
-**完成时间**: 2026-03-12
-
-**产出**:
-- KnowledgeCenter 组件 - 知识中心对话框
-- ArticleViewer 组件 - Markdown 文章渲染器
-- PROMPT_TIPS 数据 - 8 个核心提示词技巧
-- CommandPalette 集成 - 添加知识中心命令
-- i18n 翻译更新 (EN/ZH) - 完整翻译
+- i18n 翻译更新 (EN/ZH)
 
 ---
 
@@ -117,9 +101,9 @@
 - **项目**: HuluChat
 - **当前版本**: v3.54.0
 - **下一版本**: v3.56.0
-- **待开始任务**: 8 个 (TASK-187 ~ 194)
-- **已完成任务计数**: 24
+- **待开始任务**: 7 个 (TASK-188 ~ 194)
+- **已完成任务计数**: 25
 
 ---
 
-*更新时间: 2026-03-12 - Cycle #175*
+*更新时间: 2026-03-12 - Cycle #176*
