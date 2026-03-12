@@ -1,7 +1,14 @@
 # 任务清单
 
-## 🔴 紧急任务（阻塞 Boss 工作）
-- 无
+## 🔴 紧急任务（Boss 指令）
+- [ ] **TASK-182**: 📋 规划 v3.56.0 版本 - **🔴 Boss 指令**
+  - 主题：AI 知识中心 + 帮助支持体系
+  - 模块 1: AI 知识中心（使用指南、提示词技巧、术语解释）
+  - 模块 2: 帮助与支持（FAQ、故障排除、反馈入口）
+  - 模块 3: 新手引导（首次引导、交互教程、进度追踪）
+  - 模块 4: 快捷跳转（命令面板、设置快捷入口、书签跳转）
+  - 模块 5: 智能助手提示（上下文提示、错误建议、功能发现）
+  - 要求：详细规划、优先级排序、工作量估算
 
 ## 待开始
 <!-- 新任务添加到这里 -->
@@ -110,7 +117,13 @@
   - 更新 database.py 移除手动迁移代码
   - 创建 migrate.py CLI 工具
   - Cycle #172
-- [ ] **TASK-179**: ⚡ ChromaDB 异步化包装
+- [x] **TASK-179**: ⚡ ChromaDB 异步化包装 ✅ 2026-03-12
+  - 创建 services/async_chroma.py - AsyncChromaClient/AsyncCollection
+  - 更新 services/rag_service.py - 使用异步包装器
+  - 添加 tests/test_async_chroma.py - 异步包装器测试
+  - 更新 tests/test_rag_service.py - 使用 AsyncMock
+  - 使用线程池执行器避免阻塞事件循环
+  - Cycle #172
 - [ ] **TASK-180**: 📊 添加复合数据库索引
 - [ ] **TASK-181**: 🔑 API Key 存储改用系统钥匙串
 
