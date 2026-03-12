@@ -1,18 +1,18 @@
 # Auto Company Consensus
 
-> 最后更新: 2026-03-12 - Cycle #173
+> 最后更新: 2026-03-12 - Cycle #174
 
 ---
 
 ## 当前状态
-✅ **TASK-184: 提示词技巧指南完成**
+✅ **TASK-185: FAQ 常见问题完成**
 
 ---
 
 ## Next Action
 > **继续 v3.56.0 开发：**
-> - TASK-185: FAQ 常见问题 (P0)
 > - TASK-186: 快捷键列表 (P0)
+> - TASK-187: 反馈入口 (P1)
 
 ---
 
@@ -46,6 +46,35 @@
 ---
 
 ## 最近完成
+
+### TASK-185: FAQ 常见问题（Cycle #174）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- Accordion 组件 - 可折叠面板 UI
+- FAQList 组件 - FAQ 列表展示
+- faqData.ts - 19 个常见问题数据
+- KnowledgeCenter 集成 - help 分类显示 FAQ
+- i18n 翻译更新 (EN/ZH) - 完整翻译
+
+**变更文件**:
+- `src/components/ui/accordion.tsx` - 新建
+- `src/components/knowledge/FAQList.tsx` - 新建
+- `src/data/faqData.ts` - 新建
+- `src/components/knowledge/KnowledgeCenter.tsx` - 集成 FAQ
+- `src/components/knowledge/index.ts` - 导出 FAQList
+- `src/i18n/locales/en.json` - 添加 FAQ 翻译
+- `src/i18n/locales/zh.json` - 添加 FAQ 翻译
+
+**FAQ 分类**:
+1. 入门指南 (4 个问题)
+2. AI 模型 (4 个问题)
+3. 功能特性 (4 个问题)
+4. 隐私安全 (3 个问题)
+5. 故障排除 (4 个问题)
+
+---
 
 ### TASK-184: 提示词技巧指南（Cycle #173）
 
@@ -99,9 +128,9 @@
 - **项目**: HuluChat
 - **当前版本**: v3.54.0
 - **下一版本**: v3.56.0
-- **待开始任务**: 10 个 (TASK-185 ~ 194)
-- **已完成任务计数**: 22
+- **待开始任务**: 9 个 (TASK-186 ~ 194)
+- **已完成任务计数**: 23
 
 ---
 
-*更新时间: 2026-03-12 - Cycle #173*
+*更新时间: 2026-03-12 - Cycle #174*
