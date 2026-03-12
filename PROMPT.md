@@ -293,6 +293,39 @@ git push
 
 ## 邮件发送规则总结 ⚠️ **重要**
 
+### 📧 邮件发送方式（强制使用）
+
+**使用 ai-center 的 email-sender skill**：
+
+```python
+# 1. 创建 JSON 文件
+import json
+email_content = {
+    "to": "491849417@qq.com",
+    "subject": "[HuluChat] 邮件主题",
+    "body": """Hi Boss,
+
+邮件正文...
+
+---
+AI Assistant"""
+}
+with open("/tmp/email.json", "w", encoding="utf-8") as f:
+    json.dump(email_content, f, ensure_ascii=False, indent=2)
+
+# 2. 发送邮件
+import subprocess
+subprocess.run([
+    "python",
+    "D:/HuluMan/project/ai-center/.claude/skills/email-sender/scripts/send_email.py",
+    "/tmp/email.json"
+])
+```
+
+**❌ 禁止使用**：
+- `huluchat-v3/scripts/send-email.cjs` （旧脚本，授权码过期）
+- `gh workflow run email-notification.yml` （GitHub Secrets 未配置）
+
 ### ✅ 发送邮件的场景
 
 | 场景 | 说明 | 触发条件 |
