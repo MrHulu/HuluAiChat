@@ -11,6 +11,7 @@ from sqlalchemy import select
 
 from core.database import get_session as get_db_session
 from models.schemas import MessageModel
+from sqlalchemy import delete as sql_delete
 from services.openai_service import openai_service
 from services.ollama_service import ollama_service
 from services.mcp_service import mcp_service
@@ -225,6 +226,32 @@ async def chat_websocket(
             # Allow empty content if images or files are provided
             if not user_content.strip() and not images and not files:
                 continue
+
+            # Handle regenerate: delete messages after the specified message
+            regenerate = data.get("regenerate", False)
+            delete_from_message_id = data.get("delete_from_message_id")
+            if regenerate and delete_from_message_id:
+                # Delete all messages created after the specified message
+                # This effectively removes the AI response and any subsequent messages
+                try:
+                    # Get the timestamp of the message to delete from
+                    result = await db.execute(
+                        select(MessageModel.created_at)
+                        .where(MessageModel.id == delete_from_message_id)
+                        .where(MessageModel.session_id == session_id)
+                    )
+                    msg_row = result.scalar_one_or_none()
+                    if msg_row:
+                        # Delete all messages after this timestamp (excluding the message itself)
+                        await db.execute(
+                            sql_delete(MessageModel)
+                            .where(MessageModel.session_id == session_id)
+                            .where(MessageModel.created_at > msg_row)
+                        )
+                        await db.commit()
+                        logger.info(f"Regenerate: deleted messages after {delete_from_message_id}")
+                except Exception as e:
+                    logger.error(f"Failed to delete messages for regenerate: {e}")
 
             # Prepare images for storage (JSON string)
             images_json = json.dumps(images) if images else None

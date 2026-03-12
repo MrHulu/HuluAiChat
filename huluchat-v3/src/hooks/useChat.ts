@@ -302,13 +302,15 @@ export function useChat(sessionId: string | null, options?: UseChatOptions): Use
           const userMessage = messages[i];
           // 删除从用户消息之后的所有消息（包括该 AI 消息）
           setMessages((prev) => prev.slice(0, i));
-          // 重新发送用户消息
+          // 重新发送用户消息，告诉后端删除该消息之后的所有消息
           send({
             type: "message",
             content: userMessage.content.trim(),
             images: userMessage.images,
             files: userMessage.files,
             regenerate: true,
+            // 告诉后端删除该用户消息之后的所有消息（包括 AI 消息）
+            delete_from_message_id: userMessage.id,
           });
           setIsLoading(true);
           break;
