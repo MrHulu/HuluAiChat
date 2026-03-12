@@ -35,6 +35,10 @@ export interface MessageListProps {
   onQuote?: (message: Message) => void;
   // Delete props
   onDelete?: (messageId: string) => void;
+  // Selection props - TASK-175
+  isSelectionMode?: boolean;
+  selectedMessageIds?: Set<string>;
+  onMessageSelect?: (messageId: string, selected: boolean) => void;
 }
 
 /**
@@ -92,7 +96,7 @@ function buildVirtualItems(messages: Message[]): VirtualItem[] {
 }
 
 export const MessageList = forwardRef<MessageListRef, MessageListProps>(function MessageList(
-  { messages, streamingMessage, isLoading, onEditMessage, bookmarkedMessages, onBookmarkToggle, onRegenerate, isRegenerating, onSuggestionClick, onQuote, onDelete },
+  { messages, streamingMessage, isLoading, onEditMessage, bookmarkedMessages, onBookmarkToggle, onRegenerate, isRegenerating, onSuggestionClick, onQuote, onDelete, isSelectionMode, selectedMessageIds, onMessageSelect },
   ref
 ) {
   const { t } = useTranslation();
@@ -268,6 +272,9 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
                   isRegenerating={isRegenerating}
                   onQuote={onQuote}
                   onDelete={onDelete}
+                  isSelectionMode={isSelectionMode}
+                  isSelected={selectedMessageIds?.has(message.id)}
+                  onSelect={onMessageSelect}
                 />
               </div>
             );

@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Message } from "@/api/client";
 import { Button } from "@/components/ui/button";
-import { Pencil, Check, X, Bookmark, BookmarkCheck, Copy, Clock, RefreshCw, Quote, Trash2 } from "lucide-react";
+import { Pencil, Check, X, Bookmark, BookmarkCheck, Copy, Clock, RefreshCw, Quote, Trash2, CheckCircle2 } from "lucide-react";
 import { CodeBlock } from "./CodeBlock";
 import { MermaidBlock } from "./MermaidBlock";
 import ReactMarkdown from "react-markdown";
@@ -106,6 +106,10 @@ export interface MessageItemProps {
   onQuote?: (message: Message) => void;
   // Delete props
   onDelete?: (messageId: string) => void;
+  // Selection props - TASK-175
+  isSelectionMode?: boolean;
+  isSelected?: boolean;
+  onSelect?: (messageId: string, selected: boolean) => void;
 }
 
 // Stable plugin references (defined outside component to avoid recreation)
@@ -178,6 +182,9 @@ export const MessageItem = memo(function MessageItem({
   isRegenerating = false,
   onQuote,
   onDelete,
+  isSelectionMode = false,
+  isSelected = false,
+  onSelect,
 }: MessageItemProps) {
   const { t } = useTranslation();
   const isUser = message.role === "user";
@@ -336,6 +343,13 @@ export const MessageItem = memo(function MessageItem({
     }
   }, [onQuote, isEditing, isStreaming, message]);
 
+  // Handle selection toggle - TASK-175
+  const handleSelectToggle = useCallback(() => {
+    if (onSelect && !isEditing && !isStreaming) {
+      onSelect(message.id, !isSelected);
+    }
+  }, [onSelect, isEditing, isStreaming, message.id, isSelected]);
+
   return (
     <div
       role="article"
@@ -345,9 +359,45 @@ export const MessageItem = memo(function MessageItem({
       className={cn(
         "group flex w-full mb-4 animate-list-enter",
         isUser ? "justify-end" : "justify-start",
-        onQuote && !isEditing && !isStreaming && "cursor-pointer"
+        onQuote && !isEditing && !isStreaming && "cursor-pointer",
+        // Selection mode highlight - TASK-175
+        isSelectionMode && isSelected && "ring-2 ring-primary ring-offset-2 ring-offset-background rounded-lg"
       )}
     >
+      {/* Selection checkbox - TASK-175 */}
+      {isSelectionMode && !isStreaming && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleSelectToggle();
+          }}
+          aria-label={isSelected ? t("chat.deselectMessage") : t("chat.selectMessage")}
+          aria-pressed={isSelected}
+          className={cn(
+            "flex-shrink-0 self-center mr-2 transition-all duration-200",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+            "hover:scale-110 active:scale-95"
+          )}
+        >
+          <div
+            className={cn(
+              "w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200",
+              isSelected
+                ? "bg-primary border-primary"
+                : "border-muted-foreground/50 hover:border-primary/70",
+              "dark:border-muted-foreground/40"
+            )}
+          >
+            {isSelected && (
+              <CheckCircle2
+                className="w-4 h-4 text-primary-foreground transition-transform duration-200 scale-110"
+                aria-hidden="true"
+              />
+            )}
+          </div>
+        </button>
+      )}
+
       <div
         className={cn(
           "max-w-[80%] rounded-2xl px-4 py-3 relative",

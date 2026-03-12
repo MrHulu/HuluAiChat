@@ -165,7 +165,18 @@
     "cancel": "Cancel",
     "toolCalling": "Calling {{server}}: {{tool}}...",
     "toolSuccess": "{{server}}: {{tool}} completed",
-    "toolError": "{{server}}: {{tool}} failed"
+    "toolError": "{{server}}: {{tool}} failed",
+    "select": "Select",
+    "enterSelectionMode": "Enter selection mode",
+    "exitSelectionMode": "Exit selection mode",
+    "selectMessage": "Select message",
+    "deselectMessage": "Deselect message",
+    "selectAll": "Select all",
+    "deselectAll": "Deselect all",
+    "selectedCount": "{{count}} selected",
+    "noMessagesSelected": "No messages selected",
+    "exportSuccess": "{{count}} messages exported",
+    "exportTxt": "Export as TXT"
   },
   "settings": {
     "title": "Settings",

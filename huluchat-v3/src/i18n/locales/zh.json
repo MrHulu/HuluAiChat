@@ -162,7 +162,18 @@
     "cancel": "取消",
     "toolCalling": "正在调用 {{server}}: {{tool}}...",
     "toolSuccess": "{{server}}: {{tool}} 完成",
-    "toolError": "{{server}}: {{tool}} 失败"
+    "toolError": "{{server}}: {{tool}} 失败",
+    "select": "选择",
+    "enterSelectionMode": "进入选择模式",
+    "exitSelectionMode": "退出选择模式",
+    "selectMessage": "选择消息",
+    "deselectMessage": "取消选择消息",
+    "selectAll": "全选",
+    "deselectAll": "取消全选",
+    "selectedCount": "已选择 {{count}} 条",
+    "noMessagesSelected": "未选择任何消息",
+    "exportSuccess": "已导出 {{count}} 条消息",
+    "exportTxt": "导出为 TXT"
   },
   "settings": {
     "title": "设置",

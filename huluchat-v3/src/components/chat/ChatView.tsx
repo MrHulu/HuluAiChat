@@ -22,10 +22,12 @@ import {
   getSessionBookmarks,
   createBookmark,
   deleteBookmark,
+  exportMessages,
+  ExportFormat,
 } from "@/api/client";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { Bookmark, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { Bookmark, CheckCircle, XCircle, Loader2, ListChecks, Download, X } from "lucide-react";
 
 export interface ChatViewProps {
   sessionId: string | null;
@@ -147,6 +149,10 @@ export function ChatView({ sessionId, onSessionUpdated }: ChatViewProps) {
   // Quote state - Cycle #145
   const [quoteMessage, setQuoteMessage] = useState<Message | null>(null);
 
+  // Selection mode state - TASK-175
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedMessageIds, setSelectedMessageIds] = useState<Set<string>>(new Set());
+
   // Load bookmarks when session changes
   const loadBookmarks = useCallback(async () => {
     if (!sessionId) return;
@@ -209,6 +215,58 @@ export function ChatView({ sessionId, onSessionUpdated }: ChatViewProps) {
   const handleCancelQuote = useCallback(() => {
     setQuoteMessage(null);
   }, []);
+
+  // Selection handlers - TASK-175
+  const handleMessageSelect = useCallback((messageId: string, selected: boolean) => {
+    setSelectedMessageIds((prev) => {
+      const next = new Set(prev);
+      if (selected) {
+        next.add(messageId);
+      } else {
+        next.delete(messageId);
+      }
+      return next;
+    });
+  }, []);
+
+  const handleSelectAll = useCallback(() => {
+    setSelectedMessageIds(new Set(messages.map((m) => m.id)));
+  }, [messages]);
+
+  const handleDeselectAll = useCallback(() => {
+    setSelectedMessageIds(new Set());
+  }, []);
+
+  const handleExitSelectionMode = useCallback(() => {
+    setIsSelectionMode(false);
+    setSelectedMessageIds(new Set());
+  }, []);
+
+  const handleExportSelected = useCallback((format: ExportFormat) => {
+    const selectedMessages = messages.filter((m) => selectedMessageIds.has(m.id));
+    if (selectedMessages.length === 0) {
+      toast.warning(t("chat.noMessagesSelected"));
+      return;
+    }
+
+    try {
+      const { blob, filename } = exportMessages(selectedMessages, format, undefined);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      toast.success(t("chat.exportSuccess", { count: selectedMessages.length }));
+      handleExitSelectionMode();
+    } catch (error) {
+      console.error("Failed to export messages:", error);
+      toast.error(t("chat.exportError"));
+    }
+  }, [messages, selectedMessageIds, t, handleExitSelectionMode]);
 
   // Check for documents when RAG panel opens
   const checkDocuments = async () => {
@@ -294,6 +352,115 @@ export function ChatView({ sessionId, onSessionUpdated }: ChatViewProps) {
           )}
         </div>
         <div className="flex items-center gap-2">
+          {/* Selection Mode Toggle Button - TASK-175 */}
+          {sessionId && messages.length > 0 && !isSelectionMode && (
+            <button
+              onClick={() => setIsSelectionMode(true)}
+              aria-label={t("chat.enterSelectionMode")}
+              className={cn(
+                "px-2 py-1 text-xs rounded-md border transition-all duration-200 ease-out flex items-center gap-1",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                "hover:scale-105 active:scale-95",
+                "bg-background hover:bg-accent hover:border-accent border-border"
+              )}
+            >
+              <ListChecks className="w-3 h-3" />
+              {t("chat.select")}
+            </button>
+          )}
+          {/* Selection Mode Actions - TASK-175 */}
+          {isSelectionMode && (
+            <>
+              <span className="text-xs text-muted-foreground">
+                {t("chat.selectedCount", { count: selectedMessageIds.size })}
+              </span>
+              <button
+                onClick={handleSelectAll}
+                aria-label={t("chat.selectAll")}
+                className={cn(
+                  "px-2 py-1 text-xs rounded-md border transition-all duration-200 ease-out",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  "hover:scale-105 active:scale-95",
+                  "bg-background hover:bg-accent hover:border-accent border-border"
+                )}
+              >
+                {t("chat.selectAll")}
+              </button>
+              <button
+                onClick={handleDeselectAll}
+                aria-label={t("chat.deselectAll")}
+                className={cn(
+                  "px-2 py-1 text-xs rounded-md border transition-all duration-200 ease-out",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  "hover:scale-105 active:scale-95",
+                  "bg-background hover:bg-accent hover:border-accent border-border"
+                )}
+              >
+                {t("chat.deselectAll")}
+              </button>
+              <div className="h-4 w-px bg-border mx-1" />
+              <button
+                onClick={() => handleExportSelected("markdown")}
+                aria-label={t("chat.exportMarkdown")}
+                disabled={selectedMessageIds.size === 0}
+                className={cn(
+                  "px-2 py-1 text-xs rounded-md transition-all duration-200 ease-out flex items-center gap-1",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  "hover:scale-105 active:scale-95",
+                  selectedMessageIds.size === 0
+                    ? "opacity-50 cursor-not-allowed bg-muted text-muted-foreground"
+                    : "bg-primary text-primary-foreground hover:bg-primary/90"
+                )}
+              >
+                <Download className="w-3 h-3" />
+                {t("chat.exportMarkdown")}
+              </button>
+              <button
+                onClick={() => handleExportSelected("json")}
+                aria-label={t("chat.exportJSON")}
+                disabled={selectedMessageIds.size === 0}
+                className={cn(
+                  "px-2 py-1 text-xs rounded-md transition-all duration-200 ease-out flex items-center gap-1",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  "hover:scale-105 active:scale-95",
+                  selectedMessageIds.size === 0
+                    ? "opacity-50 cursor-not-allowed bg-muted text-muted-foreground"
+                    : "bg-primary text-primary-foreground hover:bg-primary/90"
+                )}
+              >
+                <Download className="w-3 h-3" />
+                JSON
+              </button>
+              <button
+                onClick={() => handleExportSelected("txt")}
+                aria-label={t("chat.exportTxt")}
+                disabled={selectedMessageIds.size === 0}
+                className={cn(
+                  "px-2 py-1 text-xs rounded-md transition-all duration-200 ease-out flex items-center gap-1",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  "hover:scale-105 active:scale-95",
+                  selectedMessageIds.size === 0
+                    ? "opacity-50 cursor-not-allowed bg-muted text-muted-foreground"
+                    : "bg-primary text-primary-foreground hover:bg-primary/90"
+                )}
+              >
+                <Download className="w-3 h-3" />
+                TXT
+              </button>
+              <button
+                onClick={handleExitSelectionMode}
+                aria-label={t("chat.exitSelectionMode")}
+                className={cn(
+                  "px-2 py-1 text-xs rounded-md border transition-all duration-200 ease-out",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  "hover:scale-105 active:scale-95",
+                  "bg-background hover:bg-accent hover:border-accent border-border"
+                )}
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </>
+          )}
           {/* Bookmark Toggle Button */}
           {sessionId && (
             <button
@@ -358,6 +525,9 @@ export function ChatView({ sessionId, onSessionUpdated }: ChatViewProps) {
         onSuggestionClick={handleSuggestionClick}
         onQuote={handleQuote}
         onDelete={deleteMessage}
+        isSelectionMode={isSelectionMode}
+        selectedMessageIds={selectedMessageIds}
+        onMessageSelect={handleMessageSelect}
       />
 
       {/* Tool Calls Indicator */}

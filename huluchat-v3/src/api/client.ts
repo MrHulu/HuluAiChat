@@ -315,6 +315,57 @@ export async function exportSession(
   return { blob, filename };
 }
 
+/**
+ * Export selected messages in specified format (client-side generation)
+ * Returns a blob that can be downloaded
+ */
+export function exportMessages(
+  messages: Message[],
+  format: ExportFormat = "markdown",
+  sessionTitle?: string
+): { blob: Blob; filename: string } {
+  const timestamp = new Date().toISOString().split("T")[0];
+  const baseName = sessionTitle ? sessionTitle.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, "_") : "messages";
+  let content: string;
+  let mimeType: string;
+  let extension: string;
+
+  switch (format) {
+    case "json":
+      content = JSON.stringify(messages.map(m => ({
+        role: m.role,
+        content: m.content,
+        created_at: m.created_at,
+      })), null, 2);
+      mimeType = "application/json";
+      extension = "json";
+      break;
+
+    case "txt":
+      content = messages.map(m => {
+        const role = m.role === "user" ? "You" : "AI";
+        return `[${role}] ${m.content}`;
+      }).join("\n\n---\n\n");
+      mimeType = "text/plain";
+      extension = "txt";
+      break;
+
+    case "markdown":
+    default:
+      content = messages.map(m => {
+        const role = m.role === "user" ? "**You**" : "**AI**";
+        return `${role}\n\n${m.content}`;
+      }).join("\n\n---\n\n");
+      mimeType = "text/markdown";
+      extension = "md";
+      break;
+  }
+
+  const blob = new Blob([content], { type: mimeType });
+  const filename = `${baseName}_selected_${timestamp}.${extension}`;
+  return { blob, filename };
+}
+
 // ============== Folder APIs ==============
 
 /**
