@@ -843,5 +843,42 @@
         "limitations": "Requires hardware resources, setup needed"
       }
     }
+  },
+  "featureDiscovery": {
+    "moreOptions": "More options",
+    "dismiss": "Dismiss this tip",
+    "dontShowAgain": "Don't show tips again",
+    "features": {
+      "commandPalette": {
+        "title": "Command Palette",
+        "description": "Press Ctrl+K to quickly access all features without leaving your keyboard.",
+        "action": "Try Command Palette"
+      },
+      "knowledgeCenter": {
+        "title": "Knowledge Center",
+        "description": "Explore prompt tips, model guides, and FAQs to become an AI expert.",
+        "action": "Open Knowledge Center"
+      },
+      "documentChat": {
+        "title": "Document Chat",
+        "description": "Upload PDFs or documents to chat with your content and get answers based on them.",
+        "action": "Try Document Chat"
+      },
+      "sessionExport": {
+        "title": "Export Conversations",
+        "description": "Export your chat history as Markdown, JSON, or plain text for sharing or archiving.",
+        "action": "Export Chat"
+      },
+      "folderManagement": {
+        "title": "Organize with Folders",
+        "description": "Create folders to organize your conversations by project, topic, or any way you like.",
+        "action": "Create Folder"
+      },
+      "modelSwitch": {
+        "title": "Switch AI Models",
+        "description": "Choose the right AI model for each task - GPT-4 for complex work, local models for privacy.",
+        "action": "Switch Model"
+      }
+    }
   }
 }

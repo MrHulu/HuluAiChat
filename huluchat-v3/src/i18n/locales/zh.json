@@ -840,5 +840,42 @@
         "limitations": "需要硬件资源，需要配置"
       }
     }
+  },
+  "featureDiscovery": {
+    "moreOptions": "更多选项",
+    "dismiss": "关闭此提示",
+    "dontShowAgain": "不再显示功能提示",
+    "features": {
+      "commandPalette": {
+        "title": "命令面板",
+        "description": "按 Ctrl+K 快速访问所有功能，无需离开键盘。",
+        "action": "试试命令面板"
+      },
+      "knowledgeCenter": {
+        "title": "知识中心",
+        "description": "探索提示词技巧、模型指南和常见问题，成为 AI 高手。",
+        "action": "打开知识中心"
+      },
+      "documentChat": {
+        "title": "文档对话",
+        "description": "上传 PDF 或文档，与您的内容对话，获取基于文档的回答。",
+        "action": "试试文档对话"
+      },
+      "sessionExport": {
+        "title": "导出对话",
+        "description": "将聊天记录导出为 Markdown、JSON 或纯文本，方便分享或存档。",
+        "action": "导出对话"
+      },
+      "folderManagement": {
+        "title": "文件夹整理",
+        "description": "创建文件夹来组织您的对话，按项目、主题或任意方式分类。",
+        "action": "创建文件夹"
+      },
+      "modelSwitch": {
+        "title": "切换 AI 模型",
+        "description": "为每个任务选择合适的 AI 模型 - GPT-4 用于复杂工作，本地模型用于隐私保护。",
+        "action": "切换模型"
+      }
+    }
   }
 }

@@ -6,3 +6,10 @@ export { useKeyboardShortcuts, KEYBOARD_SHORTCUTS, type UseKeyboardShortcutsOpti
 export { usePluginManager, type UsePluginManagerReturn } from "./usePluginManager";
 export { useFolders, type UseFoldersReturn } from "./useFolders";
 export { useModel, type UseModelReturn } from "./useModel";
+export {
+  useFeatureDiscovery,
+  DISCOVERABLE_FEATURES,
+  type FeatureId,
+  type FeatureConfig,
+  type UseFeatureDiscoveryReturn,
+} from "./useFeatureDiscovery";
