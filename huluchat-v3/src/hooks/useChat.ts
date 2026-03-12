@@ -27,6 +27,13 @@ export interface ChatParameters {
   max_tokens?: number;
 }
 
+export interface SendMessageOptions {
+  /** Skip adding user message to local state (for edit-and-resend) */
+  skipLocalUserMessage?: boolean;
+  /** Message ID being edited (for backend to skip saving) */
+  editMessageId?: string;
+}
+
 export interface UseChatOptions {
   onTitleGenerated?: (title: string) => void;
 }
@@ -36,7 +43,7 @@ export interface UseChatReturn {
   streamingMessage: StreamingMessage | null;
   toolCalls: ToolCall[];
   connectionStatus: ConnectionStatus;
-  sendMessage: (content: string, model?: string, params?: ChatParameters, images?: ImageContent[], files?: FileAttachment[], useMcp?: boolean) => void;
+  sendMessage: (content: string, model?: string, params?: ChatParameters, images?: ImageContent[], files?: FileAttachment[], useMcp?: boolean, options?: SendMessageOptions) => void;
   regenerateMessage: (assistantMessageId: string) => void;
   deleteMessage: (messageId: string) => Promise<void>;
   isLoading: boolean;
@@ -243,23 +250,33 @@ export function useChat(sessionId: string | null, options?: UseChatOptions): Use
   }, [sessionId, loadHistory]);
 
   const sendMessage = useCallback(
-    (content: string, model?: string, params?: ChatParameters, images?: ImageContent[], files?: FileAttachment[], useMcp?: boolean) => {
+    (
+      content: string,
+      model?: string,
+      params?: ChatParameters,
+      images?: ImageContent[],
+      files?: FileAttachment[],
+      useMcp?: boolean,
+      options?: SendMessageOptions
+    ) => {
       // Allow empty content if images or files are provided
       if ((!content.trim() && !images?.length && !files?.length) || connectionStatus !== "connected") {
         return;
       }
 
-      // 添加用户消息
-      const userMessage: Message = {
-        id: `temp-${Date.now()}`,
-        session_id: sessionId || "",
-        role: "user",
-        content: content.trim(),
-        images: images,
-        files: files,
-        created_at: new Date().toISOString(),
-      };
-      setMessages((prev) => [...prev, userMessage]);
+      // 添加用户消息到本地状态（除非是编辑后重发）
+      if (!options?.skipLocalUserMessage) {
+        const userMessage: Message = {
+          id: `temp-${Date.now()}`,
+          session_id: sessionId || "",
+          role: "user",
+          content: content.trim(),
+          images: images,
+          files: files,
+          created_at: new Date().toISOString(),
+        };
+        setMessages((prev) => [...prev, userMessage]);
+      }
 
       // Clear previous tool calls
       setToolCalls([]);
@@ -275,6 +292,9 @@ export function useChat(sessionId: string | null, options?: UseChatOptions): Use
         top_p: params?.top_p,
         max_tokens: params?.max_tokens,
         use_mcp: useMcp !== false, // Default to true
+        // 如果是编辑后重发，告诉后端跳过保存用户消息
+        regenerate: options?.skipLocalUserMessage || false,
+        delete_from_message_id: options?.editMessageId,
       });
 
       setIsLoading(true);

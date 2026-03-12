@@ -177,14 +177,24 @@ export async function getSessionMessages(
 
 /**
  * Update a message's content
+ * @param sessionId Session ID
+ * @param messageId Message ID to update
+ * @param content New content
+ * @param deleteAfter If True, delete all messages after this one (for edit-and-resend)
  */
 export async function updateMessage(
   sessionId: string,
   messageId: string,
-  content: string
+  content: string,
+  deleteAfter: boolean = false
 ): Promise<Message> {
+  const params = new URLSearchParams();
+  if (deleteAfter) {
+    params.append("delete_after", "true");
+  }
+
   const response = await fetch(
-    `${API_BASE}/chat/${sessionId}/messages/${messageId}`,
+    `${API_BASE}/chat/${sessionId}/messages/${messageId}?${params.toString()}`,
     {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
