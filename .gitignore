@@ -170,3 +170,6 @@ memories/consensus.md.bak
 # ====================
 *.orig
 *.rej
+
+.dev.vars*
+!.dev.vars.example
