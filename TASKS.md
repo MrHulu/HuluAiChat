@@ -102,7 +102,14 @@
   - Cycle #171
 
 ### 技术债务
-- [ ] **TASK-178**: 🗃️ 迁移到 Alembic 数据库迁移
+- [x] **TASK-178**: 🗃️ 迁移到 Alembic 数据库迁移 ✅ 2026-03-12
+  - 添加 alembic 依赖到 requirements.txt
+  - 创建 alembic.ini 配置文件
+  - 创建 migrations/env.py (异步 SQLAlchemy 支持)
+  - 创建初始迁移脚本 (001_initial)
+  - 更新 database.py 移除手动迁移代码
+  - 创建 migrate.py CLI 工具
+  - Cycle #172
 - [ ] **TASK-179**: ⚡ ChromaDB 异步化包装
 - [ ] **TASK-180**: 📊 添加复合数据库索引
 - [ ] **TASK-181**: 🔑 API Key 存储改用系统钥匙串

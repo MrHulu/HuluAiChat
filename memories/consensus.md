@@ -1,18 +1,20 @@
 # Auto Company Consensus
 
-> 最后更新: 2026-03-12 - Cycle #171
+> 最后更新: 2026-03-12 - Cycle #172
 
 ---
 
 ## 当前状态
-✅ **Phase 3 用户功能增强全部完成** - TASK-177 已完成
+✅ **TASK-178 Alembic 数据库迁移已完成**
+- 技术债务清理进度: 1/4
 
 ---
 
 ## Next Action
-> **Phase 3 已完成，下一步：**
-> - 技术债务清理（TASK-178 ~ 181）或
-> - 等待 Boss 指示
+> **继续技术债务清理：**
+> - TASK-179: ChromaDB 异步化包装
+> - TASK-180: 添加复合数据库索引
+> - TASK-181: API Key 存储改用系统钥匙串
 > - 注：TASK-163/164 仍被 Rust 内存问题阻塞
 
 ---
@@ -27,6 +29,46 @@
 ---
 
 ## 最近完成
+
+### TASK-178: Alembic 数据库迁移（Cycle #172）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- `backend/requirements.txt` - 添加 alembic>=1.13.0 依赖
+- `backend/alembic.ini` - Alembic 配置文件
+- `backend/migrations/env.py` - 异步 SQLAlchemy 支持
+- `backend/migrations/script.py.mako` - 迁移模板
+- `backend/migrations/versions/20260312_1200_001_initial_schema.py` - 初始迁移
+- `backend/migrate.py` - 迁移 CLI 工具
+- `backend/core/database.py` - 移除手动迁移代码，集成 Alembic
+
+**实现内容**:
+1. **Alembic 配置**:
+   - 支持异步 SQLAlchemy (aiosqlite)
+   - 自动从 settings 读取数据库 URL
+   - 支持 black 格式化钩子
+
+2. **初始迁移**:
+   - 创建 sessions, messages, folders 表
+   - 创建 prompt_templates, session_tags, message_bookmarks 表
+   - 创建所有索引
+
+3. **迁移 CLI**:
+   - `python migrate.py upgrade` - 升级到最新版本
+   - `python migrate.py downgrade` - 回退一个版本
+   - `python migrate.py current` - 显示当前版本
+   - `python migrate.py history` - 显示迁移历史
+   - `python migrate.py revision -m "desc"` - 创建新迁移
+   - `python migrate.py autogenerate -m "desc"` - 自动生成迁移
+
+4. **向后兼容**:
+   - 如果 Alembic 失败，自动回退到 create_all
+   - 不影响现有用户数据
+
+**结果**: 数据库迁移标准化，后续表结构变更可通过 Alembic 管理
+
+---
 
 ### TASK-177: 本地偏好学习（模型推荐）（Cycle #171）
 
@@ -479,7 +521,7 @@
 - **下一版本**: v3.55.0
 - **进行中任务**: 0 个
 - **待开始任务**: 16 个（15 新 + TASK-116）
-- **已完成任务计数**: 18 (本次周期)
+- **已完成任务计数**: 19 (本次周期)
 
 ---
 
