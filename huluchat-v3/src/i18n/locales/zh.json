@@ -437,15 +437,23 @@
   "welcome": {
     "step1": {
       "title": "欢迎使用 HuluChat",
-      "description": "您的隐私优先 AI 桌面助手。支持多模型对话、文档管理和插件扩展。"
+      "description": "您的隐私优先 AI 桌面助手。所有数据保存在本地 - 无追踪、无云端存储。"
     },
     "step2": {
+      "title": "多模型支持",
+      "description": "选择 OpenAI GPT-4、DeepSeek 或使用 Ollama 运行本地模型。随时根据需求切换模型。"
+    },
+    "step3": {
       "title": "文档对话（RAG）",
       "description": "上传 PDF、TXT 或 Markdown 文件，与您的文档进行智能对话，获取基于您内容的答案。"
     },
-    "step3": {
-      "title": "插件系统",
-      "description": "扩展 HuluChat 的功能。安装社区插件或创建自己的插件来添加新特性。"
+    "step4": {
+      "title": "快捷导航",
+      "description": "按 Ctrl+K 打开命令面板快速访问所有功能。按 ? 或 F1 查看所有键盘快捷键。"
+    },
+    "step5": {
+      "title": "知识中心",
+      "description": "从知识中心获取提示词技巧、模型对比、常见问题等。助您成为 AI 高手。"
     },
     "skip": "跳过",
     "next": "下一步",
