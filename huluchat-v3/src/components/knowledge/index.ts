@@ -3,3 +3,4 @@ export { ArticleViewer } from "./ArticleViewer";
 export { FAQList } from "./FAQList";
 export { ShortcutList } from "./ShortcutList";
 export { FeedbackLinks } from "./FeedbackLinks";
+export { ModelComparison } from "./ModelComparison";
