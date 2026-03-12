@@ -4,7 +4,7 @@
  */
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { BookOpen, Lightbulb, HelpCircle, X, ChevronLeft } from "lucide-react";
+import { BookOpen, Lightbulb, HelpCircle, ChevronLeft } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -14,6 +14,7 @@ import {
 import { cn } from "@/lib/utils";
 import { PROMPT_TIPS, type PromptTip } from "@/data/promptTips";
 import { ArticleViewer } from "./ArticleViewer";
+import { FAQList } from "./FAQList";
 
 interface KnowledgeCenterProps {
   open: boolean;
@@ -166,40 +167,45 @@ export function KnowledgeCenter({
 
           {/* 分类页 - 文章列表 */}
           {selectedCategory && !selectedArticle && (
-            <div className="p-4 space-y-2">
-              {articles.length === 0 ? (
+            <div className="p-4">
+              {/* Help 分类显示 FAQ */}
+              {selectedCategory === "help" ? (
+                <FAQList />
+              ) : articles.length === 0 ? (
                 <p className="text-muted-foreground text-center py-8">
                   {t("knowledge.comingSoon")}
                 </p>
               ) : (
-                articles.map((article, index) => (
-                  <button
-                    key={article.id}
-                    onClick={() => handleSelectArticle(article)}
-                    className={cn(
-                      "w-full flex items-start gap-3 p-3 rounded-lg text-left",
-                      "hover:bg-muted/50 transition-all duration-200",
-                      "dark:hover:bg-muted/30",
-                      "animate-list-enter"
-                    )}
-                    style={{ animationDelay: `${index * 50}ms` }}
-                  >
-                    <div className="p-1.5 rounded bg-primary/10 text-primary text-lg">
-                      {article.icon}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-medium truncate">
-                        {t(article.titleKey)}
-                      </h4>
-                      <p className="text-sm text-muted-foreground truncate">
-                        {t(article.descriptionKey)}
-                      </p>
-                    </div>
-                    <span className="text-xs text-muted-foreground px-2 py-1 bg-muted rounded">
-                      {t(`knowledge.levels.${article.level}`)}
-                    </span>
-                  </button>
-                ))
+                <div className="space-y-2">
+                  {articles.map((article, index) => (
+                    <button
+                      key={article.id}
+                      onClick={() => handleSelectArticle(article)}
+                      className={cn(
+                        "w-full flex items-start gap-3 p-3 rounded-lg text-left",
+                        "hover:bg-muted/50 transition-all duration-200",
+                        "dark:hover:bg-muted/30",
+                        "animate-list-enter"
+                      )}
+                      style={{ animationDelay: `${index * 50}ms` }}
+                    >
+                      <div className="p-1.5 rounded bg-primary/10 text-primary text-lg">
+                        {article.icon}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium truncate">
+                          {t(article.titleKey)}
+                        </h4>
+                        <p className="text-sm text-muted-foreground truncate">
+                          {t(article.descriptionKey)}
+                        </p>
+                      </div>
+                      <span className="text-xs text-muted-foreground px-2 py-1 bg-muted rounded">
+                        {t(`knowledge.levels.${article.level}`)}
+                      </span>
+                    </button>
+                  ))}
+                </div>
               )}
             </div>
           )}
