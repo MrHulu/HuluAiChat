@@ -1,21 +1,26 @@
 /**
  * WelcomeDialog Component Tests
+ * 5 步引导流程测试
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { WelcomeDialog } from "./WelcomeDialog";
 
-// Mock i18next
+// Mock i18next - 5 步流程翻译
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {
         "welcome.step1.title": "Welcome to HuluChat",
-        "welcome.step1.description": "Your AI assistant for productivity",
-        "welcome.step2.title": "Document Chat (RAG)",
-        "welcome.step2.description": "Upload documents and chat with them",
-        "welcome.step3.title": "Plugin System",
-        "welcome.step3.description": "Extend functionality with plugins",
+        "welcome.step1.description": "Your privacy-first AI desktop assistant",
+        "welcome.step2.title": "Multiple AI Models",
+        "welcome.step2.description": "Choose from OpenAI, DeepSeek, or Ollama",
+        "welcome.step3.title": "Document Chat (RAG)",
+        "welcome.step3.description": "Upload documents and chat with them",
+        "welcome.step4.title": "Quick Navigation",
+        "welcome.step4.description": "Press Ctrl+K for command palette",
+        "welcome.step5.title": "Knowledge Center",
+        "welcome.step5.description": "Access prompt tips and FAQs",
         "welcome.skip": "Skip",
         "welcome.next": "Next",
         "welcome.getStarted": "Get Started",
@@ -67,7 +72,7 @@ describe("WelcomeDialog", () => {
     );
 
     fireEvent.click(screen.getByText("Next"));
-    expect(screen.getByText("Document Chat (RAG)")).toBeInTheDocument();
+    expect(screen.getByText("Multiple AI Models")).toBeInTheDocument();
   });
 
   it("calls onComplete when Get Started is clicked", () => {
@@ -79,9 +84,11 @@ describe("WelcomeDialog", () => {
       />
     );
 
-    // Navigate to last step
-    fireEvent.click(screen.getByText("Next"));
-    fireEvent.click(screen.getByText("Next"));
+    // Navigate through all 5 steps (click Next 4 times to reach last step)
+    fireEvent.click(screen.getByText("Next")); // Step 2
+    fireEvent.click(screen.getByText("Next")); // Step 3
+    fireEvent.click(screen.getByText("Next")); // Step 4
+    fireEvent.click(screen.getByText("Next")); // Step 5
     // Click Get Started
     fireEvent.click(screen.getByText("Get Started"));
 
@@ -113,8 +120,8 @@ describe("WelcomeDialog", () => {
       />
     );
 
-    // Should have 3 step indicators
+    // Should have 5 step indicators for 5-step onboarding
     const indicators = document.querySelectorAll(".rounded-full");
-    expect(indicators.length).toBe(3);
+    expect(indicators.length).toBe(5);
   });
 });

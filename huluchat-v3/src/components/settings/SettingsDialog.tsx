@@ -1,6 +1,11 @@
 /**
  * Settings Dialog Component
  * API Key configuration, model selection, Ollama settings, and plugin management
+ *
+ * SECURITY: API keys are stored in system keyring, not in files.
+ * - macOS: Keychain
+ * - Windows: Credential Manager
+ * - Linux: Secret Service
  */
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -14,6 +19,10 @@ import {
   ExternalLink,
   Sliders,
   Puzzle,
+  Cpu,
+  Palette,
+  Keyboard,
+  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -46,7 +55,12 @@ import {
   type ModelInfo,
   type OllamaModel,
 } from "@/api/client";
+import { storeAPIKey } from "@/services/keyring";
 import { PluginSettings } from "./PluginSettings";
+import { MCPSettings } from "./MCPSettings";
+import { ThemeSettings } from "./ThemeSettings";
+import { ShortcutSettings } from "./ShortcutSettings";
+import { QuickActionsSettings } from "./QuickActionsSettings";
 
 interface SettingsDialogProps {
   onSettingsChange?: () => void;
@@ -206,9 +220,21 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
     try {
       const updateData: Record<string, string | number> = {};
 
-      // Only send API key if changed (not empty)
+      // SECURITY: Store API key in system keyring, not in files
+      // Only send to backend for immediate use (backend doesn't persist)
       if (apiKey.trim()) {
-        updateData.openai_api_key = apiKey.trim();
+        try {
+          // Store in system keyring
+          await storeAPIKey("openai", apiKey.trim());
+          // Send to backend for immediate use
+          updateData.openai_api_key = apiKey.trim();
+        } catch (keyringError) {
+          console.error("Failed to store API key in keyring:", keyringError);
+          // Show warning but continue - API key will be stored in memory only
+          toast.warning(t("settings.keyringUnavailable"));
+          // Still send to backend for immediate use (backend stores in memory only)
+          updateData.openai_api_key = apiKey.trim();
+        }
       }
 
       if (baseUrl.trim()) {
@@ -319,9 +345,25 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
           </div>
         ) : (
           <Tabs defaultValue="api" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-7">
               <TabsTrigger value="api">{t("settings.tabApi")}</TabsTrigger>
               <TabsTrigger value="ollama">{t("settings.tabOllama")}</TabsTrigger>
+              <TabsTrigger value="mcp">
+                <Cpu className="h-4 w-4 mr-1" />
+                MCP
+              </TabsTrigger>
+              <TabsTrigger value="appearance">
+                <Palette className="h-4 w-4 mr-1" />
+                {t("settings.tabAppearance")}
+              </TabsTrigger>
+              <TabsTrigger value="shortcuts">
+                <Keyboard className="h-4 w-4 mr-1" />
+                {t("settings.tabShortcuts")}
+              </TabsTrigger>
+              <TabsTrigger value="quickActions">
+                <Zap className="h-4 w-4 mr-1" />
+                {t("settings.tabQuickActions")}
+              </TabsTrigger>
               <TabsTrigger value="plugins">
                 <Puzzle className="h-4 w-4 mr-1" />
                 {t("settings.tabPlugins")}
@@ -643,6 +685,26 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                 ) : null}
                 {t("ollama.testConnection")}
               </Button>
+            </TabsContent>
+
+            {/* MCP Tab */}
+            <TabsContent value="mcp" className="py-4">
+              <MCPSettings />
+            </TabsContent>
+
+            {/* Appearance Tab */}
+            <TabsContent value="appearance" className="py-4">
+              <ThemeSettings />
+            </TabsContent>
+
+            {/* Shortcuts Tab */}
+            <TabsContent value="shortcuts" className="py-4">
+              <ShortcutSettings />
+            </TabsContent>
+
+            {/* Quick Actions Tab */}
+            <TabsContent value="quickActions" className="py-4">
+              <QuickActionsSettings />
             </TabsContent>
 
             {/* Plugins Tab */}

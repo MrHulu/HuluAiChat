@@ -209,9 +209,9 @@ describe("CodeBlock", () => {
       // Wait for auto-collapse
       await waitFor(() => {
         // The "Show all N lines" button should be in the document
-        const showMoreButton = screen.queryByText(/Show all \d+ lines/);
         // Note: This button is only visible on hover, so it might not be found
         // depending on testing environment
+        void screen.queryByText(/Show all \d+ lines/);
       });
     });
   });

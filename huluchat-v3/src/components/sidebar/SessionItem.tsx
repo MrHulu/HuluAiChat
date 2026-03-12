@@ -1,6 +1,6 @@
 /**
  * SessionItem Component
- * 单个会话项
+ * 单个会话项，支持批量选择模式
  */
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -11,6 +11,8 @@ import {
   ChevronLeft,
   Check,
   Trash2,
+  CheckSquare,
+  Square,
 } from "lucide-react";
 import { Session, Folder, ExportFormat } from "@/api/client";
 import { cn } from "@/lib/utils";
@@ -42,6 +44,10 @@ export interface SessionItemProps {
   onMoveToFolder?: (sessionId: string, folderId: string | null) => void;
   tags?: string[];
   onTagClick?: (tag: string) => void;
+  // Batch selection props
+  isBatchMode?: boolean;
+  isSelected?: boolean;
+  onToggleSelection?: () => void;
 }
 
 export function SessionItem({
@@ -54,6 +60,9 @@ export function SessionItem({
   onMoveToFolder,
   tags = [],
   onTagClick,
+  isBatchMode = false,
+  isSelected = false,
+  onToggleSelection,
 }: SessionItemProps) {
   const { t } = useTranslation();
   const [isExporting, setIsExporting] = useState(false);
@@ -106,6 +115,18 @@ export function SessionItem({
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
+      if (isBatchMode && onToggleSelection) {
+        onToggleSelection();
+      } else {
+        onClick();
+      }
+    }
+  };
+
+  const handleClick = () => {
+    if (isBatchMode && onToggleSelection) {
+      onToggleSelection();
+    } else {
       onClick();
     }
   };
@@ -117,14 +138,15 @@ export function SessionItem({
       <div
         role="button"
         tabIndex={0}
-        onClick={onClick}
+        onClick={handleClick}
         onKeyDown={handleKeyDown}
         aria-label={t("sessionItem.selectSession", { title: session.title || t("sessionItem.newChat") })}
         aria-current={isActive ? "true" : undefined}
+        aria-selected={isBatchMode ? isSelected : undefined}
         className={cn(
         "group flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer",
         "transition-all duration-200 ease-out",
-        isActive
+        isActive && !isBatchMode
           ? "bg-accent text-accent-foreground shadow-sm dark:shadow-lg dark:shadow-accent/20"
           : "hover:bg-muted/60 hover:shadow-sm text-foreground",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
@@ -132,9 +154,33 @@ export function SessionItem({
         // Dark mode enhancements
         "dark:hover:bg-muted/40 dark:hover:shadow-none",
         // Dark mode active session glow (Cycle #193)
-        isActive && "dark:bg-accent/80 dark:border-l-2 dark:border-primary/50 dark:shadow-[0_0_16px_oklch(0.5_0.15_264/0.15),inset_0_1px_0_oklch(1_0_0/0.05)]"
+        isActive && !isBatchMode && "dark:bg-accent/80 dark:border-l-2 dark:border-primary/50 dark:shadow-[0_0_16px_oklch(0.5_0.15_264/0.15),inset_0_1px_0_oklch(1_0_0/0.05)]",
+        // Batch selection highlight
+        isBatchMode && isSelected && "bg-primary/10 dark:bg-primary/20 border border-primary/30"
       )}
     >
+      {/* Checkbox for batch mode */}
+      {isBatchMode && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleSelection?.();
+          }}
+          className={cn(
+            "mr-2 p-0.5 rounded transition-all duration-200",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+            isSelected ? "text-primary" : "text-muted-foreground"
+          )}
+          aria-label={isSelected ? t("batch.deselect") : t("batch.select")}
+        >
+          {isSelected ? (
+            <CheckSquare className="w-4 h-4" aria-hidden="true" />
+          ) : (
+            <Square className="w-4 h-4" aria-hidden="true" />
+          )}
+        </button>
+      )}
+
       <div className="flex-1 min-w-0">
         <div className="font-medium text-sm truncate">
           {session.title || t("sessionItem.newChat")}

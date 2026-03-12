@@ -162,7 +162,31 @@
     "messageDeleted": "Message deleted",
     "deleteMessageConfirm": "Are you sure you want to delete this message?",
     "confirmDelete": "Yes, delete",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "toolCalling": "Calling {{server}}: {{tool}}...",
+    "toolSuccess": "{{server}}: {{tool}} completed",
+    "toolError": "{{server}}: {{tool}} failed",
+    "select": "Select",
+    "enterSelectionMode": "Enter selection mode",
+    "exitSelectionMode": "Exit selection mode",
+    "selectMessage": "Select message",
+    "deselectMessage": "Deselect message",
+    "selectAll": "Select all",
+    "deselectAll": "Deselect all",
+    "selectedCount": "{{count}} selected",
+    "noMessagesSelected": "No messages selected",
+    "exportSuccess": "{{count}} messages exported",
+    "exportTxt": "Export as TXT",
+    "search": "Search",
+    "searchInConversation": "Search in conversation",
+    "searchPlaceholder": "Search keywords...",
+    "searchQuery": "Search query",
+    "searchMatchCount": "{{current}} / {{total}}",
+    "searchNoMatch": "No match",
+    "searchCaseSensitive": "Case sensitive",
+    "searchPrev": "Previous match",
+    "searchNext": "Next match",
+    "searchClose": "Close search"
   },
   "settings": {
     "title": "Settings",
@@ -170,6 +194,9 @@
     "tabApi": "API",
     "tabOllama": "Ollama",
     "tabPlugins": "Plugins",
+    "tabAppearance": "Appearance",
+    "tabShortcuts": "Shortcuts",
+    "tabQuickActions": "Quick Actions",
     "apiKey": "API Key",
     "apiKeyPlaceholder": "sk-...",
     "apiKeySet": "API key is set. Enter a new key to update.",
@@ -194,6 +221,8 @@
     "connectionFailed": "Connection failed",
     "settingsSaved": "Settings saved successfully",
     "settingsSaveFailed": "Failed to save settings",
+    "keyringStoreFailed": "Failed to store API key securely. Your key will be stored in memory only (cleared on restart).",
+    "keyringUnavailable": "System keyring unavailable. API key will be stored temporarily.",
     "invalidUrl": "Please enter a valid URL",
     "invalidUrlProtocol": "URL must start with http:// or https://",
     "customModelId": "Custom Model ID",
@@ -201,7 +230,27 @@
     "customModelHint": "Enter the model ID provided by your API service",
     "customModelRequired": "Please enter a custom model ID",
     "customModelName": "Custom Model",
-    "customModelDescription": "Use a custom model ID (e.g., GLM-4, Qwen)"
+    "customModelDescription": "Use a custom model ID (e.g., GLM-4, Qwen)",
+    "quickActions": {
+      "description": "Customize Quick Actions for the Quick Panel. Use {{text}} as placeholder for selected text.",
+      "addAction": "Add Action",
+      "editAction": "Edit Action",
+      "reset": "Reset to Defaults",
+      "name": "Name",
+      "namePlaceholder": "e.g., Translate",
+      "description": "Description",
+      "descriptionPlaceholder": "e.g., Translate text to target language",
+      "icon": "Icon",
+      "category": "Category",
+      "promptTemplate": "Prompt Template",
+      "promptPlaceholder": "e.g., Translate the following text:\n\n{{text}}",
+      "promptHint": "Use {{text}} as placeholder for selected/input text",
+      "saved": "Quick Action saved",
+      "deleted": "Quick Action deleted",
+      "resetSuccess": "Quick Actions reset to defaults",
+      "errorRequired": "Name and Prompt Template are required",
+      "noActions": "No Quick Actions configured"
+    }
   },
   "plugins": {
     "title": "Plugins",
@@ -281,16 +330,106 @@
     "description": "View all available keyboard shortcuts to navigate the app efficiently",
     "shortcutsList": "List of keyboard shortcuts",
     "shortcutKey": "{{action}}: {{key}}",
+    "commandPalette": "Open command palette",
     "newChat": "New chat",
     "search": "Search chats",
+    "searchInChat": "Search in conversation",
     "settings": "Open settings",
     "toggleSidebar": "Toggle sidebar",
     "switchSession": "Switch to recent session",
+    "switchSession1": "Switch to session 1",
+    "switchSession2": "Switch to session 2",
+    "switchSession3": "Switch to session 3",
     "send": "Send message",
     "newLine": "New line in message",
     "close": "Close dialog",
     "showHelp": "Show keyboard shortcuts",
     "pressToOpen": "Press {{key1}} or {{key2}} to open this help anytime"
+  },
+  "shortcuts": {
+    "title": "Customize Shortcuts",
+    "instructions": "Click on a shortcut to record a new key combination. Press Escape to cancel.",
+    "pressKeys": "Press keys...",
+    "resetShortcut": "Reset to default",
+    "resetAll": "Reset All",
+    "conflictWarning": "Shortcut conflict",
+    "conflictsWith": "Conflicts with",
+    "groupNavigation": "Navigation",
+    "groupActions": "Actions",
+    "groupOther": "Other",
+    "platformMac": "macOS shortcuts (use ⌘ key)",
+    "platformWin": "Windows/Linux shortcuts (use Ctrl key)",
+    "privacyNote": "Shortcut preferences are stored locally on your device and never sent to servers."
+  },
+  "globalShortcut": {
+    "title": "Global Quick Summon",
+    "description": "Open HuluChat from anywhere with a keyboard shortcut",
+    "defaultShortcut": "Default shortcut",
+    "customize": "Customize shortcut",
+    "enabled": "Enable global shortcut",
+    "disabled": "Global shortcut disabled",
+    "registered": "Shortcut registered",
+    "notRegistered": "Shortcut not registered",
+    "registerError": "Failed to register shortcut",
+    "conflictWithSystem": "May conflict with system shortcut",
+    "systemConflictWarning": "This shortcut may conflict with a system shortcut. Consider using a different combination.",
+    "permissionRequired": "Permission required",
+    "macPermissionHint": "On macOS, you may need to grant Accessibility permission in System Settings > Privacy & Security > Accessibility.",
+    "openSettings": "Open System Settings",
+    "privacyNote": "Global shortcut is handled locally by your operating system."
+  },
+  "quickPanel": {
+    "title": "Quick Question",
+    "placeholder": "Type a quick question...",
+    "hint": "Enter to send, Shift+Enter for new line, Esc to close",
+    "send": "Send",
+    "clear": "Clear",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "copyFailed": "Failed to copy",
+    "sendError": "Failed to send message",
+    "thinking": "Thinking...",
+    "emptyResponse": "Response will appear here",
+    "close": "Close panel",
+    "settings": "Settings",
+    "clipboardDetected": "Clipboard content detected",
+    "fromClipboard": "From clipboard",
+    "pasteFromClipboard": "Paste from clipboard",
+    "quickActions": "Quick Actions"
+  },
+  "quickActions": {
+    "translate": {
+      "name": "Translate",
+      "description": "Translate text to target language"
+    },
+    "summarize": {
+      "name": "Summarize",
+      "description": "Summarize key points"
+    },
+    "polish": {
+      "name": "Polish",
+      "description": "Improve writing style"
+    },
+    "explain": {
+      "name": "Explain",
+      "description": "Explain in simple terms"
+    },
+    "codeReview": {
+      "name": "Code Review",
+      "description": "Review code for improvements"
+    },
+    "fixGrammar": {
+      "name": "Fix Grammar",
+      "description": "Fix grammar and spelling errors"
+    },
+    "expand": {
+      "name": "Expand",
+      "description": "Elaborate with more details"
+    },
+    "simplify": {
+      "name": "Simplify",
+      "description": "Make text more concise"
+    }
   },
   "export": {
     "title": "Export Chat",
@@ -312,7 +451,8 @@
     "cloudModels": "Cloud Models",
     "localModels": "Local Models (Ollama)",
     "ollamaOffline": "Ollama Offline",
-    "ollamaHint": "Make sure Ollama service is running"
+    "ollamaHint": "Make sure Ollama service is running",
+    "recommended": "Recommended"
   },
   "templates": {
     "title": "Prompt Templates",
@@ -328,6 +468,10 @@
     "categoriesLabel": "Template categories",
     "templateList": "Available templates",
     "selectTemplate": "Select {{name}} template",
+    "loading": "Loading templates...",
+    "loadError": "Failed to load templates",
+    "sessionTemplates": "Session Templates",
+    "sessionTemplateDescription": "Select a template to quickly create a session with preset configurations",
     "categories": {
       "writing": "Writing",
       "coding": "Coding",
@@ -365,11 +509,36 @@
     "tags": "Tags",
     "moreTags": "+{{count}} more tags"
   },
+  "batch": {
+    "enterBatchMode": "Enter batch selection mode",
+    "exitBatchMode": "Exit batch selection mode",
+    "selected": "{{count}} selected",
+    "selectAll": "Select All",
+    "clear": "Clear",
+    "clearSelection": "Clear selection",
+    "move": "Move",
+    "export": "Export",
+    "delete": "Delete",
+    "select": "Select session",
+    "deselect": "Deselect session",
+    "confirmDelete": "Delete Selected Sessions?",
+    "confirmDeleteDescription": "Are you sure you want to delete {{count}} sessions? This action cannot be undone.",
+    "deleting": "Deleting..."
+  },
   "theme": {
     "toggle": "Toggle theme",
     "light": "Light",
     "dark": "Dark",
     "system": "System"
+  },
+  "appearance": {
+    "title": "Appearance",
+    "theme": "Theme",
+    "selectTheme": "Select theme",
+    "themeLightDescription": "Use light theme for a bright interface",
+    "themeDarkDescription": "Use dark theme to reduce eye strain in low light",
+    "themeSystemDescription": "Automatically match your system's theme setting",
+    "privacyNote": "Theme preference is stored locally and never sent to servers."
   },
   "languageSelector": {
     "changeLanguage": "Change language",
@@ -393,7 +562,9 @@
     "settings": "Settings",
     "showHelp": "Keyboard Shortcuts",
     "openCommandPalette": "Open Command Palette",
-    "searchInput": "Search commands"
+    "searchInput": "Search commands",
+    "knowledgeCenter": "Knowledge Center",
+    "jumpToBookmark": "Jump to Bookmark"
   },
   "rag": {
     "title": "Document Chat (Experimental)",
@@ -423,15 +594,23 @@
   "welcome": {
     "step1": {
       "title": "Welcome to HuluChat",
-      "description": "Your privacy-first AI desktop assistant. Chat with multiple AI models, manage documents, and extend with plugins."
+      "description": "Your privacy-first AI desktop assistant. All data stays on your device - no tracking, no cloud storage."
     },
     "step2": {
+      "title": "Multiple AI Models",
+      "description": "Choose from OpenAI GPT-4, DeepSeek, or run local models with Ollama. Switch models anytime based on your needs."
+    },
+    "step3": {
       "title": "Document Chat (RAG)",
       "description": "Upload PDF, TXT, or Markdown files to chat with your documents. Get answers based on your own content."
     },
-    "step3": {
-      "title": "Plugin System",
-      "description": "Extend HuluChat with plugins. Install community plugins or create your own to add new features."
+    "step4": {
+      "title": "Quick Navigation",
+      "description": "Press Ctrl+K to open command palette for quick access to all features. Press ? or F1 to view all keyboard shortcuts."
+    },
+    "step5": {
+      "title": "Knowledge Center",
+      "description": "Access prompt tips, model comparisons, FAQs and more from the Knowledge Center. Everything you need to master AI."
     },
     "skip": "Skip",
     "next": "Next",
@@ -468,5 +647,658 @@
     "notePlaceholder": "Add a note...",
     "noBookmarks": "No bookmarks yet",
     "bookmarked": "Bookmarked"
+  },
+  "mcp": {
+    "title": "MCP Servers",
+    "subtitle": "Manage Model Context Protocol servers",
+    "description": "Connect external tools and services via MCP",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "error": "Error",
+    "connect": "Connect",
+    "disconnect": "Disconnect",
+    "refresh": "Refresh",
+    "connectAll": "Connect All",
+    "toolsCount": "{{count}} tools",
+    "noServers": "No MCP servers configured",
+    "noServersHint": "Click \"Add Server\" to add your first MCP server",
+    "infoText": "MCP (Model Context Protocol) enables AI to interact with external tools and services.",
+    "learnMore": "Learn more",
+    "addServer": "Add Server",
+    "addServerDescription": "Configure a new MCP server connection",
+    "serverName": "Server Name",
+    "serverNamePlaceholder": "My MCP Server",
+    "serverDescription": "Description",
+    "serverDescriptionPlaceholder": "Server description (optional)",
+    "transport": "Transport Type",
+    "command": "Command",
+    "commandHint": "Executable command to run the MCP server",
+    "arguments": "Arguments",
+    "argumentsHint": "Command line arguments (space-separated)",
+    "nameRequired": "Server name is required",
+    "commandRequired": "Command is required for stdio transport",
+    "urlRequired": "URL is required for HTTP/SSE transport",
+    "loadFailed": "Failed to load MCP servers",
+    "serverAdded": "Server added successfully",
+    "addFailed": "Failed to add server",
+    "connectedSuccess": "{{name}} connected successfully",
+    "connectFailed": "Failed to connect: {{error}}",
+    "disconnectedSuccess": "Disconnected successfully",
+    "disconnectFailed": "Failed to disconnect",
+    "serverDeleted": "Server deleted",
+    "deleteFailed": "Failed to delete server",
+    "connectAllSuccess": "{{count}} servers connected",
+    "connectAllFailed": "Failed to connect servers",
+    "statusRefreshed": "Status refreshed"
+  },
+  "variables": {
+    "dialogTitle": "Fill in Template Variables",
+    "dialogDescription": "Please provide values for the variables in this template",
+    "dialogDescriptionWithTemplate": "Please provide values for the variables in \"{{template}}\"",
+    "autoFilledVariables": "Auto-filled variables",
+    "enterValue": "Enter value...",
+    "preview": "Preview",
+    "apply": "Apply",
+    "topic": "Topic",
+    "topicPlaceholder": "e.g., Artificial Intelligence, Climate Change",
+    "language": "Language",
+    "languagePlaceholder": "e.g., English, Chinese, Japanese",
+    "style": "Style",
+    "stylePlaceholder": "e.g., Professional, Casual, Academic",
+    "length": "Length",
+    "lengthPlaceholder": "e.g., Short, Medium, Long",
+    "audience": "Target Audience",
+    "audiencePlaceholder": "e.g., Beginners, Experts, General",
+    "tone": "Tone",
+    "tonePlaceholder": "e.g., Friendly, Formal, Humorous",
+    "context": "Context",
+    "contextPlaceholder": "e.g., For a blog post, email, report",
+    "name": "Name",
+    "namePlaceholder": "e.g., John Doe",
+    "role": "Role",
+    "rolePlaceholder": "e.g., Developer, Designer, Manager",
+    "task": "Task",
+    "taskPlaceholder": "e.g., Write code, Create design, Analyze data",
+    "project": "Project",
+    "projectPlaceholder": "e.g., Mobile App, Website, API"
+  },
+  "bookmark": {
+    "jumpTitle": "Jump to Bookmark",
+    "jumpDescription": "Select a bookmark to jump to that message",
+    "searchPlaceholder": "Search bookmarks...",
+    "searchLabel": "Search bookmarks",
+    "noResults": "No bookmarks found",
+    "noBookmarks": "No bookmarks yet",
+    "listLabel": "Bookmark list"
+  },
+  "knowledge": {
+    "title": "Knowledge Center",
+    "description": "Explore AI tips and techniques to enhance your experience",
+    "comingSoon": "Content coming soon...",
+    "readTime": "{{minutes}} min read",
+    "categories": {
+      "prompts": "Prompt Tips",
+      "promptsDesc": "Learn how to write more effective prompts",
+      "help": "Help & Support",
+      "helpDesc": "Learn about HuluChat features",
+      "models": "Model Guide",
+      "modelsDesc": "Understand different AI models and their use cases"
+    },
+    "levels": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    },
+    "tips": {
+      "clearInstructions": {
+        "title": "Clear Instructions",
+        "description": "How to write clear, specific instructions for better responses",
+        "content": "# Clear Instructions\n\nWriting good prompts is the foundation of effective AI communication. Here are key principles:\n\n## 1. Be Specific, Not Vague\n\n**Bad example:**\n```\nWrite an article\n```\n\n**Good example:**\n```\nWrite a 500-word article about the benefits of remote work,\ntargeted at office workers considering remote work,\nin a professional yet friendly tone.\n```\n\n## 2. Provide Context\n\nTell the AI the background:\n- Who you are (role)\n- What you're doing (task)\n- Expected output format\n\n**Example:**\n```\nI'm a frontend developer new to React.\nPlease explain how the useEffect hook works,\nusing simple language and code examples.\n```\n\n## 3. Specify Output Format\n\nDefine what format you want:\n```\nPlease summarize this article in the following format:\n- Key points (3-5)\n- Important data\n- Action items\n```\n\n## 4. Break Down Complex Tasks\n\nFor complex tasks, split into steps:\n```\nPlease help me with the following:\n1. Analyze the issues in this code\n2. Suggest improvements\n3. Provide the revised code\n```\n\n> **Tip:** The more specific your instructions, the more precise the response!"
+      },
+      "rolePrompting": {
+        "title": "Role Prompting",
+        "description": "Get more professional responses by assigning AI specific roles",
+        "content": "# Role Prompting\n\nAssigning AI a specific role can yield more professional and targeted responses.\n\n## What is Role Prompting?\n\nRole prompting is defining the character or identity AI should assume in your prompt.\n\n## Basic Syntax\n\n```\nYou are a [role description].\n[task description]\n```\n\n## Common Role Examples\n\n### Professional Expert\n```\nYou are a senior software architect with 10 years of experience.\nHelp me design a highly available microservices architecture,\nconsidering fault tolerance, scalability, and performance.\n```\n\n### Educator\n```\nYou are a patient programming teacher who excels at explaining complex concepts with analogies.\nExplain recursion to a beginner using real-life examples.\n```\n\n### Reviewer\n```\nYou are a critical technical reviewer.\nReview this code and point out potential issues and improvements.\n```\n\n### Creative Partner\n```\nYou are a creative brainstorming partner.\nHelp me come up with 10 innovative ideas about \"smart home\".\n```\n\n## Advanced: Combining Multiple Roles\n\n```\nTake on these roles simultaneously:\n1. Product Manager - focus on user needs\n2. Tech Lead - evaluate technical feasibility\n3. Designer - consider user experience\n\nEvaluate my product idea from these three perspectives: ...\n```\n\n> **Remember:** The more specific the role description, the closer the response to your expectations!"
+      },
+      "chainOfThought": {
+        "title": "Chain of Thought",
+        "description": "Guide AI to show reasoning process for better accuracy on complex problems",
+        "content": "# Chain-of-Thought (CoT) Prompting\n\nHaving AI show its reasoning process can significantly improve solution quality for complex problems.\n\n## What is Chain of Thought?\n\nCoT is a prompting technique that asks AI to demonstrate its reasoning step by step rather than jumping to conclusions.\n\n## Basic Usage\n\n### Simple Trigger\n```\nPlease think step by step...\n```\n\n### Detailed Version\n```\nPlease analyze following these steps:\n1. First, understand the core of the problem\n2. Then, list key factors\n3. Next, analyze relationships between factors\n4. Finally, reach a conclusion and explain why\n```\n\n## Best Use Cases\n\n### Math/Logic Problems\n```\nA farm has 35 heads and 94 legs total (chickens and rabbits).\nHow many chickens and rabbits are there?\n\nShow your reasoning process.\n```\n\n### Code Debugging\n```\nThis code isn't working as expected.\nAnalyze step by step:\n1. What is the expected behavior?\n2. What actually happens?\n3. What are possible causes?\n4. How to fix it?\n```\n\n### Complex Decisions\n```\nHelp me choose between two job offers.\nAnalyze:\n1. List factors to consider\n2. Compare both offers on each factor\n3. Provide recommendation with reasoning\n```\n\n> **Tip:** CoT not only improves accuracy but helps you understand AI's reasoning process!"
+      },
+      "fewShotExamples": {
+        "title": "Few-Shot Examples",
+        "description": "Teach AI the output format and style you want through examples",
+        "content": "# Few-Shot Learning\n\nBy providing examples, teach AI the output format, style, and content you expect.\n\n## What is Few-Shot Learning?\n\nProviding a few input-output examples in your prompt so AI can learn and mimic the pattern.\n\n## Basic Structure\n\n```\nTask: [what you want AI to do]\n\nExample 1:\nInput: ...\nOutput: ...\n\nExample 2:\nInput: ...\nOutput: ...\n\nNow process:\nInput: ...\n```\n\n## Practical Examples\n\n### Sentiment Analysis\n```\nDetermine the sentiment of reviews (positive/negative/neutral).\n\nExamples:\nReview: \"Great quality but shipping was slow.\"\nSentiment: Neutral (mixed)\n\nReview: \"Amazing! Exceeded my expectations!\"\nSentiment: Positive\n\nReview: \"Very disappointed, doesn't work at all.\"\nSentiment: Negative\n\nNow analyze:\nReview: \"Great customer service, but product features are average.\"\nSentiment:\n```\n\n### Format Learning\n```\nConvert descriptions to structured data.\n\nExample 1:\nInput: Apple iPhone 15, $999, 128GB storage\nOutput: {\"product\": \"iPhone 15\", \"price\": 999, \"storage\": \"128GB\"}\n\nExample 2:\nInput: Samsung Galaxy S24, $899, 256GB storage\nOutput: {\"product\": \"Galaxy S24\", \"price\": 899, \"storage\": \"256GB\"}\n\nNow convert:\nInput: Google Pixel 8, $699, 128GB storage\nOutput:\n```\n\n> **Remember:** 2-3 examples are usually enough. Too many may confuse the model!"
+      },
+      "iterativeRefinement": {
+        "title": "Iterative Refinement",
+        "description": "Get better results through multiple rounds of feedback and adjustment",
+        "content": "# Iterative Refinement\n\nGreat results often come from multiple rounds of refinement, not single-shot generation.\n\n## Why Iterate?\n\n- First attempts are rarely perfect\n- AI learns your preferences through feedback\n- Complex tasks benefit from incremental improvements\n\n## Iteration Workflow\n\n### 1. Start with Initial Request\n```\nWrite a product description for a smart water bottle.\n```\n\n### 2. Provide Specific Feedback\n```\nGood start, but make it:\n- More concise (under 100 words)\n- Focus on health benefits\n- Add urgency\n```\n\n### 3. Fine-tune Details\n```\nAlmost there! Can you:\n- Make the opening more attention-grabbing\n- Add specific temperature features\n- Include a limited-time offer\n```\n\n## Effective Feedback Tips\n\n### Be Specific About Changes\n```\nNot: \"Make it better\"\nInstead: \"Make the tone more professional and add specific numbers\"\n```\n\n### Point Out What Works\n```\nThe first two paragraphs are great, keep them.\nOnly modify the third paragraph to include...\n```\n\n### Use Iteration Template\n```\nBased on the previous response, please adjust:\n1. [specific change 1]\n2. [specific change 2]\n3. [specific change 3]\n\nKeep unchanged:\n- [item to keep 1]\n- [item to keep 2]\n```\n\n> **Remember:** Great results are \"chatted\" out, not generated in one shot!"
+      },
+      "structuredOutput": {
+        "title": "Structured Output",
+        "description": "Get AI to output in specific formats for better readability and usability",
+        "content": "# Structured Output\n\nSpecify output formats to make AI responses more organized and easier to process.\n\n## Common Formats\n\n### List Format\n```\nList the key points with bullet points:\n- First point\n- Second point\n- ...\n```\n\n### Table Format\n```\nCompare A and B in a table:\n| Feature | A | B |\n|---------|---|---|\n| Price | ... | ... |\n| Performance | ... | ... |\n```\n\n### JSON Format\n```\nOutput the result as JSON:\n{\n  \"name\": \"...\",\n  \"value\": \"...\",\n  \"items\": [...]\n}\n```\n\n### Markdown Format\n```\nOutput in Markdown format including:\n- Heading levels\n- Code blocks\n- Blockquotes\n```\n\n## Practical Examples\n\n### Meeting Summary\n```\nSummarize the meeting in this format:\n\n## Meeting Info\n- Date:\n- Participants:\n- Topic:\n\n## Key Points\n1. ...\n2. ...\n\n## Action Items\n- [ ] Task 1 - Owner - Due date\n- [ ] Task 2 - Owner - Due date\n\n## Next Meeting\n- Time:\n- Agenda:\n```\n\n### Code Review\n```\nStructure your code review as:\n\n### Overall Assessment\n[1-2 sentence summary]\n\n### Strengths\n- ...\n- ...\n\n### Issues\n1. **Issue Description**\n   - Location: file:line\n   - Suggestion: ...\n\n### Recommendations\n- ...\n```\n\n> **Tip:** Clear format requirements greatly reduce post-processing work!"
+      },
+      "contextManagement": {
+        "title": "Context Management",
+        "description": "Effectively manage and leverage conversation context for better responses",
+        "content": "# Context Management\n\nLearn to manage and leverage conversation context for more accurate, relevant responses.\n\n## What is Context?\n\nContext is all prior information in a conversation:\n- Previous questions and answers\n- Provided background information\n- Set roles and constraints\n\n## Best Practices\n\n### 1. Set Context at Conversation Start\n```\nBackground: I'm developing a React application.\nGoal: Implement user authentication.\nConstraint: No third-party auth services.\n\nMy question is: ...\n```\n\n### 2. Provide Information in Segments\n```\nFirst, let me explain the project background...\n\n[After a few rounds]\n\nNow, based on the architecture we discussed,\nI want to ask about database design...\n```\n\n### 3. Reference Previous Content\n```\nBased on the solution you just suggested,\nI'd like to understand the implementation details of step 1.\n```\n\n## Handling Context Limits\n\n### Problem: Long conversations, AI \"forgets\" early content\n\n**Solution 1: Summarize Key Points**\n```\nLet's summarize what we've discussed:\n1. We decided on PostgreSQL\n2. API uses RESTful design\n3. Frontend uses React + TypeScript\n\nBased on these, please help me design...\n```\n\n**Solution 2: Start New Conversation with Essential Context**\n```\n[New conversation]\nBackground:\n- Project: E-commerce backend\n- Tech stack: Next.js + Prisma + PostgreSQL\n- Current progress: User module complete\n\nNow implementing product module...\n```\n\n> **Remember:** Good context management = fewer misunderstandings + more accurate responses!"
+      },
+      "promptTemplates": {
+        "title": "Prompt Templates",
+        "description": "Create reusable prompt templates for efficiency",
+        "content": "# Prompt Templates\n\nCreate reusable templates to improve efficiency and ensure output consistency.\n\n## What are Prompt Templates?\n\nPre-defined prompt structures with placeholders for quick content insertion.\n\n## Basic Template Structure\n\n```\n[Role Definition]\nYou are a [role].\n\n[Task Description]\nPlease help me [task].\n\n[Input Content]\n{{input}}\n\n[Output Requirements]\nFormat: [format]\nLength: [length]\nStyle: [style]\n```\n\n## Practical Templates\n\n### Code Review Template\n```\nYou are a senior software engineer specializing in code review.\n\nPlease review the following code:\n```{{language}}\n{{code}}\n```\n\nReview from these aspects:\n1. Code quality and readability\n2. Potential bugs or issues\n3. Performance optimization suggestions\n4. Best practice recommendations\n\nRespond in clear, structured format.\n```\n\n### Documentation Template\n```\nGenerate technical documentation for this code:\n```{{language}}\n{{code}}\n```\n\nInclude:\n- Function description\n- Parameter explanation\n- Return value\n- Usage examples\n- Notes\n\nOutput in Markdown format.\n```\n\n### Learning Explanation Template\n```\nYou are a patient teacher who explains complex concepts simply.\n\nExplain \"{{concept}}\" to a {{level}}:\n\nRequirements:\n1. Use real-life analogies\n2. Avoid jargon (unless explained)\n3. Provide concrete examples\n4. Summarize key points\n```\n\n## HuluChat Template Features\n\nHuluChat supports prompt templates:\n\n1. **Create Templates**: Define common templates in settings\n2. **Use Variables**: Use `{{variable}}` for replaceable content\n3. **Quick Access**: Select templates quickly in conversations\n\n### Pre-defined Variables\n\n| Variable | Description |\n|----------|-------------|\n| `{{date}}` | Current date |\n| `{{time}}` | Current time |\n| `{{datetime}}` | Date and time |\n| `{{timestamp}}` | Unix timestamp |\n\n> **Tip:** Good templates are efficiency multipliers! Create once, benefit many times."
+      }
+    },
+    "faq": {
+      "categories": {
+        "gettingStarted": "Getting Started",
+        "models": "AI Models",
+        "features": "Features",
+        "privacy": "Privacy & Security",
+        "troubleshooting": "Troubleshooting"
+      },
+      "questions": {
+        "apiKey": {
+          "question": "How do I configure an API key?",
+          "answer": "Click the Settings icon in the top right corner, select 'Model Providers', and enter your API key. HuluChat supports OpenAI, DeepSeek, and Ollama (local models). After entering the key, click 'Test Connection' to verify."
+        },
+        "firstChat": {
+          "question": "How do I start my first chat?",
+          "answer": "After configuring your API key, click 'New Chat' in the left sidebar, type your question in the input box, and press Enter or click Send. You can select different AI models in the top dropdown."
+        },
+        "supportedModels": {
+          "question": "Which AI models are supported?",
+          "answer": "HuluChat supports: 1) OpenAI models (GPT-4o, GPT-4, GPT-3.5), 2) DeepSeek models (DeepSeek-Chat, DeepSeek-Reasoner), 3) Local models via Ollama (Llama, Qwen, etc.), 4) Any OpenAI-compatible API."
+        },
+        "localModels": {
+          "question": "How do I use local models?",
+          "answer": "Install Ollama from ollama.com, run 'ollama serve' in terminal, then use 'ollama pull llama3' to download models. In HuluChat settings, set Ollama address (default http://localhost:11434) and select your local model."
+        },
+        "modelDifference": {
+          "question": "What's the difference between AI models?",
+          "answer": "GPT-4o: Most capable, best for complex tasks. GPT-3.5: Fast and affordable, good for simple tasks. DeepSeek: Cost-effective, strong Chinese support. Local models: Free, private, but require hardware resources."
+        },
+        "bestModel": {
+          "question": "Which model should I choose?",
+          "answer": "For complex reasoning and code: GPT-4o or DeepSeek-Reasoner. For daily chat and translation: GPT-3.5 or DeepSeek-Chat. For privacy or offline: Ollama local models. For cost-sensitive: DeepSeek or local models."
+        },
+        "modelCost": {
+          "question": "How much does AI usage cost?",
+          "answer": "OpenAI: Pay per token, GPT-4o ~$5/1M input tokens. DeepSeek: ~$0.27/1M tokens, much cheaper. Local models: Free, but requires GPU/CPU resources. Check provider pricing for current rates."
+        },
+        "deepseekVsOpenai": {
+          "question": "DeepSeek vs OpenAI - which is better?",
+          "answer": "DeepSeek: More affordable, strong Chinese support, great reasoning model. OpenAI: More mature ecosystem, better English, faster GPT-3.5. For Chinese users, DeepSeek offers better value; for diverse international needs, OpenAI is solid."
+        },
+        "documentChat": {
+          "question": "How does document chat (RAG) work?",
+          "answer": "Upload PDF, TXT, or Markdown files, HuluChat will analyze and index them. When you ask questions, the AI searches relevant document sections and provides answers based on your content. Great for research, learning, and document Q&A."
+        },
+        "mcp": {
+          "question": "What is MCP and how do I use it?",
+          "answer": "MCP (Model Context Protocol) connects external tools to AI. Go to Settings > MCP, add server configs (like filesystem, web search), and AI can use these tools automatically. See docs/MCP_GUIDE.md for details."
+        },
+        "promptTemplates": {
+          "question": "How do I use prompt templates?",
+          "answer": "Prompt templates save common prompts for reuse. Create templates with variables like {{date}}. In chat, click the template icon to quickly insert pre-defined prompts. Great for repeated tasks like code reviews or translations."
+        },
+        "exportChat": {
+          "question": "How do I export chat history?",
+          "answer": "In chat view, click the '...' menu on any message, or use multi-select mode to select multiple messages. Export formats include Markdown, JSON, and plain text. Great for sharing or archiving conversations."
+        },
+        "dataCollection": {
+          "question": "Does HuluChat collect user data?",
+          "answer": "No. HuluChat is privacy-first: no telemetry, no analytics, no user tracking. Your conversations stay on your device. API calls go directly to AI providers. We don't collect or store any user data."
+        },
+        "dataStorage": {
+          "question": "Where is my data stored?",
+          "answer": "All data is stored locally on your device: chat history, settings, documents. Data location varies by OS: Windows in AppData, macOS in Application Support, Linux in .config. You can export or delete data anytime."
+        },
+        "offline": {
+          "question": "Can I use HuluChat offline?",
+          "answer": "Yes, with local models via Ollama. Once models are downloaded, you can chat offline completely. Cloud models (OpenAI, DeepSeek) require internet. This makes HuluChat great for air-gapped environments or travel."
+        },
+        "connectionError": {
+          "question": "Why am I getting connection errors?",
+          "answer": "Common causes: 1) Invalid API key - re-enter and test, 2) Network issues - check internet/proxy, 3) API service down - check provider status, 4) Firewall blocking - allow HuluChat. Check error message for specific details."
+        },
+        "slowResponse": {
+          "question": "Why are AI responses slow?",
+          "answer": "Possible reasons: 1) Complex requests need more processing time, 2) Network latency, 3) API rate limiting, 4) Server load. Solutions: Try simpler prompts, use faster models (GPT-3.5), check network, or use local models."
+        },
+        "ollamaConnection": {
+          "question": "Why can't HuluChat connect to Ollama?",
+          "answer": "Make sure: 1) Ollama is running ('ollama serve'), 2) Correct address (http://localhost:11434), 3) At least one model downloaded ('ollama list'), 4) No firewall blocking. On macOS/Linux, Ollama starts automatically."
+        },
+        "update": {
+          "question": "How do I update HuluChat?",
+          "answer": "HuluChat checks for updates automatically on startup. When available, you'll see an update notification. Click to download and install. You can also check manually in Settings > About > Check for Updates."
+        }
+      }
+    },
+    "shortcuts": {
+      "title": "Keyboard Shortcuts",
+      "categories": {
+        "general": "General",
+        "navigation": "Navigation",
+        "editor": "Editor"
+      },
+      "footer": "Press {{key}} with other keys for shortcuts"
+    },
+    "feedback": {
+      "title": "Feedback & Support",
+      "github": {
+        "title": "GitHub Issues",
+        "description": "Report bugs or request features on GitHub"
+      },
+      "email": {
+        "title": "Email Contact",
+        "description": "Send us feedback directly via email"
+      },
+      "community": {
+        "title": "Community Discussions",
+        "description": "Join discussions and get help from the community"
+      },
+      "privacyNote": "We don't collect any user data. Your feedback is voluntary."
+    },
+    "search": {
+      "placeholder": "Search tips, FAQs, models...",
+      "typeTip": "Tip",
+      "typeFaq": "FAQ",
+      "typeModel": "Model",
+      "resultsCount": "Found {{count}} results"
+    },
+    "models": {
+      "title": "AI Model Guide",
+      "subtitle": "Compare different AI models and choose the best one for your needs",
+      "visitWebsite": "Visit website",
+      "bestFor": "Best for",
+      "selectionTip": "Choose models based on your task complexity, budget, and privacy requirements.",
+      "categories": {
+        "flagship": "Flagship",
+        "standard": "Standard",
+        "budget": "Budget",
+        "local": "Local"
+      },
+      "pricing": {
+        "label": "Price",
+        "free": "Free",
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High"
+      },
+      "speed": {
+        "label": "Speed",
+        "fast": "Fast",
+        "medium": "Medium",
+        "slow": "Slow",
+        "variable": "Varies"
+      },
+      "features": {
+        "multimodal": "Multimodal",
+        "reasoning": "Advanced Reasoning",
+        "codeGeneration": "Code Generation",
+        "longContext": "Long Context",
+        "fastResponse": "Fast Response",
+        "generalPurpose": "General Purpose",
+        "chineseSupport": "Chinese Support",
+        "deepReasoning": "Deep Reasoning",
+        "local": "Local Processing",
+        "privacy": "Privacy First",
+        "offline": "Offline Capable",
+        "agents": "Agent Workflows"
+      },
+      "providers": {
+        "openai": {
+          "name": "OpenAI",
+          "description": "Leading AI research lab with GPT series models"
+        },
+        "deepseek": {
+          "name": "DeepSeek",
+          "description": "Cost-effective AI with excellent Chinese support"
+        },
+        "ollama": {
+          "name": "Ollama (Local)",
+          "description": "Run AI models locally on your device"
+        }
+      },
+      "gpt41": {
+        "name": "GPT-4.1",
+        "description": "Latest GPT-4 with improved capabilities",
+        "bestFor": "Complex tasks, code generation, multimodal input",
+        "limitations": "Higher cost"
+      },
+      "gpt4o": {
+        "name": "GPT-4o",
+        "description": "Most capable model with vision and audio support",
+        "bestFor": "Complex tasks, multimodal input, code analysis",
+        "limitations": "Higher cost, may be slower on complex tasks"
+      },
+      "gpt4oMini": {
+        "name": "GPT-4o Mini",
+        "description": "Fast and affordable multimodal model",
+        "bestFor": "Daily chat, simple tasks, quick responses",
+        "limitations": "Less capable on complex reasoning"
+      },
+      "o3Mini": {
+        "name": "o3-mini",
+        "description": "Latest reasoning model, fast and capable",
+        "bestFor": "Complex reasoning, math, coding",
+        "limitations": "May be slower on simple tasks"
+      },
+      "o1": {
+        "name": "o1",
+        "description": "Advanced reasoning for complex problems",
+        "bestFor": "Complex reasoning, research, problem solving",
+        "limitations": "Higher cost, slower response"
+      },
+      "o1Mini": {
+        "name": "o1-mini",
+        "description": "Fast reasoning model for everyday tasks",
+        "bestFor": "Quick reasoning tasks, coding assistance",
+        "limitations": "Less capable than full o1"
+      },
+      "gpt4": {
+        "name": "GPT-4",
+        "description": "Powerful reasoning and problem-solving",
+        "bestFor": "Complex reasoning, research, professional writing",
+        "limitations": "Higher cost, slower response time"
+      },
+      "gpt35": {
+        "name": "GPT-3.5 Turbo",
+        "description": "Fast and affordable general-purpose model",
+        "bestFor": "Daily chat, translation, simple tasks",
+        "limitations": "Less capable on complex reasoning"
+      },
+      "claudeSonnet4": {
+        "name": "Claude Sonnet 4",
+        "description": "Latest Claude, best for coding and agents",
+        "bestFor": "Coding, agents, complex tasks",
+        "limitations": "Requires OpenAI-compatible API setup"
+      },
+      "claude35Sonnet": {
+        "name": "Claude 3.5 Sonnet",
+        "description": "Anthropic's versatile model",
+        "bestFor": "Coding, analysis, creative writing",
+        "limitations": "Requires OpenAI-compatible API setup"
+      },
+      "claude35Haiku": {
+        "name": "Claude 3.5 Haiku",
+        "description": "Fast and efficient Claude",
+        "bestFor": "Quick responses, daily tasks",
+        "limitations": "Less capable on complex tasks"
+      },
+      "deepseekChat": {
+        "name": "DeepSeek Chat",
+        "description": "Cost-effective model with great Chinese support",
+        "bestFor": "Chinese content, daily chat, coding",
+        "limitations": "Less known than GPT, newer ecosystem"
+      },
+      "deepseekReasoner": {
+        "name": "DeepSeek Reasoner",
+        "description": "Deep reasoning model with thought process",
+        "bestFor": "Complex problems, math, code debugging",
+        "limitations": "Slower due to reasoning steps"
+      },
+      "llama33": {
+        "name": "Llama 3.3",
+        "description": "Meta's latest open-source model",
+        "bestFor": "Privacy-sensitive tasks, offline use",
+        "limitations": "Requires hardware resources, setup needed"
+      },
+      "llama3": {
+        "name": "Llama 3",
+        "description": "Meta's open-source model, run locally",
+        "bestFor": "Privacy-sensitive tasks, offline use, experimentation",
+        "limitations": "Requires hardware resources, setup needed"
+      },
+      "qwen25": {
+        "name": "Qwen 2.5",
+        "description": "Alibaba's latest model with excellent Chinese support",
+        "bestFor": "Chinese tasks, local processing, privacy",
+        "limitations": "Requires hardware resources, setup needed"
+      },
+      "qwen": {
+        "name": "Qwen (通义千问)",
+        "description": "Alibaba's model with excellent Chinese support",
+        "bestFor": "Chinese tasks, local processing, privacy",
+        "limitations": "Requires hardware resources, setup needed"
+      }
+    }
+  },
+  "featureDiscovery": {
+    "moreOptions": "More options",
+    "dismiss": "Dismiss this tip",
+    "dontShowAgain": "Don't show tips again",
+    "features": {
+      "commandPalette": {
+        "title": "Command Palette",
+        "description": "Press Ctrl+K to quickly access all features without leaving your keyboard.",
+        "action": "Try Command Palette"
+      },
+      "knowledgeCenter": {
+        "title": "Knowledge Center",
+        "description": "Explore prompt tips, model guides, and FAQs to become an AI expert.",
+        "action": "Open Knowledge Center"
+      },
+      "documentChat": {
+        "title": "Document Chat",
+        "description": "Upload PDFs or documents to chat with your content and get answers based on them.",
+        "action": "Try Document Chat"
+      },
+      "sessionExport": {
+        "title": "Export Conversations",
+        "description": "Export your chat history as Markdown, JSON, or plain text for sharing or archiving.",
+        "action": "Export Chat"
+      },
+      "folderManagement": {
+        "title": "Organize with Folders",
+        "description": "Create folders to organize your conversations by project, topic, or any way you like.",
+        "action": "Create Folder"
+      },
+      "modelSwitch": {
+        "title": "Switch AI Models",
+        "description": "Choose the right AI model for each task - GPT-4 for complex work, local models for privacy.",
+        "action": "Switch Model"
+      }
+    }
+  },
+  "contextualTips": {
+    "moreOptions": "More options",
+    "dismiss": "Dismiss",
+    "dontShowAgain": "Don't show contextual tips",
+    "tips": {
+      "noApiKey": {
+        "title": "Configure API Key",
+        "description": "No API key detected. Set up your key to start chatting with AI.",
+        "action": "Go to Settings"
+      },
+      "noModel": {
+        "title": "Select AI Model",
+        "description": "Please select an AI model to start chatting. Choose from GPT-4, DeepSeek, or local models.",
+        "action": "Select Model"
+      },
+      "emptySession": {
+        "title": "Start a Conversation",
+        "description": "Type a message to start chatting with AI. You can also upload documents for document chat.",
+        "action": "Learn More"
+      },
+      "firstVisit": {
+        "title": "Welcome to HuluChat",
+        "description": "Your privacy-first AI assistant. All data is stored locally - no tracking, no cloud storage.",
+        "action": "Get Started"
+      },
+      "settingsIncomplete": {
+        "title": "Complete Setup",
+        "description": "You've selected a model but haven't configured an API key. Please set up your key to start chatting.",
+        "action": "Configure API"
+      }
+    }
+  },
+  "errors": {
+    "title": "Error Solutions",
+    "searchPlaceholder": "Search errors...",
+    "searchResults": "Found {{count}} results",
+    "noResults": "No matching errors found",
+    "solutions": "Solutions",
+    "relatedSettings": "Related Settings",
+    "learnMore": "Learn More",
+    "items": "items",
+    "categories": {
+      "apiKey": "API Key",
+      "connection": "Connection",
+      "model": "Model",
+      "ollama": "Ollama",
+      "rag": "Document Chat",
+      "general": "General"
+    },
+    "apiKeyMissing": {
+      "title": "Missing API Key",
+      "description": "No API key has been configured for the AI service.",
+      "step1": "Open Settings (Ctrl+, or Cmd+,)",
+      "step2": "Navigate to the API section",
+      "step3": "Enter your API key and click Save"
+    },
+    "apiKeyInvalid": {
+      "title": "Invalid API Key",
+      "description": "The API key you provided was rejected by the service.",
+      "step1": "Verify your API key is correct in Settings",
+      "step2": "Check that the key hasn't expired or been revoked",
+      "step3": "Generate a new key from your provider's dashboard"
+    },
+    "apiKeyFormat": {
+      "title": "Incorrect API Key Format",
+      "description": "The API key format doesn't match the expected pattern.",
+      "step1": "Ensure your key starts with the correct prefix (e.g., 'sk-' for OpenAI)",
+      "step2": "Check for extra spaces or characters when copying"
+    },
+    "connectionFailed": {
+      "title": "Connection Failed",
+      "description": "Unable to connect to the AI service.",
+      "step1": "Check your internet connection",
+      "step2": "Verify the API base URL is correct",
+      "step3": "Try again in a few moments"
+    },
+    "timeout": {
+      "title": "Request Timeout",
+      "description": "The AI service took too long to respond.",
+      "step1": "Check your network speed and stability",
+      "step2": "Increase timeout settings if on a slow connection"
+    },
+    "proxy": {
+      "title": "Proxy/VPN Required",
+      "description": "The AI service may be unavailable in your region.",
+      "step1": "If in a restricted region, enable VPN or proxy",
+      "step2": "Configure custom API base URL if using a proxy service",
+      "step3": "Check proxy settings in the Settings > Advanced"
+    },
+    "backendOffline": {
+      "title": "Backend Service Offline",
+      "description": "The local backend service is not running.",
+      "step1": "Restart the HuluChat application",
+      "step2": "If the issue persists, check for port conflicts (port 8765)"
+    },
+    "modelNotFound": {
+      "title": "Model Not Found",
+      "description": "The selected AI model doesn't exist or is unavailable.",
+      "step1": "Select a different model from the model selector",
+      "step2": "Check available models in Settings"
+    },
+    "rateLimit": {
+      "title": "Rate Limit Exceeded",
+      "description": "Too many requests in a short period.",
+      "step1": "Wait a moment before sending more messages",
+      "step2": "Consider upgrading your API plan",
+      "step3": "Reduce message frequency"
+    },
+    "insufficientQuota": {
+      "title": "Insufficient Quota",
+      "description": "Your API account has run out of credits.",
+      "step1": "Check your API provider's billing dashboard",
+      "step2": "Add credits or upgrade your plan"
+    },
+    "contextLength": {
+      "title": "Context Length Exceeded",
+      "description": "Your message or conversation is too long for the model.",
+      "step1": "Start a new conversation to reset context",
+      "step2": "Use a model with larger context window",
+      "step3": "Reduce the length of your messages"
+    },
+    "ollamaNotRunning": {
+      "title": "Ollama Not Running",
+      "description": "The local Ollama service is not available.",
+      "step1": "Start Ollama with 'ollama serve' command",
+      "step2": "Verify Ollama is installed correctly",
+      "step3": "Test connection in Settings > Ollama"
+    },
+    "ollamaModelNotFound": {
+      "title": "Ollama Model Not Found",
+      "description": "The requested model is not downloaded locally.",
+      "step1": "Run 'ollama pull <model-name>' to download",
+      "step2": "Check available models with 'ollama list'",
+      "step3": "Select a different model in Settings"
+    },
+    "ollamaOOM": {
+      "title": "Ollama Out of Memory",
+      "description": "Not enough memory to run the model.",
+      "step1": "Close other applications to free memory",
+      "step2": "Use a smaller model (e.g., 7B instead of 70B)",
+      "step3": "Check GPU memory if using GPU acceleration"
+    },
+    "ragFileTooLarge": {
+      "title": "File Too Large",
+      "description": "The uploaded file exceeds the size limit (5MB).",
+      "step1": "Compress or split the file into smaller parts",
+      "step2": "Upload files under 5MB for best results"
+    },
+    "ragUnsupportedFormat": {
+      "title": "Unsupported File Format",
+      "description": "This file format is not supported for document chat.",
+      "step1": "Convert to a supported format: PDF, TXT, or MD",
+      "step2": "Ensure the file is not corrupted or password-protected"
+    },
+    "ragNoDocuments": {
+      "title": "No Documents Indexed",
+      "description": "No documents have been uploaded for document chat.",
+      "step1": "Upload documents using the document upload button",
+      "step2": "Wait for indexing to complete before searching"
+    },
+    "unknown": {
+      "title": "Unknown Error",
+      "description": "An unexpected error occurred.",
+      "step1": "Try restarting the application",
+      "step2": "Check your settings and configuration",
+      "step3": "Contact support if the issue persists"
+    }
+  },
+  "permission": {
+    "guide": {
+      "title": "Accessibility Permission Required",
+      "description": "Global shortcuts require Accessibility permission to work when HuluChat is not focused.",
+      "whyNeeded": "macOS requires Accessibility permission for apps to respond to keyboard shortcuts when they're not the active application. This enables you to quickly summon HuluChat from anywhere.",
+      "step1": {
+        "title": "Open System Settings",
+        "description": "Click the button below to open macOS System Settings"
+      },
+      "step2": {
+        "title": "Navigate to Privacy & Security",
+        "description": "Go to Privacy & Security → Accessibility"
+      },
+      "step3": {
+        "title": "Enable HuluChat",
+        "description": "Find HuluChat in the list and enable the checkbox"
+      },
+      "openSettings": "Open System Settings",
+      "opening": "Opening...",
+      "recheck": "Check Again",
+      "statusChecking": "Checking permission...",
+      "statusGranted": "Permission granted",
+      "statusDenied": "Permission not granted",
+      "remindLater": "Remind Later",
+      "dontShowAgain": "Don't Show Again",
+      "privacyNote": "Permission status is only stored locally on your device."
+    }
   }
 }

@@ -35,6 +35,13 @@ export interface MessageListProps {
   onQuote?: (message: Message) => void;
   // Delete props
   onDelete?: (messageId: string) => void;
+  // Selection props - TASK-175
+  isSelectionMode?: boolean;
+  selectedMessageIds?: Set<string>;
+  onMessageSelect?: (messageId: string, selected: boolean) => void;
+  // Search highlight props - TASK-202
+  searchMatchIds?: Set<string>; // IDs of messages that match search
+  currentMatchId?: string; // Current highlighted match
 }
 
 /**
@@ -92,7 +99,7 @@ function buildVirtualItems(messages: Message[]): VirtualItem[] {
 }
 
 export const MessageList = forwardRef<MessageListRef, MessageListProps>(function MessageList(
-  { messages, streamingMessage, isLoading, onEditMessage, bookmarkedMessages, onBookmarkToggle, onRegenerate, isRegenerating, onSuggestionClick, onQuote, onDelete },
+  { messages, streamingMessage, isLoading, onEditMessage, bookmarkedMessages, onBookmarkToggle, onRegenerate, isRegenerating, onSuggestionClick, onQuote, onDelete, isSelectionMode, selectedMessageIds, onMessageSelect, searchMatchIds, currentMatchId },
   ref
 ) {
   const { t } = useTranslation();
@@ -268,6 +275,11 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
                   isRegenerating={isRegenerating}
                   onQuote={onQuote}
                   onDelete={onDelete}
+                  isSelectionMode={isSelectionMode}
+                  isSelected={selectedMessageIds?.has(message.id)}
+                  onSelect={onMessageSelect}
+                  isSearchMatch={searchMatchIds?.has(message.id)}
+                  isCurrentMatch={currentMatchId === message.id}
                 />
               </div>
             );

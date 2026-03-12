@@ -13,6 +13,64 @@
 
 ---
 
+## ⚠️ 完成定义（Definition of Done）🔴 **强制遵守**
+
+**任务完成 = 以下全部满足**：
+
+| 步骤 | 强制 | 说明 |
+|------|------|------|
+| 1. 代码实现 | ✅ | 功能/修复已完成 |
+| 2. 本地验证 | ✅ | `npm run typecheck` + `npm run lint` 通过 |
+| 3. **测试通过** | ✅ | **`npm test` 全部通过，无例外** |
+| 4. 集成验证 | ✅ | 调用 test-integration-kent agent |
+| 5. 提交推送 | ✅ | `git add . && git commit && git push` |
+
+**❌ 以下情况不算完成**：
+- 测试有失败
+- 跳过测试
+- 声称"测试通过"但实际未运行
+
+---
+
+## ⚠️ 诚实报告规则 🔴 **强制遵守**
+
+**必须如实报告**：
+1. **测试结果** - 多少通过/失败，不能只说"测试通过"
+2. **版本号** - 实际的 package.json 版本，不能夸大
+3. **遇到的问题** - 不能隐瞒
+
+**报告格式**：
+```
+测试结果: X passed, Y failed (Z test files)
+版本: v3.XX.0 (package.json)
+```
+
+**❌ 禁止行为**：
+- 声称"所有测试通过"但实际有失败
+- 声称版本号高于实际
+- 跳过验证直接报告完成
+
+---
+
+## ⚠️ 版本发布规则 🔴 **强制遵守**
+
+**版本完成（所有 MVP 任务完成）后必须**：
+
+| 步骤 | 命令/操作 |
+|------|----------|
+| 1. 更新版本号 | `package.json` + `tauri.conf.json` |
+| 2. 更新 CHANGELOG | 添加版本变更记录 |
+| 3. 创建 git tag | `git tag v3.XX.0` |
+| 4. 推送 tag | `git push origin v3.XX.0` |
+| 5. 触发 release | tag 推送自动触发 GitHub Actions |
+
+**❌ 禁止行为**：
+- 开发新版本但不发布旧版本
+- 声称完成版本但不创建 tag
+- 版本号停留在旧版本但声称开发新版本
+
+---
+
 ## ⚠️ 收敛规则 - 工作流文件保护
 
 **以下文件不能被 AI Agent 修改或提交**（只能由 Boss 或 Secretary 修改）：
@@ -110,7 +168,22 @@ git push
    npm test
    ```
 
-4. **提交并推送代码**
+4. **集成验证** ⚠️ **强制步骤**
+
+   完成功能后，**调用 test-integration-kent agent** 进行集成检查：
+   ```
+   使用 test-integration-kent 检查刚才完成的功能集成情况
+   ```
+
+   agent 会自主思考：
+   - 这个功能依赖哪些其他模块？
+   - 用户会如何使用这个功能？从入口到完成的全路径是什么？
+   - 哪些地方可能"组件存在但未被使用"？
+   - 如果我是用户，什么情况会发现这个功能坏掉了？
+
+   根据 agent 反馈针对性修复。
+
+5. **提交并推送代码**
    ```bash
    git add .
    git commit -m "feat: 简短描述"
@@ -219,6 +292,37 @@ git push
 ---
 
 ## 邮件发送规则总结 ⚠️ **重要**
+
+### 📧 邮件发送方式（强制使用）
+
+**使用本项目的 email-sender skill**：
+
+```python
+# 1. 创建 JSON 文件
+import json
+email_content = {
+    "to": "491849417@qq.com",
+    "subject": "[HuluChat] 邮件主题",
+    "body": """Hi Boss,
+
+邮件正文...
+
+---
+HuluChat AI Assistant"""
+}
+with open("/tmp/email.json", "w", encoding="utf-8") as f:
+    json.dump(email_content, f, ensure_ascii=False, indent=2)
+
+# 2. 发送邮件
+import subprocess
+subprocess.run([
+    "python",
+    ".claude/skills/email-sender/scripts/send_email.py",
+    "/tmp/email.json"
+], cwd="D:/HuluMan/project/HuluChat")
+```
+
+**配置文件位置**：`.claude/skills/email-sender/.env`
 
 ### ✅ 发送邮件的场景
 

@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional, List
 from pydantic import BaseModel
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import Text
+from sqlalchemy import Text, Index
 
 from core.database import Base
 
@@ -19,6 +19,9 @@ class SessionTagModel(Base):
     Tags are stored as individual rows for efficient querying.
     """
     __tablename__ = "session_tags"
+    __table_args__ = (
+        Index('ix_session_tags_session_tag', 'session_id', 'tag_name'),
+    )
 
     id: Mapped[str] = mapped_column(primary_key=True)
     session_id: Mapped[str] = mapped_column(index=True)
@@ -60,6 +63,9 @@ class MessageBookmarkModel(Base):
     A message can only have one bookmark.
     """
     __tablename__ = "message_bookmarks"
+    __table_args__ = (
+        Index('ix_message_bookmarks_session_created', 'session_id', 'created_at'),
+    )
 
     id: Mapped[str] = mapped_column(primary_key=True)
     message_id: Mapped[str] = mapped_column(index=True, unique=True)

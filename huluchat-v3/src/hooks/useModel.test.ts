@@ -6,6 +6,10 @@ import { useModel } from "./useModel";
 vi.mock("@/api/client", () => ({
   getSettings: vi.fn(),
   getModels: vi.fn(),
+  getOllamaStatus: vi.fn(),
+  getOllamaModels: vi.fn(),
+  recordModelUsage: vi.fn(),
+  getRecommendedModel: vi.fn(),
 }));
 
 const mockGetSettings = vi.mocked(
@@ -13,6 +17,18 @@ const mockGetSettings = vi.mocked(
 );
 const mockGetModels = vi.mocked(
   await import("@/api/client").then((m) => m.getModels)
+);
+const mockGetOllamaStatus = vi.mocked(
+  await import("@/api/client").then((m) => m.getOllamaStatus)
+);
+const mockGetOllamaModels = vi.mocked(
+  await import("@/api/client").then((m) => m.getOllamaModels)
+);
+const mockRecordModelUsage = vi.mocked(
+  await import("@/api/client").then((m) => m.recordModelUsage)
+);
+const mockGetRecommendedModel = vi.mocked(
+  await import("@/api/client").then((m) => m.getRecommendedModel)
 );
 
 describe("useModel hook", () => {
@@ -42,6 +58,10 @@ describe("useModel hook", () => {
       has_api_key: false,
     });
     mockGetModels.mockResolvedValue(mockOpenAIModels);
+    mockGetOllamaStatus.mockResolvedValue({ available: false, base_url: "http://localhost:11434" });
+    mockGetOllamaModels.mockResolvedValue([]);
+    mockRecordModelUsage.mockResolvedValue({ model_id: "", count: 1, last_used: null });
+    mockGetRecommendedModel.mockResolvedValue({ model_id: null, reason: "No usage data available" });
   });
 
   afterEach(() => {

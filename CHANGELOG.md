@@ -2,9 +2,65 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [3.55.0] - 2026-03-12 (In Progress)
+
+### 🔒 Security
+
+- **TASK-161**: Implemented Content Security Policy (CSP)
+  - Production CSP: Strict policy for built application
+  - Development CSP: Relaxed policy for Vite dev server
+  - Allowed resources: Local API, WebSocket, Ollama, OpenAI API
+  - Blocked: `object-src 'none'`, `frame-ancestors 'none'`
+  - Added `upgrade-insecure-requests` for production
+
+### 🔧 Configuration
+
+- **TASK-162**: Extracted API_BASE to environment variable
+  - Added `VITE_API_BASE` environment variable support
+  - Created `.env.example` for documentation
+  - Added TypeScript types for environment variables
+  - Updated WebSocket URL generation to use environment variable
+
+### 🔄 Networking
+
+- **TASK-165**: Implemented WebSocket exponential backoff reconnection
+  - Added exponential backoff with jitter to avoid thundering herd
+  - Configurable base delay (default: 1000ms), max delay (default: 30000ms)
+  - Backwards compatible with existing `reconnectInterval` option
+  - Added new test cases for backoff behavior
+
+- **TASK-166**: Added configurable request timeouts for OpenAI/Ollama
+  - New config options: `openai_timeout`, `http_connect_timeout`, `http_read_timeout`
+  - OpenAI client now uses configurable timeouts (default: 120s read, 10s connect)
+  - Ollama client uses same configurable timeouts
+  - Added `APITimeoutError` handling in OpenAI service
+  - All providers (OpenAI, DeepSeek, Ollama) have proper timeout configuration
+
+## [3.54.0] - 2026-03-12
+
+### 🎨 UI/UX Enhancements
+
+- **Empty State Component Enhancement**:
+  - Improved visual hierarchy with decorative background glows for large size
+  - Enhanced dark mode effects with subtle gradients and shadows
+  - Better text contrast and depth
+  - Added relative positioning for proper layering
+  - Improved hint button hover effects
+
+- **Message Bubble Enhancement**:
+  - User messages: Gradient background with deeper shadow and glow effects
+  - AI messages: Enhanced left border with shadow and glow on hover
+  - Better visual feedback on interaction
+
+### 🧹 Code Cleanup
+
+- Removed unused `screen` import in `ripple.test.tsx`
+
+---
+
 ## [3.53.0] - 2026-03-11
 
-### 🐛 Bug Fixes
+
 
 - **TASK-152**: Fixed model dropdown empty in settings page
   - Added missing `uvicorn.run()` call in `main.py`

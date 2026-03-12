@@ -2,15 +2,18 @@
  * ChatView Component
  * 聊天主界面，整合消息列表和输入框
  */
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle, useMemo } from "react";
 import { MessageList, MessageListRef } from "./MessageList";
 import { ChatInput } from "./ChatInput";
+import { ChatSearch } from "./ChatSearch";
 import { ModelSelector } from "./ModelSelector";
 import { RAGPanel } from "@/components/rag";
 import { BookmarkPanel } from "./BookmarkPanel";
 import { useChat, useModel } from "@/hooks";
 import { ConnectionStatus } from "@/hooks/useWebSocket";
+import { ToolCall } from "@/hooks/useChat";
 import { cn } from "@/lib/utils";
+import { findMatchingMessages } from "@/utils/search";
 import {
   updateMessage,
   ImageContent,
@@ -21,13 +24,23 @@ import {
   getSessionBookmarks,
   createBookmark,
   deleteBookmark,
+  exportMessages,
+  ExportFormat,
 } from "@/api/client";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { Bookmark } from "lucide-react";
+import { Bookmark, CheckCircle, XCircle, Loader2, ListChecks, Download, X, Search } from "lucide-react";
 
 export interface ChatViewProps {
   sessionId: string | null;
+  onSessionUpdated?: () => void;  // Called when session title is updated
+}
+
+/**
+ * ChatView ref interface - exposes methods for parent components
+ */
+export interface ChatViewRef {
+  scrollToMessage: (messageId: string) => void;
 }
 
 function ConnectionIndicator({ status }: { status: ConnectionStatus }) {
@@ -76,14 +89,73 @@ function ConnectionIndicator({ status }: { status: ConnectionStatus }) {
   );
 }
 
-export function ChatView({ sessionId }: ChatViewProps) {
+function ToolCallsIndicator({ toolCalls }: { toolCalls: ToolCall[] }) {
   const { t } = useTranslation();
-  const { messages, streamingMessage, connectionStatus, sendMessage, regenerateMessage, deleteMessage, isLoading, refreshMessages } =
-    useChat(sessionId);
-  const { currentModel, models, setModel, isLoading: isLoadingModels, parameters } = useModel();
+
+  if (!toolCalls || toolCalls.length === 0) return null;
+
+  return (
+    <div className="px-4 py-2 border-b border-border bg-muted/30">
+      <div className="space-y-1.5">
+        {toolCalls.map((tc, index) => (
+          <div
+            key={`${tc.server_name}-${tc.tool_name}-${index}`}
+            className="flex items-center gap-2 text-xs"
+          >
+            {tc.status === "calling" && (
+              <>
+                <Loader2 className="h-3.5 w-3.5 text-primary animate-spin" />
+                <span className="text-muted-foreground">
+                  {t("chat.toolCalling", { server: tc.server_name, tool: tc.tool_name })}
+                </span>
+              </>
+            )}
+            {tc.status === "success" && (
+              <>
+                <CheckCircle className="h-3.5 w-3.5 text-success" />
+                <span className="text-muted-foreground">
+                  {t("chat.toolSuccess", { server: tc.server_name, tool: tc.tool_name })}
+                </span>
+              </>
+            )}
+            {tc.status === "error" && (
+              <>
+                <XCircle className="h-3.5 w-3.5 text-error" />
+                <span className="text-muted-foreground">
+                  {t("chat.toolError", { server: tc.server_name, tool: tc.tool_name })}
+                </span>
+                {tc.error && (
+                  <span className="text-error truncate max-w-[200px]" title={tc.error}>
+                    : {tc.error}
+                  </span>
+                )}
+              </>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export const ChatView = forwardRef<ChatViewRef, ChatViewProps>(function ChatView(
+  { sessionId, onSessionUpdated },
+  ref
+) {
+  const { t } = useTranslation();
+  const { messages, streamingMessage, toolCalls, connectionStatus, sendMessage, regenerateMessage, deleteMessage, isLoading } =
+    useChat(sessionId, { onTitleGenerated: onSessionUpdated });
+  const { currentModel, models, setModel, isLoading: isLoadingModels, parameters, recommendedModel } = useModel();
 
   // Refs
   const messageListRef = useRef<MessageListRef>(null);
+
+  // Expose scrollToMessage via ref for bookmark jump feature
+  useImperativeHandle(ref, () => ({
+    scrollToMessage: (messageId: string) => {
+      messageListRef.current?.scrollToMessage(messageId);
+    },
+  }), []);
 
   // RAG Panel state
   const [isRAGPanelOpen, setIsRAGPanelOpen] = useState(false);
@@ -95,6 +167,16 @@ export function ChatView({ sessionId }: ChatViewProps) {
 
   // Quote state - Cycle #145
   const [quoteMessage, setQuoteMessage] = useState<Message | null>(null);
+
+  // Search state - TASK-202
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [caseSensitive, setCaseSensitive] = useState(false);
+  const [currentMatchIndex, setCurrentMatchIndex] = useState(0);
+
+  // Selection mode state - TASK-175
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedMessageIds, setSelectedMessageIds] = useState<Set<string>>(new Set());
 
   // Load bookmarks when session changes
   const loadBookmarks = useCallback(async () => {
@@ -159,6 +241,123 @@ export function ChatView({ sessionId }: ChatViewProps) {
     setQuoteMessage(null);
   }, []);
 
+  // Selection handlers - TASK-175
+  const handleMessageSelect = useCallback((messageId: string, selected: boolean) => {
+    setSelectedMessageIds((prev) => {
+      const next = new Set(prev);
+      if (selected) {
+        next.add(messageId);
+      } else {
+        next.delete(messageId);
+      }
+      return next;
+    });
+  }, []);
+
+  const handleSelectAll = useCallback(() => {
+    setSelectedMessageIds(new Set(messages.map((m) => m.id)));
+  }, [messages]);
+
+  const handleDeselectAll = useCallback(() => {
+    setSelectedMessageIds(new Set());
+  }, []);
+
+  const handleExitSelectionMode = useCallback(() => {
+    setIsSelectionMode(false);
+    setSelectedMessageIds(new Set());
+  }, []);
+
+  // Search handlers - TASK-202
+  const matchingMessageIds = useMemo(() => {
+    if (!searchQuery.trim()) return new Set<string>();
+    const ids = findMatchingMessages(messages, searchQuery, caseSensitive);
+    return new Set(ids);
+  }, [messages, searchQuery, caseSensitive]);
+
+  const currentMatchId = useMemo(() => {
+    const matchArray = Array.from(matchingMessageIds);
+    if (matchArray.length === 0) return undefined;
+    return matchArray[currentMatchIndex];
+  }, [matchingMessageIds, currentMatchIndex]);
+
+  const handleSearch = useCallback((query: string, isCaseSensitive: boolean) => {
+    setSearchQuery(query);
+    setCaseSensitive(isCaseSensitive);
+    setCurrentMatchIndex(0);
+
+    // Scroll to first match if exists
+    if (query.trim()) {
+      const ids = findMatchingMessages(messages, query, isCaseSensitive);
+      if (ids.length > 0) {
+        setTimeout(() => {
+          messageListRef.current?.scrollToMessage(ids[0]);
+        }, 100);
+      }
+    }
+  }, [messages]);
+
+  const handleSearchNavigate = useCallback((direction: "prev" | "next") => {
+    const matchArray = Array.from(matchingMessageIds);
+    if (matchArray.length === 0) return;
+
+    let newIndex = currentMatchIndex;
+    if (direction === "next") {
+      newIndex = (currentMatchIndex + 1) % matchArray.length;
+    } else {
+      newIndex = (currentMatchIndex - 1 + matchArray.length) % matchArray.length;
+    }
+
+    setCurrentMatchIndex(newIndex);
+    messageListRef.current?.scrollToMessage(matchArray[newIndex]);
+  }, [matchingMessageIds, currentMatchIndex]);
+
+  const handleSearchClose = useCallback(() => {
+    setIsSearchOpen(false);
+    setSearchQuery("");
+    setCurrentMatchIndex(0);
+  }, []);
+
+  // Ctrl+F shortcut for search - TASK-202
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "f") {
+        e.preventDefault();
+        if (sessionId) {
+          setIsSearchOpen(true);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [sessionId]);
+
+  const handleExportSelected = useCallback((format: ExportFormat) => {
+    const selectedMessages = messages.filter((m) => selectedMessageIds.has(m.id));
+    if (selectedMessages.length === 0) {
+      toast.warning(t("chat.noMessagesSelected"));
+      return;
+    }
+
+    try {
+      const { blob, filename } = exportMessages(selectedMessages, format, undefined);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      toast.success(t("chat.exportSuccess", { count: selectedMessages.length }));
+      handleExitSelectionMode();
+    } catch (error) {
+      console.error("Failed to export messages:", error);
+      toast.error(t("chat.exportError"));
+    }
+  }, [messages, selectedMessageIds, t, handleExitSelectionMode]);
+
   // Check for documents when RAG panel opens
   const checkDocuments = async () => {
     try {
@@ -182,6 +381,9 @@ export function ChatView({ sessionId }: ChatViewProps) {
   const isDisabled = connectionStatus !== "connected" || isLoading;
 
   const handleSend = async (content: string, images?: ImageContent[], files?: FileAttachment[]) => {
+    // Get quote message ID before clearing - TASK-200
+    const quotedMessageId = quoteMessage?.id;
+
     // Clear quote after sending - Cycle #145
     setQuoteMessage(null);
 
@@ -192,7 +394,7 @@ export function ChatView({ sessionId }: ChatViewProps) {
         if (ragResult.success && ragResult.context) {
           // Prepend RAG context to the message
           const enhancedContent = `${t("rag.ragEnabled")}\n\n${ragResult.context}\n\n---\n\n${content}`;
-          sendMessage(enhancedContent, currentModel, parameters, images, files);
+          sendMessage(enhancedContent, currentModel, parameters, images, files, undefined, { quotedMessageId });
           return;
         }
       } catch (error) {
@@ -201,7 +403,7 @@ export function ChatView({ sessionId }: ChatViewProps) {
         toast.warning(t("rag.queryError"));
       }
     }
-    sendMessage(content, currentModel, parameters, images, files);
+    sendMessage(content, currentModel, parameters, images, files, undefined, { quotedMessageId });
   };
 
   // Handle suggestion hint click
@@ -209,13 +411,38 @@ export function ChatView({ sessionId }: ChatViewProps) {
     handleSend(suggestion);
   };
 
-  // 编辑消息处理
+  // 编辑消息处理 - TASK-196
+  // 编辑用户消息后，删除后续消息并触发 AI 重新回复
   const handleEditMessage = async (messageId: string, newContent: string) => {
     if (!sessionId) return;
 
     try {
-      await updateMessage(sessionId, messageId, newContent);
-      refreshMessages?.();
+      // 找到被编辑的消息
+      const messageIndex = messages.findIndex((m) => m.id === messageId);
+      if (messageIndex === -1) return;
+
+      const editedMessage = messages[messageIndex];
+
+      // 调用后端 API 更新消息并删除后续消息
+      await updateMessage(sessionId, messageId, newContent, true);
+
+      // 更新前端状态：删除该消息之后的所有消息
+      // 后端已经处理了删除，我们只需要删除前端状态中的消息
+      // 注意：不使用 refreshMessages() 因为会导致 UI 闪烁
+
+      // 触发 AI 重新回复
+      // 使用 skipLocalUserMessage 选项避免添加重复的用户消息到前端状态
+      // 同时发送 regenerate 和 delete_from_message_id 参数让后端跳过保存用户消息
+      sendMessage(
+        newContent,
+        currentModel,
+        parameters,
+        editedMessage.images,
+        editedMessage.files,
+        undefined, // useMcp - use default
+        { skipLocalUserMessage: true, editMessageId: messageId }, // 跳过添加用户消息到前端状态
+      );
+
       toast.success(t("chat.messageUpdated"));
     } catch (error) {
       console.error("Failed to update message:", error);
@@ -239,10 +466,138 @@ export function ChatView({ sessionId }: ChatViewProps) {
               onChange={setModel}
               isLoading={isLoadingModels}
               disabled={isLoading}
+              recommendedModel={recommendedModel}
             />
           )}
         </div>
         <div className="flex items-center gap-2">
+          {/* Search Button - TASK-202 */}
+          {sessionId && messages.length > 0 && (
+            <button
+              onClick={() => setIsSearchOpen(true)}
+              aria-label={t("chat.searchInConversation")}
+              className={cn(
+                "px-2 py-1 text-xs rounded-md border transition-all duration-200 ease-out flex items-center gap-1",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                "hover:scale-105 active:scale-95",
+                isSearchOpen
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-background hover:bg-accent hover:border-accent border-border"
+              )}
+            >
+              <Search className="w-3 h-3" />
+              {t("chat.search")}
+            </button>
+          )}
+          {/* Selection Mode Toggle Button - TASK-175 */}
+          {sessionId && messages.length > 0 && !isSelectionMode && (
+            <button
+              onClick={() => setIsSelectionMode(true)}
+              aria-label={t("chat.enterSelectionMode")}
+              className={cn(
+                "px-2 py-1 text-xs rounded-md border transition-all duration-200 ease-out flex items-center gap-1",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                "hover:scale-105 active:scale-95",
+                "bg-background hover:bg-accent hover:border-accent border-border"
+              )}
+            >
+              <ListChecks className="w-3 h-3" />
+              {t("chat.select")}
+            </button>
+          )}
+          {/* Selection Mode Actions - TASK-175 */}
+          {isSelectionMode && (
+            <>
+              <span className="text-xs text-muted-foreground">
+                {t("chat.selectedCount", { count: selectedMessageIds.size })}
+              </span>
+              <button
+                onClick={handleSelectAll}
+                aria-label={t("chat.selectAll")}
+                className={cn(
+                  "px-2 py-1 text-xs rounded-md border transition-all duration-200 ease-out",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  "hover:scale-105 active:scale-95",
+                  "bg-background hover:bg-accent hover:border-accent border-border"
+                )}
+              >
+                {t("chat.selectAll")}
+              </button>
+              <button
+                onClick={handleDeselectAll}
+                aria-label={t("chat.deselectAll")}
+                className={cn(
+                  "px-2 py-1 text-xs rounded-md border transition-all duration-200 ease-out",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  "hover:scale-105 active:scale-95",
+                  "bg-background hover:bg-accent hover:border-accent border-border"
+                )}
+              >
+                {t("chat.deselectAll")}
+              </button>
+              <div className="h-4 w-px bg-border mx-1" />
+              <button
+                onClick={() => handleExportSelected("markdown")}
+                aria-label={t("chat.exportMarkdown")}
+                disabled={selectedMessageIds.size === 0}
+                className={cn(
+                  "px-2 py-1 text-xs rounded-md transition-all duration-200 ease-out flex items-center gap-1",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  "hover:scale-105 active:scale-95",
+                  selectedMessageIds.size === 0
+                    ? "opacity-50 cursor-not-allowed bg-muted text-muted-foreground"
+                    : "bg-primary text-primary-foreground hover:bg-primary/90"
+                )}
+              >
+                <Download className="w-3 h-3" />
+                {t("chat.exportMarkdown")}
+              </button>
+              <button
+                onClick={() => handleExportSelected("json")}
+                aria-label={t("chat.exportJSON")}
+                disabled={selectedMessageIds.size === 0}
+                className={cn(
+                  "px-2 py-1 text-xs rounded-md transition-all duration-200 ease-out flex items-center gap-1",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  "hover:scale-105 active:scale-95",
+                  selectedMessageIds.size === 0
+                    ? "opacity-50 cursor-not-allowed bg-muted text-muted-foreground"
+                    : "bg-primary text-primary-foreground hover:bg-primary/90"
+                )}
+              >
+                <Download className="w-3 h-3" />
+                JSON
+              </button>
+              <button
+                onClick={() => handleExportSelected("txt")}
+                aria-label={t("chat.exportTxt")}
+                disabled={selectedMessageIds.size === 0}
+                className={cn(
+                  "px-2 py-1 text-xs rounded-md transition-all duration-200 ease-out flex items-center gap-1",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  "hover:scale-105 active:scale-95",
+                  selectedMessageIds.size === 0
+                    ? "opacity-50 cursor-not-allowed bg-muted text-muted-foreground"
+                    : "bg-primary text-primary-foreground hover:bg-primary/90"
+                )}
+              >
+                <Download className="w-3 h-3" />
+                TXT
+              </button>
+              <button
+                onClick={handleExitSelectionMode}
+                aria-label={t("chat.exitSelectionMode")}
+                className={cn(
+                  "px-2 py-1 text-xs rounded-md border transition-all duration-200 ease-out",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  "hover:scale-105 active:scale-95",
+                  "bg-background hover:bg-accent hover:border-accent border-border"
+                )}
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </>
+          )}
           {/* Bookmark Toggle Button */}
           {sessionId && (
             <button
@@ -293,6 +648,16 @@ export function ChatView({ sessionId }: ChatViewProps) {
         </div>
       </div>
 
+      {/* Search Bar - TASK-202 */}
+      <ChatSearch
+        isOpen={isSearchOpen}
+        onClose={handleSearchClose}
+        onSearch={handleSearch}
+        onNavigate={handleSearchNavigate}
+        matchCount={matchingMessageIds.size}
+        currentMatch={currentMatchIndex}
+      />
+
       {/* 消息列表 */}
       <MessageList
         ref={messageListRef}
@@ -307,7 +672,15 @@ export function ChatView({ sessionId }: ChatViewProps) {
         onSuggestionClick={handleSuggestionClick}
         onQuote={handleQuote}
         onDelete={deleteMessage}
+        isSelectionMode={isSelectionMode}
+        selectedMessageIds={selectedMessageIds}
+        onMessageSelect={handleMessageSelect}
+        searchMatchIds={matchingMessageIds}
+        currentMatchId={currentMatchId}
       />
+
+      {/* Tool Calls Indicator */}
+      <ToolCallsIndicator toolCalls={toolCalls} />
 
       {/* Bookmark Panel - with slide-in animation */}
       {isBookmarkPanelOpen && sessionId && (
@@ -344,4 +717,4 @@ export function ChatView({ sessionId }: ChatViewProps) {
       />
     </div>
   );
-}
+});

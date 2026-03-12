@@ -1,8 +1,11 @@
 /**
  * useKeyboardShortcuts Hook
  * 全局键盘快捷键支持
+ *
+ * PRIVACY: Shortcut preferences read from localStorage only, no data sent to servers
  */
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useMemo } from "react";
+import { DEFAULT_SHORTCUTS } from "./useShortcutSettings";
 
 export interface KeyboardShortcut {
   key: string;
@@ -30,6 +33,63 @@ function isMacOS(): boolean {
 }
 
 /**
+ * Custom shortcut binding from settings
+ */
+interface CustomShortcutBinding {
+  id: string;
+  key: string;
+  ctrlKey: boolean;
+  metaKey: boolean;
+  shiftKey: boolean;
+  altKey: boolean;
+}
+
+const STORAGE_KEY = "huluchat_shortcut_settings";
+
+/**
+ * Load custom shortcuts from localStorage
+ * Falls back to default shortcuts if none are stored
+ */
+function loadCustomShortcuts(): Map<string, CustomShortcutBinding> {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const parsed: CustomShortcutBinding[] = JSON.parse(stored);
+      return new Map(parsed.map((s) => [s.id, s]));
+    }
+  } catch (e) {
+    console.error("Failed to load custom shortcuts:", e);
+  }
+  // Fall back to default shortcuts
+  return new Map(DEFAULT_SHORTCUTS.map((s) => [s.id, s]));
+}
+
+/**
+ * Check if a keyboard event matches a shortcut binding
+ */
+function matchesShortcut(
+  event: KeyboardEvent,
+  binding: CustomShortcutBinding,
+  isMac: boolean
+): boolean {
+  // Check key code
+  if (event.code !== binding.key) return false;
+
+  // For Ctrl/Cmd modifier:
+  // - If binding specifies metaKey, use metaKey
+  // - If binding specifies ctrlKey, use platform-appropriate key (Cmd on Mac, Ctrl on Windows)
+  // - This allows default shortcuts with ctrlKey: true to work on both platforms
+  const bindingUsesCtrlOrCmd = binding.ctrlKey || binding.metaKey;
+  const eventHasCtrlOrCmd = isMac ? event.metaKey : event.ctrlKey;
+
+  return (
+    eventHasCtrlOrCmd === bindingUsesCtrlOrCmd &&
+    event.shiftKey === binding.shiftKey &&
+    event.altKey === binding.altKey
+  );
+}
+
+/**
  * 全局键盘快捷键 Hook
  */
 export function useKeyboardShortcuts(options: UseKeyboardShortcutsOptions): void {
@@ -40,6 +100,9 @@ export function useKeyboardShortcuts(options: UseKeyboardShortcutsOptions): void
     onSwitchSession,
     enabled = true,
   } = options;
+
+  // Load custom shortcuts (memoized to avoid re-reading on every render)
+  const customShortcuts = useMemo(() => loadCustomShortcuts(), []);
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -62,49 +125,58 @@ export function useKeyboardShortcuts(options: UseKeyboardShortcutsOptions): void
       // 输入框中不响应其他快捷键
       if (isInputFocused) return;
 
-      // Ctrl/Cmd + N: 新建会话
-      if (
-        event.key.toLowerCase() === "n" &&
-        ((isMacOS() && event.metaKey) || (!isMacOS() && event.ctrlKey))
-      ) {
+      const isMac = isMacOS();
+
+      // Helper to check if event matches a shortcut ID
+      const checkShortcut = (id: string): boolean => {
+        const binding = customShortcuts.get(id);
+        if (!binding) return false;
+        return matchesShortcut(event, binding, isMac);
+      };
+
+      // New chat
+      if (checkShortcut("newChat")) {
         event.preventDefault();
         onNewSession?.();
         return;
       }
 
-      // Ctrl/Cmd + B: 切换侧边栏
-      if (
-        event.key.toLowerCase() === "b" &&
-        ((isMacOS() && event.metaKey) || (!isMacOS() && event.ctrlKey))
-      ) {
+      // Toggle sidebar
+      if (checkShortcut("toggleSidebar")) {
         event.preventDefault();
         onToggleSidebar?.();
         return;
       }
 
-      // Ctrl/Cmd + ,: 打开设置
-      if (
-        event.key === "," &&
-        ((isMacOS() && event.metaKey) || (!isMacOS() && event.ctrlKey))
-      ) {
+      // Settings
+      if (checkShortcut("settings")) {
         event.preventDefault();
         onOpenSettings?.();
         return;
       }
 
-      // Ctrl/Cmd + 1/2/3: 切换最近 3 个会话
-      const numKey = parseInt(event.key);
-      if (
-        numKey >= 1 &&
-        numKey <= 3 &&
-        ((isMacOS() && event.metaKey) || (!isMacOS() && event.ctrlKey))
-      ) {
+      // Switch session 1
+      if (checkShortcut("switchSession1")) {
         event.preventDefault();
-        onSwitchSession?.(numKey - 1); // 0-indexed
+        onSwitchSession?.(0);
+        return;
+      }
+
+      // Switch session 2
+      if (checkShortcut("switchSession2")) {
+        event.preventDefault();
+        onSwitchSession?.(1);
+        return;
+      }
+
+      // Switch session 3
+      if (checkShortcut("switchSession3")) {
+        event.preventDefault();
+        onSwitchSession?.(2);
         return;
       }
     },
-    [enabled, onNewSession, onToggleSidebar, onOpenSettings, onSwitchSession]
+    [enabled, onNewSession, onToggleSidebar, onOpenSettings, onSwitchSession, customShortcuts]
   );
 
   useEffect(() => {
@@ -120,10 +192,22 @@ export function useKeyboardShortcuts(options: UseKeyboardShortcutsOptions): void
  */
 export const KEYBOARD_SHORTCUTS = [
   {
+    key: "Ctrl/Cmd + K",
+    descriptionKey: "keyboard.commandPalette",
+    mac: "⌘K",
+    windows: "Ctrl+K",
+  },
+  {
     key: "Ctrl/Cmd + N",
     descriptionKey: "keyboard.newChat",
     mac: "⌘N",
     windows: "Ctrl+N",
+  },
+  {
+    key: "Ctrl/Cmd + F",
+    descriptionKey: "keyboard.searchInChat",
+    mac: "⌘F",
+    windows: "Ctrl+F",
   },
   {
     key: "Ctrl/Cmd + B",
