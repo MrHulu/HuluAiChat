@@ -194,6 +194,7 @@
     "tabApi": "API",
     "tabOllama": "Ollama",
     "tabPlugins": "Plugins",
+    "tabAppearance": "Appearance",
     "apiKey": "API Key",
     "apiKeyPlaceholder": "sk-...",
     "apiKeySet": "API key is set. Enter a new key to update.",
@@ -417,6 +418,15 @@
     "light": "Light",
     "dark": "Dark",
     "system": "System"
+  },
+  "appearance": {
+    "title": "Appearance",
+    "theme": "Theme",
+    "selectTheme": "Select theme",
+    "themeLightDescription": "Use light theme for a bright interface",
+    "themeDarkDescription": "Use dark theme to reduce eye strain in low light",
+    "themeSystemDescription": "Automatically match your system's theme setting",
+    "privacyNote": "Theme preference is stored locally and never sent to servers."
   },
   "languageSelector": {
     "changeLanguage": "Change language",
