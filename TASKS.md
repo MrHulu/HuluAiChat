@@ -117,14 +117,15 @@
     - 更新删除会话测试匹配 AlertDialog 流程
   - Cycle #14
 
-- [ ] **TASK-207**: 🔄 官网版本号自动同步机制
-
-- [ ] **TASK-207**: 🔄 官网版本号自动同步机制
-  - 问题：官网版本号硬编码在 `website/src/app/page.tsx`，目前显示 3.52.0
-  - Git tag 已到 v3.58.0，但官网未同步
-  - 方案：实现自动化同步（回归测试通过后执行）
-    - 方案 A: Cloudflare Pages 构建时动态获取最新 release 版本
-    - 方案 B: GitHub Action 在 release 时自动更新官网代码
+- [x] **TASK-207**: 🔄 官网版本号自动同步机制 ✅ 2026-03-12
+  - 问题：官网版本号硬编码在 `website/src/app/page.tsx`，显示 3.52.0
+  - 解决方案：
+    - 创建 `website/src/lib/version.ts` 集中管理版本号
+    - page.tsx 使用动态版本号
+    - release.yml 添加 `update-website-version` job
+    - 发布时自动更新版本号并推送，触发网站重新部署
+  - 当前版本：v3.58.0
+  - Cycle #15
 
 ### v3.58.0 - 消息交互增强 + 个性化体验
 **主题**: 消息交互增强 + 个性化体验 + 技术韧性
