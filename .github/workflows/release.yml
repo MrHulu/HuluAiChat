@@ -149,10 +149,37 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           projectPath: huluchat-v3
           releaseId: ${{ needs.create-release.outputs.release-id }}
           args: ${{ matrix.args }}
+
+      - name: Upload signature artifacts (macOS)
+        if: matrix.platform == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: signatures-${{ matrix.target }}
+          path: |
+            huluchat-v3/src-tauri/target/${{ matrix.target }}/release/bundle/macos/*.sig
+
+      - name: Upload signature artifacts (Linux)
+        if: matrix.platform == 'ubuntu-22.04'
+        uses: actions/upload-artifact@v4
+        with:
+          name: signatures-${{ matrix.target }}
+          path: |
+            huluchat-v3/src-tauri/target/release/bundle/appimage/*.sig
+
+      - name: Upload signature artifacts (Windows)
+        if: matrix.platform == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: signatures-${{ matrix.target }}
+          path: |
+            huluchat-v3/src-tauri/target/release/bundle/msi/*.sig
+            huluchat-v3/src-tauri/target/release/bundle/nsis/*.sig
 
   update-release:
     needs: [create-release, build-tauri]
@@ -161,14 +188,28 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Download all signature artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: signatures-*
+          path: signatures
+          merge-multiple: true
+
       - name: Get version
         id: get-version
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
-      - name: Generate latest.json
+      - name: Generate latest.json with signatures
         run: |
           VERSION="${{ steps.get-version.outputs.VERSION }}"
           TAG_NAME="${GITHUB_REF_NAME}"
+
+          # Read signature files
+          DARWIN_X64_SIG=$(cat signatures/HuluChat.app.tar.gz.sig 2>/dev/null || echo "")
+          DARWIN_ARM64_SIG=$(cat signatures/HuluChat.app.tar.gz.sig 2>/dev/null || echo "")
+          LINUX_SIG=$(cat signatures/HuluChat_*.AppImage.sig 2>/dev/null || echo "")
+          WINDOWS_SIG=$(cat signatures/HuluChat_*_en-US.msi.sig 2>/dev/null || echo "")
+
           cat > latest.json << EOF
           {
             "version": "${VERSION}",
@@ -176,24 +217,27 @@ jobs:
             "pub_date": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
             "platforms": {
               "darwin-x86_64": {
-                "signature": "",
-                "url": "https://github.com/MrHulu/HuluAiChat/releases/download/${TAG_NAME}/HuluChat_${VERSION}_x64.dmg"
+                "signature": "${DARWIN_X64_SIG}",
+                "url": "https://github.com/MrHulu/HuluAiChat/releases/download/${TAG_NAME}/HuluChat_${VERSION}_x64.app.tar.gz"
               },
               "darwin-aarch64": {
-                "signature": "",
-                "url": "https://github.com/MrHulu/HuluAiChat/releases/download/${TAG_NAME}/HuluChat_${VERSION}_aarch64.dmg"
+                "signature": "${DARWIN_ARM64_SIG}",
+                "url": "https://github.com/MrHulu/HuluAiChat/releases/download/${TAG_NAME}/HuluChat_${VERSION}_aarch64.app.tar.gz"
               },
               "linux-x86_64": {
-                "signature": "",
+                "signature": "${LINUX_SIG}",
                 "url": "https://github.com/MrHulu/HuluAiChat/releases/download/${TAG_NAME}/HuluChat_${VERSION}_amd64.AppImage"
               },
               "windows-x86_64": {
-                "signature": "",
+                "signature": "${WINDOWS_SIG}",
                 "url": "https://github.com/MrHulu/HuluAiChat/releases/download/${TAG_NAME}/HuluChat_${VERSION}_x64_en-US.msi"
               }
             }
           }
           EOF
+
+          echo "Generated latest.json:"
+          cat latest.json
 
       - name: Upload latest.json and publish Release
         uses: softprops/action-gh-release@v2

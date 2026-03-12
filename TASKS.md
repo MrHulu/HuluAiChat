@@ -119,7 +119,7 @@
   - 更新 WebSocket URL 生成逻辑
   - Cycle #164
 - [ ] **TASK-163**: 🩺 添加后端 sidecar 进程健康监控和自动重启 ⚠️ **阻塞：Rust 编译内存不足**
-- [ ] **TASK-164**: 🔐 添加更新签名验证
+- [ ] **TASK-164**: 🔐 添加更新签名验证 ⚠️ **需要 Boss 配置 GitHub Secrets**
 - [x] **TASK-165**: 🔄 实现 WebSocket 指数退避重连策略 ✅ 2026-03-12
   - 添加指数退避算法（baseDelay * 2^attempt）
   - 添加 jitter 避免同时重连
