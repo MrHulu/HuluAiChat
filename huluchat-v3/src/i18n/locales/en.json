@@ -410,7 +410,8 @@
     "showHelp": "Keyboard Shortcuts",
     "openCommandPalette": "Open Command Palette",
     "searchInput": "Search commands",
-    "knowledgeCenter": "Knowledge Center"
+    "knowledgeCenter": "Knowledge Center",
+    "jumpToBookmark": "Jump to Bookmark"
   },
   "rag": {
     "title": "Document Chat (Experimental)",
@@ -567,6 +568,15 @@
     "taskPlaceholder": "e.g., Write code, Create design, Analyze data",
     "project": "Project",
     "projectPlaceholder": "e.g., Mobile App, Website, API"
+  },
+  "bookmark": {
+    "jumpTitle": "Jump to Bookmark",
+    "jumpDescription": "Select a bookmark to jump to that message",
+    "searchPlaceholder": "Search bookmarks...",
+    "searchLabel": "Search bookmarks",
+    "noResults": "No bookmarks found",
+    "noBookmarks": "No bookmarks yet",
+    "listLabel": "Bookmark list"
   },
   "knowledge": {
     "title": "Knowledge Center",

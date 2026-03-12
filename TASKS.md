@@ -78,9 +78,14 @@
   - Cycle #180
 
 ### Phase 4: 体验增强 (P2)
-- [ ] **TASK-192**: 🔖 书签消息跳转
-  - 书签命令注册
-  - 跳转逻辑
+- [x] **TASK-192**: 🔖 书签消息跳转 ✅ 2026-03-12
+  - ChatView 添加 ref 暴露 scrollToMessage 方法
+  - BookmarkJumpDialog 组件 - 书签选择对话框
+  - CommandPalette 添加 jumpToBookmark 命令
+  - App.tsx 集成书签跳转功能
+  - i18n 翻译 (EN/ZH)
+  - 测试：10 个测试用例通过
+  - Cycle #181
 - [ ] **TASK-193**: 🤖 上下文智能提示
   - 当前状态检测
   - 提示配置

@@ -6,7 +6,7 @@ import { useState, useEffect, useCallback, useRef, lazy, Suspense } from "react"
 import { Toaster, toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { ChatView } from "@/components/chat";
+import { ChatView, type ChatViewRef } from "@/components/chat";
 import { SessionList, type SessionListRef } from "@/components/sidebar";
 import { UpdateNotification } from "@/components/UpdateNotification";
 import { KeyboardHelpDialog } from "@/components/keyboard/KeyboardHelpDialog";
@@ -15,6 +15,7 @@ import { CommandPalette } from "@/components/command";
 import { KnowledgeCenter } from "@/components/knowledge";
 import { WelcomeDialog } from "@/components/WelcomeDialog";
 import { FeatureDiscoveryTip } from "@/components/FeatureDiscoveryTip";
+import { BookmarkJumpDialog } from "@/components/bookmark";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { useSession, useKeyboardShortcuts, useFolders, useFeatureDiscovery } from "@/hooks";
@@ -38,7 +39,9 @@ function App() {
   const [keyboardHelpOpen, setKeyboardHelpOpen] = useState(false);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [knowledgeCenterOpen, setKnowledgeCenterOpen] = useState(false);
+  const [bookmarkJumpOpen, setBookmarkJumpOpen] = useState(false);
   const sessionListRef = useRef<SessionListRef>(null);
+  const chatViewRef = useRef<ChatViewRef>(null);
 
   // Welcome dialog state - check if first time user
   const [welcomeOpen, setWelcomeOpen] = useState(() => {
@@ -273,10 +276,23 @@ function App() {
           setKnowledgeCenterOpen(true);
           markFeatureUsed("knowledge-center");
         }}
+        onJumpToBookmark={() => setBookmarkJumpOpen(true)}
       />
       <KnowledgeCenter
         open={knowledgeCenterOpen}
         onOpenChange={setKnowledgeCenterOpen}
+      />
+      <BookmarkJumpDialog
+        open={bookmarkJumpOpen}
+        onOpenChange={setBookmarkJumpOpen}
+        onJumpToBookmark={(sessionId, messageId) => {
+          // Switch to the session first
+          selectSession(sessionId);
+          // Then scroll to the message (with a small delay to allow session switch)
+          setTimeout(() => {
+            chatViewRef.current?.scrollToMessage(messageId);
+          }, 100);
+        }}
       />
       <div className="flex h-screen bg-background text-foreground">
       {/* Skip to main content link - Accessibility enhancement */}
@@ -331,6 +347,7 @@ function App() {
         <main id="main-content" className="flex-1 min-h-0" tabIndex={-1}>
           <ErrorBoundary>
             <ChatView
+              ref={chatViewRef}
               sessionId={currentSession?.id || null}
               onSessionUpdated={refreshSessions}
             />
