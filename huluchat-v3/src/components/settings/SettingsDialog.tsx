@@ -1,6 +1,11 @@
 /**
  * Settings Dialog Component
  * API Key configuration, model selection, Ollama settings, and plugin management
+ *
+ * SECURITY: API keys are stored in system keyring, not in files.
+ * - macOS: Keychain
+ * - Windows: Credential Manager
+ * - Linux: Secret Service
  */
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -15,6 +20,8 @@ import {
   Sliders,
   Puzzle,
   Cpu,
+  Trash2,
+  ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -47,6 +54,7 @@ import {
   type ModelInfo,
   type OllamaModel,
 } from "@/api/client";
+import { storeAPIKey, getAPIKey, deleteAPIKey, hasAPIKey } from "@/services/keyring";
 import { PluginSettings } from "./PluginSettings";
 import { MCPSettings } from "./MCPSettings";
 
@@ -208,9 +216,20 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
     try {
       const updateData: Record<string, string | number> = {};
 
-      // Only send API key if changed (not empty)
+      // SECURITY: Store API key in system keyring, not in files
+      // Only send to backend for immediate use (backend doesn't persist)
       if (apiKey.trim()) {
-        updateData.openai_api_key = apiKey.trim();
+        try {
+          // Store in system keyring
+          await storeAPIKey("openai", apiKey.trim());
+          // Send to backend for immediate use
+          updateData.openai_api_key = apiKey.trim();
+        } catch (keyringError) {
+          console.error("Failed to store API key in keyring:", keyringError);
+          toast.error(t("settings.keyringStoreFailed"));
+          setSaving(false);
+          return;
+        }
       }
 
       if (baseUrl.trim()) {
@@ -244,6 +263,20 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
       toast.error(t("settings.settingsSaveFailed"));
     } finally {
       setSaving(false);
+    }
+  };
+
+  // Handle clearing API key from keyring
+  const handleClearApiKey = async () => {
+    try {
+      await deleteAPIKey("openai");
+      setHasApiKey(false);
+      setApiKey("");
+      toast.success(t("settings.apiKeyCleared"));
+      onSettingsChange?.();
+    } catch (error) {
+      console.error("Failed to clear API key:", error);
+      toast.error(t("settings.apiKeyClearFailed"));
     }
   };
 

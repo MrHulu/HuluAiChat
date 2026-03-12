@@ -124,8 +124,9 @@ async def get_settings():
     """Get current settings"""
     user_settings = load_user_settings()
 
-    # Merge with defaults from env
-    api_key = user_settings.get("openai_api_key") or settings.openai_api_key
+    # SECURITY: API key is stored in system keyring (frontend handles this)
+    # We only check runtime settings for API key, not the file
+    api_key = settings.openai_api_key
     base_url = user_settings.get("openai_base_url") or settings.openai_base_url
     model = user_settings.get("openai_model") or settings.openai_model
     temperature = user_settings.get("temperature", settings.temperature)
@@ -148,9 +149,11 @@ async def update_settings(update: SettingsUpdate):
     """Update settings"""
     user_settings = load_user_settings()
 
-    # Update only provided fields
-    if update.openai_api_key is not None:
-        user_settings["openai_api_key"] = update.openai_api_key
+    # SECURITY: API key is stored in system keyring (frontend handles this)
+    # We only update runtime settings, NOT the file
+    # The frontend will send the API key from keyring on app startup
+
+    # Update only non-sensitive fields to file
     if update.openai_base_url is not None:
         user_settings["openai_base_url"] = update.openai_base_url
     if update.openai_model is not None:
@@ -165,7 +168,7 @@ async def update_settings(update: SettingsUpdate):
 
     save_user_settings(user_settings)
 
-    # Update runtime settings
+    # Update runtime settings (API key only in memory, not persisted)
     if update.openai_api_key:
         settings.openai_api_key = update.openai_api_key
     if update.openai_base_url:
@@ -179,7 +182,8 @@ async def update_settings(update: SettingsUpdate):
     if update.max_tokens is not None:
         settings.max_tokens = update.max_tokens
 
-    api_key = user_settings.get("openai_api_key") or settings.openai_api_key
+    # Check if API key exists (in runtime settings)
+    api_key = settings.openai_api_key
     return SettingsResponse(
         openai_api_key=api_key[:8] + "..." if api_key and len(api_key) > 8 else None,
         openai_base_url=user_settings.get("openai_base_url") or settings.openai_base_url,
