@@ -295,7 +295,7 @@ git push
 
 ### 📧 邮件发送方式（强制使用）
 
-**使用 ai-center 的 email-sender skill**：
+**使用本项目的 email-sender skill**：
 
 ```python
 # 1. 创建 JSON 文件
@@ -308,7 +308,7 @@ email_content = {
 邮件正文...
 
 ---
-AI Assistant"""
+HuluChat AI Assistant"""
 }
 with open("/tmp/email.json", "w", encoding="utf-8") as f:
     json.dump(email_content, f, ensure_ascii=False, indent=2)
@@ -317,14 +317,12 @@ with open("/tmp/email.json", "w", encoding="utf-8") as f:
 import subprocess
 subprocess.run([
     "python",
-    "D:/HuluMan/project/ai-center/.claude/skills/email-sender/scripts/send_email.py",
+    ".claude/skills/email-sender/scripts/send_email.py",
     "/tmp/email.json"
-])
+], cwd="D:/HuluMan/project/HuluChat")
 ```
 
-**❌ 禁止使用**：
-- `huluchat-v3/scripts/send-email.cjs` （旧脚本，授权码过期）
-- `gh workflow run email-notification.yml` （GitHub Secrets 未配置）
+**配置文件位置**：`.claude/skills/email-sender/.env`
 
 ### ✅ 发送邮件的场景
 
