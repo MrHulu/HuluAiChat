@@ -19,6 +19,7 @@ import { ShortcutList } from "./ShortcutList";
 import { FeedbackLinks } from "./FeedbackLinks";
 import { ModelComparison } from "./ModelComparison";
 import { SearchBar } from "./SearchBar";
+import { ErrorSolutions } from "./ErrorSolutions";
 
 interface KnowledgeCenterProps {
   open: boolean;
@@ -188,6 +189,8 @@ export function KnowledgeCenter({
                 <>
                   {/* 快捷键列表 */}
                   <ShortcutList className="mb-8" />
+                  {/* 错误解决建议 */}
+                  <ErrorSolutions className="mb-8" />
                   {/* FAQ 列表 */}
                   <FAQList className="mb-8" />
                   {/* 反馈入口 */}

@@ -922,5 +922,141 @@
         "action": "Configure API"
       }
     }
+  },
+  "errors": {
+    "title": "Error Solutions",
+    "searchPlaceholder": "Search errors...",
+    "searchResults": "Found {{count}} results",
+    "noResults": "No matching errors found",
+    "solutions": "Solutions",
+    "relatedSettings": "Related Settings",
+    "learnMore": "Learn More",
+    "items": "items",
+    "categories": {
+      "apiKey": "API Key",
+      "connection": "Connection",
+      "model": "Model",
+      "ollama": "Ollama",
+      "rag": "Document Chat",
+      "general": "General"
+    },
+    "apiKeyMissing": {
+      "title": "Missing API Key",
+      "description": "No API key has been configured for the AI service.",
+      "step1": "Open Settings (Ctrl+, or Cmd+,)",
+      "step2": "Navigate to the API section",
+      "step3": "Enter your API key and click Save"
+    },
+    "apiKeyInvalid": {
+      "title": "Invalid API Key",
+      "description": "The API key you provided was rejected by the service.",
+      "step1": "Verify your API key is correct in Settings",
+      "step2": "Check that the key hasn't expired or been revoked",
+      "step3": "Generate a new key from your provider's dashboard"
+    },
+    "apiKeyFormat": {
+      "title": "Incorrect API Key Format",
+      "description": "The API key format doesn't match the expected pattern.",
+      "step1": "Ensure your key starts with the correct prefix (e.g., 'sk-' for OpenAI)",
+      "step2": "Check for extra spaces or characters when copying"
+    },
+    "connectionFailed": {
+      "title": "Connection Failed",
+      "description": "Unable to connect to the AI service.",
+      "step1": "Check your internet connection",
+      "step2": "Verify the API base URL is correct",
+      "step3": "Try again in a few moments"
+    },
+    "timeout": {
+      "title": "Request Timeout",
+      "description": "The AI service took too long to respond.",
+      "step1": "Check your network speed and stability",
+      "step2": "Increase timeout settings if on a slow connection"
+    },
+    "proxy": {
+      "title": "Proxy/VPN Required",
+      "description": "The AI service may be unavailable in your region.",
+      "step1": "If in a restricted region, enable VPN or proxy",
+      "step2": "Configure custom API base URL if using a proxy service",
+      "step3": "Check proxy settings in the Settings > Advanced"
+    },
+    "backendOffline": {
+      "title": "Backend Service Offline",
+      "description": "The local backend service is not running.",
+      "step1": "Restart the HuluChat application",
+      "step2": "If the issue persists, check for port conflicts (port 8765)"
+    },
+    "modelNotFound": {
+      "title": "Model Not Found",
+      "description": "The selected AI model doesn't exist or is unavailable.",
+      "step1": "Select a different model from the model selector",
+      "step2": "Check available models in Settings"
+    },
+    "rateLimit": {
+      "title": "Rate Limit Exceeded",
+      "description": "Too many requests in a short period.",
+      "step1": "Wait a moment before sending more messages",
+      "step2": "Consider upgrading your API plan",
+      "step3": "Reduce message frequency"
+    },
+    "insufficientQuota": {
+      "title": "Insufficient Quota",
+      "description": "Your API account has run out of credits.",
+      "step1": "Check your API provider's billing dashboard",
+      "step2": "Add credits or upgrade your plan"
+    },
+    "contextLength": {
+      "title": "Context Length Exceeded",
+      "description": "Your message or conversation is too long for the model.",
+      "step1": "Start a new conversation to reset context",
+      "step2": "Use a model with larger context window",
+      "step3": "Reduce the length of your messages"
+    },
+    "ollamaNotRunning": {
+      "title": "Ollama Not Running",
+      "description": "The local Ollama service is not available.",
+      "step1": "Start Ollama with 'ollama serve' command",
+      "step2": "Verify Ollama is installed correctly",
+      "step3": "Test connection in Settings > Ollama"
+    },
+    "ollamaModelNotFound": {
+      "title": "Ollama Model Not Found",
+      "description": "The requested model is not downloaded locally.",
+      "step1": "Run 'ollama pull <model-name>' to download",
+      "step2": "Check available models with 'ollama list'",
+      "step3": "Select a different model in Settings"
+    },
+    "ollamaOOM": {
+      "title": "Ollama Out of Memory",
+      "description": "Not enough memory to run the model.",
+      "step1": "Close other applications to free memory",
+      "step2": "Use a smaller model (e.g., 7B instead of 70B)",
+      "step3": "Check GPU memory if using GPU acceleration"
+    },
+    "ragFileTooLarge": {
+      "title": "File Too Large",
+      "description": "The uploaded file exceeds the size limit (5MB).",
+      "step1": "Compress or split the file into smaller parts",
+      "step2": "Upload files under 5MB for best results"
+    },
+    "ragUnsupportedFormat": {
+      "title": "Unsupported File Format",
+      "description": "This file format is not supported for document chat.",
+      "step1": "Convert to a supported format: PDF, TXT, or MD",
+      "step2": "Ensure the file is not corrupted or password-protected"
+    },
+    "ragNoDocuments": {
+      "title": "No Documents Indexed",
+      "description": "No documents have been uploaded for document chat.",
+      "step1": "Upload documents using the document upload button",
+      "step2": "Wait for indexing to complete before searching"
+    },
+    "unknown": {
+      "title": "Unknown Error",
+      "description": "An unexpected error occurred.",
+      "step1": "Try restarting the application",
+      "step2": "Check your settings and configuration",
+      "step3": "Contact support if the issue persists"
+    }
   }
 }
