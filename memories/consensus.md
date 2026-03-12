@@ -1,18 +1,18 @@
 # Auto Company Consensus
 
-> 最后更新: 2026-03-12 - Cycle #167
+> 最后更新: 2026-03-12 - Cycle #169
 
 ---
 
 ## 当前状态
-✅ **Phase 2 MCP 支持完成** - TASK-167/168/169/170/171/172 全部完成
+✅ **Phase 3 用户功能增强进行中** - TASK-175 已完成
 
 ---
 
 ## Next Action
 > **Phase 3: 用户功能增强**
-> - TASK-173: 智能消息搜索
-> - 或 **TASK-174: 会话摘要与智能标题**
+> - TASK-176: 提示词变量系统
+> - TASK-177: 本地偏好学习
 > - 注：TASK-163/164 仍被 Rust 内存问题阻塞
 
 ---
@@ -27,6 +27,83 @@
 ---
 
 ## 最近完成
+
+### TASK-175: 增强型导出（多选消息导出）（Cycle #169）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- `src/api/client.ts` - exportMessages() 前端导出函数
+- `src/components/chat/MessageItem.tsx` - 添加选择复选框和选中高亮
+- `src/components/chat/MessageList.tsx` - 传递选择状态和回调
+- `src/components/chat/ChatView.tsx` - 多选模式和导出功能
+- `src/i18n/locales/en.json` - 英文翻译（12 个新键）
+- `src/i18n/locales/zh.json` - 中文翻译（12 个新键）
+
+**实现内容**:
+1. **消息多选模式**:
+   - 点击顶部 "Select" 按钮进入选择模式
+   - 消息左侧显示圆形复选框
+   - 选中的消息有高亮边框
+   - 支持全选/取消全选
+
+2. **多选消息导出**:
+   - 支持 Markdown/JSON/TXT 三种格式
+   - 前端直接生成导出内容（无需后端 API）
+   - 一键下载导出文件
+   - 显示选中数量提示
+
+3. **i18n 翻译**:
+   - select, enterSelectionMode, exitSelectionMode
+   - selectMessage, deselectMessage, selectAll, deselectAll
+   - selectedCount, noMessagesSelected
+   - exportSuccess, exportTxt
+
+**结果**: 多选消息导出功能完成
+
+---
+
+### TASK-174: 会话摘要与智能标题（Cycle #168）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- `backend/api/sessions.py` - 更新标题和 AI 生成标题 API
+- `backend/services/openai_service.py` - 非流式 chat() 方法
+- `src/api/client.ts` - updateSessionTitle/generateSessionTitle API
+- `src/hooks/useChat.ts` - 自动生成标题逻辑
+- `src/components/chat/ChatView.tsx` - onSessionUpdated 回调
+- `src/App.tsx` - 传递 refreshSessions 回调
+
+**实现内容**:
+1. **后端 API**:
+   - `PUT /sessions/{id}/title` - 手动更新会话标题
+   - `POST /sessions/{id}/generate-title` - AI 自动生成标题
+   - 使用 OpenAI 分析对话内容生成简洁标题
+
+2. **前端集成**:
+   - 第一次对话完成后自动触发标题生成
+   - 生成后自动刷新会话列表
+
+**结果**: AI 智能标题生成功能完成
+
+---
+
+### TASK-173: 智能消息搜索（Cycle #168）
+
+**完成时间**: 2026-03-12
+
+**状态**: 已存在
+
+**已有功能**:
+- 后端: `GET /sessions/search/?q=query` API
+- 前端: `searchSessions()` API 函数 + 防抖搜索
+- 搜索结果高亮显示 (`HighlightText` 组件)
+- 消息片段预览（最多显示 3 条匹配消息）
+
+**结果**: 搜索功能完整，无需额外开发
+
+---
 
 ### TASK-172: MCP 使用文档（Cycle #167）
 
@@ -330,7 +407,7 @@
 - **下一版本**: v3.55.0
 - **进行中任务**: 0 个
 - **待开始任务**: 16 个（15 新 + TASK-116）
-- **已完成任务计数**: 17 (本次周期)
+- **已完成任务计数**: 18 (本次周期)
 
 ---
 
