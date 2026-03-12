@@ -1,18 +1,18 @@
 # Auto Company Consensus
 
-> 最后更新: 2026-03-12 - Cycle #179
+> 最后更新: 2026-03-12 - Cycle #180
 
 ---
 
 ## 当前状态
-✅ **TASK-190: 首次使用引导完成**
+✅ **TASK-191: 功能发现提示完成**
 
 ---
 
 ## Next Action
 > **继续 v3.56.0 开发：**
-> - TASK-191: 功能发现提示 (P1)
 > - TASK-192: 书签消息跳转 (P2)
+> - TASK-193: 上下文智能提示 (P2)
 
 ---
 
@@ -23,7 +23,8 @@
 **MVP 功能**: 10 个
 - Phase 1 (P0): 命令面板、提示词指南、首次引导 ✅
 - Phase 2 (P1): FAQ、快捷键、反馈、模型对比 ✅
-- Phase 3 (P2): 帮助搜索 ✅、书签跳转、智能提示
+- Phase 3 (P1): 功能发现提示 ✅
+- Phase 4 (P2): 帮助搜索 ✅、书签跳转、智能提示
 
 **预计周期**: 9-12 Cycles
 
@@ -46,6 +47,45 @@
 ---
 
 ## 最近完成
+
+### TASK-191: 功能发现提示（Cycle #180）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- useFeatureDiscovery hook - 功能使用状态检测
+- FeatureDiscoveryTip 组件 - 提示卡片 UI
+- 6 个可发现功能（命令面板、知识中心、文档对话、导出、文件夹、模型切换）
+- 可关闭/永久关闭
+- 隐私约束：只存储布尔值
+- i18n 翻译 (EN/ZH)
+- 测试：26 个测试用例通过
+
+**变更文件**:
+- `src/hooks/useFeatureDiscovery.ts` - 新建 hook
+- `src/hooks/useFeatureDiscovery.test.ts` - hook 测试
+- `src/components/FeatureDiscoveryTip.tsx` - 新建组件
+- `src/components/FeatureDiscoveryTip.test.tsx` - 组件测试
+- `src/hooks/index.ts` - 导出新 hook
+- `src/App.tsx` - 集成功能发现提示
+- `src/i18n/locales/en.json` - featureDiscovery 翻译
+- `src/i18n/locales/zh.json` - featureDiscovery 翻译
+
+**可发现功能**:
+1. ⌘ 命令面板 (Ctrl+K)
+2. 📚 知识中心
+3. 📄 文档对话 (RAG)
+4. 📤 导出对话
+5. 📁 文件夹整理
+6. 🔄 切换模型
+
+**隐私设计**:
+- 只存储布尔值（是否使用过）
+- 不记录使用次数、时间、频率
+- 用户可永久关闭提示
+- 所有数据存储在本地
+
+---
 
 ### TASK-190: 首次使用引导（Cycle #179）
 
@@ -157,9 +197,9 @@
 - **项目**: HuluChat
 - **当前版本**: v3.54.0
 - **下一版本**: v3.56.0
-- **待开始任务**: 4 个 (TASK-191 ~ 194)
-- **已完成任务计数**: 27
+- **待开始任务**: 3 个 (TASK-192 ~ 194)
+- **已完成任务计数**: 28
 
 ---
 
-*更新时间: 2026-03-12 - Cycle #179*
+*更新时间: 2026-03-12 - Cycle #180*

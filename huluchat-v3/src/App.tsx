@@ -14,9 +14,10 @@ import { LanguageSelector } from "@/components/LanguageSelector";
 import { CommandPalette } from "@/components/command";
 import { KnowledgeCenter } from "@/components/knowledge";
 import { WelcomeDialog } from "@/components/WelcomeDialog";
+import { FeatureDiscoveryTip } from "@/components/FeatureDiscoveryTip";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
-import { useSession, useKeyboardShortcuts, useFolders } from "@/hooks";
+import { useSession, useKeyboardShortcuts, useFolders, useFeatureDiscovery } from "@/hooks";
 import { exportSession, moveSessionToFolder, ExportFormat } from "@/api/client";
 
 // Import version from package.json for dynamic version display
@@ -44,6 +45,14 @@ function App() {
     const hasSeenWelcome = localStorage.getItem(WELCOME_SHOWN_KEY);
     return !hasSeenWelcome;
   });
+
+  // Feature discovery hook
+  const {
+    currentTip,
+    markFeatureUsed,
+    dismissCurrentTip,
+    disableTips,
+  } = useFeatureDiscovery();
 
   const handleWelcomeComplete = () => {
     localStorage.setItem(WELCOME_SHOWN_KEY, "true");
@@ -89,6 +98,7 @@ function App() {
 
   // 导出会话
   const handleExportSession = async (sessionId: string, format: ExportFormat) => {
+    markFeatureUsed("session-export");
     try {
       const { blob, filename } = await exportSession(sessionId, format);
 
@@ -113,6 +123,7 @@ function App() {
 
   // 创建文件夹
   const handleCreateFolder = async (name: string) => {
+    markFeatureUsed("folder-management");
     const folder = await createFolder(name);
     if (folder) {
       toast.success(t("app.folderCreated", { name }));
@@ -197,8 +208,9 @@ function App() {
     if (event.key.toLowerCase() === "k" && modifierKey) {
       event.preventDefault();
       setCommandPaletteOpen((prev) => !prev);
+      markFeatureUsed("command-palette");
     }
-  }, []);
+  }, [markFeatureUsed]);
 
   // / 键聚焦搜索框（不在输入框中时）
   const handleSearchFocusKeyDown = useCallback((event: KeyboardEvent) => {
@@ -257,7 +269,10 @@ function App() {
         onOpenSettings={() => setSettingsOpen(true)}
         onExportSession={() => currentSession && handleExportSession(currentSession.id, "markdown")}
         onShowHelp={() => setKeyboardHelpOpen(true)}
-        onOpenKnowledgeCenter={() => setKnowledgeCenterOpen(true)}
+        onOpenKnowledgeCenter={() => {
+          setKnowledgeCenterOpen(true);
+          markFeatureUsed("knowledge-center");
+        }}
       />
       <KnowledgeCenter
         open={knowledgeCenterOpen}
@@ -321,6 +336,39 @@ function App() {
             />
           </ErrorBoundary>
         </main>
+
+        {/* 功能发现提示 - 仅在欢迎流程完成后显示 */}
+        {!welcomeOpen && currentTip && (
+          <div className="p-4 border-t border-border bg-muted/30">
+            <FeatureDiscoveryTip
+              feature={currentTip}
+              onDismiss={dismissCurrentTip}
+              onDisableAll={disableTips}
+              onAction={() => {
+                // 根据功能类型执行相应操作
+                switch (currentTip.id) {
+                  case "command-palette":
+                    setCommandPaletteOpen(true);
+                    break;
+                  case "knowledge-center":
+                    setKnowledgeCenterOpen(true);
+                    break;
+                  case "session-export":
+                    if (currentSession) {
+                      handleExportSession(currentSession.id, "markdown");
+                    }
+                    break;
+                  case "folder-management":
+                    handleCreateFolder(t("sidebar.newFolder"));
+                    break;
+                  case "model-switch":
+                    setSettingsOpen(true);
+                    break;
+                }
+              }}
+            />
+          </div>
+        )}
       </div>
     </div>
     </TooltipProvider>
