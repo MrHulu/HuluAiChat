@@ -61,11 +61,17 @@ AVAILABLE_MODELS: List[ModelInfo] = [
         description="Advanced reasoning model",
         provider="deepseek"
     ),
-    # OpenAI Models
+    # OpenAI Models - Latest Generation
+    ModelInfo(
+        id="gpt-4.1",
+        name="GPT-4.1",
+        description="Latest GPT-4 with improved capabilities",
+        provider="openai"
+    ),
     ModelInfo(
         id="gpt-4o",
         name="GPT-4o",
-        description="Most capable model, best for complex tasks",
+        description="Multimodal model, best for complex tasks",
         provider="openai"
     ),
     ModelInfo(
@@ -74,6 +80,26 @@ AVAILABLE_MODELS: List[ModelInfo] = [
         description="Fast and affordable, great for daily use",
         provider="openai"
     ),
+    # OpenAI Reasoning Models
+    ModelInfo(
+        id="o3-mini",
+        name="o3-mini",
+        description="Latest reasoning model, fast and capable",
+        provider="openai"
+    ),
+    ModelInfo(
+        id="o1",
+        name="o1",
+        description="Advanced reasoning for complex problems",
+        provider="openai"
+    ),
+    ModelInfo(
+        id="o1-mini",
+        name="o1-mini",
+        description="Fast reasoning model",
+        provider="openai"
+    ),
+    # Legacy OpenAI Models
     ModelInfo(
         id="gpt-4-turbo",
         name="GPT-4 Turbo",
@@ -86,17 +112,29 @@ AVAILABLE_MODELS: List[ModelInfo] = [
         description="Fast and economical",
         provider="openai"
     ),
-    # Claude Models (via OpenAI-compatible API)
+    # Claude Models (via OpenAI-compatible API) - Latest Generation
+    ModelInfo(
+        id="claude-sonnet-4-20250514",
+        name="Claude Sonnet 4",
+        description="Latest Claude, best for coding and agents",
+        provider="openai"
+    ),
     ModelInfo(
         id="claude-3-5-sonnet-20241022",
         name="Claude 3.5 Sonnet",
-        description="Anthropic's latest",
+        description="Anthropic's versatile model",
+        provider="openai"
+    ),
+    ModelInfo(
+        id="claude-3-5-haiku-20241022",
+        name="Claude 3.5 Haiku",
+        description="Fast and efficient Claude",
         provider="openai"
     ),
     ModelInfo(
         id="claude-3-opus-20240229",
         name="Claude 3 Opus",
-        description="Most powerful Claude",
+        description="Most powerful Claude 3",
         provider="openai"
     ),
 ]
@@ -124,8 +162,9 @@ async def get_settings():
     """Get current settings"""
     user_settings = load_user_settings()
 
-    # Merge with defaults from env
-    api_key = user_settings.get("openai_api_key") or settings.openai_api_key
+    # SECURITY: API key is stored in system keyring (frontend handles this)
+    # We only check runtime settings for API key, not the file
+    api_key = settings.openai_api_key
     base_url = user_settings.get("openai_base_url") or settings.openai_base_url
     model = user_settings.get("openai_model") or settings.openai_model
     temperature = user_settings.get("temperature", settings.temperature)
@@ -148,9 +187,11 @@ async def update_settings(update: SettingsUpdate):
     """Update settings"""
     user_settings = load_user_settings()
 
-    # Update only provided fields
-    if update.openai_api_key is not None:
-        user_settings["openai_api_key"] = update.openai_api_key
+    # SECURITY: API key is stored in system keyring (frontend handles this)
+    # We only update runtime settings, NOT the file
+    # The frontend will send the API key from keyring on app startup
+
+    # Update only non-sensitive fields to file
     if update.openai_base_url is not None:
         user_settings["openai_base_url"] = update.openai_base_url
     if update.openai_model is not None:
@@ -165,7 +206,7 @@ async def update_settings(update: SettingsUpdate):
 
     save_user_settings(user_settings)
 
-    # Update runtime settings
+    # Update runtime settings (API key only in memory, not persisted)
     if update.openai_api_key:
         settings.openai_api_key = update.openai_api_key
     if update.openai_base_url:
@@ -179,7 +220,8 @@ async def update_settings(update: SettingsUpdate):
     if update.max_tokens is not None:
         settings.max_tokens = update.max_tokens
 
-    api_key = user_settings.get("openai_api_key") or settings.openai_api_key
+    # Check if API key exists (in runtime settings)
+    api_key = settings.openai_api_key
     return SettingsResponse(
         openai_api_key=api_key[:8] + "..." if api_key and len(api_key) > 8 else None,
         openai_base_url=user_settings.get("openai_base_url") or settings.openai_base_url,

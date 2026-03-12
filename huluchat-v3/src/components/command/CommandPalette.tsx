@@ -14,6 +14,8 @@ import {
   Moon,
   HelpCircle,
   FolderPlus,
+  BookOpen,
+  Bookmark,
 } from "lucide-react";
 import {
   CommandDialog,
@@ -48,6 +50,8 @@ interface CommandPaletteProps {
   onChangeLanguage?: () => void;
   onToggleTheme?: () => void;
   onShowHelp?: () => void;
+  onOpenKnowledgeCenter?: () => void;
+  onJumpToBookmark?: () => void;
 }
 
 /**
@@ -69,6 +73,8 @@ export function CommandPalette({
   onChangeLanguage,
   onToggleTheme,
   onShowHelp,
+  onOpenKnowledgeCenter,
+  onJumpToBookmark,
 }: CommandPaletteProps) {
   const { t } = useTranslation();
   const isMac = isMacOS();
@@ -132,6 +138,16 @@ export function CommandPalette({
       });
     }
 
+    if (onJumpToBookmark) {
+      cmds.push({
+        id: "jump-bookmark",
+        icon: <Bookmark className="size-4 transition-transform duration-200 data-[selected=true]:scale-110" aria-hidden="true" />,
+        labelKey: "command.jumpToBookmark",
+        action: onJumpToBookmark,
+        group: "navigation",
+      });
+    }
+
     // Settings group
     if (onChangeLanguage) {
       cmds.push({
@@ -175,6 +191,16 @@ export function CommandPalette({
       });
     }
 
+    if (onOpenKnowledgeCenter) {
+      cmds.push({
+        id: "knowledge-center",
+        icon: <BookOpen className="size-4 transition-transform duration-200 data-[selected=true]:scale-110" aria-hidden="true" />,
+        labelKey: "command.knowledgeCenter",
+        action: onOpenKnowledgeCenter,
+        group: "settings",
+      });
+    }
+
     return cmds;
   }, [
     onNewSession,
@@ -186,6 +212,8 @@ export function CommandPalette({
     onChangeLanguage,
     onToggleTheme,
     onShowHelp,
+    onOpenKnowledgeCenter,
+    onJumpToBookmark,
     isMac,
   ]);
 

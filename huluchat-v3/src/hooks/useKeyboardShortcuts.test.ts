@@ -81,7 +81,7 @@ describe("useKeyboardShortcuts hook", () => {
       );
 
       const event = new KeyboardEvent("keydown", {
-        key: "n",
+        code: "KeyN",
         metaKey: true,
         bubbles: true,
       });
@@ -99,7 +99,7 @@ describe("useKeyboardShortcuts hook", () => {
       );
 
       const event = new KeyboardEvent("keydown", {
-        key: "b",
+        code: "KeyB",
         metaKey: true,
         bubbles: true,
       });
@@ -117,7 +117,7 @@ describe("useKeyboardShortcuts hook", () => {
       );
 
       const event = new KeyboardEvent("keydown", {
-        key: ",",
+        code: "Comma",
         metaKey: true,
         bubbles: true,
       });
@@ -135,7 +135,7 @@ describe("useKeyboardShortcuts hook", () => {
       );
 
       const event = new KeyboardEvent("keydown", {
-        key: "n",
+        code: "KeyN",
         ctrlKey: true,
         bubbles: true,
       });
@@ -172,7 +172,7 @@ describe("useKeyboardShortcuts hook", () => {
       );
 
       const event = new KeyboardEvent("keydown", {
-        key: "n",
+        code: "KeyN",
         ctrlKey: true,
         bubbles: true,
       });
@@ -190,7 +190,7 @@ describe("useKeyboardShortcuts hook", () => {
       );
 
       const event = new KeyboardEvent("keydown", {
-        key: "n",
+        code: "KeyN",
         metaKey: true,
         bubbles: true,
       });
@@ -206,7 +206,7 @@ describe("useKeyboardShortcuts hook", () => {
       );
 
       const event = new KeyboardEvent("keydown", {
-        key: "b",
+        code: "KeyB",
         ctrlKey: true,
         bubbles: true,
       });
@@ -224,7 +224,7 @@ describe("useKeyboardShortcuts hook", () => {
       );
 
       const event = new KeyboardEvent("keydown", {
-        key: ",",
+        code: "Comma",
         ctrlKey: true,
         bubbles: true,
       });
@@ -247,7 +247,7 @@ describe("useKeyboardShortcuts hook", () => {
       document.body.appendChild(input);
 
       const event = new KeyboardEvent("keydown", {
-        key: "n",
+        code: "KeyN",
         ctrlKey: true,
         bubbles: true,
       });
@@ -273,7 +273,7 @@ describe("useKeyboardShortcuts hook", () => {
       document.body.appendChild(textarea);
 
       const event = new KeyboardEvent("keydown", {
-        key: "b",
+        code: "KeyB",
         ctrlKey: true,
         bubbles: true,
       });
@@ -300,7 +300,7 @@ describe("useKeyboardShortcuts hook", () => {
       document.body.appendChild(div);
 
       const event = new KeyboardEvent("keydown", {
-        key: ",",
+        code: "Comma",
         ctrlKey: true,
         bubbles: true,
       });
@@ -334,7 +334,7 @@ describe("useKeyboardShortcuts hook", () => {
       );
 
       const event = new KeyboardEvent("keydown", {
-        key: "n",
+        code: "KeyN",
         ctrlKey: true,
         bubbles: true,
       });
@@ -365,7 +365,7 @@ describe("useKeyboardShortcuts hook", () => {
   });
 
   describe("case sensitivity", () => {
-    it("should work with uppercase N", () => {
+    it("should work with code regardless of key", () => {
       // Set to non-macOS for Ctrl key
       Object.defineProperty(window.navigator, "platform", {
         value: "Win32",
@@ -378,6 +378,7 @@ describe("useKeyboardShortcuts hook", () => {
       );
 
       const event = new KeyboardEvent("keydown", {
+        code: "KeyN",
         key: "N",
         ctrlKey: true,
         bubbles: true,
@@ -416,7 +417,7 @@ describe("useKeyboardShortcuts hook", () => {
         );
 
         const event = new KeyboardEvent("keydown", {
-          key: "1",
+          code: "Digit1",
           ctrlKey: true,
           bubbles: true,
         });
@@ -439,7 +440,7 @@ describe("useKeyboardShortcuts hook", () => {
         );
 
         const event = new KeyboardEvent("keydown", {
-          key: "2",
+          code: "Digit2",
           ctrlKey: true,
           bubbles: true,
         });
@@ -462,7 +463,7 @@ describe("useKeyboardShortcuts hook", () => {
         );
 
         const event = new KeyboardEvent("keydown", {
-          key: "3",
+          code: "Digit3",
           ctrlKey: true,
           bubbles: true,
         });
@@ -485,7 +486,7 @@ describe("useKeyboardShortcuts hook", () => {
         );
 
         const event = new KeyboardEvent("keydown", {
-          key: "4",
+          code: "Digit4",
           ctrlKey: true,
           bubbles: true,
         });
@@ -516,7 +517,7 @@ describe("useKeyboardShortcuts hook", () => {
         );
 
         const event = new KeyboardEvent("keydown", {
-          key: "1",
+          code: "Digit1",
           metaKey: true,
           bubbles: true,
         });

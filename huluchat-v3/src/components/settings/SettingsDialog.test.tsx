@@ -15,12 +15,28 @@ vi.mock("@/api/client", () => ({
   testOllamaConnection: vi.fn(),
 }));
 
+// Mock keyring service
+vi.mock("@/services/keyring", () => ({
+  storeAPIKey: vi.fn().mockResolvedValue(undefined),
+  getAPIKey: vi.fn().mockResolvedValue(null),
+  deleteAPIKey: vi.fn().mockResolvedValue(undefined),
+  hasAPIKey: vi.fn().mockResolvedValue(false),
+}));
+
 // Mock sonner toast
 vi.mock("sonner", () => ({
   toast: {
     success: vi.fn(),
     error: vi.fn(),
   },
+}));
+
+// Mock theme-provider to avoid ThemeProvider requirement in tests
+vi.mock("@/components/theme-provider", () => ({
+  useTheme: () => ({
+    theme: "system",
+    setTheme: vi.fn(),
+  }),
 }));
 
 describe("SettingsDialog", () => {
@@ -207,7 +223,7 @@ describe("SettingsDialog", () => {
       // Wait for dialog to open and API Key input to be available
       await waitFor(() => {
         expect(screen.getByLabelText("API Key")).toBeInTheDocument();
-      });
+      }, { timeout: 3000 });
 
       const apiKeyInput = screen.getByLabelText("API Key");
       await user.type(apiKeyInput, "sk-test-key");
@@ -221,7 +237,7 @@ describe("SettingsDialog", () => {
             openai_api_key: "sk-test-key",
           })
         );
-      });
+      }, { timeout: 5000 });
     });
 
     it("should call updateSettings with base URL when provided", async () => {

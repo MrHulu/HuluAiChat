@@ -1,6 +1,7 @@
 /**
  * WelcomeDialog Component
  * 首次启动引导弹窗，帮助新用户了解核心功能
+ * 5 步引导流程：欢迎 → 多模型 → 文档对话 → 快捷键 → 知识中心
  */
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -20,6 +21,7 @@ interface WelcomeDialogProps {
   onComplete: () => void;
 }
 
+// 5 步引导流程，展示核心功能
 const steps = [
   {
     key: "welcome",
@@ -28,16 +30,28 @@ const steps = [
     descKey: "welcome.step1.description",
   },
   {
-    key: "rag",
-    icon: "📚",
+    key: "models",
+    icon: "🤖",
     titleKey: "welcome.step2.title",
     descKey: "welcome.step2.description",
   },
   {
-    key: "plugins",
-    icon: "🔌",
+    key: "rag",
+    icon: "📚",
     titleKey: "welcome.step3.title",
     descKey: "welcome.step3.description",
+  },
+  {
+    key: "shortcuts",
+    icon: "⌨️",
+    titleKey: "welcome.step4.title",
+    descKey: "welcome.step4.description",
+  },
+  {
+    key: "knowledge",
+    icon: "💡",
+    titleKey: "welcome.step5.title",
+    descKey: "welcome.step5.description",
   },
 ];
 

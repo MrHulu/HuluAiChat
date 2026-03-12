@@ -6,7 +6,12 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=[],
-    hiddenimports=[],
+    hiddenimports=[
+        'aiosqlite',
+        'sqlalchemy.dialects.sqlite.aiosqlite',
+        'multipart',
+        'multipart.multipart',
+    ],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

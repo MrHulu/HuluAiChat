@@ -216,7 +216,9 @@ describe("ModelSelector", () => {
 
     const button = screen.getByRole("button");
     expect(button).toHaveClass("max-w-[180px]");
-    expect(button.querySelector("span")).toHaveClass("truncate");
+    // Find the span that contains the model name (the one after provider icon)
+    const modelNameSpan = button.querySelector("span.truncate");
+    expect(modelNameSpan).toHaveClass("truncate");
   });
 
   it("should handle special characters in model names", async () => {

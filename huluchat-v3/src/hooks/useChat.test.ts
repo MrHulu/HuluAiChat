@@ -2,9 +2,12 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { useChat } from "./useChat";
 
-// Mock getSessionMessages
+// Mock getSessionMessages and createChatWebSocket
 vi.mock("@/api/client", () => ({
   getSessionMessages: vi.fn(),
+  createChatWebSocket: vi.fn((sessionId: string) => ({
+    url: `ws://localhost:8765/api/chat/ws/${sessionId}`,
+  })),
 }));
 
 // Mock useWebSocket hook
@@ -156,11 +159,12 @@ describe("useChat hook", () => {
     expect(result.current.messages[0].content).toBe("Hello, AI!");
 
     // Should call WebSocket send
-    expect(mockWSReturn.send).toHaveBeenCalledWith({
-      type: "message",
-      content: "Hello, AI!",
-      model: undefined,
-    });
+    expect(mockWSReturn.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "message",
+        content: "Hello, AI!",
+      })
+    );
 
     // Should set loading
     expect(result.current.isLoading).toBe(true);
@@ -177,11 +181,13 @@ describe("useChat hook", () => {
       result.current.sendMessage("Hello", "gpt-4");
     });
 
-    expect(mockWSReturn.send).toHaveBeenCalledWith({
-      type: "message",
-      content: "Hello",
-      model: "gpt-4",
-    });
+    expect(mockWSReturn.send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "message",
+        content: "Hello",
+        model: "gpt-4",
+      })
+    );
   });
 
   it("should handle stream_start message", async () => {

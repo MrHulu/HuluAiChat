@@ -78,6 +78,45 @@ vi.mock("@/hooks", () => ({
     setModel: vi.fn(),
     isLoading: false,
   })),
+  useFeatureDiscovery: vi.fn(() => ({
+    features: [],
+    featureUsage: {},
+    markFeatureUsed: vi.fn(),
+    getUnusedFeatures: vi.fn(() => []),
+    getNextUnusedFeature: vi.fn(() => null),
+    isTipsDisabled: false,
+    disableTips: vi.fn(),
+    enableTips: vi.fn(),
+    dismissCurrentTip: vi.fn(),
+    currentTip: null,
+  })),
+  useContextualTip: vi.fn(() => ({
+    currentTip: null,
+    dismissTip: vi.fn(),
+    disableAllTips: vi.fn(),
+  })),
+  useBackendHealth: vi.fn(() => ({
+    status: "healthy",
+    version: "1.0.0",
+    isRecovering: false,
+    lastChecked: new Date(),
+    consecutiveFailures: 0,
+    triggerRecovery: vi.fn(),
+    checkHealth: vi.fn(),
+  })),
+  useGlobalShortcut: vi.fn(),
+  useAccessibilityPermission: vi.fn(() => ({
+    status: "granted",
+    showGuide: false,
+    openSettings: vi.fn(),
+    checkPermission: vi.fn(),
+    dismissGuide: vi.fn(),
+    dismissPermanently: vi.fn(),
+  })),
+  useWebSocket: vi.fn(() => ({
+    status: "connected",
+    send: vi.fn(),
+  })),
 }));
 
 // Mock API client
@@ -1267,8 +1306,7 @@ describe("App", () => {
 
   describe("Phase 1 P0 - Delete Session with Confirmation", () => {
     it("should delete session after user confirmation", async () => {
-      // Arrange - 模拟用户确认删除
-      mockConfirm.mockReturnValueOnce(true);
+      // Arrange - 模拟删除成功
       mockRemoveSession.mockResolvedValueOnce(undefined);
       mockSessions = [createSession("1", "Test Session")];
 
@@ -1289,16 +1327,23 @@ describe("App", () => {
       const deleteButton = screen.getByLabelText("Delete session");
       await user.click(deleteButton);
 
-      // Assert - 验证确认对话框和删除调用
-      expect(mockConfirm).toHaveBeenCalledWith("Are you sure you want to delete this conversation?");
+      // Assert - 验证确认对话框出现
+      await waitFor(() => {
+        expect(screen.getByRole("alertdialog")).toBeInTheDocument();
+      });
+
+      // 点击确认删除按钮
+      const confirmButton = screen.getByRole("button", { name: /delete session/i });
+      await user.click(confirmButton);
+
+      // 验证删除被调用
       await waitFor(() => {
         expect(mockRemoveSession).toHaveBeenCalledWith("1");
       });
     });
 
     it("should not delete session when user cancels", async () => {
-      // Arrange - 模拟用户取消删除
-      mockConfirm.mockReturnValueOnce(false);
+      // Arrange
       mockSessions = [createSession("1", "Test Session")];
 
       // Act
@@ -1317,8 +1362,16 @@ describe("App", () => {
       const deleteButton = screen.getByLabelText("Delete session");
       await user.click(deleteButton);
 
-      // Assert
-      expect(mockConfirm).toHaveBeenCalledWith("Are you sure you want to delete this conversation?");
+      // Assert - 验证确认对话框出现
+      await waitFor(() => {
+        expect(screen.getByRole("alertdialog")).toBeInTheDocument();
+      });
+
+      // 点击取消按钮
+      const cancelButton = screen.getByRole("button", { name: /cancel/i });
+      await user.click(cancelButton);
+
+      // 验证删除未被调用
       expect(mockRemoveSession).not.toHaveBeenCalled();
     });
   });

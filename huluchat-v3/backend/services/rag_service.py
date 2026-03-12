@@ -5,14 +5,16 @@
 - 语义检索
 - 上下文构建
 - 引用来源显示
+
+Note: Uses AsyncChromaClient for non-blocking ChromaDB operations.
 """
 import logging
-import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional, List, Dict, Any
 
 from services.document_processor import DocumentProcessor, Chunk
 from services.embedding_service import EmbeddingService
+from services.async_chroma import AsyncChromaClient, AsyncCollection
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +56,8 @@ class DocumentInfo:
 class RAGService:
     """Service for RAG (Retrieval-Augmented Generation).
 
-    使用 Chroma 向量数据库进行文档存储和检索。
+    Uses ChromaDB for document storage and retrieval via AsyncChromaClient
+    for non-blocking operations.
     """
 
     DEFAULT_COLLECTION_NAME = "huluchat_documents"
@@ -71,8 +74,8 @@ class RAGService:
         self.persist_directory = persist_directory
         self._embedding_service = embedding_service
         self._document_processor = document_processor
-        self._collection = None
-        self._chroma_client = None
+        self._collection: Optional[AsyncCollection] = None
+        self._chroma_client: Optional[AsyncChromaClient] = None
         self.default_n_results = self.DEFAULT_N_RESULTS
 
     @property
@@ -89,19 +92,14 @@ class RAGService:
             self._document_processor = DocumentProcessor()
         return self._document_processor
 
-    def _get_collection(self):
-        """Get or create Chroma collection."""
+    async def _get_collection(self) -> AsyncCollection:
+        """Get or create Chroma collection (async)."""
         if self._collection is None:
-            import chromadb
+            self._chroma_client = AsyncChromaClient(
+                persist_directory=self.persist_directory
+            )
 
-            if self.persist_directory:
-                self._chroma_client = chromadb.PersistentClient(
-                    path=self.persist_directory
-                )
-            else:
-                self._chroma_client = chromadb.EphemeralClient()
-
-            self._collection = self._chroma_client.get_or_create_collection(
+            self._collection = await self._chroma_client.get_or_create_collection(
                 name=self.collection_name,
                 metadata={"hnsw:space": "cosine"}
             )
@@ -155,9 +153,9 @@ class RAGService:
                     "end_char": chunk.end_char
                 })
 
-            # Add to collection
-            collection = self._get_collection()
-            collection.add(
+            # Add to collection (async)
+            collection = await self._get_collection()
+            await collection.add(
                 ids=ids,
                 embeddings=embeddings,
                 documents=chunk_texts,
@@ -201,9 +199,9 @@ class RAGService:
             # Generate query embedding
             query_embedding = await self.embedding_service.embed(query)
 
-            # Query the collection
-            collection = self._get_collection()
-            results = collection.query(
+            # Query the collection (async)
+            collection = await self._get_collection()
+            results = await collection.query(
                 query_embeddings=[query_embedding],
                 n_results=n_results,
                 include=["documents", "metadatas", "distances"]
@@ -242,15 +240,15 @@ class RAGService:
             DeleteResult with deletion status
         """
         try:
-            collection = self._get_collection()
+            collection = await self._get_collection()
 
-            # Find all chunks for this document
-            results = collection.get(
+            # Find all chunks for this document (async)
+            results = await collection.get(
                 where={"doc_id": doc_id}
             )
 
             if results['ids']:
-                collection.delete(ids=results['ids'])
+                await collection.delete(ids=results['ids'])
                 logger.info(f"Deleted document {doc_id} ({len(results['ids'])} chunks)")
             else:
                 logger.info(f"Document {doc_id} not found (already deleted?)")
@@ -275,14 +273,14 @@ class RAGService:
             List of DocumentInfo objects
         """
         try:
-            collection = self._get_collection()
-            results = collection.get()
+            collection = await self._get_collection()
+            results = await collection.get()
 
             # Group by doc_id
             doc_map: Dict[str, DocumentInfo] = {}
 
             if results['metadatas']:
-                for i, metadata in enumerate(results['metadatas']):
+                for metadata in results['metadatas']:
                     doc_id = metadata.get('doc_id', 'unknown')
                     source = metadata.get('source', 'unknown')
 
@@ -328,11 +326,11 @@ class RAGService:
 
         return "\n\n---\n\n".join(context_parts)
 
-    def clear_collection(self):
-        """Clear all documents from the collection."""
+    async def clear_collection(self) -> None:
+        """Clear all documents from the collection (async)."""
         try:
             if self._chroma_client and self._collection:
-                self._chroma_client.delete_collection(self.collection_name)
+                await self._chroma_client.delete_collection(self.collection_name)
                 self._collection = None
                 logger.info(f"Cleared collection {self.collection_name}")
         except Exception as e:

@@ -11,17 +11,17 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 hover:shadow-sm dark:shadow-primary/5 dark:hover:shadow-primary/20 dark:hover:bg-primary/85",
+          "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 hover:shadow-sm dark:shadow-[0_2px_8px_oklch(0.5_0.2_264/0.25)] dark:hover:shadow-[0_4px_16px_oklch(0.5_0.2_264/0.35)] dark:hover:bg-primary/85 dark:active:shadow-[0_2px_8px_oklch(0.5_0.2_264/0.2)]",
         destructive:
-          "bg-destructive text-white shadow-xs hover:bg-destructive/90 hover:shadow-sm focus-visible:ring-destructive/20 dark:bg-destructive/70 dark:hover:bg-destructive/80 dark:focus-visible:ring-destructive/40 dark:hover:shadow-destructive/20",
+          "bg-destructive text-white shadow-xs hover:bg-destructive/90 hover:shadow-sm focus-visible:ring-destructive/20 dark:bg-destructive/70 dark:hover:bg-destructive/80 dark:focus-visible:ring-destructive/40 dark:hover:shadow-destructive/25 dark:shadow-[0_2px_8px_oklch(0.5_0.2_25/0.2)]",
         outline:
-          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground hover:border-accent dark:border-border/80 dark:bg-transparent dark:hover:bg-accent/30 dark:hover:border-accent/50 dark:active:border-accent/60",
+          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground hover:border-accent dark:border-border/80 dark:bg-transparent dark:hover:bg-accent/30 dark:hover:border-accent/50 dark:active:border-accent/60 dark:hover:shadow-[0_0_12px_oklch(0.5_0.15_264/0.15)]",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80 hover:shadow-sm dark:bg-secondary/80 dark:hover:bg-secondary/60 dark:active:bg-secondary/50",
+          "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80 hover:shadow-sm dark:bg-secondary/80 dark:hover:bg-secondary/60 dark:active:bg-secondary/50 dark:hover:shadow-[0_2px_8px_oklch(0_0_0/0.15)]",
         ghost:
-          "hover:bg-accent/60 hover:text-accent-foreground dark:hover:bg-accent/50 dark:active:bg-accent/60 dark:hover:shadow-sm dark:hover:shadow-accent/10",
+          "hover:bg-accent/60 hover:text-accent-foreground dark:hover:bg-accent/50 dark:active:bg-accent/60 dark:hover:shadow-[0_0_12px_oklch(0.5_0.12_264/0.12)]",
         link:
-          "text-primary underline-offset-4 hover:underline decoration-primary/30 hover:decoration-primary decoration-2 transition-[text-decoration-color,opacity] dark:decoration-primary/40 dark:hover:decoration-primary",
+          "text-primary underline-offset-4 hover:underline decoration-primary/30 hover:decoration-primary decoration-2 transition-[text-decoration-color,opacity] dark:decoration-primary/40 dark:hover:decoration-primary dark:hover:drop-shadow-[0_0_6px_oklch(0.5_0.2_264/0.3)]",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

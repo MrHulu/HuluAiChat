@@ -59,6 +59,7 @@ export const CodeBlock = memo(function CodeBlock({
   }, [codeText]);
 
   // Check if code should be collapsible based on line count
+  // Note: isCollapsed intentionally excluded from deps - only auto-collapse on initial load
   useEffect(() => {
     const isLong = lineCount > COLLAPSE_THRESHOLD_LINES;
     setShouldShowCollapse(isLong);
@@ -66,6 +67,7 @@ export const CodeBlock = memo(function CodeBlock({
     if (isLong && !isCollapsed) {
       setIsCollapsed(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lineCount]);
 
   // Extract language from className (e.g., "language-typescript")

@@ -27,6 +27,14 @@ class Settings(BaseSettings):
     top_p: float = 1.0
     max_tokens: int = 4096
 
+    # Request timeouts (in seconds)
+    # OpenAI/DeepSeek API timeout
+    openai_timeout: int = 120
+    # Connection timeout for all HTTP requests
+    http_connect_timeout: int = 10
+    # Read timeout for non-streaming requests
+    http_read_timeout: int = 60
+
     # Ollama
     ollama_enabled: bool = True
     ollama_base_url: str = "http://localhost:11434"

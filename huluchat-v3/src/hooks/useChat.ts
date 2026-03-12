@@ -5,12 +5,20 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { useWebSocket, ConnectionStatus } from "./useWebSocket";
-import { Message, getSessionMessages, ImageContent, FileAttachment, deleteMessage as apiDeleteMessage } from "@/api/client";
+import { Message, getSessionMessages, ImageContent, FileAttachment, deleteMessage as apiDeleteMessage, createChatWebSocket, generateSessionTitle } from "@/api/client";
 
 export interface StreamingMessage {
   id: string;
   content: string;
   isStreaming: boolean;
+}
+
+export interface ToolCall {
+  server_name: string;
+  tool_name: string;
+  status: "calling" | "success" | "error";
+  result?: string;
+  error?: string;
 }
 
 export interface ChatParameters {
@@ -19,33 +27,55 @@ export interface ChatParameters {
   max_tokens?: number;
 }
 
+export interface SendMessageOptions {
+  /** Skip adding user message to local state (for edit-and-resend) */
+  skipLocalUserMessage?: boolean;
+  /** Message ID being edited (for backend to skip saving) */
+  editMessageId?: string;
+  /** Quoted message ID for reply context - TASK-200 */
+  quotedMessageId?: string;
+}
+
+export interface UseChatOptions {
+  onTitleGenerated?: (title: string) => void;
+}
+
 export interface UseChatReturn {
   messages: Message[];
   streamingMessage: StreamingMessage | null;
+  toolCalls: ToolCall[];
   connectionStatus: ConnectionStatus;
-  sendMessage: (content: string, model?: string, params?: ChatParameters, images?: ImageContent[], files?: FileAttachment[]) => void;
+  sendMessage: (content: string, model?: string, params?: ChatParameters, images?: ImageContent[], files?: FileAttachment[], useMcp?: boolean, options?: SendMessageOptions) => void;
   regenerateMessage: (assistantMessageId: string) => void;
   deleteMessage: (messageId: string) => Promise<void>;
   isLoading: boolean;
   isLoadingHistory: boolean;
   refreshMessages: () => void;
+  generateTitle: () => Promise<void>;
 }
 
 // WebSocket 消息类型
 interface WSMessage {
-  type: "message" | "stream_start" | "stream_chunk" | "stream_end" | "error" | "history";
+  type: "message" | "stream_start" | "stream_chunk" | "stream_end" | "error" | "history" | "tool_call";
   content?: string;
   message_id?: string;
   messages?: Message[];
   error?: string;
+  // Tool call fields
+  server_name?: string;
+  tool_name?: string;
+  status?: "calling" | "success" | "error";
+  result?: string;
 }
 
-export function useChat(sessionId: string | null): UseChatReturn {
+export function useChat(sessionId: string | null, options?: UseChatOptions): UseChatReturn {
   const [messages, setMessages] = useState<Message[]>([]);
   const [streamingMessage, setStreamingMessage] = useState<StreamingMessage | null>(null);
+  const [toolCalls, setToolCalls] = useState<ToolCall[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const currentSessionIdRef = useRef<string | null>(null);
+  const titleGeneratedRef = useRef(false); // Track if title was generated for this session
 
   // 使用 ref 保存 streamingMessage 的最新值，避免闭包陷阱
   const streamingMessageRef = useRef<StreamingMessage | null>(null);
@@ -54,7 +84,7 @@ export function useChat(sessionId: string | null): UseChatReturn {
   }, [streamingMessage]);
 
   const wsUrl = sessionId
-    ? `ws://127.0.0.1:8765/api/chat/ws/${sessionId}`
+    ? createChatWebSocket(sessionId).url
     : "";
 
   // 加载历史消息
@@ -134,8 +164,51 @@ export function useChat(sessionId: string | null): UseChatReturn {
             content: currentStreaming.content,
             created_at: new Date().toISOString(),
           };
-          setMessages((prev) => [...prev, newMessage]);
+          setMessages((prev) => {
+            const updated = [...prev, newMessage];
+            // Auto-generate title after first AI response
+            if (updated.length === 2 && !titleGeneratedRef.current && sessionId) {
+              // First user + assistant exchange complete
+              titleGeneratedRef.current = true;
+              generateSessionTitle(sessionId).then((result) => {
+                if (result.title && options?.onTitleGenerated) {
+                  options.onTitleGenerated(result.title);
+                }
+              }).catch((error) => {
+                console.error("Failed to generate title:", error);
+              });
+            }
+            return updated;
+          });
           setStreamingMessage(null);
+        }
+        // Clear tool calls when stream ends
+        setToolCalls([]);
+        break;
+      }
+
+      case "tool_call": {
+        // Handle tool call status updates
+        if (msg.server_name && msg.tool_name && msg.status) {
+          const toolCall: ToolCall = {
+            server_name: msg.server_name,
+            tool_name: msg.tool_name,
+            status: msg.status,
+            result: msg.result,
+            error: msg.error,
+          };
+          setToolCalls((prev) => {
+            // Update existing or add new
+            const existingIndex = prev.findIndex(
+              (tc) => tc.server_name === toolCall.server_name && tc.tool_name === toolCall.tool_name
+            );
+            if (existingIndex >= 0) {
+              const updated = [...prev];
+              updated[existingIndex] = toolCall;
+              return updated;
+            }
+            return [...prev, toolCall];
+          });
         }
         break;
       }
@@ -165,6 +238,7 @@ export function useChat(sessionId: string | null): UseChatReturn {
       currentSessionIdRef.current = sessionId;
       setStreamingMessage(null);
       setIsLoading(false);
+      titleGeneratedRef.current = false; // Reset title generation flag
       // 加载该会话的历史消息
       loadHistory(sessionId);
     } else if (!sessionId) {
@@ -173,27 +247,41 @@ export function useChat(sessionId: string | null): UseChatReturn {
       setMessages([]);
       setStreamingMessage(null);
       setIsLoading(false);
+      titleGeneratedRef.current = false;
     }
   }, [sessionId, loadHistory]);
 
   const sendMessage = useCallback(
-    (content: string, model?: string, params?: ChatParameters, images?: ImageContent[], files?: FileAttachment[]) => {
+    (
+      content: string,
+      model?: string,
+      params?: ChatParameters,
+      images?: ImageContent[],
+      files?: FileAttachment[],
+      useMcp?: boolean,
+      options?: SendMessageOptions
+    ) => {
       // Allow empty content if images or files are provided
       if ((!content.trim() && !images?.length && !files?.length) || connectionStatus !== "connected") {
         return;
       }
 
-      // 添加用户消息
-      const userMessage: Message = {
-        id: `temp-${Date.now()}`,
-        session_id: sessionId || "",
-        role: "user",
-        content: content.trim(),
-        images: images,
-        files: files,
-        created_at: new Date().toISOString(),
-      };
-      setMessages((prev) => [...prev, userMessage]);
+      // 添加用户消息到本地状态（除非是编辑后重发）
+      if (!options?.skipLocalUserMessage) {
+        const userMessage: Message = {
+          id: `temp-${Date.now()}`,
+          session_id: sessionId || "",
+          role: "user",
+          content: content.trim(),
+          images: images,
+          files: files,
+          created_at: new Date().toISOString(),
+        };
+        setMessages((prev) => [...prev, userMessage]);
+      }
+
+      // Clear previous tool calls
+      setToolCalls([]);
 
       // 发送到后端（包含可选的模型参数、图片和文件）
       send({
@@ -205,6 +293,12 @@ export function useChat(sessionId: string | null): UseChatReturn {
         temperature: params?.temperature,
         top_p: params?.top_p,
         max_tokens: params?.max_tokens,
+        use_mcp: useMcp !== false, // Default to true
+        // 如果是编辑后重发，告诉后端跳过保存用户消息
+        regenerate: options?.skipLocalUserMessage || false,
+        delete_from_message_id: options?.editMessageId,
+        // 引用消息 ID - TASK-200
+        quoted_message_id: options?.quotedMessageId,
       });
 
       setIsLoading(true);
@@ -232,13 +326,15 @@ export function useChat(sessionId: string | null): UseChatReturn {
           const userMessage = messages[i];
           // 删除从用户消息之后的所有消息（包括该 AI 消息）
           setMessages((prev) => prev.slice(0, i));
-          // 重新发送用户消息
+          // 重新发送用户消息，告诉后端删除该消息之后的所有消息
           send({
             type: "message",
             content: userMessage.content.trim(),
             images: userMessage.images,
             files: userMessage.files,
             regenerate: true,
+            // 告诉后端删除该用户消息之后的所有消息（包括 AI 消息）
+            delete_from_message_id: userMessage.id,
           });
           setIsLoading(true);
           break;
@@ -268,9 +364,24 @@ export function useChat(sessionId: string | null): UseChatReturn {
     [sessionId]
   );
 
+  // 手动触发生成标题
+  const generateTitle = useCallback(async () => {
+    if (!sessionId) return;
+
+    try {
+      const result = await generateSessionTitle(sessionId);
+      if (result.title && options?.onTitleGenerated) {
+        options.onTitleGenerated(result.title);
+      }
+    } catch (error) {
+      console.error("Failed to generate title:", error);
+    }
+  }, [sessionId, options]);
+
   return {
     messages,
     streamingMessage,
+    toolCalls,
     connectionStatus,
     sendMessage,
     regenerateMessage,
@@ -278,5 +389,6 @@ export function useChat(sessionId: string | null): UseChatReturn {
     isLoading,
     isLoadingHistory,
     refreshMessages,
+    generateTitle,
   };
 }
