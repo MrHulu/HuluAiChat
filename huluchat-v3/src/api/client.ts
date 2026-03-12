@@ -1284,3 +1284,101 @@ export async function updateSessionTemplate(
 export async function deleteSessionTemplate(templateId: string): Promise<void> {
   await fetch(`${API_BASE}/session-templates/${templateId}`, { method: "DELETE" });
 }
+
+// ============== Custom Commands APIs (TASK-198) ==============
+
+/**
+ * Custom command for quick actions
+ */
+export interface CustomCommand {
+  id: string;
+  name: string;
+  description: string | null;
+  command_type: "prompt" | "action" | "template";
+  prompt_content: string | null;
+  template_id: string | null;
+  actions: Record<string, unknown>[] | null;
+  shortcut: string | null;
+  icon: string | null;
+  is_builtin: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Custom command creation data
+ */
+export interface CustomCommandCreate {
+  name: string;
+  description?: string;
+  command_type?: "prompt" | "action" | "template";
+  prompt_content?: string;
+  template_id?: string;
+  actions?: Record<string, unknown>[];
+  shortcut?: string;
+  icon?: string;
+}
+
+/**
+ * Custom command update data
+ */
+export interface CustomCommandUpdate {
+  name?: string;
+  description?: string;
+  command_type?: "prompt" | "action" | "template";
+  prompt_content?: string;
+  template_id?: string;
+  actions?: Record<string, unknown>[];
+  shortcut?: string;
+  icon?: string;
+}
+
+/**
+ * List all custom commands (built-in + user-created)
+ */
+export async function listCustomCommands(): Promise<CustomCommand[]> {
+  const response = await fetch(`${API_BASE}/custom-commands`);
+  return response.json();
+}
+
+/**
+ * Get a specific custom command by ID
+ */
+export async function getCustomCommand(commandId: string): Promise<CustomCommand> {
+  const response = await fetch(`${API_BASE}/custom-commands/${commandId}`);
+  return response.json();
+}
+
+/**
+ * Create a new custom command
+ */
+export async function createCustomCommand(command: CustomCommandCreate): Promise<CustomCommand> {
+  const response = await fetch(`${API_BASE}/custom-commands`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(command),
+  });
+  return response.json();
+}
+
+/**
+ * Update a custom command
+ */
+export async function updateCustomCommand(
+  commandId: string,
+  command: CustomCommandUpdate
+): Promise<CustomCommand> {
+  const response = await fetch(`${API_BASE}/custom-commands/${commandId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(command),
+  });
+  return response.json();
+}
+
+/**
+ * Delete a custom command
+ */
+export async function deleteCustomCommand(commandId: string): Promise<void> {
+  await fetch(`${API_BASE}/custom-commands/${commandId}`, { method: "DELETE" });
+}
