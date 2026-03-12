@@ -1114,3 +1114,62 @@ export async function getAllMCPTools(): Promise<Record<string, MCPTool[]>> {
   const response = await fetch(`${API_BASE}/mcp/tools`);
   return response.json();
 }
+
+// ============== Preference Learning APIs ==============
+
+/**
+ * Model usage statistics
+ */
+export interface ModelUsageStats {
+  model_id: string;
+  count: number;
+  last_used: string | null;
+}
+
+/**
+ * Recommended model response
+ */
+export interface RecommendedModel {
+  model_id: string | null;
+  reason: string;
+}
+
+/**
+ * Record model usage for preference learning
+ * Privacy-first: All data stored locally
+ */
+export async function recordModelUsage(modelId: string): Promise<ModelUsageStats> {
+  const response = await fetch(`${API_BASE}/preferences/model-usage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ model_id: modelId }),
+  });
+  return response.json();
+}
+
+/**
+ * Get model usage statistics
+ */
+export async function getModelUsageStats(): Promise<ModelUsageStats[]> {
+  const response = await fetch(`${API_BASE}/preferences/model-usage`);
+  return response.json();
+}
+
+/**
+ * Get recommended model based on usage frequency
+ */
+export async function getRecommendedModel(availableModels: string[]): Promise<RecommendedModel> {
+  const response = await fetch(`${API_BASE}/preferences/recommended-model`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ available_models: availableModels }),
+  });
+  return response.json();
+}
+
+/**
+ * Clear all preference data
+ */
+export async function clearPreferences(): Promise<void> {
+  await fetch(`${API_BASE}/preferences/model-usage`, { method: "DELETE" });
+}

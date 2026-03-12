@@ -326,7 +326,8 @@
     "cloudModels": "Cloud Models",
     "localModels": "Local Models (Ollama)",
     "ollamaOffline": "Ollama Offline",
-    "ollamaHint": "Make sure Ollama service is running"
+    "ollamaHint": "Make sure Ollama service is running",
+    "recommended": "Recommended"
   },
   "templates": {
     "title": "Prompt Templates",

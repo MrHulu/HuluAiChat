@@ -91,7 +91,15 @@
   - 自定义变量：用户在对话框中输入
   - 前端实现：变量输入对话框 + 工具函数
   - Cycle #170
-- [ ] **TASK-177**: 🧠 本地偏好学习（模型推荐）- v3.56.0
+- [x] **TASK-177**: 🧠 本地偏好学习（模型推荐）✅ 2026-03-12
+  - 后端: `services/preference_service.py` - 偏好存储服务（JSON 文件）
+  - 后端: `api/preferences.py` - 偏好 API 端点
+  - 前端: `src/api/client.ts` - 偏好 API 函数
+  - 前端: `src/hooks/useModel.ts` - 记录使用和推荐模型
+  - 前端: `src/components/chat/ModelSelector.tsx` - 推荐标记
+  - 隐私优先：所有数据存储在本地，不上传
+  - i18n 翻译：EN/ZH
+  - Cycle #171
 
 ### 技术债务
 - [ ] **TASK-178**: 🗃️ 迁移到 Alembic 数据库迁移

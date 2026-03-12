@@ -133,7 +133,7 @@ export function ChatView({ sessionId, onSessionUpdated }: ChatViewProps) {
   const { t } = useTranslation();
   const { messages, streamingMessage, toolCalls, connectionStatus, sendMessage, regenerateMessage, deleteMessage, isLoading, refreshMessages } =
     useChat(sessionId, { onTitleGenerated: onSessionUpdated });
-  const { currentModel, models, setModel, isLoading: isLoadingModels, parameters } = useModel();
+  const { currentModel, models, setModel, isLoading: isLoadingModels, parameters, recommendedModel } = useModel();
 
   // Refs
   const messageListRef = useRef<MessageListRef>(null);
@@ -348,6 +348,7 @@ export function ChatView({ sessionId, onSessionUpdated }: ChatViewProps) {
               onChange={setModel}
               isLoading={isLoadingModels}
               disabled={isLoading}
+              recommendedModel={recommendedModel}
             />
           )}
         </div>

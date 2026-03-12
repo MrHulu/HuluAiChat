@@ -2,8 +2,9 @@
  * ModelSelector Component
  * 模型选择下拉框，用于快速切换 AI 模型
  * 支持 Cloud (OpenAI) 和 Local (Ollama) 模型分组
+ * 支持本地偏好学习推荐标记（隐私优先）
  */
-import { Check, Loader2, Server, Cloud } from "lucide-react";
+import { Check, Loader2, Server, Cloud, Star } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +16,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { ModelInfo, ModelProvider } from "@/api/client";
 
@@ -33,6 +35,8 @@ export interface ModelSelectorProps {
   ollamaAvailable?: boolean;
   /** Ollama 本地模型列表 */
   ollamaModels?: Array<{ name: string }>;
+  /** 推荐的模型 ID */
+  recommendedModel?: string | null;
 }
 
 // Provider 图标组件
@@ -52,6 +56,7 @@ export function ModelSelector({
   disabled = false,
   ollamaAvailable = false,
   ollamaModels: _ollamaModels = [],
+  recommendedModel = null,
 }: ModelSelectorProps) {
   const { t } = useTranslation();
   // _ollamaModels is kept for API compatibility but not used internally
@@ -94,6 +99,9 @@ export function ModelSelector({
             </span>
           )}
           <span className="truncate">{currentModel?.name || value}</span>
+          {recommendedModel && value === recommendedModel && (
+            <Star className="h-3 w-3 text-yellow-500 shrink-0" aria-hidden="true" />
+          )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[260px] max-h-[400px] overflow-y-auto">
@@ -120,7 +128,15 @@ export function ModelSelector({
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
                   <div className="flex flex-col flex-1 min-w-0">
-                    <span className="font-medium truncate">{model.name}</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-medium truncate">{model.name}</span>
+                      {recommendedModel === model.id && (
+                        <Badge variant="secondary" className="text-[10px] px-1 py-0 h-4 bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border-yellow-500/30">
+                          <Star className="h-2.5 w-2.5 mr-0.5" aria-hidden="true" />
+                          {t("modelSelector.recommended")}
+                        </Badge>
+                      )}
+                    </div>
                     <span className="text-xs text-muted-foreground truncate">
                       {model.description}
                     </span>
@@ -159,7 +175,15 @@ export function ModelSelector({
                     style={{ animationDelay: `${index * 50}ms` }}
                   >
                     <div className="flex flex-col flex-1 min-w-0">
-                      <span className="font-medium truncate">{model.name}</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-medium truncate">{model.name}</span>
+                        {recommendedModel === model.id && (
+                          <Badge variant="secondary" className="text-[10px] px-1 py-0 h-4 bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border-yellow-500/30">
+                            <Star className="h-2.5 w-2.5 mr-0.5" aria-hidden="true" />
+                            {t("modelSelector.recommended")}
+                          </Badge>
+                        )}
+                      </div>
                       <span className="text-xs text-muted-foreground truncate">
                         {model.description}
                       </span>

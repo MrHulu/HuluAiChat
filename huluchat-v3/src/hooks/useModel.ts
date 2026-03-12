@@ -1,6 +1,7 @@
 /**
  * useModel Hook
  * 管理当前选择的 AI 模型
+ * 支持本地偏好学习（隐私优先：所有数据存储在本地）
  */
 import { useState, useEffect, useCallback } from "react";
 import {
@@ -8,6 +9,8 @@ import {
   getModels,
   getOllamaStatus,
   getOllamaModels,
+  recordModelUsage,
+  getRecommendedModel,
   type ModelInfo,
   type OllamaModel,
 } from "@/api/client";
@@ -37,6 +40,8 @@ export interface UseModelReturn {
   refreshOllamaModels: () => Promise<void>;
   /** 聊天参数 */
   parameters: ChatParameters;
+  /** 推荐的模型 ID */
+  recommendedModel: string | null;
 }
 
 const STORAGE_KEY = "huluchat-selected-model";
@@ -52,6 +57,7 @@ export function useModel(): UseModelReturn {
     top_p: 1.0,
     max_tokens: 4096,
   });
+  const [recommendedModel, setRecommendedModel] = useState<string | null>(null);
 
   // 检查 Ollama 状态
   useEffect(() => {
@@ -83,11 +89,24 @@ export function useModel(): UseModelReturn {
 
         setModels(modelList);
 
-        // 优先级：localStorage > 后端设置 > 第一个可用模型
+        // 获取推荐模型
+        const modelIds = modelList.map((m) => m.id);
+        try {
+          const recommended = await getRecommendedModel(modelIds);
+          if (recommended.model_id) {
+            setRecommendedModel(recommended.model_id);
+          }
+        } catch {
+          // Ignore recommendation errors
+        }
+
+        // 优先级：localStorage > 推荐模型 > 后端设置 > 第一个可用模型
         const savedModel = localStorage.getItem(STORAGE_KEY);
         if (savedModel && modelList.some((m) => m.id === savedModel)) {
           setCurrentModel(savedModel);
-        } else if (settings.openai_model) {
+        } else if (recommendedModel && modelList.some((m) => m.id === recommendedModel)) {
+          setCurrentModel(recommendedModel);
+        } else if (settings.openai_model && modelList.some((m) => m.id === settings.openai_model)) {
           setCurrentModel(settings.openai_model);
         } else if (modelList.length > 0) {
           setCurrentModel(modelList[0].id);
@@ -109,11 +128,16 @@ export function useModel(): UseModelReturn {
     loadModelData();
   }, []);
 
-  // 设置模型并保存到 localStorage
+  // 设置模型并保存到 localStorage，同时记录使用情况
   const setModel = useCallback((modelId: string) => {
     if (models.some((m) => m.id === modelId)) {
       setCurrentModel(modelId);
       localStorage.setItem(STORAGE_KEY, modelId);
+
+      // 异步记录使用情况（不阻塞 UI）
+      recordModelUsage(modelId).catch(() => {
+        // Ignore recording errors
+      });
     }
   }, [models]);
 
@@ -154,5 +178,6 @@ export function useModel(): UseModelReturn {
     ollamaModels,
     refreshOllamaModels,
     parameters,
+    recommendedModel,
   };
 }

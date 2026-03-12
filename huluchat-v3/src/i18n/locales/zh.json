@@ -323,7 +323,8 @@
     "cloudModels": "云端模型",
     "localModels": "本地模型（Ollama）",
     "ollamaOffline": "Ollama 离线",
-    "ollamaHint": "请确保 Ollama 服务正在运行"
+    "ollamaHint": "请确保 Ollama 服务正在运行",
+    "recommended": "推荐"
   },
   "templates": {
     "title": "提示词模板",
