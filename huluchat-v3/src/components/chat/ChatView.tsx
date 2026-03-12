@@ -335,13 +335,38 @@ export const ChatView = forwardRef<ChatViewRef, ChatViewProps>(function ChatView
     handleSend(suggestion);
   };
 
-  // 编辑消息处理
+  // 编辑消息处理 - TASK-196
+  // 编辑用户消息后，删除后续消息并触发 AI 重新回复
   const handleEditMessage = async (messageId: string, newContent: string) => {
     if (!sessionId) return;
 
     try {
-      await updateMessage(sessionId, messageId, newContent);
-      refreshMessages?.();
+      // 找到被编辑的消息
+      const messageIndex = messages.findIndex((m) => m.id === messageId);
+      if (messageIndex === -1) return;
+
+      const editedMessage = messages[messageIndex];
+
+      // 调用后端 API 更新消息并删除后续消息
+      await updateMessage(sessionId, messageId, newContent, true);
+
+      // 更新前端状态：删除该消息之后的所有消息
+      // 后端已经处理了删除，我们只需要删除前端状态中的消息
+      // 注意：不使用 refreshMessages() 因为会导致 UI 闪烁
+
+      // 触发 AI 重新回复
+      // 使用 skipLocalUserMessage 选项避免添加重复的用户消息到前端状态
+      // 同时发送 regenerate 和 delete_from_message_id 参数让后端跳过保存用户消息
+      sendMessage(
+        newContent,
+        currentModel,
+        parameters,
+        editedMessage.images,
+        editedMessage.files,
+        undefined, // useMcp - use default
+        { skipLocalUserMessage: true, editMessageId: messageId }, // 跳过添加用户消息到前端状态
+      );
+
       toast.success(t("chat.messageUpdated"));
     } catch (error) {
       console.error("Failed to update message:", error);

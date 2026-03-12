@@ -230,6 +230,8 @@ async def chat_websocket(
             # Handle regenerate: delete messages after the specified message
             regenerate = data.get("regenerate", False)
             delete_from_message_id = data.get("delete_from_message_id")
+            skip_save_user = False  # Flag to skip saving user message
+
             if regenerate and delete_from_message_id:
                 # Delete all messages created after the specified message
                 # This effectively removes the AI response and any subsequent messages
@@ -250,6 +252,8 @@ async def chat_websocket(
                         )
                         await db.commit()
                         logger.info(f"Regenerate: deleted messages after {delete_from_message_id}")
+                        # Skip saving user message - it already exists (just updated or being reused)
+                        skip_save_user = True
                 except Exception as e:
                     logger.error(f"Failed to delete messages for regenerate: {e}")
 
@@ -258,8 +262,9 @@ async def chat_websocket(
             # Prepare files for storage (JSON string)
             files_json = json.dumps(files) if files else None
 
-            # Save user message
-            await save_message(db, session_id, "user", user_content, images_json, files_json)
+            # Save user message (skip if this is a regenerate/edit request)
+            if not skip_save_user:
+                await save_message(db, session_id, "user", user_content, images_json, files_json)
 
             # Notify client that streaming is starting
             await manager.send_json(session_id, {
@@ -517,9 +522,17 @@ async def update_message(
     session_id: str,
     message_id: str,
     content: str,
+    delete_after: bool = False,
     db: AsyncSession = Depends(get_db_session),
 ):
-    """Update a message's content."""
+    """Update a message's content.
+
+    Args:
+        session_id: Session ID
+        message_id: Message ID to update
+        content: New content
+        delete_after: If True, delete all messages after this one (for edit-and-resend feature)
+    """
     result = await db.execute(
         select(MessageModel)
         .where(MessageModel.id == message_id)
@@ -531,6 +544,16 @@ async def update_message(
         return {"error": "Message not found"}
 
     message.content = content
+
+    # Delete all messages after this one if requested (TASK-196)
+    if delete_after:
+        await db.execute(
+            sql_delete(MessageModel)
+            .where(MessageModel.session_id == session_id)
+            .where(MessageModel.created_at > message.created_at)
+        )
+        logger.info(f"Edit message: deleted messages after {message_id}")
+
     await db.commit()
     await db.refresh(message)
 

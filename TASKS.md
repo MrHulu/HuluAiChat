@@ -120,11 +120,12 @@
   - 后端: 处理 regenerate + delete_from_message_id
   - Cycle #5
 
-- [ ] **TASK-196**: ✏️ 消息编辑
+- [x] **TASK-196**: ✏️ 消息编辑 ✅ 2026-03-12
   - 编辑已发送消息，从该点重新对话
-  - 后端: PATCH /sessions/{id}/messages/{id} 端点
-  - 前端: 编辑 UI + 确认对话框
-  - 预计: 1 Cycle
+  - 后端: PUT /sessions/{id}/messages/{id} 添加 delete_after 参数
+  - 前端: sendMessage 支持 skipLocalUserMessage 选项
+  - 后端: 处理 regenerate + skip_save_user 逻辑
+  - Cycle #5
 
 - [ ] **TASK-197**: 📋 会话模板
   - 预设配置快速创建会话

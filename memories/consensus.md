@@ -7,7 +7,8 @@
 ## 当前状态
 ✅ **v3.57.0 版本规划完成**
 ✅ **TASK-195: 消息重新生成 - 已完成**
-🔄 **待执行: TASK-196 消息编辑**
+✅ **TASK-196: 消息编辑 - 已完成**
+🔄 **待执行: TASK-197 会话模板**
 
 ---
 
@@ -18,12 +19,12 @@
 >
 > **MVP 功能集**（5 个）:
 > - TASK-195: 🔄 消息重新生成 ✅
-> - TASK-196: ✏️ 消息编辑 (进行中)
+> - TASK-196: ✏️ 消息编辑 ✅
 > - TASK-197: 📋 会话模板 (待开始)
 > - TASK-198: ⚡ 自定义命令 (待开始)
 > - TASK-199: 📁 批量会话操作 (待开始)
 >
-> **已完成**: 1/5 功能
+> **已完成**: 2/5 功能
 
 ---
 
@@ -81,6 +82,34 @@
 ---
 
 ## 最近完成
+
+### TASK-196: 消息编辑（Cycle #5）
+
+**完成时间**: 2026-03-12
+
+**问题**: 之前的编辑功能只更新消息内容，不删除后续消息，也不触发 AI 重新回复
+
+**产出**:
+- 后端: updateMessage API 添加 delete_after 参数
+- 前端: sendMessage 支持 skipLocalUserMessage 和 editMessageId 选项
+- 后端: 处理 regenerate + skip_save_user 逻辑（不保存重复用户消息）
+- 前端: ChatView handleEditMessage 完整实现
+
+**变更文件**:
+- `backend/api/chat.py` - updateMessage 添加 delete_after 参数
+- `backend/api/chat.py` - WebSocket 处理 regenerate + skip_save_user
+- `src/api/client.ts` - updateMessage 支持 deleteAfter 参数
+- `src/hooks/useChat.ts` - SendMessageOptions 接口 + sendMessage 选项
+- `src/hooks/useChat.ts` - UseChatReturn 接口更新
+- `src/components/chat/ChatView.tsx` - handleEditMessage 完整实现
+
+**功能特性**:
+- 编辑用户消息后删除后续消息
+- 自动触发 AI 重新回复
+- 后端不保存重复的用户消息
+- 前端不添加重复的用户消息到状态
+
+---
 
 ### TASK-195: 消息重新生成（Cycle #5）
 
