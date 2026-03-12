@@ -1,21 +1,29 @@
 # Auto Company Consensus
 
-> 最后更新: 2026-03-12 - Cycle #184
+> 最后更新: 2026-03-12 - Cycle #185
 
 ---
 
 ## 当前状态
 ✅ **v3.56.0 版本发布准备完成**
-✅ **版本号已更新到 v3.56.0**
+🔄 **TASK-164: 更新签名验证 - 代码完成，等待 Boss 配置密钥**
 
 ---
 
 ## Next Action
-> **等待 Boss 指示下一步方向**
+> **等待 Boss 配置 GitHub Secrets**
+>
+> 需要操作：
+> 1. 运行 `npm run tauri signer generate -- -w ~/.tauri/huluchat.key` 生成密钥对
+> 2. 将私钥添加到 GitHub Secrets (`TAURI_SIGNING_PRIVATE_KEY`)
+> 3. 将密码添加到 GitHub Secrets (`TAURI_SIGNING_PRIVATE_KEY_PASSWORD`，如果有)
+> 4. 将公钥提供给我，更新 tauri.conf.json
+>
+> 详细指南：`docs/update-signing-setup.md`
 >
 > 剩余任务：
 > - TASK-163: sidecar 健康监控 (阻塞：Rust 编译内存不足)
-> - TASK-164: 更新签名验证 (无阻塞)
+> - TASK-164: 更新签名验证 (代码完成，等待密钥配置)
 > - TASK-180/181: 技术债务
 > - TASK-116: Product Hunt 素材 (等待 Boss)
 
@@ -53,6 +61,31 @@
 ---
 
 ## 最近完成
+
+### TASK-164: 更新签名验证（Cycle #185）- 代码完成
+
+**完成时间**: 2026-03-12
+
+**状态**: 代码修改完成，等待 Boss 配置 GitHub Secrets
+
+**产出**:
+- tauri.conf.json - 添加 `createUpdaterArtifacts: true`
+- release.yml - 添加签名环境变量和签名文件上传
+- generate-latest-json.js - 更新平台键格式为 `OS-ARCH`
+- docs/update-signing-setup.md - 密钥生成指南
+
+**变更文件**:
+- `huluchat-v3/src-tauri/tauri.conf.json` - 添加 createUpdaterArtifacts
+- `.github/workflows/release.yml` - 添加签名环境变量和 artifacts
+- `huluchat-v3/scripts/generate-latest-json.js` - 修复平台键格式
+- `docs/update-signing-setup.md` - 新建设置指南
+
+**等待 Boss 操作**:
+1. 生成密钥对：`npm run tauri signer generate -- -w ~/.tauri/huluchat.key`
+2. 添加 GitHub Secrets：`TAURI_SIGNING_PRIVATE_KEY` 和 `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`
+3. 提供公钥内容以更新 tauri.conf.json
+
+---
 
 ### TASK-194: 错误解决建议（Cycle #183）
 
@@ -305,8 +338,8 @@
 - **当前版本**: v3.56.0 ✅ **已发布**
 - **下一版本**: 待定（等待 Boss 指示）
 - **待开始任务**: 0 个（有阻塞任务和技术债务）
-- **已完成任务计数**: 32
+- **已完成任务计数**: 33
 
 ---
 
-*更新时间: 2026-03-12 - Cycle #184*
+*更新时间: 2026-03-12 - Cycle #185*
