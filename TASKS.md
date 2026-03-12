@@ -107,12 +107,6 @@
 ## 待开始
 
 ### 🔴 优先任务
-- [ ] **TASK-209**: 🔄 更新模型列表
-  - **问题**: 当前模型列表过时，跟不上模型更新速度
-  - **当前模型**: GPT-4o, GPT-4-turbo, GPT-3.5-turbo, DeepSeek V3/R1, Claude 3.5 Sonnet/3 Opus
-  - **用户反馈**: 模型更新很快，需要更新列表
-  - **建议**: 考虑动态获取模型列表或定期更新
-
 - [ ] **TASK-210**: 🧪 添加集成测试框架
   - **问题**: 项目只有单元测试，没有集成测试
   - **后果**: 组件集成遗漏无法被测试发现（如 BackendStatusIndicator）
@@ -343,6 +337,19 @@
 - [ ] **TASK-116**: 🎬 准备 Product Hunt 发布素材(截图、视频) - 等待 Boss
 
 ## 已完成（最近）
+- [x] **TASK-209**: 🔄 更新模型列表 ✅ 2026-03-12
+  - **更新内容**：
+    - OpenAI: GPT-4.1, GPT-4o, GPT-4o-mini, o3-mini, o1, o1-mini
+    - Claude: Claude Sonnet 4, Claude 3.5 Sonnet, Claude 3.5 Haiku
+    - DeepSeek: V3, R1 (保持不变)
+    - Ollama: Llama 3.3, Qwen 2.5
+  - **变更文件**：
+    - backend/api/settings.py: 16 个模型
+    - src/data/modelComparison.ts: 前端模型数据
+    - i18n 翻译文件: EN/ZH
+  - **测试**: 1795 个测试通过
+  - Cycle #17
+
 - [x] **TASK-208**: 🐛 修复多个开发环境问题 ✅ 2026-03-12
   - **修复内容**：
     - BackendStatusIndicator 已集成到 App.tsx header ✅

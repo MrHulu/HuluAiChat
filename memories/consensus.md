@@ -14,15 +14,35 @@
 
 ## Next Action
 
-> **TASK-208: 修复开发环境问题** ✅ 已完成
+> **TASK-209: 更新模型列表** ✅ 已完成
 >
-> **下一个任务**: TASK-209 - 更新模型列表
-> - 当前模型列表过时，需要更新
-> - 考虑动态获取模型列表或定期更新
+> **下一个任务**: TASK-210 - 添加集成测试框架
+> - 防止类似 BackendStatusIndicator 未集成的集成遗漏问题
+> - 建议方案: 添加 Vitest 集成测试或 Playwright E2E 测试
 
 ---
 
 ## 最近完成
+
+### TASK-209: 更新模型列表（Cycle #17）
+
+**完成时间**: 2026-03-12
+
+**更新内容**:
+- **OpenAI**: GPT-4.1, GPT-4o, GPT-4o-mini, o3-mini, o1, o1-mini
+- **Claude**: Claude Sonnet 4, Claude 3.5 Sonnet, Claude 3.5 Haiku
+- **DeepSeek**: V3, R1 (保持不变)
+- **Ollama**: Llama 3.3, Qwen 2.5
+
+**变更文件**:
+- `huluchat-v3/backend/api/settings.py` - 后端模型列表 (16 个模型)
+- `huluchat-v3/src/data/modelComparison.ts` - 前端模型比较数据
+- `huluchat-v3/src/i18n/locales/en.json` - 英文翻译
+- `huluchat-v3/src/i18n/locales/zh.json` - 中文翻译
+
+**验证结果**: 所有 1795 个测试通过
+
+---
 
 ### TASK-208: 修复多个开发环境问题（Cycle #16）
 
