@@ -2,7 +2,7 @@
  * KnowledgeCenter - AI 知识中心
  * 提示词技巧、帮助文档等知识内容
  */
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { BookOpen, Lightbulb, HelpCircle, ChevronLeft } from "lucide-react";
 import {
@@ -18,6 +18,7 @@ import { FAQList } from "./FAQList";
 import { ShortcutList } from "./ShortcutList";
 import { FeedbackLinks } from "./FeedbackLinks";
 import { ModelComparison } from "./ModelComparison";
+import { SearchBar } from "./SearchBar";
 
 interface KnowledgeCenterProps {
   open: boolean;
@@ -94,6 +95,12 @@ export function KnowledgeCenter({
     setSelectedArticle(null);
   };
 
+  // 处理搜索结果导航（提示词技巧）
+  const handleNavigateToTip = useCallback((tip: PromptTip) => {
+    setSelectedCategory("prompts");
+    setSelectedArticle(tip);
+  }, []);
+
   // 关闭对话框
   const handleClose = () => {
     onOpenChange(false);
@@ -144,6 +151,11 @@ export function KnowledgeCenter({
               <p className="text-muted-foreground text-sm mb-4">
                 {t("knowledge.description")}
               </p>
+              {/* 搜索框 */}
+              <SearchBar
+                onNavigateToTip={handleNavigateToTip}
+                className="mb-2"
+              />
               {CATEGORIES.map((category) => (
                 <button
                   key={category.id}

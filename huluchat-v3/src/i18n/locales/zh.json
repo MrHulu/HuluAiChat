@@ -729,6 +729,13 @@
       },
       "privacyNote": "我们不收集任何用户数据。您的反馈是自愿的。"
     },
+    "search": {
+      "placeholder": "搜索技巧、常见问题、模型...",
+      "typeTip": "技巧",
+      "typeFaq": "常见问题",
+      "typeModel": "模型",
+      "resultsCount": "找到 {{count}} 个结果"
+    },
     "models": {
       "title": "AI 模型指南",
       "subtitle": "比较不同的 AI 模型，选择最适合您需求的模型",

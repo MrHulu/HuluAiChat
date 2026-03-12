@@ -732,6 +732,13 @@
       },
       "privacyNote": "We don't collect any user data. Your feedback is voluntary."
     },
+    "search": {
+      "placeholder": "Search tips, FAQs, models...",
+      "typeTip": "Tip",
+      "typeFaq": "FAQ",
+      "typeModel": "Model",
+      "resultsCount": "Found {{count}} results"
+    },
     "models": {
       "title": "AI Model Guide",
       "subtitle": "Compare different AI models and choose the best one for your needs",
