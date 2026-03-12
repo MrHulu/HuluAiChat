@@ -222,6 +222,8 @@ async def chat_websocket(
             max_tokens = data.get("max_tokens")  # None means use default
             # Get MCP enable flag
             use_mcp = data.get("use_mcp", True)  # Enable MCP tools by default
+            # Get quoted message ID for reply context - TASK-200
+            quoted_message_id = data.get("quoted_message_id")
 
             # Allow empty content if images or files are provided
             if not user_content.strip() and not images and not files:
@@ -274,6 +276,28 @@ async def chat_websocket(
 
             # Get conversation history for context
             history = await get_session_messages(db, session_id, limit=20)
+
+            # Handle quoted message - add to context if provided - TASK-200
+            if quoted_message_id:
+                try:
+                    quoted_result = await db.execute(
+                        select(MessageModel)
+                        .where(MessageModel.id == quoted_message_id)
+                        .where(MessageModel.session_id == session_id)
+                    )
+                    quoted_msg = quoted_result.scalar_one_or_none()
+                    if quoted_msg:
+                        # Prepend quoted message context for AI to understand the reference
+                        quoted_context = f"[引用回复] 之前的内容:\n{quoted_msg.content}\n\n---\n\n用户的新问题:"
+                        # Insert quoted context marker before the user's message
+                        # This helps AI understand the context without modifying user's actual message
+                        history.append({
+                            "role": "system",
+                            "content": quoted_context
+                        })
+                        logger.info(f"Added quoted message context: {quoted_message_id}")
+                except Exception as e:
+                    logger.warning(f"Failed to get quoted message {quoted_message_id}: {e}")
 
             # Determine which service to use based on model
             service, model_name = get_service_for_model(request_model)

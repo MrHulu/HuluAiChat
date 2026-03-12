@@ -112,11 +112,12 @@
 **预计周期**: 5-6 Cycles
 
 #### Phase 1: 消息交互增强 (P0)
-- [ ] **TASK-200**: 💬 完善引用回复
-  - 引用预览组件（输入框上方）
-  - 后端 API 支持 quoted_message_id
-  - 前端已有引用按钮和双击引用
-  - 预计：0.5 Cycle
+- [x] **TASK-200**: 💬 完善引用回复 ✅ 2026-03-12
+  - 引用预览组件（输入框上方）✅ 已存在
+  - 前端发送 quoted_message_id ✅
+  - 后端 API 支持 quoted_message_id ✅
+  - 后端将引用消息添加到 AI 上下文 ✅
+  - Cycle #8
 
 - [ ] **TASK-202**: 🔍 会话内搜索
   - ChatView 添加搜索栏（Ctrl+F）
