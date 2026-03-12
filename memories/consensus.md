@@ -1,18 +1,18 @@
 # Auto Company Consensus
 
-> 最后更新: 2026-03-12 - Cycle #176
+> 最后更新: 2026-03-12 - Cycle #178
 
 ---
 
 ## 当前状态
-✅ **TASK-187: 反馈入口完成**
+✅ **TASK-189: 帮助文档搜索完成**
 
 ---
 
 ## Next Action
 > **继续 v3.56.0 开发：**
-> - TASK-188: 模型对比说明 (P1)
-> - TASK-189: 帮助文档搜索 (P1)
+> - TASK-190: 首次使用引导 (P1)
+> - TASK-191: 功能发现提示 (P1)
 
 ---
 
@@ -47,7 +47,37 @@
 
 ## 最近完成
 
-### TASK-187: 反馈入口（Cycle #176）
+### TASK-189: 帮助文档搜索（Cycle #178）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- SearchBar 组件 - 搜索框和结果展示
+- searchData.ts - MiniSearch 索引和搜索逻辑
+- 搜索范围：提示词技巧、FAQ、模型对比
+- 搜索高亮显示
+- KnowledgeCenter 集成 - 主页显示搜索框
+- i18n 翻译更新 (EN/ZH)
+
+**变更文件**:
+- `src/data/searchData.ts` - 新建搜索索引
+- `src/components/knowledge/SearchBar.tsx` - 新建搜索组件
+- `src/components/knowledge/KnowledgeCenter.tsx` - 集成搜索
+- `src/components/knowledge/index.ts` - 导出 SearchBar
+- `src/i18n/locales/en.json` - 添加 search 翻译
+- `src/i18n/locales/zh.json` - 添加 search 翻译
+- `package.json` - 添加 minisearch 依赖
+
+**搜索特性**:
+- 模糊匹配 (fuzzy: 0.2)
+- 前缀匹配
+- 标题权重更高 (boost: 2)
+- 最多显示 10 个结果
+- 关键词高亮
+
+---
+
+### TASK-188: 模型对比说明（Cycle #177）
 
 **完成时间**: 2026-03-12
 
@@ -101,9 +131,9 @@
 - **项目**: HuluChat
 - **当前版本**: v3.54.0
 - **下一版本**: v3.56.0
-- **待开始任务**: 7 个 (TASK-188 ~ 194)
-- **已完成任务计数**: 25
+- **待开始任务**: 5 个 (TASK-190 ~ 194)
+- **已完成任务计数**: 26
 
 ---
 
-*更新时间: 2026-03-12 - Cycle #176*
+*更新时间: 2026-03-12 - Cycle #178*
