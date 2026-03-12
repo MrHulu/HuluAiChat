@@ -17,6 +17,16 @@
         }
       ]
     },
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "open-system-settings",
+          "cmd": "open",
+          "args": true
+        }
+      ]
+    },
     "fs:default",
     {
       "identifier": "fs:allow-read-text-file",

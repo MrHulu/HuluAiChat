@@ -146,10 +146,16 @@
   - 测试：22 个测试用例通过 ✅
   - Cycle #21
 
-- [ ] **TASK-214**: 🔐 权限引导
-  - macOS 辅助功能权限检测
-  - 未授权时显示引导弹窗
-  - 系统设置跳转链接
+- [x] **TASK-214**: 🔐 权限引导 ✅ 2026-03-12
+  - macOS 辅助功能权限检测 ✅
+  - useAccessibilityPermission hook（检测/状态管理/周期检查）✅
+  - PermissionGuideDialog 组件（步骤引导 UI）✅
+  - Rust 命令：check_accessibility_permission, open_accessibility_settings ✅
+  - 系统设置跳转链接 ✅
+  - 权限变更时实时更新状态 ✅
+  - i18n 翻译（EN/ZH）✅
+  - 测试：21 个测试用例通过 ✅
+  - Cycle #22
 
 #### Phase 2: 技术债务清理 (P1)
 - [ ] **TASK-215**: 🩺 Sidecar 健康监控

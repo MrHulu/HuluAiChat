@@ -6,26 +6,26 @@
 
 ## 当前状态
 ✅ **v3.58.0 已完成** 🎉
-⏳ **v3.59.0 开发中** (3/6 任务完成)
-🔄 **TASK-213 已完成**
+⏳ **v3.59.0 开发中** (4/6 任务完成)
+🔄 **TASK-214 已完成**
 
 ---
 
 ## Next Action
 
-> **TASK-214: 权限引导** - 下一个任务
+> **TASK-215: Sidecar 健康监控** - 下一个任务
 >
 > **版本**: v3.59.0
 > **主题**: 全局快捷唤起 + 技术韧性
-> **周期**: Cycle #22
-> **进度**: 3/6 任务完成
+> **周期**: Cycle #23
+> **进度**: 4/6 任务完成
 
 ---
 
 ## v3.59.0 规划摘要
 
 **MVP 范围** (6 个任务):
-- P0: ~~TASK-211 全局热键~~ ✅、~~TASK-212 快速面板~~ ✅、~~TASK-213 剪贴板~~ ✅、TASK-214 权限引导
+- P0: ~~TASK-211 全局热键~~ ✅、~~TASK-212 快速面板~~ ✅、~~TASK-213 剪贴板~~ ✅、~~TASK-214 权限引导~~ ✅
 - P1: TASK-215 Sidecar 监控、TASK-216 WebSocket 优化
 
 **预计周期**: 5-6 Cycles
@@ -34,6 +34,45 @@
 ---
 
 ## 最近完成
+
+### TASK-214: 权限引导（Cycle #22）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- macOS 辅助功能权限检测 ✅
+- useAccessibilityPermission hook（检测/状态管理/周期检查）✅
+- PermissionGuideDialog 组件（步骤引导 UI）✅
+- Rust 命令：check_accessibility_permission, open_accessibility_settings ✅
+- 系统设置跳转链接 ✅
+- 权限变更时实时更新状态（5秒周期检查）✅
+- 永久忽略选项（localStorage）✅
+- i18n 翻译（EN/ZH）✅
+- 测试：21 个测试用例通过 ✅
+
+**变更文件**:
+- `src-tauri/src/lib.rs` - 添加 check_accessibility_permission, open_accessibility_settings 命令
+- `src-tauri/capabilities/default.json` - 添加 shell:allow-execute 权限
+- `src/hooks/useAccessibilityPermission.ts` - 新建权限检测 hook
+- `src/hooks/useAccessibilityPermission.test.ts` - hook 测试
+- `src/hooks/index.ts` - 导出新 hook
+- `src/components/permission/PermissionGuideDialog.tsx` - 新建引导对话框组件
+- `src/components/permission/PermissionGuideDialog.test.tsx` - 组件测试
+- `src/components/permission/index.ts` - 导出
+- `src/App.tsx` - 集成权限引导和 QuickPanel
+- `src/i18n/locales/en.json` - 添加 permission 翻译
+- `src/i18n/locales/zh.json` - 添加 permission 翻译
+
+**平台差异**:
+| 平台 | 所需权限 | 处理方式 |
+|------|----------|----------|
+| macOS | 辅助功能权限 | 引导弹窗 + 设置跳转 |
+| Windows | 无需额外权限 | 直接使用 |
+| Linux | 无需额外权限 | 直接使用 |
+
+**隐私约束**: 权限状态仅存储在本地，不发送到服务器
+
+---
 
 ### TASK-213: 剪贴板增强（Cycle #21）
 
@@ -784,9 +823,10 @@
 ## Company State
 
 - **项目**: HuluChat
-- **当前版本**: v3.59.0 开发中 (3/6 任务完成)
+- **当前版本**: v3.59.0 开发中 (4/6 任务完成)
 - **下一版本**: v3.60.0
-- **待开始任务**: 3 个 (TASK-214, TASK-215, TASK-216)
+- **待开始任务**: 2 个 (TASK-215, TASK-216)
+- **已完成任务计数**: 51
 - **已完成任务计数**: 50
 
 ---

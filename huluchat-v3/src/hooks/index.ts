@@ -32,3 +32,8 @@ export {
   DEFAULT_GLOBAL_SHORTCUT,
   type GlobalShortcutConfig,
 } from "./useGlobalShortcut";
+export {
+  useAccessibilityPermission,
+  type PermissionStatus,
+  type UseAccessibilityPermissionResult,
+} from "./useAccessibilityPermission";

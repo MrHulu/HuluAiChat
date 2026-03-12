@@ -1248,5 +1248,33 @@
       "step2": "检查您的设置和配置",
       "step3": "如果问题持续，请联系支持"
     }
+  },
+  "permission": {
+    "guide": {
+      "title": "需要辅助功能权限",
+      "description": "全局快捷键需要辅助功能权限才能在 HuluChat 未聚焦时工作。",
+      "whyNeeded": "macOS 要求应用程序获得辅助功能权限才能在非活动状态下响应键盘快捷键。这使您能够在任何地方快速唤起 HuluChat。",
+      "step1": {
+        "title": "打开系统设置",
+        "description": "点击下方按钮打开 macOS 系统设置"
+      },
+      "step2": {
+        "title": "进入隐私与安全性",
+        "description": "前往 隐私与安全性 → 辅助功能"
+      },
+      "step3": {
+        "title": "启用 HuluChat",
+        "description": "在列表中找到 HuluChat 并勾选启用"
+      },
+      "openSettings": "打开系统设置",
+      "opening": "正在打开...",
+      "recheck": "重新检测",
+      "statusChecking": "检测中...",
+      "statusGranted": "已授权",
+      "statusDenied": "未授权",
+      "remindLater": "稍后提醒",
+      "dontShowAgain": "不再显示",
+      "privacyNote": "权限状态仅存储在您的本地设备上。"
+    }
   }
 }

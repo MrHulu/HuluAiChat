@@ -17,9 +17,11 @@ import { WelcomeDialog } from "@/components/WelcomeDialog";
 import { FeatureDiscoveryTip } from "@/components/FeatureDiscoveryTip";
 import { ContextualTip } from "@/components/ContextualTip";
 import { BookmarkJumpDialog } from "@/components/bookmark";
+import { PermissionGuideDialog } from "@/components/permission";
+import { QuickPanel } from "@/components/quickpanel";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
-import { useSession, useKeyboardShortcuts, useFolders, useFeatureDiscovery, useContextualTip, useModel, useBackendHealth } from "@/hooks";
+import { useSession, useKeyboardShortcuts, useFolders, useFeatureDiscovery, useContextualTip, useModel, useBackendHealth, useGlobalShortcut, useAccessibilityPermission } from "@/hooks";
 import { BackendStatusIndicator } from "@/components/BackendStatusIndicator";
 import { exportSession, moveSessionToFolder, updateSettings, ExportFormat } from "@/api/client";
 import { getAPIKey, type APIKeyProvider } from "@/services/keyring";
@@ -46,6 +48,7 @@ function App() {
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [knowledgeCenterOpen, setKnowledgeCenterOpen] = useState(false);
   const [bookmarkJumpOpen, setBookmarkJumpOpen] = useState(false);
+  const [quickPanelOpen, setQuickPanelOpen] = useState(false);
   const sessionListRef = useRef<SessionListRef>(null);
   const chatViewRef = useRef<ChatViewRef>(null);
 
@@ -54,6 +57,46 @@ function App() {
     const hasSeenWelcome = localStorage.getItem(WELCOME_SHOWN_KEY);
     return !hasSeenWelcome;
   });
+
+  // Accessibility permission hook - for macOS global shortcuts
+  const {
+    status: permissionStatus,
+    showGuide: showPermissionGuide,
+    openSettings: openAccessibilitySettings,
+    checkPermission: recheckPermission,
+    dismissGuide: dismissPermissionGuide,
+    dismissPermanently: dismissPermissionPermanently,
+  } = useAccessibilityPermission();
+
+  // Global shortcut hook - for quick summon (Ctrl+Shift+Space)
+  useGlobalShortcut(
+    {
+      id: "quick-summon",
+      shortcut: "CommandOrControl+Shift+Space",
+      handler: () => {
+        // Only show QuickPanel if permission is granted or not required
+        if (permissionStatus === "granted") {
+          setQuickPanelOpen(true);
+        }
+      },
+      description: "Quick summon HuluChat from anywhere",
+    },
+    {
+      enabled: permissionStatus === "granted",
+      onError: (error) => {
+        console.error("Global shortcut error:", error);
+        // Show toast with guidance
+        if (error.message.includes("permission") || error.message.includes("denied")) {
+          toast.warning(t("globalShortcut.permissionRequired"), {
+            action: {
+              label: t("globalShortcut.openSettings"),
+              onClick: () => openAccessibilitySettings(),
+            },
+          });
+        }
+      },
+    }
+  );
 
   // Feature discovery hook
   const {
@@ -359,6 +402,26 @@ function App() {
             chatViewRef.current?.scrollToMessage(messageId);
           }, 100);
         }}
+      />
+      {/* Permission Guide Dialog - macOS Accessibility Permission */}
+      <PermissionGuideDialog
+        open={showPermissionGuide}
+        onOpenChange={(open) => {
+          if (!open) {
+            dismissPermissionGuide();
+          }
+        }}
+        status={permissionStatus}
+        onOpenSettings={openAccessibilitySettings}
+        onDismiss={dismissPermissionGuide}
+        onDismissPermanently={dismissPermissionPermanently}
+        onRecheck={recheckPermission}
+      />
+      {/* Quick Panel - Floating quick question panel */}
+      <QuickPanel
+        isOpen={quickPanelOpen}
+        onClose={() => setQuickPanelOpen(false)}
+        onOpenSettings={() => setSettingsOpen(true)}
       />
       <div className="flex h-screen bg-background text-foreground">
       {/* Skip to main content link - Accessibility enhancement */}

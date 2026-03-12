@@ -1272,5 +1272,33 @@
       "step2": "Check your settings and configuration",
       "step3": "Contact support if the issue persists"
     }
+  },
+  "permission": {
+    "guide": {
+      "title": "Accessibility Permission Required",
+      "description": "Global shortcuts require Accessibility permission to work when HuluChat is not focused.",
+      "whyNeeded": "macOS requires Accessibility permission for apps to respond to keyboard shortcuts when they're not the active application. This enables you to quickly summon HuluChat from anywhere.",
+      "step1": {
+        "title": "Open System Settings",
+        "description": "Click the button below to open macOS System Settings"
+      },
+      "step2": {
+        "title": "Navigate to Privacy & Security",
+        "description": "Go to Privacy & Security → Accessibility"
+      },
+      "step3": {
+        "title": "Enable HuluChat",
+        "description": "Find HuluChat in the list and enable the checkbox"
+      },
+      "openSettings": "Open System Settings",
+      "opening": "Opening...",
+      "recheck": "Check Again",
+      "statusChecking": "Checking permission...",
+      "statusGranted": "Permission granted",
+      "statusDenied": "Permission not granted",
+      "remindLater": "Remind Later",
+      "dontShowAgain": "Don't Show Again",
+      "privacyNote": "Permission status is only stored locally on your device."
+    }
   }
 }
