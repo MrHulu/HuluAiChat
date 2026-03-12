@@ -1,47 +1,49 @@
 # Auto Company Consensus
 
-> 最后更新: 2026-03-12 - Cycle #11
+> 最后更新: 2026-03-12 - Cycle #13
 
 ---
 
 ## 当前状态
 ✅ **v3.57.0 已完成**
-✅ **v3.58.0 规划已完成**
-✅ **TASK-200: 完善引用回复 已完成**
-✅ **TASK-202: 会话内搜索 已完成**
-✅ **TASK-203: 主题定制 已完成**
-✅ **TASK-204: 快捷键自定义 已完成**
-🔄 **准备开始 TASK-205: 前端健康监控**
+✅ **v3.58.0 已完成** 🎉
+⏳ **等待 Boss 指示 - 下一步方向**
 
 ---
 
 ## Next Action
-> **开始 TASK-205: 前端健康监控**
+> **所有短期任务完成，等待 Boss 决策**
 >
-> v3.58.0 任务：
-> - TASK-200: 完善引用回复 ✅ (0.5 Cycle)
-> - TASK-202: 会话内搜索 ✅ (1 Cycle)
-> - TASK-203: 主题定制 ✅ (0.5 Cycle)
-> - TASK-204: 快捷键自定义 ✅ (1 Cycle)
-> - TASK-205: 前端健康监控 (1 Cycle)
+> ✅ v3.58.0 任务全部完成：
+> - TASK-200: 完善引用回复 ✅ (Cycle #8)
+> - TASK-202: 会话内搜索 ✅ (Cycle #9)
+> - TASK-203: 主题定制 ✅ (Cycle #10)
+> - TASK-204: 快捷键自定义 ✅ (Cycle #11)
+> - TASK-205: 前端健康监控 ✅ (Cycle #12)
 >
 > 阻塞任务（需要 Boss 操作）：
 > - TASK-163: sidecar 健康监控 (阻塞：Rust 编译内存不足)
 > - TASK-164: 更新签名验证 (代码完成，等待密钥配置)
 > - TASK-116: Product Hunt 素材 (等待 Boss)
+>
+> **选项**：
+> A. 规划下一个版本（v3.59.0）
+> B. Product Hunt 准备
+> C. 执行长期任务
 
 ---
 
-## v3.58.0 版本概要
+## v3.58.0 版本概要 ✅ **已完成**
 
 **主题**: 消息交互增强 + 个性化体验 + 技术韧性
 
-**MVP 功能**: 5 个
-- Phase 1 (P0): 完善引用回复、会话内搜索
-- Phase 2 (P1): 主题定制（仅预设）、快捷键自定义
-- Phase 3 (P1): 前端健康监控（CTO 建议）
+**MVP 功能**: 5 个 ✅ **全部完成**
+- Phase 1 (P0): 完善引用回复 ✅、会话内搜索 ✅
+- Phase 2 (P1): 主题定制 ✅、快捷键自定义 ✅
+- Phase 3 (P1): 前端健康监控 ✅
 
 **预计周期**: 5-6 Cycles
+**实际周期**: 5 Cycles (Cycle #8-12)
 
 **文档**: `docs/v3.58.0-roadmap.md`
 
@@ -99,6 +101,38 @@
 
 ## 最近完成
 
+### TASK-205: 前端健康监控（Cycle #12）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- useBackendHealth hook（状态管理 + 轮询 + 回调）✅
+- BackendStatusIndicator 组件（状态指示器 UI）✅
+- App.tsx 集成（Header 添加状态指示器）✅
+- 四种状态：checking / healthy / degraded / offline ✅
+- i18n 翻译（EN/ZH）✅
+- 测试：25 个测试用例通过 ✅
+
+**变更文件**:
+- `src/hooks/useBackendHealth.ts` - 新建健康监控 hook
+- `src/hooks/useBackendHealth.test.ts` - hook 测试
+- `src/components/BackendStatusIndicator.tsx` - 新建状态指示器组件
+- `src/components/BackendStatusIndicator.test.tsx` - 组件测试
+- `src/App.tsx` - 集成状态指示器到 Header
+- `src/i18n/locales/en.json` - 添加 health 翻译
+- `src/i18n/locales/zh.json` - 添加 health 翻译
+
+**功能特性**:
+- 实时后端健康状态指示器
+- 四种状态显示：checking（检查中）、healthy（健康）、degraded（降级）、offline（离线）
+- 自动轮询检测（每 30 秒）
+- 点击显示状态详情
+- 视觉指示器（颜色区分状态）
+
+**隐私约束**: 仅检测本地后端状态，不发送数据
+
+---
+
 ### TASK-204: 快捷键自定义（Cycle #11）
 
 **完成时间**: 2026-03-12
@@ -106,30 +140,30 @@
 **产出**:
 - useShortcutSettings hook（状态管理 + localStorage 存储）✅
 - ShortcutSettings 组件（快捷键列表 + 录制 + 冲突检测）✅
+- SettingsDialog 添加快捷键 Tab ✅
 - useKeyboardShortcuts hook 读取自定义快捷键 ✅
-- SettingsDialog 添加快捷键 Tab（6 个 Tabs）✅
 - i18n 翻译（EN/ZH）✅
 - 测试：29 个测试用例通过 ✅
 
 **变更文件**:
 - `src/hooks/useShortcutSettings.ts` - 新建快捷键设置 hook
-- `src/hooks/useKeyboardShortcuts.ts` - 修改以读取自定义快捷键
+- `src/hooks/useShortcutSettings.test.ts` - hook 测试
 - `src/components/settings/ShortcutSettings.tsx` - 新建快捷键设置组件
+- `src/components/settings/ShortcutSettings.test.tsx` - 组件测试
 - `src/components/settings/SettingsDialog.tsx` - 添加快捷键 Tab
+- `src/hooks/useKeyboardShortcuts.ts` - 读取自定义快捷键
 - `src/i18n/locales/en.json` - 添加 shortcuts 翻译
 - `src/i18n/locales/zh.json` - 添加 shortcuts 翻译
-- `src/hooks/useShortcutSettings.test.ts` - 新建测试
-- `src/components/settings/ShortcutSettings.test.tsx` - 新建测试
 
 **功能特性**:
 - 设置对话框新增"快捷键"标签页
-- 点击快捷键录制新的组合键
-- 冲突检测（显示警告）
-- 重置单个快捷键或全部重置
-- 平台感知显示（Windows 显示 Ctrl，macOS 显示 ⌘）
-- 隐私提示：快捷键偏好仅存储在本地
+- 可自定义快捷键列表
+- 快捷键录制功能（按键自动识别）
+- 冲突检测（重复快捷键警告）
+- 重置为默认功能
+- 快捷键存储在 localStorage
 
-**隐私约束**: 快捷键偏好存储在 localStorage，不发送到服务器
+**隐私约束**: 快捷键设置仅存储在本地
 
 ---
 
@@ -551,11 +585,11 @@
 ## Company State
 
 - **项目**: HuluChat
-- **当前版本**: v3.57.0 ✅ **已完成**
-- **下一版本**: v3.58.0 ✅ **规划完成**
-- **待开始任务**: 1 个（v3.58.0 - TASK-205）
-- **已完成任务计数**: 44
+- **当前版本**: v3.58.0 ✅ **已完成**
+- **下一版本**: 等待 Boss 决策
+- **待开始任务**: 0 个（需要规划）
+- **已完成任务计数**: 48
 
 ---
 
-*更新时间: 2026-03-12 - Cycle #11*
+*更新时间: 2026-03-12 - Cycle #13*

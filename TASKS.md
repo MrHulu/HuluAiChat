@@ -147,11 +147,14 @@
   - Cycle #11
 
 #### Phase 3: 技术韧性 (P1) - CTO 建议
-- [ ] **TASK-205**: 🩺 前端健康监控
-  - 前端轮询后端健康状态
-  - 后端崩溃自动恢复
-  - 状态指示器
-  - 预计：1 Cycle
+- [x] **TASK-205**: 🩺 前端健康监控 ✅ 2026-03-12
+  - useBackendHealth hook（状态管理 + 轮询 + 回调）✅
+  - BackendStatusIndicator 组件（状态指示器 UI）✅
+  - App.tsx 集成（Header 添加状态指示器）✅
+  - 四种状态：checking / healthy / degraded / offline ✅
+  - i18n 翻译（EN/ZH）✅
+  - 测试：25 个测试用例通过 ✅
+  - Cycle #12
 
 ---
 
