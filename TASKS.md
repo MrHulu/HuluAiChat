@@ -112,10 +112,13 @@
 **预计周期**: 4.5-5 Cycles
 
 #### Phase 1: 核心对话增强 (P0)
-- [ ] **TASK-195**: 🔄 消息重新生成
+- [x] **TASK-195**: 🔄 消息重新生成 ✅ 2026-03-12
   - 用户对 AI 回复不满意时重新生成
-  - 前端: MessageItem 添加"重新生成"按钮
-  - 预计: 0.5 Cycle
+  - 前端: MessageItem 已有"重新生成"按钮
+  - 修复: 后端同步删除消息（之前只删除前端状态）
+  - 前端: 发送 delete_from_message_id 参数
+  - 后端: 处理 regenerate + delete_from_message_id
+  - Cycle #5
 
 - [ ] **TASK-196**: ✏️ 消息编辑
   - 编辑已发送消息，从该点重新对话
