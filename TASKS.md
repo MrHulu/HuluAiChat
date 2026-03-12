@@ -135,11 +135,16 @@
   - 测试：10 个测试用例通过 ✅
   - Cycle #20
 
-- [ ] **TASK-213**: 📋 剪贴板增强
-  - 检测剪贴板内容
-  - Quick Actions：翻译/摘要/润色/解释/代码审查
-  - 结果一键复制
-  - 自定义 Quick Actions
+- [x] **TASK-213**: 📋 剪贴板增强 ✅ 2026-03-12
+  - 检测剪贴板内容 ✅
+  - Quick Actions：翻译/摘要/润色/解释/代码审查/修复语法/扩展/简化 (8个) ✅
+  - 结果一键复制 ✅
+  - 自定义 Quick Actions ✅
+  - QuickActionsSettings 设置组件 ✅
+  - 设置对话框 Quick Actions Tab ✅
+  - i18n 翻译 (EN/ZH) ✅
+  - 测试：22 个测试用例通过 ✅
+  - Cycle #21
 
 - [ ] **TASK-214**: 🔐 权限引导
   - macOS 辅助功能权限检测
