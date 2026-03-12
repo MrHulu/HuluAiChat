@@ -8,7 +8,7 @@
  */
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AlertTriangle, ExternalLink, Settings, X, RefreshCw } from "lucide-react";
+import { AlertTriangle, ExternalLink, Settings, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {

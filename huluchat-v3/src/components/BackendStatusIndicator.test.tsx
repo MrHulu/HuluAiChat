@@ -2,7 +2,7 @@
  * BackendStatusIndicator Component Tests
  */
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { BackendStatusIndicator } from "./BackendStatusIndicator";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import type { BackendStatus } from "@/hooks/useBackendHealth";
@@ -16,8 +16,18 @@ vi.mock("react-i18next", () => ({
         "backend.degraded": "Backend Degraded",
         "backend.offline": "Backend Offline",
         "backend.checking": "Checking...",
+        "backend.retry": "Retry",
+        "backend.restartAttempts": "Restart attempt {{current}}/{{max}}",
+        "backend.manualRestart": "Manual Restart",
       };
-      return translations[key] || key;
+      let result = translations[key] || key;
+      // Replace {{param}} with actual values
+      if (params) {
+        Object.entries(params).forEach(([k, v]) => {
+          result = result.replace(new RegExp(`\\{\\{${k}\\}\\}`, "g"), String(v));
+        });
+      }
+      return result;
     },
   }),
 }));
@@ -34,6 +44,10 @@ describe("BackendStatusIndicator", () => {
     isRecovering: false,
     lastChecked: new Date(),
     onRetry: vi.fn(),
+    restartAttempts: 0,
+    maxRestartAttempts: 3,
+    restartError: null,
+    onManualRestart: undefined,
   };
 
   it("should render healthy status with green indicator", () => {
@@ -161,6 +175,100 @@ describe("BackendStatusIndicator", () => {
         expect(screen.getByLabelText(label)).toBeInTheDocument();
         unmount();
       });
+    });
+  });
+
+  describe("sidecar health monitoring", () => {
+    it("should show restart attempts when offline", () => {
+      renderWithProviders(
+        <BackendStatusIndicator
+          {...defaultProps}
+          status="offline"
+          restartAttempts={2}
+          maxRestartAttempts={3}
+          compact={false}
+        />
+      );
+
+      expect(screen.getByText("Restart attempt 2/3")).toBeInTheDocument();
+    });
+
+    it("should show restart error when provided", () => {
+      renderWithProviders(
+        <BackendStatusIndicator
+          {...defaultProps}
+          status="offline"
+          restartError="Failed to restart backend"
+          compact={false}
+        />
+      );
+
+      expect(screen.getByText("Failed to restart backend")).toBeInTheDocument();
+    });
+
+    it("should show manual restart button when auto-restart exhausted", () => {
+      const onManualRestart = vi.fn();
+      renderWithProviders(
+        <BackendStatusIndicator
+          {...defaultProps}
+          status="offline"
+          restartAttempts={3}
+          maxRestartAttempts={3}
+          onManualRestart={onManualRestart}
+          compact={false}
+        />
+      );
+
+      expect(screen.getByText("Manual Restart")).toBeInTheDocument();
+    });
+
+    it("should call onManualRestart when clicked", () => {
+      const onManualRestart = vi.fn();
+      renderWithProviders(
+        <BackendStatusIndicator
+          {...defaultProps}
+          status="offline"
+          restartAttempts={3}
+          maxRestartAttempts={3}
+          onManualRestart={onManualRestart}
+          compact={false}
+        />
+      );
+
+      const button = screen.getByText("Manual Restart");
+      fireEvent.click(button);
+
+      expect(onManualRestart).toHaveBeenCalledOnce();
+    });
+
+    it("should not show manual restart button when attempts not exhausted", () => {
+      const onManualRestart = vi.fn();
+      renderWithProviders(
+        <BackendStatusIndicator
+          {...defaultProps}
+          status="offline"
+          restartAttempts={1}
+          maxRestartAttempts={3}
+          onManualRestart={onManualRestart}
+          compact={false}
+        />
+      );
+
+      expect(screen.queryByText("Manual Restart")).not.toBeInTheDocument();
+    });
+
+    it("should disable retry button when recovering", () => {
+      renderWithProviders(
+        <BackendStatusIndicator
+          {...defaultProps}
+          status="offline"
+          isRecovering={true}
+          compact={false}
+        />
+      );
+
+      const retryButton = screen.getByText("Retry").closest("button");
+      expect(retryButton).toBeDisabled();
     });
   });
 });

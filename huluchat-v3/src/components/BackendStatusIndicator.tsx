@@ -5,7 +5,7 @@
  * Privacy-first: Only displays current status, no tracking
  */
 import { useTranslation } from "react-i18next";
-import { Server, RefreshCw, CheckCircle, AlertTriangle, XCircle } from "lucide-react";
+import { Server, RefreshCw, CheckCircle, AlertTriangle, XCircle, Settings, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -24,6 +24,14 @@ export interface BackendStatusIndicatorProps {
   className?: string;
   /** Whether to show compact mode (icon only) */
   compact?: boolean;
+  /** Number of restart attempts made (for auto-restart display) */
+  restartAttempts?: number;
+  /** Maximum restart attempts allowed (for display) */
+  maxRestartAttempts?: number;
+  /** Error message from restart attempt */
+  restartError?: string | null;
+  /** Manual restart handler */
+  onManualRestart?: () => void;
 }
 
 /**
@@ -37,6 +45,10 @@ export function BackendStatusIndicator({
   onRetry,
   className,
   compact = true,
+  restartAttempts = 0,
+  maxRestartAttempts = 3,
+  restartError = null,
+  onManualRestart,
 }: BackendStatusIndicatorProps) {
   const { t } = useTranslation();
 
@@ -149,23 +161,60 @@ export function BackendStatusIndicator({
               </p>
             )}
             {status === "offline" && (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={(e) => {
-                  e.preventDefault();
-                  onRetry();
-                }}
-                disabled={isRecovering}
-                className="w-full mt-2"
-              >
-                {isRecovering ? (
-                  <RefreshCw className="h-3 w-3 animate-spin mr-1" />
-                ) : (
-                  <RefreshCw className="h-3 w-3 mr-1" />
+              <div className="space-y-2">
+                {/* Show restart attempts if any */}
+                {restartAttempts > 0 && (
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <Info className="h-3 w-3" />
+                    <span>
+                      {t("backend.restartAttempts", {
+                        current: restartAttempts,
+                        max: maxRestartAttempts,
+                      })}
+                    </span>
+                  </div>
                 )}
-                {t("backend.retry")}
-              </Button>
+                {/* Show restart error if any */}
+                {restartError && (
+                  <p className="text-xs text-destructive">
+                    {restartError}
+                  </p>
+                )}
+                {/* Retry connection button */}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onRetry();
+                  }}
+                  disabled={isRecovering}
+                  className="w-full"
+                >
+                  {isRecovering ? (
+                    <RefreshCw className="h-3 w-3 animate-spin mr-1" />
+                  ) : (
+                    <RefreshCw className="h-3 w-3 mr-1" />
+                  )}
+                  {t("backend.retry")}
+                </Button>
+                {/* Manual restart button - only show if auto-restart exhausted */}
+                {onManualRestart && restartAttempts >= maxRestartAttempts && (
+                  <Button
+                    size="sm"
+                    variant="default"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onManualRestart();
+                    }}
+                    disabled={isRecovering}
+                    className="w-full"
+                  >
+                    <Settings className="h-3 w-3 mr-1" />
+                    {t("backend.manualRestart")}
+                  </Button>
+                )}
+              </div>
             )}
           </div>
         </TooltipContent>
@@ -203,19 +252,52 @@ export function BackendStatusIndicator({
         </p>
       </div>
       {status === "offline" && (
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={onRetry}
-          disabled={isRecovering}
-        >
-          {isRecovering ? (
-            <RefreshCw className="h-3 w-3 animate-spin mr-1" />
-          ) : (
-            <RefreshCw className="h-3 w-3 mr-1" />
+        <div className="flex flex-col gap-2">
+          {/* Show restart attempts if any */}
+          {restartAttempts > 0 && (
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Info className="h-3 w-3" />
+              <span>
+                {t("backend.restartAttempts", {
+                  current: restartAttempts,
+                  max: maxRestartAttempts,
+                })}
+              </span>
+            </div>
           )}
-          {t("backend.retry")}
-        </Button>
+          {/* Show restart error if any */}
+          {restartError && (
+            <p className="text-xs text-destructive">
+              {restartError}
+            </p>
+          )}
+          {/* Retry connection button */}
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onRetry}
+            disabled={isRecovering}
+          >
+            {isRecovering ? (
+              <RefreshCw className="h-3 w-3 animate-spin mr-1" />
+            ) : (
+              <RefreshCw className="h-3 w-3 mr-1" />
+            )}
+            {t("backend.retry")}
+          </Button>
+          {/* Manual restart button - only show if auto-restart exhausted */}
+          {onManualRestart && restartAttempts >= maxRestartAttempts && (
+            <Button
+              size="sm"
+              variant="default"
+              onClick={onManualRestart}
+              disabled={isRecovering}
+            >
+              <Settings className="h-3 w-3 mr-1" />
+              {t("backend.manualRestart")}
+            </Button>
+          )}
+        </div>
       )}
     </div>
   );

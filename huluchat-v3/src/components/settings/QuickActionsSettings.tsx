@@ -5,7 +5,7 @@
  */
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Trash2, RotateCcw, Star, GripVertical, Pencil } from "lucide-react";
+import { Plus, Trash2, RotateCcw, Star, GripVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,7 +20,6 @@ import {
   loadQuickActions,
   saveQuickActions,
   resetQuickActions,
-  DEFAULT_QUICK_ACTIONS,
   type QuickAction,
 } from "@/data/quickActions";
 import { toast } from "sonner";
@@ -293,7 +292,7 @@ export function QuickActionsSettings({ onSettingsChange }: QuickActionsSettingsP
 
       {/* Actions List */}
       <div className="space-y-2">
-        {actions.map((action, index) => (
+        {actions.map((action) => (
           <div
             key={action.id}
             className="flex items-center justify-between p-3 border border-border rounded-lg hover:bg-muted/30 transition-colors"

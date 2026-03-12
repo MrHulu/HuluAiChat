@@ -104,6 +104,19 @@ vi.mock("@/hooks", () => ({
     triggerRecovery: vi.fn(),
     checkHealth: vi.fn(),
   })),
+  useGlobalShortcut: vi.fn(),
+  useAccessibilityPermission: vi.fn(() => ({
+    status: "granted",
+    showGuide: false,
+    openSettings: vi.fn(),
+    checkPermission: vi.fn(),
+    dismissGuide: vi.fn(),
+    dismissPermanently: vi.fn(),
+  })),
+  useWebSocket: vi.fn(() => ({
+    status: "connected",
+    send: vi.fn(),
+  })),
 }));
 
 // Mock API client

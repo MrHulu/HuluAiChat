@@ -1,4 +1,5 @@
 use tauri_plugin_shell::ShellExt;
+use tauri::Manager;
 
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -33,7 +34,7 @@ fn check_accessibility_permission() -> bool {
     }
 }
 
-/// Open macOS System Settings to Accessibility panel
+/// Open macOS System Settings in Accessibility panel
 /// This helps users grant accessibility permissions
 #[tauri::command]
 async fn open_accessibility_settings(app: tauri::AppHandle) -> Result<(), String> {
@@ -79,6 +80,67 @@ async fn open_accessibility_settings(app: tauri::AppHandle) -> Result<(), String
     }
 }
 
+/// Restart the backend process
+/// Uses shell command to start the Python backend
+#[tauri::command]
+async fn restart_backend(app: tauri::AppHandle) -> Result<String, String> {
+    let shell = app.shell();
+
+    // Determine the path to the Python backend
+    // In development: backend directory relative to project
+    // In production: bundled with the app
+    let backend_path = if cfg!(debug_assertions) {
+        // Development mode - use project relative path
+        std::path::PathBuf::from("../backend")
+    } else {
+        // Production mode - use resource directory
+        app.path().resource_dir()
+            .map(|p| p.join("backend"))
+            .unwrap_or_else(|_| std::path::PathBuf::from("../backend"))
+    };
+
+    // Determine Python executable path
+    // First try the venv Python, then system Python
+    let python_path = if cfg!(windows) {
+        let venv_python = backend_path.join(".venv/Scripts/python.exe");
+        if venv_python.exists() {
+            venv_python.to_string_lossy().to_string()
+        } else {
+            "python".to_string()
+        }
+    } else {
+        let venv_python = backend_path.join(".venv/bin/python");
+        if venv_python.exists() {
+            venv_python.to_string_lossy().to_string()
+        } else {
+            "python3".to_string()
+        }
+    };
+
+    // Start the backend process
+    let main_py = backend_path.join("main.py");
+    let main_py_str = main_py.to_string_lossy().to_string();
+
+    let result = shell
+        .command(python_path)
+        .args(&[main_py_str])
+        .current_dir(backend_path)
+        .output()
+        .await;
+
+    match result {
+        Ok(output) => {
+            if output.status.success() {
+                Ok("Backend restart initiated".to_string())
+            } else {
+                let stderr = String::from_utf8_lossy(&output.stderr);
+                Err(format!("Backend failed to start: {}", stderr))
+            }
+        }
+        Err(e) => Err(format!("Failed to execute backend: {}", e)),
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -94,7 +156,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             greet,
             check_accessibility_permission,
-            open_accessibility_settings
+            open_accessibility_settings,
+            restart_backend
         ])
         .setup(|app| {
             // Start the FastAPI backend sidecar
