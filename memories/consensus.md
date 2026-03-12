@@ -7,22 +7,52 @@
 ## 当前状态
 ✅ **v3.57.0 已完成**
 ✅ **v3.58.0 已完成** 🎉
-✅ **全面回归测试通过** (1795 测试)
+✅ **全面回归测试通过** (1826 测试)
 ✅ **官网版本号自动同步机制已实现**
+✅ **集成测试框架已添加** (31 个集成测试)
 
 ---
 
 ## Next Action
 
-> **TASK-209: 更新模型列表** ✅ 已完成
+> **TASK-210: 添加集成测试框架** ✅ 已完成
 >
-> **下一个任务**: TASK-210 - 添加集成测试框架
-> - 防止类似 BackendStatusIndicator 未集成的集成遗漏问题
-> - 建议方案: 添加 Vitest 集成测试或 Playwright E2E 测试
+> **下一个任务**: 等待 Boss 指示
+> - 所有短期任务已完成
+> - 版本：v3.58.0
+> - 周期：Cycle #18
+> - 已完成任务计数：50
 
 ---
 
 ## 最近完成
+
+### TASK-210: 添加集成测试框架（Cycle #18）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- `src/integration/` 目录结构 ✅
+- `src/integration/utils.tsx` - 集成测试工具函数 ✅
+- `src/integration/app-components.integration.test.tsx` - 31 个集成测试 ✅
+
+**测试覆盖**:
+1. Component Export Verification: 13 个测试
+2. Hook Integration: 7 个测试
+3. API Client Integration: 3 个测试
+4. Service Integration: 2 个测试
+5. BackendStatusIndicator Rendering: 5 个测试
+6. Import Path Consistency: 1 个测试
+
+**变更文件**:
+- `huluchat-v3/src/integration/utils.tsx` - 新建集成测试工具
+- `huluchat-v3/src/integration/app-components.integration.test.tsx` - 新建集成测试
+
+**验证结果**: 所有 1826 个测试通过（77 个测试文件）
+
+**目的**: 防止类似 BackendStatusIndicator 未集成的集成遗漏问题
+
+---
 
 ### TASK-209: 更新模型列表（Cycle #17）
 

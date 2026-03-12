@@ -107,18 +107,24 @@
 ## 待开始
 
 ### 🔴 优先任务
-- [ ] **TASK-210**: 🧪 添加集成测试框架
+- [x] **TASK-210**: 🧪 添加集成测试框架 ✅ 2026-03-12
   - **问题**: 项目只有单元测试，没有集成测试
   - **后果**: 组件集成遗漏无法被测试发现（如 BackendStatusIndicator）
-  - **当前状态**:
-    - 单元测试: ✅ ~30+ 个
-    - 集成测试: ❌ 0
-    - E2E 测试: ❌ 0
-  - **建议方案**:
-    - 方案 A: 添加 Playwright E2E 测试
-    - 方案 B: 添加 Vitest 集成测试（减少 mock 使用）
-    - 方案 C: 两者都添加
-  - **优先级**: P1 - 防止类似集成遗漏问题
+  - **解决方案**: 方案 B - Vitest 集成测试
+  - **完成内容**:
+    - `src/integration/` 目录结构 ✅
+    - `src/integration/utils.tsx` - 集成测试工具函数 ✅
+    - `src/integration/app-components.integration.test.tsx` - 31 个集成测试 ✅
+    - 测试覆盖：组件导出、Hook 导出、API 客户端、服务集成、渲染验证
+    - **结果**: 1826 个测试全部通过（77 个测试文件）
+  - **测试类型**:
+    - Component Export Verification: 13 个测试
+    - Hook Integration: 7 个测试
+    - API Client Integration: 3 个测试
+    - Service Integration: 2 个测试
+    - BackendStatusIndicator Rendering: 5 个测试
+    - Import Path Consistency: 1 个测试
+  - Cycle #18
 
 - [x] **TASK-206**: 🧪 全面回归测试 - v3.55.0 ~ v3.58.0 ✅ 2026-03-12
   - 暂停新功能开发，进行全面回归测试
