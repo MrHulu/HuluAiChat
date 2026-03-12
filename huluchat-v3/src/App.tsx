@@ -308,7 +308,10 @@ function App() {
         {/* 聊天区域 */}
         <main id="main-content" className="flex-1 min-h-0" tabIndex={-1}>
           <ErrorBoundary>
-            <ChatView sessionId={currentSession?.id || null} />
+            <ChatView
+              sessionId={currentSession?.id || null}
+              onSessionUpdated={refreshSessions}
+            />
           </ErrorBoundary>
         </main>
       </div>

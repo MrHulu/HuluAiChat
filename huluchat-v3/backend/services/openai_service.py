@@ -197,6 +197,58 @@ class OpenAIService:
         """Check if OpenAI is properly configured."""
         return settings.openai_api_key is not None
 
+    async def chat(
+        self,
+        messages: list[dict],
+        model: Optional[str] = None,
+        temperature: Optional[float] = None,
+        max_tokens: Optional[int] = None,
+    ) -> str:
+        """Non-streaming chat completion from OpenAI.
+
+        Args:
+            messages: List of message dicts with 'role' and 'content'
+            model: Model to use, defaults to settings.openai_model
+            temperature: Sampling temperature (0-2), defaults to settings.temperature
+            max_tokens: Max tokens in response, defaults to settings.max_tokens
+
+        Returns:
+            The assistant's response content as string
+
+        Raises:
+            ValueError: If API key not configured
+            Exception: If API call fails
+        """
+        model = model or settings.openai_model
+        temperature = temperature if temperature is not None else settings.temperature
+        max_tokens = max_tokens if max_tokens is not None else settings.max_tokens
+
+        try:
+            response = await self.client.chat.completions.create(
+                model=model,
+                messages=messages,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                stream=False,
+            )
+            return response.choices[0].message.content or ""
+
+        except APIConnectionError as e:
+            logger.error(f"API connection error: {e}")
+            raise Exception(f"连接失败: {str(e)}")
+
+        except APITimeoutError as e:
+            logger.error(f"API timeout error: {e}")
+            raise Exception(f"请求超时，请稍后重试")
+
+        except APIStatusError as e:
+            logger.error(f"API status error: {e.status_code} {e.message}")
+            raise Exception(f"请求失败: {e.message}")
+
+        except Exception as e:
+            logger.error(f"Chat request error: {type(e).__name__}: {e}")
+            raise
+
 
 # Global service instance
 openai_service = OpenAIService()

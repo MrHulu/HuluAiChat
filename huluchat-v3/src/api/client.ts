@@ -140,6 +140,28 @@ export async function searchSessions(query: string): Promise<SessionSearchResult
 }
 
 /**
+ * Update session title
+ */
+export async function updateSessionTitle(sessionId: string, title: string): Promise<Session> {
+  const response = await fetch(`${API_BASE}/sessions/${sessionId}/title`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title }),
+  });
+  return response.json();
+}
+
+/**
+ * Generate AI title for session
+ */
+export async function generateSessionTitle(sessionId: string): Promise<{ title: string; session_id: string }> {
+  const response = await fetch(`${API_BASE}/sessions/${sessionId}/generate-title`, {
+    method: "POST",
+  });
+  return response.json();
+}
+
+/**
  * Get messages for a session
  */
 export async function getSessionMessages(

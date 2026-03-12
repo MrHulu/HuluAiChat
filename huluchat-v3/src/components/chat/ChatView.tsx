@@ -29,6 +29,7 @@ import { Bookmark, CheckCircle, XCircle, Loader2 } from "lucide-react";
 
 export interface ChatViewProps {
   sessionId: string | null;
+  onSessionUpdated?: () => void;  // Called when session title is updated
 }
 
 function ConnectionIndicator({ status }: { status: ConnectionStatus }) {
@@ -126,10 +127,10 @@ function ToolCallsIndicator({ toolCalls }: { toolCalls: ToolCall[] }) {
   );
 }
 
-export function ChatView({ sessionId }: ChatViewProps) {
+export function ChatView({ sessionId, onSessionUpdated }: ChatViewProps) {
   const { t } = useTranslation();
   const { messages, streamingMessage, toolCalls, connectionStatus, sendMessage, regenerateMessage, deleteMessage, isLoading, refreshMessages } =
-    useChat(sessionId);
+    useChat(sessionId, { onTitleGenerated: onSessionUpdated });
   const { currentModel, models, setModel, isLoading: isLoadingModels, parameters } = useModel();
 
   // Refs

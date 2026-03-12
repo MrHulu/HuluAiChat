@@ -5,7 +5,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { useWebSocket, ConnectionStatus } from "./useWebSocket";
-import { Message, getSessionMessages, ImageContent, FileAttachment, deleteMessage as apiDeleteMessage, createChatWebSocket } from "@/api/client";
+import { Message, getSessionMessages, ImageContent, FileAttachment, deleteMessage as apiDeleteMessage, createChatWebSocket, generateSessionTitle } from "@/api/client";
 
 export interface StreamingMessage {
   id: string;
@@ -27,6 +27,10 @@ export interface ChatParameters {
   max_tokens?: number;
 }
 
+export interface UseChatOptions {
+  onTitleGenerated?: (title: string) => void;
+}
+
 export interface UseChatReturn {
   messages: Message[];
   streamingMessage: StreamingMessage | null;
@@ -38,6 +42,7 @@ export interface UseChatReturn {
   isLoading: boolean;
   isLoadingHistory: boolean;
   refreshMessages: () => void;
+  generateTitle: () => Promise<void>;
 }
 
 // WebSocket 消息类型
@@ -54,13 +59,14 @@ interface WSMessage {
   result?: string;
 }
 
-export function useChat(sessionId: string | null): UseChatReturn {
+export function useChat(sessionId: string | null, options?: UseChatOptions): UseChatReturn {
   const [messages, setMessages] = useState<Message[]>([]);
   const [streamingMessage, setStreamingMessage] = useState<StreamingMessage | null>(null);
   const [toolCalls, setToolCalls] = useState<ToolCall[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const currentSessionIdRef = useRef<string | null>(null);
+  const titleGeneratedRef = useRef(false); // Track if title was generated for this session
 
   // 使用 ref 保存 streamingMessage 的最新值，避免闭包陷阱
   const streamingMessageRef = useRef<StreamingMessage | null>(null);
@@ -149,7 +155,22 @@ export function useChat(sessionId: string | null): UseChatReturn {
             content: currentStreaming.content,
             created_at: new Date().toISOString(),
           };
-          setMessages((prev) => [...prev, newMessage]);
+          setMessages((prev) => {
+            const updated = [...prev, newMessage];
+            // Auto-generate title after first AI response
+            if (updated.length === 2 && !titleGeneratedRef.current && sessionId) {
+              // First user + assistant exchange complete
+              titleGeneratedRef.current = true;
+              generateSessionTitle(sessionId).then((result) => {
+                if (result.title && options?.onTitleGenerated) {
+                  options.onTitleGenerated(result.title);
+                }
+              }).catch((error) => {
+                console.error("Failed to generate title:", error);
+              });
+            }
+            return updated;
+          });
           setStreamingMessage(null);
         }
         // Clear tool calls when stream ends
@@ -208,6 +229,7 @@ export function useChat(sessionId: string | null): UseChatReturn {
       currentSessionIdRef.current = sessionId;
       setStreamingMessage(null);
       setIsLoading(false);
+      titleGeneratedRef.current = false; // Reset title generation flag
       // 加载该会话的历史消息
       loadHistory(sessionId);
     } else if (!sessionId) {
@@ -216,6 +238,7 @@ export function useChat(sessionId: string | null): UseChatReturn {
       setMessages([]);
       setStreamingMessage(null);
       setIsLoading(false);
+      titleGeneratedRef.current = false;
     }
   }, [sessionId, loadHistory]);
 
@@ -315,6 +338,20 @@ export function useChat(sessionId: string | null): UseChatReturn {
     [sessionId]
   );
 
+  // 手动触发生成标题
+  const generateTitle = useCallback(async () => {
+    if (!sessionId) return;
+
+    try {
+      const result = await generateSessionTitle(sessionId);
+      if (result.title && options?.onTitleGenerated) {
+        options.onTitleGenerated(result.title);
+      }
+    } catch (error) {
+      console.error("Failed to generate title:", error);
+    }
+  }, [sessionId, options]);
+
   return {
     messages,
     streamingMessage,
@@ -326,5 +363,6 @@ export function useChat(sessionId: string | null): UseChatReturn {
     isLoading,
     isLoadingHistory,
     refreshMessages,
+    generateTitle,
   };
 }
