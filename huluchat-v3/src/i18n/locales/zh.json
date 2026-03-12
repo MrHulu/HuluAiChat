@@ -703,6 +703,15 @@
           "answer": "HuluChat 启动时会自动检查更新。有新版本时会显示更新通知，点击即可下载安装。您也可以在设置 > 关于 > 检查更新中手动检查。"
         }
       }
+    },
+    "shortcuts": {
+      "title": "键盘快捷键",
+      "categories": {
+        "general": "常规",
+        "navigation": "导航",
+        "editor": "编辑器"
+      },
+      "footer": "按 {{key}} 加其他按键使用快捷键"
     }
   }
 }
