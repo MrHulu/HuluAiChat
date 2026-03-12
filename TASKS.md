@@ -226,7 +226,11 @@
   - sessions: (folder_id, updated_at) - 优化会话列表查询
   - 更新 SQLAlchemy 模型添加 Index 声明
   - Cycle #186
-- [ ] **TASK-181**: 🔑 API Key 存储改用系统钥匙串
+- [x] **TASK-181**: 🔑 API Key 存储改用系统钥匙串 ✅ 2026-03-12
+  - App.tsx 吝始化时从 keyring 加载 API key 发送给后端
+  - keyring.ts 已支持 openai 和 deepseek provider
+  - Settings.py 后端不持久化 API key
+  - Cycle #187
 
 ### 等待 Boss
 - [ ] **TASK-116**: 🎬 准备 Product Hunt 发布素材(截图、视频) - 等待 Boss

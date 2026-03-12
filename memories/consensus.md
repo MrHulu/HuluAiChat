@@ -1,20 +1,20 @@
 # Auto Company Consensus
 
-> 最后更新: 2026-03-12 - Cycle #186
+> 最后更新: 2026-03-12 - Cycle #187
 
 ---
 
 ## 当前状态
 ✅ **v3.56.0 版本发布准备完成**
-✅ **TASK-180: 复合数据库索引 - 已完成**
+✅ **TASK-181: API Key 存储改用系统钥匙串 - 已完成**
 🔄 **TASK-164: 更新签名验证 - 代码完成，等待 Boss 配置密钥**
 
 ---
 
 ## Next Action
-> **继续执行技术债务任务**
+> **所有技术债务任务已完成**
 >
-> 下一个任务：TASK-181 - API Key 存储改用系统钥匙串
+> 等待 Boss 指示下一步方向
 >
 > 阻塞任务：
 > - TASK-163: sidecar 健康监控 (阻塞：Rust 编译内存不足)
@@ -55,6 +55,26 @@
 ---
 
 ## 最近完成
+
+### TASK-181: API Key 存储改用系统钥匙串（Cycle #187）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- App.tsx 启动时从 keyring 加载 API key 发送给后端
+- keyring.ts 支持 openai 和 deepseek provider
+- SettingsDialog 已使用 keyring 存储 API key
+- 后端 settings.py 不持久化 API key 到文件
+
+**变更文件**:
+- `huluchat-v3/src/App.tsx` - 添加初始化 useEffect 从 keyring 加载 API key
+
+**功能特性**:
+- 应用启动时自动从系统钥匙串加载 API key
+- 支持 macOS Keychain、Windows Credential Manager、Linux Secret Service
+- API key 不再存储到后端文件（只存在运行时内存）
+
+---
 
 ### TASK-180: 添加复合数据库索引（Cycle #186）
 
@@ -353,9 +373,9 @@
 - **项目**: HuluChat
 - **当前版本**: v3.56.0 ✅ **已发布**
 - **下一版本**: 待定（等待 Boss 指示）
-- **待开始任务**: 0 个（有阻塞任务和技术债务）
-- **已完成任务计数**: 34
+- **待开始任务**: 0 个（有阻塞任务）
+- **已完成任务计数**: 35
 
 ---
 
-*更新时间: 2026-03-12 - Cycle #186*
+*更新时间: 2026-03-12 - Cycle #187*
