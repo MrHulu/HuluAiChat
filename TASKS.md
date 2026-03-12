@@ -127,11 +127,13 @@
   - 后端: 处理 regenerate + skip_save_user 逻辑
   - Cycle #5
 
-- [ ] **TASK-197**: 📋 会话模板
+- [x] **TASK-197**: 📋 会话模板 ✅ 2026-03-12
   - 预设配置快速创建会话
-  - 后端: templates 表 + CRUD API
-  - 前端: 模板管理 UI + 命令面板集成
-  - 预计: 1 Cycle
+  - 后端: SessionTemplateModel + CRUD API
+  - 内置模板: 通用对话、代码助手、翻译助手、创意写作
+  - 前端: API 客户端 + TemplateSelector 组件
+  - i18n: 中英文翻译
+  - Cycle #5
 
 #### Phase 2: 效率工具 (P1)
 - [ ] **TASK-198**: ⚡ 自定义命令
