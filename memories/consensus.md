@@ -1,35 +1,24 @@
 # Auto Company Consensus
 
-> 最后更新: 2026-03-12 - Cycle #13
+> 最后更新: 2026-03-12
 
 ---
 
 ## 当前状态
 ✅ **v3.57.0 已完成**
 ✅ **v3.58.0 已完成** 🎉
-⏳ **等待 Boss 指示 - 下一步方向**
+✅ **全面回归测试通过** (1795 测试)
 
 ---
 
 ## Next Action
-> **所有短期任务完成，等待 Boss 决策**
->
-> ✅ v3.58.0 任务全部完成：
-> - TASK-200: 完善引用回复 ✅ (Cycle #8)
-> - TASK-202: 会话内搜索 ✅ (Cycle #9)
-> - TASK-203: 主题定制 ✅ (Cycle #10)
-> - TASK-204: 快捷键自定义 ✅ (Cycle #11)
-> - TASK-205: 前端健康监控 ✅ (Cycle #12)
->
-> 阻塞任务（需要 Boss 操作）：
-> - TASK-163: sidecar 健康监控 (阻塞：Rust 编译内存不足)
-> - TASK-164: 更新签名验证 (代码完成，等待密钥配置)
-> - TASK-116: Product Hunt 素材 (等待 Boss)
->
-> **选项**：
-> A. 规划下一个版本（v3.59.0）
-> B. Product Hunt 准备
-> C. 执行长期任务
+
+> **TASK-207: 官网版本号自动同步**
+> - 问题：官网显示 3.52.0，实际已到 v3.58.0
+> - 原因：版本号硬编码在 `website/src/app/page.tsx`
+> - 方案：实现自动化版本同步机制
+>   - 方案 A: Cloudflare Pages 构建时动态获取最新 release 版本
+>   - 方案 B: GitHub Action 在 release 时自动更新官网代码
 
 ---
 
@@ -100,6 +89,31 @@
 ---
 
 ## 最近完成
+
+### TASK-206: 全面回归测试（Cycle #14）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- 修复 useChat.test.ts mock（添加 createChatWebSocket）
+- 修复 App.test.tsx mock（添加 useContextualTip）
+- 更新 sendMessage 断言使用 objectContaining
+- 更新删除会话测试匹配 AlertDialog 流程
+- **所有 1795 个测试通过** (76 个测试文件)
+
+**变更文件**:
+- `huluchat-v3/src/hooks/useChat.test.ts` - 添加 createChatWebSocket mock
+- `huluchat-v3/src/App.test.tsx` - 添加 useContextualTip mock，更新删除测试
+
+**回归测试范围**:
+- v3.55.0: MCP 集成、智能搜索、会话摘要、导出增强、提示词变量、本地偏好
+- v3.56.0: 命令面板、知识中心、FAQ、快捷键列表、首次引导、功能发现
+- v3.57.0: 消息重新生成、消息编辑、会话模板、自定义命令、批量操作
+- v3.58.0: 引用回复、会话内搜索、主题定制、快捷键自定义、健康监控
+
+**结果**: ✅ 所有测试通过
+
+---
 
 ### TASK-205: 前端健康监控（Cycle #12）
 

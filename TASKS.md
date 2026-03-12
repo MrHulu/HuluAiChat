@@ -1,6 +1,6 @@
 # 任务清单
 
-## 🔴 紧急任务（Boss 指令）
+## 🔴 紧急任务
 - [x] **TASK-182**: 📋 规划 v3.56.0 版本 ✅ 2026-03-12
   - 主题：AI 知识中心 + 帮助支持体系
   - 已完成：版本路线图 `docs/v3.56.0-roadmap.md`
@@ -106,7 +106,27 @@
 
 ## 待开始
 
-### 🔴 v3.58.0 - 消息交互增强 + 个性化体验
+### 🔴 优先任务
+- [x] **TASK-206**: 🧪 全面回归测试 - v3.55.0 ~ v3.58.0 ✅ 2026-03-12
+  - 暂停新功能开发，进行全面回归测试
+  - 结果：**所有 1795 个测试通过** (76 个测试文件)
+  - 修复内容：
+    - useChat.test.ts: 添加 createChatWebSocket mock
+    - App.test.tsx: 添加 useContextualTip mock
+    - 更新 sendMessage 断言使用 objectContaining
+    - 更新删除会话测试匹配 AlertDialog 流程
+  - Cycle #14
+
+- [ ] **TASK-207**: 🔄 官网版本号自动同步机制
+
+- [ ] **TASK-207**: 🔄 官网版本号自动同步机制
+  - 问题：官网版本号硬编码在 `website/src/app/page.tsx`，目前显示 3.52.0
+  - Git tag 已到 v3.58.0，但官网未同步
+  - 方案：实现自动化同步（回归测试通过后执行）
+    - 方案 A: Cloudflare Pages 构建时动态获取最新 release 版本
+    - 方案 B: GitHub Action 在 release 时自动更新官网代码
+
+### v3.58.0 - 消息交互增强 + 个性化体验
 **主题**: 消息交互增强 + 个性化体验 + 技术韧性
 **路线图**: `docs/v3.58.0-roadmap.md`
 **预计周期**: 5-6 Cycles
