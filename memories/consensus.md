@@ -1,18 +1,18 @@
 # Auto Company Consensus
 
-> 最后更新: 2026-03-12 - Cycle #174
+> 最后更新: 2026-03-12 - Cycle #175
 
 ---
 
 ## 当前状态
-✅ **TASK-185: FAQ 常见问题完成**
+✅ **TASK-186: 快捷键列表完成**
 
 ---
 
 ## Next Action
 > **继续 v3.56.0 开发：**
-> - TASK-186: 快捷键列表 (P0)
 > - TASK-187: 反馈入口 (P1)
+> - TASK-188: 模型对比说明 (P1)
 
 ---
 
@@ -46,6 +46,29 @@
 ---
 
 ## 最近完成
+
+### TASK-186: 快捷键列表（Cycle #175）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- ShortcutList 组件 - 分类快捷键展示
+- KnowledgeCenter 集成 - help 分类显示快捷键
+- 复用 KEYBOARD_SHORTCUTS 数据
+- i18n 翻译更新 (EN/ZH)
+
+**变更文件**:
+- `src/components/knowledge/ShortcutList.tsx` - 新建
+- `src/components/knowledge/KnowledgeCenter.tsx` - 集成快捷键
+- `src/components/knowledge/index.ts` - 导出 ShortcutList
+- `src/i18n/locales/en.json` - 添加 shortcuts 翻译
+- `src/i18n/locales/zh.json` - 添加 shortcuts 翻译
+
+**快捷键分类**:
+1. 常规 (命令面板、新建对话、帮助)
+2. 导航 (侧边栏、切换会话、设置、关闭)
+
+---
 
 ### TASK-185: FAQ 常见问题（Cycle #174）
 
@@ -87,40 +110,6 @@
 - CommandPalette 集成 - 添加知识中心命令
 - i18n 翻译更新 (EN/ZH) - 完整翻译
 
-**变更文件**:
-- `src/components/knowledge/KnowledgeCenter.tsx` - 新建
-- `src/components/knowledge/ArticleViewer.tsx` - 新建
-- `src/components/knowledge/index.ts` - 新建
-- `src/data/promptTips.ts` - 新建
-- `src/components/command/CommandPalette.tsx` - 添加知识中心命令
-- `src/App.tsx` - 集成 KnowledgeCenter
-- `src/i18n/locales/en.json` - 添加 knowledge 翻译
-- `src/i18n/locales/zh.json` - 添加 knowledge 翻译
-
-**提示词技巧列表**:
-1. 清晰明确的指令 (入门)
-2. 角色扮演提示 (入门)
-3. 思维链推理 (进阶)
-4. 少样本示例 (进阶)
-5. 迭代优化 (进阶)
-6. 结构化输出 (进阶)
-7. 上下文管理 (高级)
-8. 提示词模板 (高级)
-
----
-
-### TASK-183: 快捷命令面板（Cycle #173）
-
-**完成时间**: 2026-03-12
-
-**产出**:
-- CommandPalette 组件（已存在）
-- Ctrl/Cmd + K 快捷键（已实现）
-- 快捷键帮助列表更新（新增 Ctrl+K）
-- i18n 翻译更新（EN/ZH）
-
-**备注**: 系统级全局快捷键（Tauri global-shortcut）待后续实现
-
 ---
 
 ## Company State
@@ -128,9 +117,9 @@
 - **项目**: HuluChat
 - **当前版本**: v3.54.0
 - **下一版本**: v3.56.0
-- **待开始任务**: 9 个 (TASK-186 ~ 194)
-- **已完成任务计数**: 23
+- **待开始任务**: 8 个 (TASK-187 ~ 194)
+- **已完成任务计数**: 24
 
 ---
 
-*更新时间: 2026-03-12 - Cycle #174*
+*更新时间: 2026-03-12 - Cycle #175*
