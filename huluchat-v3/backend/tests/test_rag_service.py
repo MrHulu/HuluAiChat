@@ -4,6 +4,8 @@ Phase 2: RAG 单文档对话基础版
 - 单文档上传和处理
 - 语义检索
 - 对话时显示引用来源
+
+Note: Uses AsyncChromaClient for non-blocking operations.
 """
 import pytest
 from unittest.mock import patch, MagicMock, AsyncMock
@@ -34,9 +36,11 @@ class TestDocumentIndexing:
 
         service = RAGService()
 
-        with patch.object(service, '_get_collection') as mock_collection:
-            mock_collection.return_value.add = MagicMock()
+        # Create async mock collection
+        mock_collection = MagicMock()
+        mock_collection.add = AsyncMock()
 
+        with patch.object(service, '_get_collection', return_value=mock_collection):
             # Mock embedding service
             mock_embedding = AsyncMock(return_value=[[0.1] * 1536])
             with patch.object(service.embedding_service, 'embed_batch', mock_embedding):
@@ -56,9 +60,11 @@ class TestDocumentIndexing:
 
         service = RAGService()
 
-        with patch.object(service, '_get_collection') as mock_collection:
-            mock_collection.return_value.add = MagicMock()
+        # Create async mock collection
+        mock_collection = MagicMock()
+        mock_collection.add = AsyncMock()
 
+        with patch.object(service, '_get_collection', return_value=mock_collection):
             # Mock embedding service
             mock_embedding = AsyncMock(return_value=[[0.1] * 1536] * 3)
             with patch.object(service.embedding_service, 'embed_batch', mock_embedding):
@@ -81,9 +87,11 @@ class TestDocumentIndexing:
 
         service = RAGService()
 
-        with patch.object(service, '_get_collection') as mock_collection:
-            mock_collection.return_value.add = MagicMock()
+        # Create async mock collection
+        mock_collection = MagicMock()
+        mock_collection.add = AsyncMock()
 
+        with patch.object(service, '_get_collection', return_value=mock_collection):
             # Mock embedding service
             mock_embedding = AsyncMock(return_value=[[0.1] * 1536])
             with patch.object(service.embedding_service, 'embed_batch', mock_embedding):
@@ -106,19 +114,21 @@ class TestDocumentRetrieval:
 
         service = RAGService()
 
-        with patch.object(service, '_get_collection') as mock_collection:
-            mock_collection.return_value.query = MagicMock(
-                return_value={
-                    'ids': [['chunk-1', 'chunk-2']],
-                    'documents': [['content 1', 'content 2']],
-                    'metadatas': [[
-                        {'source': 'test.txt', 'chunk_index': 0},
-                        {'source': 'test.txt', 'chunk_index': 1}
-                    ]],
-                    'distances': [[0.1, 0.2]]
-                }
-            )
+        # Create async mock collection
+        mock_collection = MagicMock()
+        mock_collection.query = AsyncMock(
+            return_value={
+                'ids': [['chunk-1', 'chunk-2']],
+                'documents': [['content 1', 'content 2']],
+                'metadatas': [[
+                    {'source': 'test.txt', 'chunk_index': 0},
+                    {'source': 'test.txt', 'chunk_index': 1}
+                ]],
+                'distances': [[0.1, 0.2]]
+            }
+        )
 
+        with patch.object(service, '_get_collection', return_value=mock_collection):
             # Mock embedding service
             mock_embed = AsyncMock(return_value=[0.1] * 1536)
             with patch.object(service.embedding_service, 'embed', mock_embed):
@@ -138,16 +148,18 @@ class TestDocumentRetrieval:
 
         service = RAGService()
 
-        with patch.object(service, '_get_collection') as mock_collection:
-            mock_collection.return_value.query = MagicMock(
-                return_value={
-                    'ids': [['chunk-1']],
-                    'documents': [['content']],
-                    'metadatas': [[{'source': 'doc.pdf', 'chunk_index': 0}]],
-                    'distances': [[0.1]]
-                }
-            )
+        # Create async mock collection
+        mock_collection = MagicMock()
+        mock_collection.query = AsyncMock(
+            return_value={
+                'ids': [['chunk-1']],
+                'documents': [['content']],
+                'metadatas': [[{'source': 'doc.pdf', 'chunk_index': 0}]],
+                'distances': [[0.1]]
+            }
+        )
 
+        with patch.object(service, '_get_collection', return_value=mock_collection):
             # Mock embedding service
             mock_embed = AsyncMock(return_value=[0.1] * 1536)
             with patch.object(service.embedding_service, 'embed', mock_embed):
@@ -163,16 +175,18 @@ class TestDocumentRetrieval:
 
         service = RAGService()
 
-        with patch.object(service, '_get_collection') as mock_collection:
-            mock_collection.return_value.query = MagicMock(
-                return_value={
-                    'ids': [[]],
-                    'documents': [[]],
-                    'metadatas': [[]],
-                    'distances': [[]]
-                }
-            )
+        # Create async mock collection
+        mock_collection = MagicMock()
+        mock_collection.query = AsyncMock(
+            return_value={
+                'ids': [[]],
+                'documents': [[]],
+                'metadatas': [[]],
+                'distances': [[]]
+            }
+        )
 
+        with patch.object(service, '_get_collection', return_value=mock_collection):
             # Mock embedding service
             mock_embed = AsyncMock(return_value=[0.1] * 1536)
             with patch.object(service.embedding_service, 'embed', mock_embed):
@@ -191,12 +205,14 @@ class TestDocumentDeletion:
 
         service = RAGService()
 
-        with patch.object(service, '_get_collection') as mock_collection:
-            mock_collection.return_value.delete = MagicMock()
-            mock_collection.return_value.get = MagicMock(
-                return_value={'ids': ['chunk-1', 'chunk-2']}
-            )
+        # Create async mock collection
+        mock_collection = MagicMock()
+        mock_collection.delete = AsyncMock()
+        mock_collection.get = AsyncMock(
+            return_value={'ids': ['chunk-1', 'chunk-2']}
+        )
 
+        with patch.object(service, '_get_collection', return_value=mock_collection):
             result = await service.delete_document("test-doc-1")
 
             assert result.success is True
@@ -208,12 +224,14 @@ class TestDocumentDeletion:
 
         service = RAGService()
 
-        with patch.object(service, '_get_collection') as mock_collection:
-            mock_collection.return_value.delete = MagicMock()
-            mock_collection.return_value.get = MagicMock(
-                return_value={'ids': []}
-            )
+        # Create async mock collection
+        mock_collection = MagicMock()
+        mock_collection.delete = AsyncMock()
+        mock_collection.get = AsyncMock(
+            return_value={'ids': []}
+        )
 
+        with patch.object(service, '_get_collection', return_value=mock_collection):
             result = await service.delete_document("nonexistent")
 
             # 删除不存在的文档也算成功
@@ -358,11 +376,13 @@ class TestListDocuments:
 
         service = RAGService()
 
-        with patch.object(service, '_get_collection') as mock_collection:
-            mock_collection.return_value.get = MagicMock(
-                return_value={'ids': [], 'metadatas': []}
-            )
+        # Create async mock collection
+        mock_collection = MagicMock()
+        mock_collection.get = AsyncMock(
+            return_value={'ids': [], 'metadatas': []}
+        )
 
+        with patch.object(service, '_get_collection', return_value=mock_collection):
             docs = await service.list_documents()
 
             assert len(docs) == 0
@@ -374,18 +394,20 @@ class TestListDocuments:
 
         service = RAGService()
 
-        with patch.object(service, '_get_collection') as mock_collection:
-            mock_collection.return_value.get = MagicMock(
-                return_value={
-                    'ids': ['doc1-chunk0', 'doc1-chunk1', 'doc2-chunk0'],
-                    'metadatas': [
-                        {'doc_id': 'doc1', 'source': 'a.txt'},
-                        {'doc_id': 'doc1', 'source': 'a.txt'},
-                        {'doc_id': 'doc2', 'source': 'b.txt'},
-                    ]
-                }
-            )
+        # Create async mock collection
+        mock_collection = MagicMock()
+        mock_collection.get = AsyncMock(
+            return_value={
+                'ids': ['doc1-chunk0', 'doc1-chunk1', 'doc2-chunk0'],
+                'metadatas': [
+                    {'doc_id': 'doc1', 'source': 'a.txt'},
+                    {'doc_id': 'doc1', 'source': 'a.txt'},
+                    {'doc_id': 'doc2', 'source': 'b.txt'},
+                ]
+            }
+        )
 
+        with patch.object(service, '_get_collection', return_value=mock_collection):
             docs = await service.list_documents()
 
             # 应该去重，只返回唯一的文档
