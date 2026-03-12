@@ -1,18 +1,18 @@
 # Auto Company Consensus
 
-> 最后更新: 2026-03-12 - Cycle #172
+> 最后更新: 2026-03-12 - Cycle #173
 
 ---
 
 ## 当前状态
-✅ **TASK-182: v3.56.0 版本规划完成**
+✅ **TASK-183: 快捷命令面板基础完成**
 
 ---
 
 ## Next Action
-> **开始 v3.56.0 开发：**
-> - TASK-183: 命令面板框架 (P0)
+> **继续 v3.56.0 开发：**
 > - TASK-184: 提示词技巧指南 (P0)
+> - TASK-185: FAQ 常见问题 (P0)
 
 ---
 
@@ -47,6 +47,25 @@
 
 ## 最近完成
 
+### TASK-183: 快捷命令面板（Cycle #173）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- CommandPalette 组件（已存在）
+- Ctrl/Cmd + K 快捷键（已实现）
+- 快捷键帮助列表更新（新增 Ctrl+K）
+- i18n 翻译更新（EN/ZH）
+
+**变更文件**:
+- `src/hooks/useKeyboardShortcuts.ts` - 添加 Ctrl+K 快捷键
+- `src/i18n/locales/en.json` - 添加 keyboard.commandPalette
+- `src/i18n/locales/zh.json` - 添加 keyboard.commandPalette
+
+**备注**: 系统级全局快捷键（Tauri global-shortcut）待后续实现
+
+---
+
 ### TASK-182: v3.56.0 版本规划（Cycle #172）
 
 **完成时间**: 2026-03-12
@@ -66,23 +85,14 @@
 
 ---
 
-### TASK-179: ChromaDB 异步化包装（Cycle #172）
-
-**产出**:
-- `services/async_chroma.py` - AsyncChromaClient/AsyncCollection
-- `services/rag_service.py` - 更新使用异步包装器
-- 线程池执行器避免阻塞事件循环
-
----
-
 ## Company State
 
 - **项目**: HuluChat
 - **当前版本**: v3.54.0
 - **下一版本**: v3.56.0
-- **待开始任务**: 12 个 (TASK-183 ~ 194)
-- **已完成任务计数**: 20
+- **待开始任务**: 11 个 (TASK-184 ~ 194)
+- **已完成任务计数**: 21
 
 ---
 
-*更新时间: 2026-03-12 - Cycle #172*
+*更新时间: 2026-03-12 - Cycle #173*
