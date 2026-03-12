@@ -86,9 +86,15 @@
   - i18n 翻译 (EN/ZH)
   - 测试：10 个测试用例通过
   - Cycle #181
-- [ ] **TASK-193**: 🤖 上下文智能提示
-  - 当前状态检测
-  - 提示配置
+- [x] **TASK-193**: 🤖 上下文智能提示 ✅ 2026-03-12
+  - contextualTips.ts - 5 个提示配置（no-api-key, no-model, empty-session, first-visit, settings-incomplete）
+  - useContextualTip.ts - 状态检测 hook（当前状态、设置加载）
+  - ContextualTip.tsx - 提示显示组件
+  - 集成到 App.tsx（优先级高于功能发现提示）
+  - i18n 翻译 (EN/ZH)
+  - 测试：21 个测试用例通过
+  - 隐私约束：只检测当前状态，不存储历史行为
+  - Cycle #182
 - [ ] **TASK-194**: ⚠️ 错误解决建议
   - 错误码映射
   - 解决建议配置
