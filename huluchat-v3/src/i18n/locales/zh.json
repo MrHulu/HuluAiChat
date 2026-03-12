@@ -616,6 +616,93 @@
         "description": "创建可复用的提示词模板，提高效率",
         "content": "# 提示词模板\n\n创建可复用的模板，提高日常使用效率，确保输出一致性。\n\n## 什么是提示词模板？\n\n提示词模板是预定义的提示词结构，包含占位符，可以快速填入具体内容。\n\n## 基本模板结构\n\n```\n[角色定义]\n你是一个 [角色]。\n\n[任务描述]\n请帮我 [任务]。\n\n[输入内容]\n{{input}}\n\n[输出要求]\n格式：[格式]\n长度：[长度]\n风格：[风格]\n```\n\n## 实用模板示例\n\n### 代码审查模板\n```\n你是一位资深软件工程师，擅长代码审查。\n\n请审查以下代码：\n```{{language}}\n{{code}}\n```\n\n请从以下方面进行评审：\n1. 代码质量和可读性\n2. 潜在的 bug 或问题\n3. 性能优化建议\n4. 最佳实践建议\n\n请用中文回复，格式清晰。\n```\n\n### 文档生成模板\n```\n请为以下代码生成技术文档：\n```{{language}}\n{{code}}\n```\n\n文档应包含：\n- 功能描述\n- 参数说明\n- 返回值说明\n- 使用示例\n- 注意事项\n\n使用 Markdown 格式输出。\n```\n\n### 学习解释模板\n```\n你是一位耐心的老师，擅长用简单的语言解释复杂概念。\n\n请向一个 {{level}} 解释「{{concept}}」：\n\n要求：\n1. 使用生活中的类比\n2. 避免专业术语（除非必要并解释）\n3. 提供具体例子\n4. 总结关键要点\n```\n\n### 邮件撰写模板\n```\n请帮我写一封邮件：\n\n场景：{{scenario}}\n收件人：{{recipient}}\n目的：{{purpose}}\n语气：{{tone}}\n\n要点：\n{{points}}\n\n要求：\n- 简洁明了\n- 语气得体\n- 包含明确的行动号召\n```\n\n## HuluChat 模板功能\n\nHuluChat 支持提示词模板，你可以：\n\n1. **创建模板**：在设置中定义常用模板\n2. **使用变量**：用 `{{变量名}}` 定义可替换内容\n3. **快速调用**：在对话中快速选择模板\n\n### 预定义变量\n\n| 变量 | 说明 |\n|------|------|\n| `{{date}}` | 当前日期 |\n| `{{time}}` | 当前时间 |\n| `{{datetime}}` | 日期和时间 |\n| `{{timestamp}}` | Unix 时间戳 |\n\n## 模板管理建议\n\n1. **分类整理**：按用途分组（工作、学习、创作）\n2. **定期更新**：根据使用体验优化模板\n3. **分享复用**：团队共享高质量模板\n\n> **提示：** 好的模板是效率的倍增器！一次创建，多次受益。"
       }
+    },
+    "faq": {
+      "categories": {
+        "gettingStarted": "入门指南",
+        "models": "AI 模型",
+        "features": "功能特性",
+        "privacy": "隐私安全",
+        "troubleshooting": "故障排除"
+      },
+      "questions": {
+        "apiKey": {
+          "question": "如何配置 API Key？",
+          "answer": "点击右上角设置图标，选择「模型配置」，输入您的 API Key。HuluChat 支持 OpenAI、DeepSeek 和 Ollama（本地模型）。输入后点击「测试连接」验证是否配置成功。"
+        },
+        "firstChat": {
+          "question": "如何开始第一次对话？",
+          "answer": "配置好 API Key 后，点击左侧边栏的「新建对话」，在输入框输入问题，按回车或点击发送按钮即可。您可以在顶部下拉框选择不同的 AI 模型。"
+        },
+        "supportedModels": {
+          "question": "支持哪些 AI 模型？",
+          "answer": "HuluChat 支持：1) OpenAI 模型（GPT-4o、GPT-4、GPT-3.5），2) DeepSeek 模型（DeepSeek-Chat、DeepSeek-Reasoner），3) 通过 Ollama 的本地模型（Llama、Qwen 等），4) 任何兼容 OpenAI API 的服务。"
+        },
+        "localModels": {
+          "question": "如何使用本地模型？",
+          "answer": "先从 ollama.com 安装 Ollama，在终端运行「ollama serve」，然后用「ollama pull llama3」下载模型。在 HuluChat 设置中填写 Ollama 地址（默认 http://localhost:11434），选择已下载的本地模型即可。"
+        },
+        "modelDifference": {
+          "question": "不同 AI 模型有什么区别？",
+          "answer": "GPT-4o：能力最强，适合复杂任务。GPT-3.5：速度快、成本低，适合简单任务。DeepSeek：性价比高，中文能力强。本地模型：免费、隐私保护好，但需要硬件资源。"
+        },
+        "bestModel": {
+          "question": "应该选择哪个模型？",
+          "answer": "复杂推理和代码：GPT-4o 或 DeepSeek-Reasoner。日常聊天翻译：GPT-3.5 或 DeepSeek-Chat。注重隐私或离线：Ollama 本地模型。成本敏感：DeepSeek 或本地模型。"
+        },
+        "modelCost": {
+          "question": "使用 AI 需要多少费用？",
+          "answer": "OpenAI：按 token 计费，GPT-4o 约 $5/百万输入 token。DeepSeek：约 $0.27/百万 token，便宜很多。本地模型：免费，但需要 GPU/CPU 资源。具体请查看各供应商最新定价。"
+        },
+        "deepseekVsOpenai": {
+          "question": "DeepSeek 和 OpenAI 哪个好？",
+          "answer": "DeepSeek：价格更实惠，中文支持更好，推理模型也很强。OpenAI：生态更成熟，英文效果更好，GPT-3.5 响应更快。国内用户推荐 DeepSeek，国际多样化需求可选 OpenAI。"
+        },
+        "documentChat": {
+          "question": "文档对话（RAG）功能怎么用？",
+          "answer": "上传 PDF、TXT 或 Markdown 文件后，HuluChat 会自动分析和索引文档内容。提问时，AI 会搜索相关文档片段，基于您的内容给出答案。适合研究、学习、文档问答等场景。"
+        },
+        "mcp": {
+          "question": "什么是 MCP？如何使用？",
+          "answer": "MCP（模型上下文协议）可以让 AI 调用外部工具。在设置 > MCP 中添加服务器配置（如文件系统、网页搜索），AI 就能自动使用这些工具。详见 docs/MCP_GUIDE.md。"
+        },
+        "promptTemplates": {
+          "question": "如何使用提示词模板？",
+          "answer": "提示词模板可以保存常用提示词供重复使用。创建模板时可以使用 {{date}} 等变量。在对话时点击模板图标可快速插入预设提示词。适合代码审查、翻译等重复性任务。"
+        },
+        "exportChat": {
+          "question": "如何导出聊天记录？",
+          "answer": "在对话界面，点击任意消息的「...」菜单，或使用多选模式选择多条消息。支持导出为 Markdown、JSON 和纯文本格式。方便分享或存档对话内容。"
+        },
+        "dataCollection": {
+          "question": "HuluChat 会收集用户数据吗？",
+          "answer": "不会。HuluChat 遵循隐私优先原则：无遥测、无分析、无用户追踪。您的对话内容只保存在本地设备。API 调用直接发送到 AI 服务商。我们不收集或存储任何用户数据。"
+        },
+        "dataStorage": {
+          "question": "我的数据存储在哪里？",
+          "answer": "所有数据都存储在您的本地设备上：聊天记录、设置、文档等。数据位置因系统而异：Windows 在 AppData，macOS 在 Application Support，Linux 在 .config 目录。您可以随时导出或删除数据。"
+        },
+        "offline": {
+          "question": "可以离线使用 HuluChat 吗？",
+          "answer": "可以，使用 Ollama 本地模型即可完全离线使用。一旦下载了模型，就可以在没有网络的情况下对话。云端模型（OpenAI、DeepSeek）需要联网。这使 HuluChat 适合内网环境或出行使用。"
+        },
+        "connectionError": {
+          "question": "为什么出现连接错误？",
+          "answer": "常见原因：1) API Key 无效 - 重新输入并测试，2) 网络问题 - 检查网络/代理，3) API 服务故障 - 检查服务商状态，4) 防火墙拦截 - 允许 HuluChat 访问网络。查看具体错误信息获取更多细节。"
+        },
+        "slowResponse": {
+          "question": "AI 响应为什么很慢？",
+          "answer": "可能原因：1) 复杂请求需要更多处理时间，2) 网络延迟，3) API 限流，4) 服务器负载高。解决方法：简化提示词、使用更快的模型（如 GPT-3.5）、检查网络、或使用本地模型。"
+        },
+        "ollamaConnection": {
+          "question": "为什么连接不上 Ollama？",
+          "answer": "请确保：1) Ollama 正在运行（终端执行「ollama serve」），2) 地址正确（http://localhost:11434），3) 至少下载了一个模型（「ollama list」查看），4) 防火墙未阻止。macOS/Linux 上 Ollama 会自动启动。"
+        },
+        "update": {
+          "question": "如何更新 HuluChat？",
+          "answer": "HuluChat 启动时会自动检查更新。有新版本时会显示更新通知，点击即可下载安装。您也可以在设置 > 关于 > 检查更新中手动检查。"
+        }
+      }
     }
   }
 }

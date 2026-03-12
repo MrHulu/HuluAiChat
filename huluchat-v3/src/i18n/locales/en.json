@@ -619,6 +619,93 @@
         "description": "Create reusable prompt templates for efficiency",
         "content": "# Prompt Templates\n\nCreate reusable templates to improve efficiency and ensure output consistency.\n\n## What are Prompt Templates?\n\nPre-defined prompt structures with placeholders for quick content insertion.\n\n## Basic Template Structure\n\n```\n[Role Definition]\nYou are a [role].\n\n[Task Description]\nPlease help me [task].\n\n[Input Content]\n{{input}}\n\n[Output Requirements]\nFormat: [format]\nLength: [length]\nStyle: [style]\n```\n\n## Practical Templates\n\n### Code Review Template\n```\nYou are a senior software engineer specializing in code review.\n\nPlease review the following code:\n```{{language}}\n{{code}}\n```\n\nReview from these aspects:\n1. Code quality and readability\n2. Potential bugs or issues\n3. Performance optimization suggestions\n4. Best practice recommendations\n\nRespond in clear, structured format.\n```\n\n### Documentation Template\n```\nGenerate technical documentation for this code:\n```{{language}}\n{{code}}\n```\n\nInclude:\n- Function description\n- Parameter explanation\n- Return value\n- Usage examples\n- Notes\n\nOutput in Markdown format.\n```\n\n### Learning Explanation Template\n```\nYou are a patient teacher who explains complex concepts simply.\n\nExplain \"{{concept}}\" to a {{level}}:\n\nRequirements:\n1. Use real-life analogies\n2. Avoid jargon (unless explained)\n3. Provide concrete examples\n4. Summarize key points\n```\n\n## HuluChat Template Features\n\nHuluChat supports prompt templates:\n\n1. **Create Templates**: Define common templates in settings\n2. **Use Variables**: Use `{{variable}}` for replaceable content\n3. **Quick Access**: Select templates quickly in conversations\n\n### Pre-defined Variables\n\n| Variable | Description |\n|----------|-------------|\n| `{{date}}` | Current date |\n| `{{time}}` | Current time |\n| `{{datetime}}` | Date and time |\n| `{{timestamp}}` | Unix timestamp |\n\n> **Tip:** Good templates are efficiency multipliers! Create once, benefit many times."
       }
+    },
+    "faq": {
+      "categories": {
+        "gettingStarted": "Getting Started",
+        "models": "AI Models",
+        "features": "Features",
+        "privacy": "Privacy & Security",
+        "troubleshooting": "Troubleshooting"
+      },
+      "questions": {
+        "apiKey": {
+          "question": "How do I configure an API key?",
+          "answer": "Click the Settings icon in the top right corner, select 'Model Providers', and enter your API key. HuluChat supports OpenAI, DeepSeek, and Ollama (local models). After entering the key, click 'Test Connection' to verify."
+        },
+        "firstChat": {
+          "question": "How do I start my first chat?",
+          "answer": "After configuring your API key, click 'New Chat' in the left sidebar, type your question in the input box, and press Enter or click Send. You can select different AI models in the top dropdown."
+        },
+        "supportedModels": {
+          "question": "Which AI models are supported?",
+          "answer": "HuluChat supports: 1) OpenAI models (GPT-4o, GPT-4, GPT-3.5), 2) DeepSeek models (DeepSeek-Chat, DeepSeek-Reasoner), 3) Local models via Ollama (Llama, Qwen, etc.), 4) Any OpenAI-compatible API."
+        },
+        "localModels": {
+          "question": "How do I use local models?",
+          "answer": "Install Ollama from ollama.com, run 'ollama serve' in terminal, then use 'ollama pull llama3' to download models. In HuluChat settings, set Ollama address (default http://localhost:11434) and select your local model."
+        },
+        "modelDifference": {
+          "question": "What's the difference between AI models?",
+          "answer": "GPT-4o: Most capable, best for complex tasks. GPT-3.5: Fast and affordable, good for simple tasks. DeepSeek: Cost-effective, strong Chinese support. Local models: Free, private, but require hardware resources."
+        },
+        "bestModel": {
+          "question": "Which model should I choose?",
+          "answer": "For complex reasoning and code: GPT-4o or DeepSeek-Reasoner. For daily chat and translation: GPT-3.5 or DeepSeek-Chat. For privacy or offline: Ollama local models. For cost-sensitive: DeepSeek or local models."
+        },
+        "modelCost": {
+          "question": "How much does AI usage cost?",
+          "answer": "OpenAI: Pay per token, GPT-4o ~$5/1M input tokens. DeepSeek: ~$0.27/1M tokens, much cheaper. Local models: Free, but requires GPU/CPU resources. Check provider pricing for current rates."
+        },
+        "deepseekVsOpenai": {
+          "question": "DeepSeek vs OpenAI - which is better?",
+          "answer": "DeepSeek: More affordable, strong Chinese support, great reasoning model. OpenAI: More mature ecosystem, better English, faster GPT-3.5. For Chinese users, DeepSeek offers better value; for diverse international needs, OpenAI is solid."
+        },
+        "documentChat": {
+          "question": "How does document chat (RAG) work?",
+          "answer": "Upload PDF, TXT, or Markdown files, HuluChat will analyze and index them. When you ask questions, the AI searches relevant document sections and provides answers based on your content. Great for research, learning, and document Q&A."
+        },
+        "mcp": {
+          "question": "What is MCP and how do I use it?",
+          "answer": "MCP (Model Context Protocol) connects external tools to AI. Go to Settings > MCP, add server configs (like filesystem, web search), and AI can use these tools automatically. See docs/MCP_GUIDE.md for details."
+        },
+        "promptTemplates": {
+          "question": "How do I use prompt templates?",
+          "answer": "Prompt templates save common prompts for reuse. Create templates with variables like {{date}}. In chat, click the template icon to quickly insert pre-defined prompts. Great for repeated tasks like code reviews or translations."
+        },
+        "exportChat": {
+          "question": "How do I export chat history?",
+          "answer": "In chat view, click the '...' menu on any message, or use multi-select mode to select multiple messages. Export formats include Markdown, JSON, and plain text. Great for sharing or archiving conversations."
+        },
+        "dataCollection": {
+          "question": "Does HuluChat collect user data?",
+          "answer": "No. HuluChat is privacy-first: no telemetry, no analytics, no user tracking. Your conversations stay on your device. API calls go directly to AI providers. We don't collect or store any user data."
+        },
+        "dataStorage": {
+          "question": "Where is my data stored?",
+          "answer": "All data is stored locally on your device: chat history, settings, documents. Data location varies by OS: Windows in AppData, macOS in Application Support, Linux in .config. You can export or delete data anytime."
+        },
+        "offline": {
+          "question": "Can I use HuluChat offline?",
+          "answer": "Yes, with local models via Ollama. Once models are downloaded, you can chat offline completely. Cloud models (OpenAI, DeepSeek) require internet. This makes HuluChat great for air-gapped environments or travel."
+        },
+        "connectionError": {
+          "question": "Why am I getting connection errors?",
+          "answer": "Common causes: 1) Invalid API key - re-enter and test, 2) Network issues - check internet/proxy, 3) API service down - check provider status, 4) Firewall blocking - allow HuluChat. Check error message for specific details."
+        },
+        "slowResponse": {
+          "question": "Why are AI responses slow?",
+          "answer": "Possible reasons: 1) Complex requests need more processing time, 2) Network latency, 3) API rate limiting, 4) Server load. Solutions: Try simpler prompts, use faster models (GPT-3.5), check network, or use local models."
+        },
+        "ollamaConnection": {
+          "question": "Why can't HuluChat connect to Ollama?",
+          "answer": "Make sure: 1) Ollama is running ('ollama serve'), 2) Correct address (http://localhost:11434), 3) At least one model downloaded ('ollama list'), 4) No firewall blocking. On macOS/Linux, Ollama starts automatically."
+        },
+        "update": {
+          "question": "How do I update HuluChat?",
+          "answer": "HuluChat checks for updates automatically on startup. When available, you'll see an update notification. Click to download and install. You can also check manually in Settings > About > Check for Updates."
+        }
+      }
     }
   }
 }
