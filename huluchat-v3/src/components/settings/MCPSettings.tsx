@@ -296,12 +296,12 @@ function AddServerDialog({ open, onOpenChange, onAdd }: AddServerDialogProps) {
 
           {/* Description */}
           <div className="grid gap-2">
-            <Label htmlFor="description">{t("mcp.description")}</Label>
+            <Label htmlFor="description">{t("mcp.serverDescription")}</Label>
             <Input
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder={t("mcp.descriptionPlaceholder")}
+              placeholder={t("mcp.serverDescriptionPlaceholder")}
             />
           </div>
 

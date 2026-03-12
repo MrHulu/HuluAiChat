@@ -1,18 +1,18 @@
 # Auto Company Consensus
 
-> 最后更新: 2026-03-12 - Cycle #166
+> 最后更新: 2026-03-12 - Cycle #167
 
 ---
 
 ## 当前状态
-🚀 **Phase 2 MCP 支持进行中** - TASK-167/168/169/170 已完成，核心 Tool Calling 功能已实现
+🚀 **Phase 2 MCP 支持进行中** - TASK-167/168/169/170/171 已完成，MCP i18n 已添加
 
 ---
 
 ## Next Action
-> **TASK-171: 添加 MCP i18n 支持（EN/ZH）**
-> - 为 MCP 设置面板添加完整翻译
-> - 或 **TASK-172: 编写 MCP 使用文档**
+> **TASK-172: 编写 MCP 使用文档**
+> - 创建用户指南文档
+> - 或 **TASK-164: 添加更新签名验证**（如果需要 Rust）
 
 ---
 
@@ -26,6 +26,33 @@
 ---
 
 ## 最近完成
+
+### TASK-171: MCP i18n 支持（Cycle #167）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- `src/i18n/locales/en.json` - MCP 英文翻译
+- `src/i18n/locales/zh.json` - MCP 中文翻译
+- `src/components/settings/MCPSettings.tsx` - 修复翻译键命名
+
+**实现内容**:
+1. **en.json 添加 26 个 MCP 翻译键**:
+   - 服务器状态：connected, disconnected, error
+   - 操作：connect, disconnect, refresh, connectAll
+   - 表单：serverName, serverDescription, transport, command, arguments
+   - 提示：nameRequired, commandRequired, urlRequired
+   - 消息：serverAdded, connectedSuccess, connectFailed 等
+
+2. **zh.json 添加 26 个 MCP 翻译键**:
+   - 完整中文翻译对应所有英文键
+
+3. **修复 MCPSettings.tsx**:
+   - 修正 description 字段使用 serverDescription 翻译键
+
+**结果**: MCP 设置面板完全支持中英文切换
+
+---
 
 ### TASK-170: MCP Tool Calling 集成（Cycle #166）
 
@@ -282,8 +309,8 @@
 - **当前版本**: v3.54.0
 - **下一版本**: v3.55.0
 - **进行中任务**: 0 个
-- **待开始任务**: 18 个（17 新 + TASK-116）
-- **已完成任务计数**: 15 (本次周期)
+- **待开始任务**: 17 个（16 新 + TASK-116）
+- **已完成任务计数**: 16 (本次周期)
 
 ---
 
@@ -308,7 +335,7 @@
 | TASK-168 | Python MCP Client | ✅ 已完成 |
 | TASK-169 | MCP 设置面板 | ✅ 已完成 |
 | TASK-170 | Tool Calling 集成 | ✅ 已完成 |
-| TASK-171 | 添加 MCP i18n | 待开始 |
+| TASK-171 | 添加 MCP i18n | ✅ 已完成 |
 | TASK-172 | 编写 MCP 文档 | 待开始 |
 
 ### Phase 3: 用户功能
@@ -381,3 +408,8 @@
 - 更新 `useChat.ts` 添加 toolCalls 状态
 - 添加 `ToolCallsIndicator` 组件
 - 添加 i18n 翻译（EN/ZH）
+
+**Cycle #167** - 完成 TASK-171（MCP i18n 支持）
+- 添加 en.json MCP 翻译（26 个键）
+- 添加 zh.json MCP 翻译（26 个键）
+- 修复 MCPSettings.tsx 翻译键命名

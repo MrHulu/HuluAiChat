@@ -57,7 +57,11 @@
   - 更新 ChatView 添加 ToolCallsIndicator 组件
   - 添加 i18n 翻译（EN/ZH）
   - Cycle #166
-- [ ] **TASK-171**: 🌐 添加 MCP i18n 支持（EN/ZH）
+- [x] **TASK-171**: 🌐 添加 MCP i18n 支持（EN/ZH）✅ 2026-03-12
+  - 添加 MCP 翻译到 en.json（26 个翻译键）
+  - 添加 MCP 翻译到 zh.json（26 个翻译键）
+  - 修复 MCPSettings.tsx 中的翻译键命名
+  - Cycle #167
 - [ ] **TASK-172**: 📚 编写 MCP 使用文档
 
 ### Phase 3: 用户功能增强
