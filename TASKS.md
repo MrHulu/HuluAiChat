@@ -106,6 +106,57 @@
 
 ## 待开始
 
+### v3.59.0 - 多模型实时对比 + 技术韧性
+**主题**: Multi-Model Real-Time Comparison + Technical Resilience
+**路线图**: `docs/v3.59.0-roadmap.md`
+**预计周期**: 5-7 Cycles
+**CEO 决策日期**: 2026-03-12
+
+#### Phase 1: 核心功能 (P0)
+- [ ] **TASK-211**: 🔀 多模型并发请求
+  - 新增 POST /sessions/{id}/compare API
+  - 支持 2-4 个模型并发
+  - asyncio.gather() 实现
+  - 错误隔离（单模型失败不影响其他）
+
+- [ ] **TASK-212**: 📊 对比视图 UI
+  - ComparisonView.tsx - 2-4 列布局
+  - 流式响应支持
+  - 响应式设计（移动端 Tab 视图）
+  - i18n 翻译 (EN/ZH)
+
+- [ ] **TASK-213**: 🎯 模型选择器
+  - 多选模型 UI（2-4 个）
+  - 显示模型特性/价格/速度
+  - 快速预设：快速模型/智能模型/全部
+  - localStorage 记忆选择
+
+#### Phase 2: 体验增强 (P1)
+- [ ] **TASK-214**: 📚 对比历史
+  - comparison_history 数据库表
+  - GET /sessions/{id}/comparisons API
+  - 历史浏览 UI
+  - 隐私约束：仅本地存储
+
+- [ ] **TASK-215**: 📋 一键复制最佳
+  - 每列复制按钮
+  - "使用此回复"替换原聊天
+  - 快捷键 1/2/3/4 复制
+  - Toast 通知
+
+#### Phase 3: 技术债务 (P1)
+- [ ] **TASK-216**: 🩺 Sidecar 健康监控
+  - Python 后端健康检查端点
+  - Tauri 监控 sidecar 状态
+  - 崩溃自动重启（最多 3 次）
+  - 用户通知
+
+- [ ] **TASK-217**: 🔄 WebSocket 重连优化
+  - 连接状态机
+  - 连接质量指示器
+  - 重连期间消息队列
+  - 重连后自动重发
+
 ### 🔴 优先任务
 - [x] **TASK-210**: 🧪 添加集成测试框架 ✅ 2026-03-12
   - **问题**: 项目只有单元测试，没有集成测试
