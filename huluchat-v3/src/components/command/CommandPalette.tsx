@@ -14,6 +14,7 @@ import {
   Moon,
   HelpCircle,
   FolderPlus,
+  BookOpen,
 } from "lucide-react";
 import {
   CommandDialog,
@@ -48,6 +49,7 @@ interface CommandPaletteProps {
   onChangeLanguage?: () => void;
   onToggleTheme?: () => void;
   onShowHelp?: () => void;
+  onOpenKnowledgeCenter?: () => void;
 }
 
 /**
@@ -69,6 +71,7 @@ export function CommandPalette({
   onChangeLanguage,
   onToggleTheme,
   onShowHelp,
+  onOpenKnowledgeCenter,
 }: CommandPaletteProps) {
   const { t } = useTranslation();
   const isMac = isMacOS();
@@ -175,6 +178,16 @@ export function CommandPalette({
       });
     }
 
+    if (onOpenKnowledgeCenter) {
+      cmds.push({
+        id: "knowledge-center",
+        icon: <BookOpen className="size-4 transition-transform duration-200 data-[selected=true]:scale-110" aria-hidden="true" />,
+        labelKey: "command.knowledgeCenter",
+        action: onOpenKnowledgeCenter,
+        group: "settings",
+      });
+    }
+
     return cmds;
   }, [
     onNewSession,
@@ -186,6 +199,7 @@ export function CommandPalette({
     onChangeLanguage,
     onToggleTheme,
     onShowHelp,
+    onOpenKnowledgeCenter,
     isMac,
   ]);
 

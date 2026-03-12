@@ -12,6 +12,7 @@ import { UpdateNotification } from "@/components/UpdateNotification";
 import { KeyboardHelpDialog } from "@/components/keyboard/KeyboardHelpDialog";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { CommandPalette } from "@/components/command";
+import { KnowledgeCenter } from "@/components/knowledge";
 import { WelcomeDialog } from "@/components/WelcomeDialog";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
@@ -35,6 +36,7 @@ function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [keyboardHelpOpen, setKeyboardHelpOpen] = useState(false);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const [knowledgeCenterOpen, setKnowledgeCenterOpen] = useState(false);
   const sessionListRef = useRef<SessionListRef>(null);
 
   // Welcome dialog state - check if first time user
@@ -255,6 +257,11 @@ function App() {
         onOpenSettings={() => setSettingsOpen(true)}
         onExportSession={() => currentSession && handleExportSession(currentSession.id, "markdown")}
         onShowHelp={() => setKeyboardHelpOpen(true)}
+        onOpenKnowledgeCenter={() => setKnowledgeCenterOpen(true)}
+      />
+      <KnowledgeCenter
+        open={knowledgeCenterOpen}
+        onOpenChange={setKnowledgeCenterOpen}
       />
       <div className="flex h-screen bg-background text-foreground">
       {/* Skip to main content link - Accessibility enhancement */}

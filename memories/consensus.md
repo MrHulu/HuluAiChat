@@ -5,14 +5,14 @@
 ---
 
 ## 当前状态
-✅ **TASK-183: 快捷命令面板基础完成**
+✅ **TASK-184: 提示词技巧指南完成**
 
 ---
 
 ## Next Action
 > **继续 v3.56.0 开发：**
-> - TASK-184: 提示词技巧指南 (P0)
 > - TASK-185: FAQ 常见问题 (P0)
+> - TASK-186: 快捷键列表 (P0)
 
 ---
 
@@ -47,6 +47,39 @@
 
 ## 最近完成
 
+### TASK-184: 提示词技巧指南（Cycle #173）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- KnowledgeCenter 组件 - 知识中心对话框
+- ArticleViewer 组件 - Markdown 文章渲染器
+- PROMPT_TIPS 数据 - 8 个核心提示词技巧
+- CommandPalette 集成 - 添加知识中心命令
+- i18n 翻译更新 (EN/ZH) - 完整翻译
+
+**变更文件**:
+- `src/components/knowledge/KnowledgeCenter.tsx` - 新建
+- `src/components/knowledge/ArticleViewer.tsx` - 新建
+- `src/components/knowledge/index.ts` - 新建
+- `src/data/promptTips.ts` - 新建
+- `src/components/command/CommandPalette.tsx` - 添加知识中心命令
+- `src/App.tsx` - 集成 KnowledgeCenter
+- `src/i18n/locales/en.json` - 添加 knowledge 翻译
+- `src/i18n/locales/zh.json` - 添加 knowledge 翻译
+
+**提示词技巧列表**:
+1. 清晰明确的指令 (入门)
+2. 角色扮演提示 (入门)
+3. 思维链推理 (进阶)
+4. 少样本示例 (进阶)
+5. 迭代优化 (进阶)
+6. 结构化输出 (进阶)
+7. 上下文管理 (高级)
+8. 提示词模板 (高级)
+
+---
+
 ### TASK-183: 快捷命令面板（Cycle #173）
 
 **完成时间**: 2026-03-12
@@ -57,31 +90,7 @@
 - 快捷键帮助列表更新（新增 Ctrl+K）
 - i18n 翻译更新（EN/ZH）
 
-**变更文件**:
-- `src/hooks/useKeyboardShortcuts.ts` - 添加 Ctrl+K 快捷键
-- `src/i18n/locales/en.json` - 添加 keyboard.commandPalette
-- `src/i18n/locales/zh.json` - 添加 keyboard.commandPalette
-
 **备注**: 系统级全局快捷键（Tauri global-shortcut）待后续实现
-
----
-
-### TASK-182: v3.56.0 版本规划（Cycle #172）
-
-**完成时间**: 2026-03-12
-
-**产出**:
-- `docs/v3.56.0-roadmap.md` - 版本路线图
-- CEO 战略规划
-- CTO 技术评估
-
-**规划结果**:
-1. **MVP 范围**: 10 个核心功能
-2. **开发阶段**: 4 个 Phase
-3. **技术选型**: minisearch、fzf、remark
-4. **风险评估**: 隐私合规、性能优化
-
-**新增任务**: TASK-183 ~ 194
 
 ---
 
@@ -90,8 +99,8 @@
 - **项目**: HuluChat
 - **当前版本**: v3.54.0
 - **下一版本**: v3.56.0
-- **待开始任务**: 11 个 (TASK-184 ~ 194)
-- **已完成任务计数**: 21
+- **待开始任务**: 10 个 (TASK-185 ~ 194)
+- **已完成任务计数**: 22
 
 ---
 
