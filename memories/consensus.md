@@ -1,17 +1,16 @@
 # Auto Company Consensus
 
-> 最后更新: 2026-03-12 - Cycle #169
+> 最后更新: 2026-03-12 - Cycle #170
 
 ---
 
 ## 当前状态
-✅ **Phase 3 用户功能增强进行中** - TASK-175 已完成
+✅ **Phase 3 用户功能增强进行中** - TASK-176 已完成
 
 ---
 
 ## Next Action
 > **Phase 3: 用户功能增强**
-> - TASK-176: 提示词变量系统
 > - TASK-177: 本地偏好学习
 > - 注：TASK-163/164 仍被 Rust 内存问题阻塞
 
@@ -60,6 +59,39 @@
    - exportSuccess, exportTxt
 
 **结果**: 多选消息导出功能完成
+
+---
+
+### TASK-176: 提示词变量系统（模板变量插值）（Cycle #170）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- `src/utils/templateVariables.ts` - 变量系统工具函数
+- `src/components/templates/VariableInputDialog.tsx` - 变量输入对话框
+- `src/components/chat/ChatInput.tsx` - 集成变量检测和对话框
+- `src/i18n/locales/en.json` - 英文翻译（17 个新键）
+- `src/i18n/locales/zh.json` - 中文翻译（17 个新键）
+
+- i18n 翻译: EN/ZH 对应所有变量相关 UI 文本
+
+**实现内容**:
+1. **变量格式**: `{{variable_name}}`
+2. **预定义变量**（自动填充）:
+   - `{{date}}` - 当前日期
+   - `{{time}}` - 当前时间
+   - `{{datetime}}` - 当前日期时间
+   - `{{weekday}}` - 当前星期几
+   - `{{year}}`, `{{month}}`, `{{day}}` - 年月日
+   - `{{timestamp}}` - 时间戳
+
+3. **用户变量**: 在对话框中输入值
+4. **流程**:
+   - 选择模板时检测是否有用户变量
+   - 有变量则弹出对话框让用户填写
+   - 无变量则直接使用（预定义变量自动填充）
+
+**结果**: 提示词模板变量系统完成
 
 ---
 
