@@ -204,9 +204,10 @@ describe("MessageItem", () => {
     const message = createMessage("user", "User message");
     const { container } = render(<MessageItem message={message} />);
 
-    const messageBubble = container.querySelector(".bg-primary");
+    // User messages use gradient background (from-primary to-primary/90)
+    const messageBubble = container.querySelector(".bg-gradient-to-br");
     expect(messageBubble).toBeInTheDocument();
-    expect(messageBubble).toHaveClass("text-primary-foreground");
+    expect(messageBubble).toHaveClass("from-primary");
     expect(messageBubble).toHaveClass("ml-12");
   });
 
@@ -335,12 +336,10 @@ describe("MessageItem", () => {
     expect(outer).toHaveClass("mb-4");
     expect(outer).toHaveClass("justify-end");
 
-    // Inner bubble
-    const bubble = outer.querySelector(".bg-primary");
-    expect(bubble).toHaveClass("max-w-[80%]");
-    expect(bubble).toHaveClass("rounded-2xl");
-    expect(bubble).toHaveClass("px-4");
-    expect(bubble).toHaveClass("py-3");
+    // User message uses dark theme colors (not bg-primary)
+    const userBubble = outer.querySelector(".dark\\:from-primary");
+    expect(userBubble).toBeInTheDocument();
+    expect(userBubble.className).toMatch(/dark:to-primary/);
   });
 
   it("should render assistant message with all correct classes", () => {

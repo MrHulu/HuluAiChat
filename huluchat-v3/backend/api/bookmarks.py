@@ -15,7 +15,8 @@ from models.tags_bookmarks import (
     BookmarkUpdate,
     BookmarkResponse,
 )
-from models.schemas import MessageModel, SessionModel
+from models.schemas import MessageModel
+from api.sessions import SessionModel
 
 router = APIRouter()
 
