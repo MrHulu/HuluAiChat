@@ -20,10 +20,14 @@ import { BookmarkJumpDialog } from "@/components/bookmark";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { useSession, useKeyboardShortcuts, useFolders, useFeatureDiscovery, useContextualTip, useModel } from "@/hooks";
-import { exportSession, moveSessionToFolder, ExportFormat } from "@/api/client";
+import { exportSession, moveSessionToFolder, updateSettings, ExportFormat } from "@/api/client";
+import { getAPIKey, storeAPIKey, type APIKeyProvider } from "@/services/keyring";
 
 // Import version from package.json for dynamic version display
 import { version } from "../package.json";
+
+// Migration flag stored in localStorage
+const API_KEY_MIGRATED_KEY = "huluchat-api-key-migrated-v2";
 
 // 懒加载设置对话框（非核心功能）
 const SettingsDialog = lazy(() =>
@@ -96,6 +100,37 @@ function App() {
   const handleWelcomeComplete = () => {
     localStorage.setItem(WELCOME_SHOWN_KEY, "true");
   };
+
+  // Initialize API key from keyring on app startup
+  // This ensures the backend has the API key for the current session
+  useEffect(() => {
+    const initializeAPIKeyFromKeyring = async () => {
+      try {
+        // Check if we've already done migration
+        const migrated = localStorage.getItem(API_KEY_MIGRATED_KEY);
+
+        // Load API keys from keyring and send to backend
+        const providers: APIKeyProvider[] = ["openai", "deepseek"];
+        for (const provider of providers) {
+          const apiKey = await getAPIKey(provider);
+          if (apiKey) {
+            // Send to backend for immediate use (backend stores only in memory)
+            await updateSettings({ openai_api_key: apiKey });
+            console.log(`Loaded ${provider} API key from keyring`);
+          }
+        }
+
+        // Mark migration as complete
+        if (!migrated) {
+          localStorage.setItem(API_KEY_MIGRATED_KEY, "true");
+        }
+      } catch (error) {
+        console.warn("Failed to initialize API key from keyring:", error);
+      }
+    };
+
+    initializeAPIKeyFromKeyring();
+  }, []);
 
   // 显示错误 toast
   useEffect(() => {
