@@ -2,7 +2,7 @@
  * TemplateSelector Component - TASK-197
  * Quick session creation with preset templates
  */
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import {

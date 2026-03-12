@@ -21,7 +21,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { useSession, useKeyboardShortcuts, useFolders, useFeatureDiscovery, useContextualTip, useModel } from "@/hooks";
 import { exportSession, moveSessionToFolder, updateSettings, ExportFormat } from "@/api/client";
-import { getAPIKey, storeAPIKey, type APIKeyProvider } from "@/services/keyring";
+import { getAPIKey, type APIKeyProvider } from "@/services/keyring";
 
 // Import version from package.json for dynamic version display
 import { version } from "../package.json";

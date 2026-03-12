@@ -5,6 +5,7 @@
  * PRIVACY: Shortcut preferences read from localStorage only, no data sent to servers
  */
 import { useEffect, useCallback, useMemo } from "react";
+import { DEFAULT_SHORTCUTS } from "./useShortcutSettings";
 
 export interface KeyboardShortcut {
   key: string;
@@ -47,6 +48,7 @@ const STORAGE_KEY = "huluchat_shortcut_settings";
 
 /**
  * Load custom shortcuts from localStorage
+ * Falls back to default shortcuts if none are stored
  */
 function loadCustomShortcuts(): Map<string, CustomShortcutBinding> {
   try {
@@ -58,7 +60,8 @@ function loadCustomShortcuts(): Map<string, CustomShortcutBinding> {
   } catch (e) {
     console.error("Failed to load custom shortcuts:", e);
   }
-  return new Map();
+  // Fall back to default shortcuts
+  return new Map(DEFAULT_SHORTCUTS.map((s) => [s.id, s]));
 }
 
 /**
@@ -72,12 +75,15 @@ function matchesShortcut(
   // Check key code
   if (event.code !== binding.key) return false;
 
-  // On Mac, metaKey is used; on Windows/Linux, ctrlKey is used
-  const ctrlOrMeta = isMac ? binding.metaKey : binding.ctrlKey;
-  const eventCtrlOrMeta = isMac ? event.metaKey : event.ctrlKey;
+  // For Ctrl/Cmd modifier:
+  // - If binding specifies metaKey, use metaKey
+  // - If binding specifies ctrlKey, use platform-appropriate key (Cmd on Mac, Ctrl on Windows)
+  // - This allows default shortcuts with ctrlKey: true to work on both platforms
+  const bindingUsesCtrlOrCmd = binding.ctrlKey || binding.metaKey;
+  const eventHasCtrlOrCmd = isMac ? event.metaKey : event.ctrlKey;
 
   return (
-    eventCtrlOrMeta === ctrlOrMeta &&
+    eventHasCtrlOrCmd === bindingUsesCtrlOrCmd &&
     event.shiftKey === binding.shiftKey &&
     event.altKey === binding.altKey
   );

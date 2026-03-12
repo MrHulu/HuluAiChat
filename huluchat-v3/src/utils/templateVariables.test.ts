@@ -2,7 +2,8 @@
  * Template Variables System Tests
  * 提示词模板变量系统测试
  */
-import { describe, extractVariables, getUserVariables, hasUserVariables, replaceVariables, processTemplate, PREDEFINED_VARIABLES } from "./templateVariables";
+import { describe, it, expect } from "vitest";
+import { extractVariables, getUserVariables, hasUserVariables, replaceVariables, processTemplate, PREDEFINED_VARIABLES } from "./templateVariables";
 
 describe("extractVariables", () => {
   it("should extract variable names from template content", () => {

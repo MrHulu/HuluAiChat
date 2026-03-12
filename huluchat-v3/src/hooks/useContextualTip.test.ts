@@ -215,7 +215,10 @@ describe("useContextualTip Hook", () => {
       const noApiKey = CONTEXTUAL_TIPS.find((t) => t.id === "no-api-key");
       const emptySession = CONTEXTUAL_TIPS.find((t) => t.id === "empty-session");
 
-      expect(noApiKey?.priority).toBeLessThan(emptySession?.priority!);
+      // Both should exist, then compare priorities
+      expect(noApiKey).toBeDefined();
+      expect(emptySession).toBeDefined();
+      expect(noApiKey!.priority).toBeLessThan(emptySession!.priority);
     });
   });
 

@@ -92,7 +92,7 @@ function ConnectionIndicator({ status }: { status: ConnectionStatus }) {
 function ToolCallsIndicator({ toolCalls }: { toolCalls: ToolCall[] }) {
   const { t } = useTranslation();
 
-  if (toolCalls.length === 0) return null;
+  if (!toolCalls || toolCalls.length === 0) return null;
 
   return (
     <div className="px-4 py-2 border-b border-border bg-muted/30">
@@ -143,7 +143,7 @@ export const ChatView = forwardRef<ChatViewRef, ChatViewProps>(function ChatView
   ref
 ) {
   const { t } = useTranslation();
-  const { messages, streamingMessage, toolCalls, connectionStatus, sendMessage, regenerateMessage, deleteMessage, isLoading, refreshMessages } =
+  const { messages, streamingMessage, toolCalls, connectionStatus, sendMessage, regenerateMessage, deleteMessage, isLoading } =
     useChat(sessionId, { onTitleGenerated: onSessionUpdated });
   const { currentModel, models, setModel, isLoading: isLoadingModels, parameters, recommendedModel } = useModel();
 
