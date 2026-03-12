@@ -374,7 +374,7 @@ async def chat_websocket(
                     if chunk.error:
                         await manager.send_json(session_id, {
                             "type": "error",
-                            "content": chunk.error,
+                            "error": chunk.error,
                         })
                         break
 
@@ -460,7 +460,7 @@ async def chat_websocket(
                                 if cont_chunk.error:
                                     await manager.send_json(session_id, {
                                         "type": "error",
-                                        "content": cont_chunk.error,
+                                        "error": cont_chunk.error,
                                     })
                                     break
 
@@ -498,7 +498,7 @@ async def chat_websocket(
                 logger.error(f"Error during streaming: {e}")
                 await manager.send_json(session_id, {
                     "type": "error",
-                    "content": f"AI 响应出错: {str(e)}",
+                    "error": f"AI 响应出错: {str(e)}",
                 })
 
     except WebSocketDisconnect:
