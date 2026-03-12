@@ -11,8 +11,10 @@ import { LayoutTemplate, Send, ImagePlus, X, Loader2, Paperclip, FileText, FileC
 import {
   PromptTemplateSelector,
 } from "@/components/templates/PromptTemplateSelector";
+import { VariableInputDialog } from "@/components/templates/VariableInputDialog";
 import { VoiceInputButton } from "@/components/chat/VoiceInputButton";
 import { ImageContent, FileAttachment, Message } from "@/api/client";
+import { hasUserVariables, processTemplate } from "@/utils/templateVariables";
 
 // Constants
 const MAX_TEXTAREA_HEIGHT = 200;
@@ -68,6 +70,8 @@ export const ChatInput = memo(function ChatInput({
   const [files, setFiles] = useState<FileAttachment[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [isSendSuccess, setIsSendSuccess] = useState(false);
+  // Variable input dialog state - TASK-176
+  const [pendingTemplate, setPendingTemplate] = useState<{ content: string; name?: string } | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -269,10 +273,29 @@ export const ChatInput = memo(function ChatInput({
     }
   }, [handleSend]);
 
-  const handleTemplateSelect = useCallback((content: string) => {
-    setValue(content);
-    setShowTemplateSelector(false);
-    // Focus textarea after selection
+  const handleTemplateSelect = useCallback((content: string, templateName?: string) => {
+    // Check if template has variables that need user input
+    if (hasUserVariables(content)) {
+      // Show variable input dialog
+      setPendingTemplate({ content, name: templateName });
+      setShowTemplateSelector(false);
+    } else {
+      // No variables or only predefined variables - process and use directly
+      const processedContent = processTemplate(content);
+      setValue(processedContent);
+      setShowTemplateSelector(false);
+      // Focus textarea after selection
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+      }
+    }
+  }, []);
+
+  // Handle variable dialog submit
+  const handleVariableSubmit = useCallback((processedContent: string) => {
+    setValue(processedContent);
+    setPendingTemplate(null);
+    // Focus textarea after variable input
     if (textareaRef.current) {
       textareaRef.current.focus();
     }
@@ -589,8 +612,19 @@ export const ChatInput = memo(function ChatInput({
       <PromptTemplateSelector
         open={showTemplateSelector}
         onOpenChange={setShowTemplateSelector}
-        onSelect={handleTemplateSelect}
+        onSelect={(content) => handleTemplateSelect(content)}
       />
+
+      {/* Variable Input Dialog - TASK-176 */}
+      {pendingTemplate && (
+        <VariableInputDialog
+          open={true}
+          onOpenChange={(open) => !open && setPendingTemplate(null)}
+          templateContent={pendingTemplate.content}
+          templateName={pendingTemplate.name}
+          onSubmit={handleVariableSubmit}
+        />
+      )}
     </div>
   );
 });

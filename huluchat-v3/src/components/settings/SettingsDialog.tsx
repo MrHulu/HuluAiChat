@@ -1,6 +1,11 @@
 /**
  * Settings Dialog Component
  * API Key configuration, model selection, Ollama settings, and plugin management
+ *
+ * SECURITY: API keys are stored in system keyring, not in files.
+ * - macOS: Keychain
+ * - Windows: Credential Manager
+ * - Linux: Secret Service
  */
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -14,6 +19,8 @@ import {
   ExternalLink,
   Sliders,
   Puzzle,
+  Cpu,
+  Palette,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -46,7 +53,10 @@ import {
   type ModelInfo,
   type OllamaModel,
 } from "@/api/client";
+import { storeAPIKey } from "@/services/keyring";
 import { PluginSettings } from "./PluginSettings";
+import { MCPSettings } from "./MCPSettings";
+import { ThemeSettings } from "./ThemeSettings";
 
 interface SettingsDialogProps {
   onSettingsChange?: () => void;
@@ -206,9 +216,20 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
     try {
       const updateData: Record<string, string | number> = {};
 
-      // Only send API key if changed (not empty)
+      // SECURITY: Store API key in system keyring, not in files
+      // Only send to backend for immediate use (backend doesn't persist)
       if (apiKey.trim()) {
-        updateData.openai_api_key = apiKey.trim();
+        try {
+          // Store in system keyring
+          await storeAPIKey("openai", apiKey.trim());
+          // Send to backend for immediate use
+          updateData.openai_api_key = apiKey.trim();
+        } catch (keyringError) {
+          console.error("Failed to store API key in keyring:", keyringError);
+          toast.error(t("settings.keyringStoreFailed"));
+          setSaving(false);
+          return;
+        }
       }
 
       if (baseUrl.trim()) {
@@ -319,9 +340,17 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
           </div>
         ) : (
           <Tabs defaultValue="api" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="api">{t("settings.tabApi")}</TabsTrigger>
               <TabsTrigger value="ollama">{t("settings.tabOllama")}</TabsTrigger>
+              <TabsTrigger value="mcp">
+                <Cpu className="h-4 w-4 mr-1" />
+                MCP
+              </TabsTrigger>
+              <TabsTrigger value="appearance">
+                <Palette className="h-4 w-4 mr-1" />
+                {t("settings.tabAppearance")}
+              </TabsTrigger>
               <TabsTrigger value="plugins">
                 <Puzzle className="h-4 w-4 mr-1" />
                 {t("settings.tabPlugins")}
@@ -643,6 +672,16 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
                 ) : null}
                 {t("ollama.testConnection")}
               </Button>
+            </TabsContent>
+
+            {/* MCP Tab */}
+            <TabsContent value="mcp" className="py-4">
+              <MCPSettings />
+            </TabsContent>
+
+            {/* Appearance Tab */}
+            <TabsContent value="appearance" className="py-4">
+              <ThemeSettings />
             </TabsContent>
 
             {/* Plugins Tab */}

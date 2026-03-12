@@ -1,6 +1,326 @@
 # 任务清单
 
-## 🔴 紧急任务（阻塞 Boss 工作）
+## 🔴 紧急任务（Boss 指令）
+- [x] **TASK-182**: 📋 规划 v3.56.0 版本 ✅ 2026-03-12
+  - 主题：AI 知识中心 + 帮助支持体系
+  - 已完成：版本路线图 `docs/v3.56.0-roadmap.md`
+  - MVP 功能：10 个，预计 9-12 Cycles
+  - Cycle #172
+
+## v3.56.0 任务（按优先级）
+
+### Phase 1: 基础设施 (P0)
+- [x] **TASK-183**: ⌨️ 快捷命令面板 (Ctrl+K) ✅ 2026-03-12
+  - 全局快捷键注册 (Tauri global-shortcut 插件) - 待系统级实现
+  - 命令面板 UI 组件 (fzf 模糊搜索) ✅
+  - 命令注册机制 ✅
+  - 基础导航命令 ✅
+  - 快捷键帮助列表更新 ✅
+  - i18n 翻译更新 ✅
+  - Cycle #173
+- [x] **TASK-184**: 📚 提示词技巧指南 ✅ 2026-03-12
+  - 8 个核心提示词技巧文档
+  - Markdown 渲染页面 (ArticleViewer)
+  - 知识中心组件 (KnowledgeCenter)
+  - 命令面板集成
+  - i18n 翻译更新 (EN/ZH)
+  - Cycle #173
+- [x] **TASK-185**: ❓ FAQ 常见问题 ✅ 2026-03-12
+  - 19 个常见问题
+  - Accordion UI 组件
+  - 5 个分类显示
+  - i18n 翻译 (EN/ZH)
+  - Cycle #174
+- [x] **TASK-186**: ⌨️ 快捷键列表 ✅ 2026-03-12
+  - 复用现有 KEYBOARD_SHORTCUTS 数据
+  - 分类展示 UI（常规/导航）
+  - 平台适配 (Cmd/Ctrl)
+  - 集成到知识中心 help 分类
+  - i18n 翻译 (EN/ZH)
+  - Cycle #175
+
+### Phase 2: 帮助体系 (P1)
+- [x] **TASK-187**: 💬 反馈入口 ✅ 2026-03-12
+  - GitHub Issues 链接
+  - 邮件联系入口
+  - 社区讨论链接
+  - 隐私提示（不收集用户数据）
+  - i18n 翻译 (EN/ZH)
+  - Cycle #176
+- [x] **TASK-188**: 🔀 模型对比说明 ✅ 2026-03-12
+  - 7 个模型（OpenAI/DeepSeek/Ollama）
+  - 模型特点展示
+  - 适用场景推荐
+  - 价格和速度对比
+  - i18n 翻译 (EN/ZH)
+  - Cycle #177
+- [x] **TASK-189**: 🔍 帮助文档搜索 ✅ 2026-03-12
+  - minisearch 集成
+  - 搜索结果 UI（高亮显示）
+  - 知识中心集成
+  - i18n 翻译 (EN/ZH)
+  - Cycle #178
+
+### Phase 3: 新手体验 (P1)
+- [x] **TASK-190**: 🎯 首次使用引导 ✅ 2026-03-12
+  - 欢迎页面
+  - 5 步功能介绍（欢迎、多模型、文档对话、快捷键、知识中心）
+  - localStorage 状态保存
+  - i18n 翻译 (EN/ZH)
+  - Cycle #179
+- [x] **TASK-191**: 💡 功能发现提示 ✅ 2026-03-12
+  - useFeatureDiscovery hook - 功能使用状态检测
+  - FeatureDiscoveryTip 组件 - 提示卡片 UI
+  - 6 个可发现功能（命令面板、知识中心、文档对话、导出、文件夹、模型切换）
+  - 可关闭/永久关闭
+  - 隐私约束：只存储布尔值
+  - i18n 翻译 (EN/ZH)
+  - Cycle #180
+
+### Phase 4: 体验增强 (P2)
+- [x] **TASK-192**: 🔖 书签消息跳转 ✅ 2026-03-12
+  - ChatView 添加 ref 暴露 scrollToMessage 方法
+  - BookmarkJumpDialog 组件 - 书签选择对话框
+  - CommandPalette 添加 jumpToBookmark 命令
+  - App.tsx 集成书签跳转功能
+  - i18n 翻译 (EN/ZH)
+  - 测试：10 个测试用例通过
+  - Cycle #181
+- [x] **TASK-193**: 🤖 上下文智能提示 ✅ 2026-03-12
+  - contextualTips.ts - 5 个提示配置（no-api-key, no-model, empty-session, first-visit, settings-incomplete）
+  - useContextualTip.ts - 状态检测 hook（当前状态、设置加载）
+  - ContextualTip.tsx - 提示显示组件
+  - 集成到 App.tsx（优先级高于功能发现提示）
+  - i18n 翻译 (EN/ZH)
+  - 测试：21 个测试用例通过
+  - 隐私约束：只检测当前状态，不存储历史行为
+  - Cycle #182
+- [x] **TASK-194**: ⚠️ 错误解决建议 ✅ 2026-03-12
+  - errorCodes.ts - 17 个错误码配置（6 个分类）
+  - ErrorSolutions.tsx - 错误解决建议组件
+  - 知识中心 help 分类集成
+  - i18n 翻译 (EN/ZH)
+  - 测试：28 个测试用例通过
+  - 隐私约束：静态内容，不收集用户错误信息
+  - Cycle #183
+
+## 待开始
+
+### 🔴 v3.58.0 - 消息交互增强 + 个性化体验
+**主题**: 消息交互增强 + 个性化体验 + 技术韧性
+**路线图**: `docs/v3.58.0-roadmap.md`
+**预计周期**: 5-6 Cycles
+
+#### Phase 1: 消息交互增强 (P0)
+- [x] **TASK-200**: 💬 完善引用回复 ✅ 2026-03-12
+  - 引用预览组件（输入框上方）✅ 已存在
+  - 前端发送 quoted_message_id ✅
+  - 后端 API 支持 quoted_message_id ✅
+  - 后端将引用消息添加到 AI 上下文 ✅
+  - Cycle #8
+
+- [x] **TASK-202**: 🔍 会话内搜索 ✅ 2026-03-12
+  - ChatSearch 组件（搜索栏 UI）✅
+  - 搜索工具函数✅
+  - 消息高亮支持✅
+  - Ctrl+F 快捷键支持✅
+  - i18n 翻译（EN/ZH）✅
+  - 测试：33 个测试用例通过✅
+  - Cycle #9
+
+#### Phase 2: 个性化体验 (P1)
+- [x] **TASK-203**: 🎨 主题定制（仅预设） ✅ 2026-03-12
+  - SettingsDialog 添加外观 Tab ✅
+  - 预设主题：Light / Dark / System ✅
+  - localStorage 存储主题偏好 ✅
+  - i18n 翻译（EN/ZH）✅
+  - 测试：12 个测试用例通过 ✅
+  - Cycle #10
+
+- [ ] **TASK-204**: ⌨️ 快捷键自定义
+  - SettingsDialog 添加快捷键 Tab
+  - 快捷键录制组件
+  - 冲突检测
+  - 预计：1-2 Cycle
+
+#### Phase 3: 技术韧性 (P1) - CTO 建议
+- [ ] **TASK-205**: 🩺 前端健康监控
+  - 前端轮询后端健康状态
+  - 后端崩溃自动恢复
+  - 状态指示器
+  - 预计：1 Cycle
+
+---
+
+### v3.57.0 - 对话控制增强 ✅ **已完成**
+**主题**: 智能对话增强 + 工作流效率
+**路线图**: `docs/v3.57.0-roadmap.md`
+**实际周期**: 6 Cycles
+
+#### Phase 1: 核心对话增强 (P0) ✅
+- [x] **TASK-195**: 🔄 消息重新生成 ✅ 2026-03-12
+- [x] **TASK-196**: ✏️ 消息编辑 ✅ 2026-03-12
+- [x] **TASK-197**: 📋 会话模板 ✅ 2026-03-12
+
+#### Phase 2: 效率工具 (P1) ✅
+- [x] **TASK-198**: ⚡ 自定义命令 ✅ 2026-03-12
+- [x] **TASK-199**: 📁 批量会话操作 ✅ 2026-03-12
+
+---
+
+### Phase 1: 基础修复 (阻塞问题)
+- [x] **TASK-161**: 🔒 实现 Content Security Policy (CSP) ✅ 2026-03-12
+  - 生产环境 CSP：严格策略
+  - 开发环境 CSP：支持 Vite dev server
+  - 允许资源：本地 API、WebSocket、Ollama、OpenAI API
+  - Cycle #164
+- [x] **TASK-162**: 🔧 提取 API_BASE 到环境变量 ✅ 2026-03-12
+  - 添加 VITE_API_BASE 环境变量支持
+  - 创建 .env.example 文档
+  - 更新 WebSocket URL 生成逻辑
+  - Cycle #164
+- [ ] **TASK-163**: 🩺 添加后端 sidecar 进程健康监控和自动重启 ⚠️ **阻塞：Rust 编译内存不足**
+- [ ] **TASK-164**: 🔐 添加更新签名验证 ⚠️ **需要 Boss 配置 GitHub Secrets**
+- [x] **TASK-165**: 🔄 实现 WebSocket 指数退避重连策略 ✅ 2026-03-12
+  - 添加指数退避算法（baseDelay * 2^attempt）
+  - 添加 jitter 避免同时重连
+  - 向后兼容 reconnectInterval 参数
+  - Cycle #164
+- [x] **TASK-166**: ⏱️ 添加 OpenAI/Ollama 请求超时配置 ✅ 2026-03-12
+  - 新增配置：openai_timeout、http_connect_timeout、http_read_timeout
+  - OpenAI/DeepSeek/Ollama 客户端统一使用可配置超时
+  - 添加 APITimeoutError 错误处理
+  - Cycle #164
+
+### Phase 2: MCP 支持 (核心功能)
+- [x] **TASK-167**: 🏗️ 设计 MCP 架构（前端面板 + 后端 client）✅ 2026-03-12
+  - 架构设计文档: docs/cto/mcp-architecture.md
+  - 包含后端服务设计、前端组件设计、API 端点设计
+  - Tool Calling 集成流程
+  - Cycle #165
+- [x] **TASK-168**: 🐍 实现 Python MCP client（使用 mcp SDK）✅ 2026-03-12
+  - 安装 mcp SDK (v1.26.0)
+  - 创建 models/mcp_server.py (数据模型)
+  - 创建 services/mcp_service.py (核心服务)
+  - 创建 api/mcp.py (REST API 端点)
+  - 更新 main.py 添加 MCP 路由
+  - Cycle #165
+- [x] **TASK-169**: ⚙️ 创建 MCP 设置面板（Settings 新 Tab）✅ 2026-03-12
+  - 扩展 src/api/client.ts 添加 MCP API 函数
+  - 创建 src/components/settings/MCPSettings.tsx
+  - 更新 SettingsDialog.tsx 添加 MCP Tab
+  - Server 卡片、添加对话框、连接管理
+  - Cycle #165
+- [x] **TASK-170**: 🔗 集成 MCP tool calling 与现有聊天流 ✅ 2026-03-12
+  - 创建 services/mcp_tool_adapter.py（MCP → OpenAI 格式转换）
+  - 修改 services/openai_service.py 支持 tools 参数和 tool_calls
+  - 修改 api/chat.py 集成 MCP tools 和 tool calling 流程
+  - 更新 useChat hook 添加 toolCalls 状态
+  - 更新 ChatView 添加 ToolCallsIndicator 组件
+  - 添加 i18n 翻译（EN/ZH）
+  - Cycle #166
+- [x] **TASK-171**: 🌐 添加 MCP i18n 支持（EN/ZH）✅ 2026-03-12
+  - 添加 MCP 翻译到 en.json（26 个翻译键）
+  - 添加 MCP 翻译到 zh.json（26 个翻译键）
+  - 修复 MCPSettings.tsx 中的翻译键命名
+  - Cycle #167
+- [x] **TASK-172**: 📚 编写 MCP 使用文档 ✅ 2026-03-12
+  - 创建 docs/MCP_GUIDE.md 用户指南
+  - 包含：快速开始、推荐 Servers、使用示例、常见问题
+  - Cycle #167
+
+### Phase 3: 用户功能增强
+- [x] **TASK-173**: 🔍 智能消息搜索（跨会话搜索）✅ 2026-03-12
+  - 已存在：后端 `/sessions/search/` API
+  - 已存在：前端 `searchSessions()` + 搜索 UI + 高亮
+  - Cycle #168
+- [x] **TASK-174**: 📝 会话摘要与智能标题（AI 自动生成）✅ 2026-03-12
+  - 后端：PUT /sessions/{id}/title + POST /sessions/{id}/generate-title
+  - 前端：updateSessionTitle() + generateSessionTitle() API
+  - 自动触发：第一次对话完成后自动生成标题
+  - openai_service.py 添加非流式 chat() 方法
+  - Cycle #168
+- [x] **TASK-175**: 📤 增强型导出（多选消息导出）✅ 2026-03-12
+  - 前端：exportMessages() 函数（前端生成导出内容）
+  - MessageItem：添加选择复选框和选中高亮
+  - ChatView：多选模式、全选/取消全选、导出按钮
+  - 支持 Markdown/JSON/TXT 三种导出格式
+  - i18n：EN/ZH 翻译（12 个新键）
+  - Cycle #169
+- [x] **TASK-176**: 💬 提示词变量系统（模板变量插值） ✅ 2026-03-12
+  - 变量格式：`{{variable_name}}`
+  - 预定义变量：日期、时间、时间戳等自动填充
+  - 自定义变量：用户在对话框中输入
+  - 前端实现：变量输入对话框 + 工具函数
+  - Cycle #170
+- [x] **TASK-177**: 🧠 本地偏好学习（模型推荐）✅ 2026-03-12
+  - 后端: `services/preference_service.py` - 偏好存储服务（JSON 文件）
+  - 后端: `api/preferences.py` - 偏好 API 端点
+  - 前端: `src/api/client.ts` - 偏好 API 函数
+  - 前端: `src/hooks/useModel.ts` - 记录使用和推荐模型
+  - 前端: `src/components/chat/ModelSelector.tsx` - 推荐标记
+  - 隐私优先：所有数据存储在本地，不上传
+  - i18n 翻译：EN/ZH
+  - Cycle #171
+
+### 技术债务
+- [x] **TASK-178**: 🗃️ 迁移到 Alembic 数据库迁移 ✅ 2026-03-12
+  - 添加 alembic 依赖到 requirements.txt
+  - 创建 alembic.ini 配置文件
+  - 创建 migrations/env.py (异步 SQLAlchemy 支持)
+  - 创建初始迁移脚本 (001_initial)
+  - 更新 database.py 移除手动迁移代码
+  - 创建 migrate.py CLI 工具
+  - Cycle #172
+- [x] **TASK-179**: ⚡ ChromaDB 异步化包装 ✅ 2026-03-12
+  - 创建 services/async_chroma.py - AsyncChromaClient/AsyncCollection
+  - 更新 services/rag_service.py - 使用异步包装器
+  - 添加 tests/test_async_chroma.py - 异步包装器测试
+  - 更新 tests/test_rag_service.py - 使用 AsyncMock
+  - 使用线程池执行器避免阻塞事件循环
+  - Cycle #172
+- [x] **TASK-180**: 📊 添加复合数据库索引 ✅ 2026-03-12
+  - 创建 Alembic 迁移添加复合索引
+  - messages: (session_id, created_at) - 优化消息查询
+  - session_tags: (session_id, tag) - 优化标签查询
+  - message_bookmarks: (session_id, created_at) - 优化书签查询
+  - sessions: (folder_id, updated_at) - 优化会话列表查询
+  - 更新 SQLAlchemy 模型添加 Index 声明
+  - Cycle #186
+- [x] **TASK-181**: 🔑 API Key 存储改用系统钥匙串 ✅ 2026-03-12
+  - App.tsx 吝始化时从 keyring 加载 API key 发送给后端
+  - keyring.ts 已支持 openai 和 deepseek provider
+  - Settings.py 后端不持久化 API key
+  - Cycle #187
+
+### 等待 Boss
+- [ ] **TASK-116**: 🎬 准备 Product Hunt 发布素材(截图、视频) - 等待 Boss
+
+## 已完成（最近）
+- [x] **TASK-160**: 🐛 修复测试内存溢出 ✅ 2026-03-12
+  - 配置 Vitest 使用 forks pool 和 fileParallelism=false
+  - 更新 empty-state.test.tsx 断言匹配新样式
+  - Cycle #163
+
+- [x] **TASK-122**: 🎨 UI/UX 美化优化 ✅ 2026-03-12
+  - 状态：已完成
+  - 内容：空状态组件增强、消息气泡层次感、按钮发光效果
+  - 所有 UI 组件暗色模式增强
+  - 全局 CSS 暗色模式增强
+  - Cycle #158-160
+
+- [x] **TASK-156**: 🔧 修复 GitHub Release Workflow URL 错误 + 发布 v3.54.0 ✅ 2026-03-12
+  - 修复 `.github/workflows/release.yml` 中的 GitHub URL
+  - `MrHulu/HuluChat` → `MrHulu/HuluAiChat`
+  - 发布 v3.54.0
+  - Cycle #156
+
+- [x] **TASK-155**: ✨ 添加消息删除功能 ✅ 2026-03-11
+  - 后端: DELETE /{session_id}/messages/{message_id} 端点
+  - 前端: API 客户端、useChat hook、MessageItem 组件
+  - i18n: EN/ZH 翻译
+  - Cycle #155
+
 - [x] **TASK-152**: 🐛 设置页模型下拉框为空 ✅ 2026-03-11
   - 问题: main.py 缺少服务器启动代码
   - 修复: 添加 `if __name__ == "__main__": uvicorn.run()` 启动服务器
@@ -15,34 +335,6 @@
   - Linux: `HuluChat_${version}_amd64.AppImage`
   - Cycle #153
 
-- [x] **TASK-150**: 🔧 修复 CI - ESLint 错误 ✅ 2026-03-11
-  - 文件: `ChatInput.tsx` Line 101, 132
-  - 问题: `useCallback` 依赖数组不正确
-  - 修复: 依赖改为 `[t, images.length]` 和 `[t, files.length]`
-  - Cycle #150
-
-- [x] **TASK-151**: 🚀 发布 GitHub Release（最新版本）✅ 2026-03-11
-  - 原因: Boss 需要最新版本准备素材
-  - 前置: TASK-150 ✅ 完成，可以发布
-  - 发布: https://github.com/MrHulu/HuluAiChat/releases/tag/v3.52.0
-  - Cycle #150
-
-## 进行中
-- [x] **TASK-129**: 🚀 README 优化 ✅ 2026-03-11
-  - 修复缺失的图片引用（Demo GIF、截图占位符）
-  - 更新功能列表（添加文件上传、消息引用、交互增强等）
-  - 优化营销文案（Why HuluChat 部分）
-  - **修正 GitHub URL**：`MrHulu/HuluChat` → `MrHulu/HuluAiChat`
-  - Cycle #150
-
-## 待开始
-<!-- 新任务添加到这里 -->
-- [ ] **TASK-122**: 🎨 UI/UX 美化优化（持续进行）
-  - 状态：长期任务，持续进行
-  - 方向：界面美化、交互优化、视觉一致性
-
-- [ ] **TASK-116**: 🎬 准备 Product Hunt 发布素材(截图、视频) - 等待 Boss
-
 ## 已取消
 - [x] ~~**TASK-127**: 🎤 用户访谈招募~~ ❌ **Boss 决定取消** - 暂停并删除相关内容
 - [x] ~~**TASK-120**: 📊 添加用户行为埋点~~ ❌ **Boss 决定取消** - 隐私优先原则
@@ -52,199 +344,6 @@
 - 📋 **原则**：隐私优先（Privacy-First），用户数据不上传、不收集
 - 🚫 **执行**：任何版本规划或开发都不得包含上述功能
 - 📄 **文档**：CLAUDE.md 和 PROMPT.md 已明确记录此要求
-
-## 已完成
-- [x] **TASK-122**: 🎨 UI/UX 美化优化 - 消息发送成功反馈 ✅ 2026-03-11
-  - ChatInput 添加发送成功反馈动画
-  - 发送按钮短暂显示 Check 图标 + "已发送" 文字
-  - 1.5 秒后自动恢复正常状态
-  - i18n EN/ZH 翻译
-  - 新增 3 个测试用例
-  - Cycle #149
-
-- [x] **TASK-122**: 🎨 UI/UX 美化优化 - 按钮涟漪效果 ✅ 2026-03-11
-  - 新增 Ripple 组件实现点击涟漪动画
-  - Button 组件集成 Ripple 效果
-  - 支持自定义颜色和动画时长
-  - asChild 模式不显示涟漪
-  - 新增 11 个测试用例
-  - Cycle #147
-
-- [x] **TASK-122**: 🎨 UI/UX 美化优化 - 双击引用消息 ✅ 2026-03-11
-  - MessageItem 添加 onDoubleClick 处理，双击快速引用
-  - 悬停提示 "双击引用消息"
-  - 编辑中或流式传输时不触发引用
-  - 添加 cursor-pointer 样式指示可交互
-  - 新增 5 个测试用例
-  - i18n EN/ZH 翻译
-  - Cycle #146
-
-- [x] **TASK-122**: 🎨 UI/UX 美化优化 - 消息引用回复功能 ✅ 2026-03-11
-  - MessageItem 添加引用按钮（Quote 图标）
-  - ChatInput 添加引用预览显示
-  - ChatView 添加引用状态管理
-  - i18n EN/ZH 翻译
-  - Cycle #145
-
-- [x] **TASK-122**: 🎨 UI/UX 美化优化 - AI 消息重新生成按钮 ✅ 2026-03-11
-  - useChat hook 添加 regenerateMessage 函数
-  - MessageItem 组件添加重新生成按钮（仅 AI 消息显示）
-  - 加载状态显示旋转动画
-  - 新增 7 个测试用例
-  - Cycle #143
-
-- [x] **TASK-122**: 🎨 UI/UX 美化优化 - 输入框字符计数 ✅ 2026-03-11
-  - ChatInput 添加实时字符计数显示
-  - 超过 4000 字符显示橙色警告
-  - 超过 8000 字符显示红色警告
-  - i18n EN/ZH 翻译
-  - 新增 4 个测试用例
-  - Cycle #142
-
-- [x] **TASK-122**: 🎨 UI/UX 美化优化 - 消息日期分隔符 ✅ 2026-03-11
-  - 新增 DateSeparator 组件，支持日期分组显示
-  - MessageList 按日期自动分组消息（今天、昨天、其他日期）
-  - 虚拟列表支持日期分隔符
-  - i18n 中英文支持
-  - Cycle #140
-
-- [x] **TASK-122**: 🎨 UI/UX 美化优化 - 滚动到底部按钮 ✅ 2026-03-11
-  - 当用户向上滚动查看历史消息时显示"滚动到底部"悬浮按钮
-  - 点击按钮平滑滚动到最新消息
-  - i18n EN/ZH 翻译
-  - Cycle #139
-
-- [x] **TASK-122**: 🎨 UI/UX 美化优化 - 会话删除确认对话框 ✅ 2026-03-11
-  - 删除会话时显示确认对话框，防止误删除
-  - 使用 AlertDialog 组件
-  - i18n EN/ZH 翻译
-  - Cycle #139
-
-- [x] **TASK-122**: 🎨 UI/UX 美化优化 - 键盘快捷键 / 聚焦搜索 ✅ 2026-03-11
-  - 添加全局键盘快捷键 `/` 聚焦搜索框
-  - SessionList 使用 forwardRef 暴露 focusSearch 方法
-  - 当侧边栏展开且不在输入框中时，按 `/` 聚焦搜索
-  - Cycle #138
-
-- [x] **TASK-122**: 🎨 UI/UX 美化优化 - 文件上传错误提示 ✅ 2026-03-11
-  - ChatInput 添加 toast 错误提示
-  - 文件过大时显示错误（图片 10MB、文件 20MB）
-  - 达到最大数量时显示警告（5 个文件）
-  - i18n EN/ZH 翻译
-  - Cycle #138
-
-- [x] **TASK-122**: 🎨 UI/UX 美化优化 - 消息时间戳显示 ✅ 2026-03-11
-  - MessageItem 组件添加相对时间戳显示
-  - 悬停时显示时间戳（"刚刚"、"2分钟前"、"1小时前"、"昨天"、"2天前"等）
-  - 支持中英文双语
-  - i18n EN/ZH 翻译
-  - Cycle #136
-
-- [x] **TASK-122**: 🎨 UI/UX 美化优化 - 消息复制按钮 ✅ 2026-03-11
-  - MessageItem 组件添加复制按钮
-  - 点击复制消息内容到剪贴板
-  - 复制成功显示 toast 提示
-  - 复制后图标变为对勾，2 秒后恢复
-  - Cycle #135
-
-- [x] **TASK-122**: 🎨 UI/UX 美化优化 - 空状态快捷提示 ✅ 2026-03-11
-  - EmptyState 组件添加 hints 和 action 属性
-  - MessageList 空状态显示快捷提示词
-  - 用户可点击提示词快速开始对话
-  - i18n EN/ZH 翻译
-  - Cycle #134
-
-- [x] **TASK-130**: 📎 添加文件上传功能（文档、代码等）✅ 2026-03-11
-  - Phase 1: 文件上传 UI（支持多文件、拖拽）✅
-  - Phase 2: 文件预览（显示文件名、大小、类型）✅
-  - Phase 3: API 集成（发送给后端）✅
-  - Phase 4: 测试和优化 ✅
-  - 前端：ChatInput 添加文件上传按钮、拖拽支持、预览组件
-  - 后端：MessageModel 添加 files 字段、chat.py 处理文件附件
-  - 支持文件类型：PDF、TXT、MD、CSV、JSON、JS、TS、JSX、TSX、HTML、CSS、XML、DOC、DOCX、XLS、XLSX
-  - 最大文件大小：20MB，最多 5 个文件
-
-- [x] **TASK-128**: ⚙ 支持自定义模型配置（智谱、中转 API 等）✅ 2026-03-10
-  - SettingsDialog 添加 "Custom Model" 选项
-  - 选择 Custom 时显示输入框让用户输入模型 ID
-  - 支持任意 OpenAI 兼容 API 的模型（智谱 GLM、通义千问、Moonshot 等）
-  - i18n EN/ZH 翻译
-
-- [x] **TASK-121**: 💻 开发 v3.50.0 - 会话标签/消息书签功能 ✅ 2026-03-07
-  - Phase 1: 数据库 Schema 设计（tags, bookmarks 表）✅
-  - Phase 2: 会话标签 UI（打标签、按标签筛选）✅
-  - Phase 3: 消息书签 UI（标记重要消息、快速跳转）✅
-  - Phase 4: 发布 v3.50.0 ✅
-
-- [x] **TASK-119**: 💻 开发 v3.49.0 - 键盘快捷键优化 ✅ 2026-03-07
-  - Phase 1: Ctrl+1/2/3 快速切换最近会话 ✅
-  - Phase 2: 发布 v3.49.0 ✅
-  - PR #170 已合并
-  - GitHub Release v3.49.0 已创建
-  - https://github.com/MrHulu/HuluAiChat/releases/tag/v3.49.0
-  - 注：命令面板增强推迟到后续版本（根据 Critic 建议）
-
-- [x] **TASK-118**: 🚀 发布 v3.48.0（GitHub Release + 桌面构建）✅ 2026-03-07
-  - 版本号更新：tauri.conf.json, Cargo.toml
-  - CHANGELOG.md 更新
-  - GitHub Release v3.48.0 已创建
-  - https://github.com/MrHuluAiChat/releases/tag/v3.48.0
-
-- [x] **TASK-117**: 🚀 开发 v3.48.0 - 智能引导系统 ✅ 2026-03-07
-  - WelcomeDialog 组件（3 步引导）
-  - i18n EN/ZH 翻译
-  - localStorage 首次启动检测
-  - PR #164 已合并
-
-- [x] **TASK-115**: 📝 优化 GitHub README（营销优化）✅ 2026-03-07
-  - 添加 shields.io badges (release, license, platform)
-  - 添加新功能：RAG 智能问答、插件系统
-  - 更新版本到 v3.47.0
-  - 添加 DeepSeek 推荐标记
-  - 添加 Moonshot API 配置
-
-- [x] **TASK-114**: 📧 提醒 Boss 配置 Cloudflare Secrets ✅ 2026-03-07
-  - 邮件已发送：详细配置指南
-  - 部署失败原因：apiToken 未配置
-  - 等待 Boss 配置
-
-- [x] **TASK-111**: 💻 开发 v3.47.0 - 用户体验优化 ✅ 2026-03-07
-  - Phase 1: 输入框自动聚焦 + 消息发送反馈 ✅
-  - Phase 2: 空状态引导 + 搜索 loading ✅
-  - Phase 3: 消息编辑键盘提示 ✅
-  - 功能已存在，验证测试通过
-
-- [x] **TASK-113**: 🚀 规划 v3.47.0（自主决策）✅ 2026-03-07
-  - 版本号已更新为 3.47.0
-  - CHANGELOG 已更新
-
-- [x] **TASK-112**: 📱 手机版构建调研（团队协作）✅ 2026-03-07
-  - Boss 决策：暂不开发手机版
-  - 决策原因：聚焦桌面版，资源有限
-  - 调研报告已归档
-
-- [x] **TASK-104**: 🌐 官网部署配置（Cloudflare secrets）✅ 2026-03-07
-  - GitHub Secrets 已配置:
-    - CLOUDFLARE_API_TOKEN ✅
-    CLOUDFLARE_ACCOUNT_ID ✅
-  - GitHub Actions workflow 已就绪
-  - 下次推送将自动部署
-
-- [x] **TASK-110**: 💻 开发 v3.46.0 - DeepSeek 默认模型 + RAG 单文档对话 ✅ 2026-03-07
-  - Phase 1: DeepSeek 默认模型 ✅
-  - Phase 2: RAG 后端 Pipeline ✅ (PR #147)
-  - Phase 2.5: RAG 前端 UI ✅ (Cycle #114)
-  - Phase 3: 发布 v3.46.0 ✅ (Cycle #116)
-
-- [x] **TASK-109**: 🚀 规划 v3.46.0 新功能（自主决策）✅ 2026-03-07 (Cycle #104)
-- [x] **TASK-105**: ⚡ 性能优化 - Rust LTO + Mermaid 懒加载 ✅ 2026-03-07 (Cycle #98)
-- [x] **TASK-108**: 🧹 清理项目目录结构 - 删除旧 Python 架构遗留文件 ✅ 2026-03-07 (Cycle #97)
-- [x] TASK-107: 📧 发送测试邮件给 Boss（验证 SMTP 配置）✅ 2026-03-07 (Cycle #87)
-- [x] TASK-106: 🚨 Boss 指令 - 补发进度邮件 ✅ 2026-03-07 (Cycle #82)
-- [x] TASK-103: 修复 CI 构建失败 - Python sidecar 二进制文件不存在 ✅ 2026-03-07
-- [x] TASK-100: 会话分组/文件夹功能 ✅ 2026-03-04
-- [x] TASK-101: v3.7.0 发布 ✅ 2026-03-04
-- [x] TASK-102: 数据库迁移和命名冲突修复 ✅ 2026-03-04
 
 ---
 

@@ -1,6 +1,6 @@
 [package]
 name = "huluchat-v3"
-version = "3.53.0"
+version = "3.56.0"
 description = "HuluChat - AI Chat Desktop Application"
 authors = ["you"]
 edition = "2021"
@@ -25,6 +25,7 @@ tauri-plugin-updater = "2"
 tauri-plugin-process = "2"
 tauri-plugin-fs = "2"
 tauri-plugin-dialog = "2"
+tauri-plugin-keyring = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 

@@ -11,8 +11,16 @@ from sqlalchemy import select
 
 from core.database import get_session as get_db_session
 from models.schemas import MessageModel
+from sqlalchemy import delete as sql_delete
 from services.openai_service import openai_service
 from services.ollama_service import ollama_service
+from services.mcp_service import mcp_service
+from services.mcp_tool_adapter import (
+    mcp_tools_to_openai_format,
+    parse_mcp_tool_call,
+    format_tool_call_message,
+    build_tool_result_message,
+)
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -212,18 +220,53 @@ async def chat_websocket(
             temperature = data.get("temperature")  # None means use default
             top_p = data.get("top_p")  # None means use default
             max_tokens = data.get("max_tokens")  # None means use default
+            # Get MCP enable flag
+            use_mcp = data.get("use_mcp", True)  # Enable MCP tools by default
+            # Get quoted message ID for reply context - TASK-200
+            quoted_message_id = data.get("quoted_message_id")
 
             # Allow empty content if images or files are provided
             if not user_content.strip() and not images and not files:
                 continue
+
+            # Handle regenerate: delete messages after the specified message
+            regenerate = data.get("regenerate", False)
+            delete_from_message_id = data.get("delete_from_message_id")
+            skip_save_user = False  # Flag to skip saving user message
+
+            if regenerate and delete_from_message_id:
+                # Delete all messages created after the specified message
+                # This effectively removes the AI response and any subsequent messages
+                try:
+                    # Get the timestamp of the message to delete from
+                    result = await db.execute(
+                        select(MessageModel.created_at)
+                        .where(MessageModel.id == delete_from_message_id)
+                        .where(MessageModel.session_id == session_id)
+                    )
+                    msg_row = result.scalar_one_or_none()
+                    if msg_row:
+                        # Delete all messages after this timestamp (excluding the message itself)
+                        await db.execute(
+                            sql_delete(MessageModel)
+                            .where(MessageModel.session_id == session_id)
+                            .where(MessageModel.created_at > msg_row)
+                        )
+                        await db.commit()
+                        logger.info(f"Regenerate: deleted messages after {delete_from_message_id}")
+                        # Skip saving user message - it already exists (just updated or being reused)
+                        skip_save_user = True
+                except Exception as e:
+                    logger.error(f"Failed to delete messages for regenerate: {e}")
 
             # Prepare images for storage (JSON string)
             images_json = json.dumps(images) if images else None
             # Prepare files for storage (JSON string)
             files_json = json.dumps(files) if files else None
 
-            # Save user message
-            await save_message(db, session_id, "user", user_content, images_json, files_json)
+            # Save user message (skip if this is a regenerate/edit request)
+            if not skip_save_user:
+                await save_message(db, session_id, "user", user_content, images_json, files_json)
 
             # Notify client that streaming is starting
             await manager.send_json(session_id, {
@@ -233,6 +276,28 @@ async def chat_websocket(
 
             # Get conversation history for context
             history = await get_session_messages(db, session_id, limit=20)
+
+            # Handle quoted message - add to context if provided - TASK-200
+            if quoted_message_id:
+                try:
+                    quoted_result = await db.execute(
+                        select(MessageModel)
+                        .where(MessageModel.id == quoted_message_id)
+                        .where(MessageModel.session_id == session_id)
+                    )
+                    quoted_msg = quoted_result.scalar_one_or_none()
+                    if quoted_msg:
+                        # Prepend quoted message context for AI to understand the reference
+                        quoted_context = f"[引用回复] 之前的内容:\n{quoted_msg.content}\n\n---\n\n用户的新问题:"
+                        # Insert quoted context marker before the user's message
+                        # This helps AI understand the context without modifying user's actual message
+                        history.append({
+                            "role": "system",
+                            "content": quoted_context
+                        })
+                        logger.info(f"Added quoted message context: {quoted_message_id}")
+                except Exception as e:
+                    logger.warning(f"Failed to get quoted message {quoted_message_id}: {e}")
 
             # Determine which service to use based on model
             service, model_name = get_service_for_model(request_model)
@@ -272,7 +337,22 @@ async def chat_websocket(
                     })
                     continue
 
-            # Stream AI response
+            # Get MCP tools if enabled
+            mcp_tools = None
+            server_configs = {}
+            if use_mcp and not is_ollama:  # MCP tools only work with OpenAI-compatible APIs
+                try:
+                    mcp_tools_raw = await mcp_service.get_all_tools()
+                    if mcp_tools_raw:
+                        mcp_tools = mcp_tools_to_openai_format(mcp_tools_raw)
+                        # Store server configs for name lookup
+                        servers = await mcp_service.list_servers()
+                        server_configs = {s.id: s for s in servers}
+                        logger.info(f"Loaded {len(mcp_tools)} MCP tools from {len(mcp_tools_raw)} servers")
+                except Exception as e:
+                    logger.warning(f"Failed to load MCP tools: {e}")
+
+            # Stream AI response with potential tool calls
             full_response = ""
             try:
                 # Build kwargs for service call based on service type
@@ -286,6 +366,10 @@ async def chat_websocket(
                 if not is_ollama and max_tokens is not None:
                     service_kwargs["max_tokens"] = int(max_tokens)
 
+                # Add MCP tools if available
+                if mcp_tools:
+                    service_kwargs["tools"] = mcp_tools
+
                 async for chunk in service.stream_chat(**service_kwargs):
                     if chunk.error:
                         await manager.send_json(session_id, {
@@ -293,6 +377,107 @@ async def chat_websocket(
                             "content": chunk.error,
                         })
                         break
+
+                    # Handle tool calls
+                    if chunk.has_tool_calls and chunk.tool_calls:
+                        tool_results = []
+                        for tc in chunk.tool_calls:
+                            # Parse server_id and tool_name
+                            parsed = parse_mcp_tool_call(tc.function_name)
+                            if not parsed:
+                                logger.warning(f"Unknown tool call format: {tc.function_name}")
+                                continue
+
+                            server_id, tool_name = parsed
+                            server_config = server_configs.get(server_id)
+
+                            # Notify client about tool call
+                            await manager.send_json(session_id, format_tool_call_message(
+                                server_name=server_config.name if server_config else server_id,
+                                tool_name=tool_name,
+                                status="calling"
+                            ))
+
+                            # Execute the tool
+                            try:
+                                # Parse arguments from JSON string
+                                arguments = json.loads(tc.function_arguments) if isinstance(tc.function_arguments, str) else tc.function_arguments
+                                result = await mcp_service.call_tool(server_id, tool_name, arguments)
+
+                                # Notify client about result
+                                await manager.send_json(session_id, format_tool_call_message(
+                                    server_name=server_config.name if server_config else server_id,
+                                    tool_name=tool_name,
+                                    status="success" if result.success else "error",
+                                    result=result.content if result.success else None,
+                                    error=result.error if not result.success else None
+                                ))
+
+                                tool_results.append(build_tool_result_message(
+                                    tool_call_id=tc.id,
+                                    content=result.content if result.success else f"Error: {result.error}"
+                                ))
+
+                            except Exception as e:
+                                logger.error(f"Tool execution failed: {e}")
+                                await manager.send_json(session_id, format_tool_call_message(
+                                    server_name=server_config.name if server_config else server_id,
+                                    tool_name=tool_name,
+                                    status="error",
+                                    error=str(e)
+                                ))
+                                tool_results.append(build_tool_result_message(
+                                    tool_call_id=tc.id,
+                                    content=f"Error: {str(e)}"
+                                ))
+
+                        # If we have tool results, continue the conversation
+                        if tool_results:
+                            # Add assistant message with tool calls to history
+                            assistant_tool_msg = {
+                                "role": "assistant",
+                                "content": None,
+                                "tool_calls": [
+                                    {
+                                        "id": tc.id,
+                                        "type": "function",
+                                        "function": {
+                                            "name": tc.function_name,
+                                            "arguments": tc.function_arguments
+                                        }
+                                    }
+                                    for tc in chunk.tool_calls
+                                    if parse_mcp_tool_call(tc.function_name)
+                                ]
+                            }
+                            extended_history = history + [assistant_tool_msg] + tool_results
+
+                            # Continue streaming with tool results
+                            service_kwargs["messages"] = extended_history
+                            service_kwargs["tools"] = mcp_tools  # Keep tools available
+
+                            async for cont_chunk in service.stream_chat(**service_kwargs):
+                                if cont_chunk.error:
+                                    await manager.send_json(session_id, {
+                                        "type": "error",
+                                        "content": cont_chunk.error,
+                                    })
+                                    break
+
+                                if cont_chunk.is_done:
+                                    if full_response:
+                                        await save_message(db, session_id, "assistant", full_response)
+                                    await manager.send_json(session_id, {
+                                        "type": "stream_end",
+                                        "session_id": session_id,
+                                    })
+                                elif cont_chunk.content:
+                                    full_response += cont_chunk.content
+                                    await manager.send_json(session_id, {
+                                        "type": "stream_chunk",
+                                        "content": cont_chunk.content,
+                                    })
+                        continue
 
                     if chunk.is_done:
                         # Save the complete assistant response
@@ -302,7 +487,7 @@ async def chat_websocket(
                             "type": "stream_end",
                             "session_id": session_id,
                         })
-                    else:
+                    elif chunk.content:
                         full_response += chunk.content
                         await manager.send_json(session_id, {
                             "type": "stream_chunk",
@@ -361,9 +546,17 @@ async def update_message(
     session_id: str,
     message_id: str,
     content: str,
+    delete_after: bool = False,
     db: AsyncSession = Depends(get_db_session),
 ):
-    """Update a message's content."""
+    """Update a message's content.
+
+    Args:
+        session_id: Session ID
+        message_id: Message ID to update
+        content: New content
+        delete_after: If True, delete all messages after this one (for edit-and-resend feature)
+    """
     result = await db.execute(
         select(MessageModel)
         .where(MessageModel.id == message_id)
@@ -375,6 +568,16 @@ async def update_message(
         return {"error": "Message not found"}
 
     message.content = content
+
+    # Delete all messages after this one if requested (TASK-196)
+    if delete_after:
+        await db.execute(
+            sql_delete(MessageModel)
+            .where(MessageModel.session_id == session_id)
+            .where(MessageModel.created_at > message.created_at)
+        )
+        logger.info(f"Edit message: deleted messages after {message_id}")
+
     await db.commit()
     await db.refresh(message)
 
@@ -385,3 +588,28 @@ async def update_message(
         "content": message.content,
         "created_at": message.created_at.isoformat(),
     }
+
+
+@router.delete("/{session_id}/messages/{message_id}")
+async def delete_message(
+    session_id: str,
+    message_id: str,
+    db: AsyncSession = Depends(get_db_session),
+):
+    """Delete a message from a session."""
+    from fastapi import HTTPException
+
+    result = await db.execute(
+        select(MessageModel)
+        .where(MessageModel.id == message_id)
+        .where(MessageModel.session_id == session_id)
+    )
+    message = result.scalar_one_or_none()
+
+    if not message:
+        raise HTTPException(status_code=404, detail="Message not found")
+
+    await db.delete(message)
+    await db.commit()
+
+    return {"status": "deleted", "message_id": message_id}

@@ -120,10 +120,22 @@ export function useKeyboardShortcuts(options: UseKeyboardShortcutsOptions): void
  */
 export const KEYBOARD_SHORTCUTS = [
   {
+    key: "Ctrl/Cmd + K",
+    descriptionKey: "keyboard.commandPalette",
+    mac: "⌘K",
+    windows: "Ctrl+K",
+  },
+  {
     key: "Ctrl/Cmd + N",
     descriptionKey: "keyboard.newChat",
     mac: "⌘N",
     windows: "Ctrl+N",
+  },
+  {
+    key: "Ctrl/Cmd + F",
+    descriptionKey: "keyboard.searchInChat",
+    mac: "⌘F",
+    windows: "Ctrl+F",
   },
   {
     key: "Ctrl/Cmd + B",

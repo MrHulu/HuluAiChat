@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Message } from "@/api/client";
 import { Button } from "@/components/ui/button";
-import { Pencil, Check, X, Bookmark, BookmarkCheck, Copy, Clock, RefreshCw, Quote } from "lucide-react";
+import { Pencil, Check, X, Bookmark, BookmarkCheck, Copy, Clock, RefreshCw, Quote, Trash2, CheckCircle2 } from "lucide-react";
 import { CodeBlock } from "./CodeBlock";
 import { MermaidBlock } from "./MermaidBlock";
 import ReactMarkdown from "react-markdown";
@@ -104,6 +104,17 @@ export interface MessageItemProps {
   isRegenerating?: boolean;
   // Quote props
   onQuote?: (message: Message) => void;
+  // Delete props
+  onDelete?: (messageId: string) => void;
+  // Selection props - TASK-175
+  isSelectionMode?: boolean;
+  isSelected?: boolean;
+  onSelect?: (messageId: string, selected: boolean) => void;
+  // Search highlight props - TASK-202
+  isSearchMatch?: boolean;
+  isCurrentMatch?: boolean;
+  searchQuery?: string;
+  caseSensitive?: boolean;
 }
 
 // Stable plugin references (defined outside component to avoid recreation)
@@ -175,6 +186,12 @@ export const MessageItem = memo(function MessageItem({
   onRegenerate,
   isRegenerating = false,
   onQuote,
+  onDelete,
+  isSelectionMode = false,
+  isSelected = false,
+  onSelect,
+  isSearchMatch = false,
+  isCurrentMatch = false,
 }: MessageItemProps) {
   const { t } = useTranslation();
   const isUser = message.role === "user";
@@ -333,6 +350,13 @@ export const MessageItem = memo(function MessageItem({
     }
   }, [onQuote, isEditing, isStreaming, message]);
 
+  // Handle selection toggle - TASK-175
+  const handleSelectToggle = useCallback(() => {
+    if (onSelect && !isEditing && !isStreaming) {
+      onSelect(message.id, !isSelected);
+    }
+  }, [onSelect, isEditing, isStreaming, message.id, isSelected]);
+
   return (
     <div
       role="article"
@@ -342,20 +366,86 @@ export const MessageItem = memo(function MessageItem({
       className={cn(
         "group flex w-full mb-4 animate-list-enter",
         isUser ? "justify-end" : "justify-start",
-        onQuote && !isEditing && !isStreaming && "cursor-pointer"
+        onQuote && !isEditing && !isStreaming && "cursor-pointer",
+        // Selection mode highlight - TASK-175
+        isSelectionMode && isSelected && "ring-2 ring-primary ring-offset-2 ring-offset-background rounded-lg"
       )}
     >
+      {/* Selection checkbox - TASK-175 */}
+      {isSelectionMode && !isStreaming && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleSelectToggle();
+          }}
+          aria-label={isSelected ? t("chat.deselectMessage") : t("chat.selectMessage")}
+          aria-pressed={isSelected}
+          className={cn(
+            "flex-shrink-0 self-center mr-2 transition-all duration-200",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+            "hover:scale-110 active:scale-95"
+          )}
+        >
+          <div
+            className={cn(
+              "w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200",
+              isSelected
+                ? "bg-primary border-primary"
+                : "border-muted-foreground/50 hover:border-primary/70",
+              "dark:border-muted-foreground/40"
+            )}
+          >
+            {isSelected && (
+              <CheckCircle2
+                className="w-4 h-4 text-primary-foreground transition-transform duration-200 scale-110"
+                aria-hidden="true"
+              />
+            )}
+          </div>
+        </button>
+      )}
+
       <div
         className={cn(
           "max-w-[80%] rounded-2xl px-4 py-3 relative",
           "shadow-sm hover:shadow-md transition-all duration-200 ease-out",
           "hover:scale-[1.005] active:scale-[0.995]",
+          // Search highlight - TASK-202
+          isSearchMatch && !isCurrentMatch && "ring-2 ring-warning/50",
+          isCurrentMatch && "ring-2 ring-warning shadow-[0_0_12px_rgba(234,179,8,0.4)]",
           isUser
-            ? "bg-primary text-primary-foreground ml-12 hover:bg-primary/90 dark:shadow-primary/20 dark:hover:shadow-primary/30"
-            : "bg-muted text-foreground mr-12 border-l-4 border-primary/30 hover:bg-muted/80",
-          // Dark mode enhancements - more visible borders and backgrounds
-          "dark:shadow-lg dark:hover:shadow-xl",
-          !isUser && "dark:border-primary/60 dark:bg-muted/70 dark:hover:bg-muted/90 dark:shadow-black/20 dark:hover:shadow-black/30"
+            ? cn(
+                // 用户消息 - 渐变背景
+                "bg-gradient-to-br from-primary to-primary/90",
+                "text-primary-foreground ml-12",
+                "hover:from-primary/95 hover:to-primary/85",
+                // 阴影效果
+                "shadow-primary/15 hover:shadow-primary/25",
+                // 深色模式增强
+                "dark:from-primary dark:to-primary/80",
+                "dark:hover:from-primary/95 dark:hover:to-primary/70",
+                "dark:shadow-primary/20 dark:hover:shadow-primary/40",
+                "dark:shadow-[0_4px_16px_oklch(0.488_0.243_264.376/0.2)]",
+                "dark:hover:shadow-[0_6px_24px_oklch(0.488_0.243_264.376/0.3)]"
+              )
+            : cn(
+                // AI 消息 - 层次感设计
+                "bg-muted text-foreground mr-12",
+                "border-l-4 border-primary/40",
+                "hover:bg-muted/85 hover:border-primary/60",
+                // 阴影效果
+                "shadow-black/5 hover:shadow-black/10",
+                // 深色模式增强
+                "dark:border-primary/70",
+                "dark:bg-gradient-to-r dark:from-muted/80 dark:to-muted/60",
+                "dark:hover:from-muted/95 dark:hover:to-muted/80",
+                "dark:shadow-[0_2px_12px_oklch(0_0_0/0.15),inset_0_1px_0_oklch(1_0_0/0.05)]",
+                "dark:hover:shadow-[0_4px_20px_oklch(0_0_0/0.2),inset_0_1px_0_oklch(1_0_0/0.08)]",
+                // 左侧发光边框
+                "dark:hover:shadow-[0_4px_20px_oklch(0_0_0/0.2),-4px_0_16px_-4px_oklch(0.5_0.2_264/0.1)]"
+              ),
+          // 通用动画增强
+          "dark:shadow-lg dark:hover:shadow-xl"
         )}
       >
         {/* 头像标识和时间戳 */}
@@ -497,6 +587,27 @@ export const MessageItem = memo(function MessageItem({
                 )}
               >
                 <Quote className="w-3 h-3 transition-transform duration-200 ease-out group-hover/quote:scale-110 group-hover/quote:-rotate-12" aria-hidden="true" />
+              </button>
+            )}
+            {/* Delete button for all messages - Cycle #155 */}
+            {onDelete && !isEditing && !isStreaming && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(message.id);
+                }}
+                aria-label={t("chat.deleteMessage")}
+                className={cn(
+                  "group/delete transition-all p-1 rounded",
+                  "opacity-0 group-hover:opacity-100 focus-visible:opacity-100",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  isUser
+                    ? "hover:bg-primary-foreground/10 text-primary-foreground/70"
+                    : "hover:bg-accent text-muted-foreground",
+                  "hover:text-destructive"
+                )}
+              >
+                <Trash2 className="w-3 h-3 transition-transform duration-200 ease-out group-hover/delete:scale-110" aria-hidden="true" />
               </button>
             )}
           </div>

@@ -10,6 +10,12 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./src/test/setup.ts"],
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
+    // Memory optimization: run tests sequentially to prevent memory issues
+    // In Vitest 4, poolOptions are now top-level options
+    pool: "forks",
+    fileParallelism: false,
+    // Timeout for long-running tests
+    testTimeout: 30000,
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],

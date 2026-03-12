@@ -154,7 +154,36 @@
     "quote": "引用",
     "quotingMessage": "正在引用消息",
     "cancelQuote": "取消引用",
-    "doubleClickToQuote": "双击引用消息"
+    "doubleClickToQuote": "双击引用消息",
+    "deleteMessage": "删除消息",
+    "messageDeleted": "消息已删除",
+    "deleteMessageConfirm": "确定要删除这条消息吗？",
+    "confirmDelete": "是的，删除",
+    "cancel": "取消",
+    "toolCalling": "正在调用 {{server}}: {{tool}}...",
+    "toolSuccess": "{{server}}: {{tool}} 完成",
+    "toolError": "{{server}}: {{tool}} 失败",
+    "select": "选择",
+    "enterSelectionMode": "进入选择模式",
+    "exitSelectionMode": "退出选择模式",
+    "selectMessage": "选择消息",
+    "deselectMessage": "取消选择消息",
+    "selectAll": "全选",
+    "deselectAll": "取消全选",
+    "selectedCount": "已选择 {{count}} 条",
+    "noMessagesSelected": "未选择任何消息",
+    "exportSuccess": "已导出 {{count}} 条消息",
+    "exportTxt": "导出为 TXT",
+    "search": "搜索",
+    "searchInConversation": "在对话中搜索",
+    "searchPlaceholder": "搜索关键词...",
+    "searchQuery": "搜索内容",
+    "searchMatchCount": "{{current}} / {{total}}",
+    "searchNoMatch": "无匹配",
+    "searchCaseSensitive": "区分大小写",
+    "searchPrev": "上一个匹配",
+    "searchNext": "下一个匹配",
+    "searchClose": "关闭搜索"
   },
   "settings": {
     "title": "设置",
@@ -162,6 +191,7 @@
     "tabApi": "API",
     "tabOllama": "Ollama",
     "tabPlugins": "插件",
+    "tabAppearance": "外观",
     "apiKey": "API 密钥",
     "apiKeyPlaceholder": "sk-...",
     "apiKeySet": "已设置 API 密钥。输入新密钥以更新。",
@@ -273,8 +303,10 @@
     "description": "查看所有可用的键盘快捷键，高效导航应用程序",
     "shortcutsList": "快捷键列表",
     "shortcutKey": "{{action}}：{{key}}",
+    "commandPalette": "打开命令面板",
     "newChat": "新建聊天",
     "search": "搜索聊天",
+    "searchInChat": "在对话中搜索",
     "settings": "打开设置",
     "toggleSidebar": "切换侧边栏",
     "switchSession": "切换到最近会话",
@@ -304,7 +336,8 @@
     "cloudModels": "云端模型",
     "localModels": "本地模型（Ollama）",
     "ollamaOffline": "Ollama 离线",
-    "ollamaHint": "请确保 Ollama 服务正在运行"
+    "ollamaHint": "请确保 Ollama 服务正在运行",
+    "recommended": "推荐"
   },
   "templates": {
     "title": "提示词模板",
@@ -320,6 +353,10 @@
     "categoriesLabel": "模板分类",
     "templateList": "可用模板列表",
     "selectTemplate": "选择 {{name}} 模板",
+    "loading": "加载模板中...",
+    "loadError": "加载模板失败",
+    "sessionTemplates": "会话模板",
+    "sessionTemplateDescription": "选择模板快速创建预设配置的会话",
     "categories": {
       "writing": "写作",
       "coding": "编程",
@@ -357,11 +394,36 @@
     "tags": "标签",
     "moreTags": "+{{count}} 个标签"
   },
+  "batch": {
+    "enterBatchMode": "进入批量选择模式",
+    "exitBatchMode": "退出批量选择模式",
+    "selected": "已选择 {{count}} 个",
+    "selectAll": "全选",
+    "clear": "清除",
+    "clearSelection": "清除选择",
+    "move": "移动",
+    "export": "导出",
+    "delete": "删除",
+    "select": "选择会话",
+    "deselect": "取消选择",
+    "confirmDelete": "删除所选会话？",
+    "confirmDeleteDescription": "确定要删除 {{count}} 个会话吗？此操作无法撤销。",
+    "deleting": "删除中..."
+  },
   "theme": {
     "toggle": "切换主题",
     "light": "浅色",
     "dark": "深色",
     "system": "跟随系统"
+  },
+  "appearance": {
+    "title": "外观",
+    "theme": "主题",
+    "selectTheme": "选择主题",
+    "themeLightDescription": "使用浅色主题，界面明亮",
+    "themeDarkDescription": "使用深色主题，减少暗光环境下的眼睛疲劳",
+    "themeSystemDescription": "自动跟随系统的主题设置",
+    "privacyNote": "主题偏好仅存储在本地，不会发送到服务器。"
   },
   "languageSelector": {
     "changeLanguage": "切换语言",
@@ -385,7 +447,9 @@
     "settings": "设置",
     "showHelp": "键盘快捷键",
     "openCommandPalette": "打开命令面板",
-    "searchInput": "搜索命令"
+    "searchInput": "搜索命令",
+    "knowledgeCenter": "知识中心",
+    "jumpToBookmark": "跳转到书签"
   },
   "rag": {
     "title": "文档对话（实验性）",
@@ -415,15 +479,23 @@
   "welcome": {
     "step1": {
       "title": "欢迎使用 HuluChat",
-      "description": "您的隐私优先 AI 桌面助手。支持多模型对话、文档管理和插件扩展。"
+      "description": "您的隐私优先 AI 桌面助手。所有数据保存在本地 - 无追踪、无云端存储。"
     },
     "step2": {
+      "title": "多模型支持",
+      "description": "选择 OpenAI GPT-4、DeepSeek 或使用 Ollama 运行本地模型。随时根据需求切换模型。"
+    },
+    "step3": {
       "title": "文档对话（RAG）",
       "description": "上传 PDF、TXT 或 Markdown 文件，与您的文档进行智能对话，获取基于您内容的答案。"
     },
-    "step3": {
-      "title": "插件系统",
-      "description": "扩展 HuluChat 的功能。安装社区插件或创建自己的插件来添加新特性。"
+    "step4": {
+      "title": "快捷导航",
+      "description": "按 Ctrl+K 打开命令面板快速访问所有功能。按 ? 或 F1 查看所有键盘快捷键。"
+    },
+    "step5": {
+      "title": "知识中心",
+      "description": "从知识中心获取提示词技巧、模型对比、常见问题等。助您成为 AI 高手。"
     },
     "skip": "跳过",
     "next": "下一步",
@@ -460,5 +532,569 @@
     "notePlaceholder": "添加备注...",
     "noBookmarks": "暂无书签",
     "bookmarked": "已添加书签"
+  },
+  "mcp": {
+    "title": "MCP 服务",
+    "subtitle": "管理模型上下文协议服务器",
+    "description": "通过 MCP 连接外部工具和服务",
+    "connected": "已连接",
+    "disconnected": "已断开",
+    "error": "错误",
+    "connect": "连接",
+    "disconnect": "断开",
+    "refresh": "刷新",
+    "connectAll": "全部连接",
+    "toolsCount": "{{count}} 个工具",
+    "noServers": "未配置 MCP 服务器",
+    "noServersHint": "点击「添加服务」配置您的第一个 MCP 服务器",
+    "infoText": "MCP（模型上下文协议）让 AI 能够与外部工具和服务进行交互。",
+    "learnMore": "了解更多",
+    "addServer": "添加服务",
+    "addServerDescription": "配置新的 MCP 服务器连接",
+    "serverName": "服务名称",
+    "serverNamePlaceholder": "我的 MCP 服务",
+    "serverDescription": "描述",
+    "serverDescriptionPlaceholder": "服务描述（可选）",
+    "transport": "传输类型",
+    "command": "命令",
+    "commandHint": "运行 MCP 服务器的可执行命令",
+    "arguments": "参数",
+    "argumentsHint": "命令行参数（空格分隔）",
+    "nameRequired": "服务名称不能为空",
+    "commandRequired": "stdio 传输类型需要填写命令",
+    "urlRequired": "HTTP/SSE 传输类型需要填写 URL",
+    "loadFailed": "加载 MCP 服务失败",
+    "serverAdded": "服务添加成功",
+    "addFailed": "添加服务失败",
+    "connectedSuccess": "{{name}} 已连接",
+    "connectFailed": "连接失败：{{error}}",
+    "disconnectedSuccess": "已断开连接",
+    "disconnectFailed": "断开连接失败",
+    "serverDeleted": "服务已删除",
+    "deleteFailed": "删除服务失败",
+    "connectAllSuccess": "{{count}} 个服务已连接",
+    "connectAllFailed": "连接服务失败",
+    "statusRefreshed": "状态已刷新"
+  },
+  "variables": {
+    "dialogTitle": "填写模板变量",
+    "dialogDescription": "请为此模板中的变量提供值",
+    "dialogDescriptionWithTemplate": "请为「{{template}}」中的变量提供值",
+    "autoFilledVariables": "自动填充的变量",
+    "enterValue": "输入值...",
+    "preview": "预览",
+    "apply": "应用",
+    "topic": "主题",
+    "topicPlaceholder": "例如：人工智能、气候变化",
+    "language": "语言",
+    "languagePlaceholder": "例如：英语、中文、日语",
+    "style": "风格",
+    "stylePlaceholder": "例如：专业、轻松、学术",
+    "length": "长度",
+    "lengthPlaceholder": "例如：简短、中等、详细",
+    "audience": "目标受众",
+    "audiencePlaceholder": "例如：初学者、专家、普通用户",
+    "tone": "语气",
+    "tonePlaceholder": "例如：友好、正式、幽默",
+    "context": "上下文",
+    "contextPlaceholder": "例如：博客文章、邮件、报告",
+    "name": "名称",
+    "namePlaceholder": "例如：张三",
+    "role": "角色",
+    "rolePlaceholder": "例如：开发者、设计师、经理",
+    "task": "任务",
+    "taskPlaceholder": "例如：编写代码、设计界面、分析数据",
+    "project": "项目",
+    "projectPlaceholder": "例如：移动应用、网站、API"
+  },
+  "bookmark": {
+    "jumpTitle": "跳转到书签",
+    "jumpDescription": "选择一个书签跳转到对应消息",
+    "searchPlaceholder": "搜索书签...",
+    "searchLabel": "搜索书签",
+    "noResults": "未找到匹配的书签",
+    "noBookmarks": "暂无书签",
+    "listLabel": "书签列表"
+  },
+  "knowledge": {
+    "title": "知识中心",
+    "description": "探索 AI 使用技巧，提升您的对话体验",
+    "comingSoon": "内容即将推出...",
+    "readTime": "{{minutes}} 分钟阅读",
+    "categories": {
+      "prompts": "提示词技巧",
+      "promptsDesc": "学习如何编写更有效的提示词",
+      "help": "使用帮助",
+      "helpDesc": "了解 HuluChat 的各项功能",
+      "models": "模型指南",
+      "modelsDesc": "了解不同 AI 模型的特点和适用场景"
+    },
+    "levels": {
+      "beginner": "入门",
+      "intermediate": "进阶",
+      "advanced": "高级"
+    },
+    "tips": {
+      "clearInstructions": {
+        "title": "清晰明确的指令",
+        "description": "如何编写清晰、具体的指令获得更好的回答",
+        "content": "# 清晰明确的指令\n\n编写好的提示词是与 AI 有效沟通的基础。以下是一些关键原则：\n\n## 1. 具体而非模糊\n\n**不好的例子：**\n```\n写一篇文章\n```\n\n**好的例子：**\n```\n写一篇 500 字的文章，主题是「远程工作的优势」，\n目标读者是考虑远程办公的白领，语气要专业但亲切。\n```\n\n## 2. 提供上下文\n\n告诉 AI 背景信息：\n- 你是谁（角色）\n- 你在做什么（任务）\n- 期望的输出格式\n\n**示例：**\n```\n我是一名前端开发新手，正在学习 React。\n请解释 useEffect 钩子的工作原理，\n用简单的语言和代码示例说明。\n```\n\n## 3. 明确输出格式\n\n指定你想要的格式：\n```\n请用以下格式总结这篇文章：\n- 主要观点（3-5 点）\n- 关键数据\n- 行动建议\n```\n\n## 4. 分步骤说明\n\n对于复杂任务，拆分成步骤：\n```\n请帮我完成以下任务：\n1. 分析这段代码的问题\n2. 提出改进建议\n3. 给出修改后的代码\n```\n\n> **提示：** 越具体的指令，得到的回答越精准！"
+      },
+      "rolePrompting": {
+        "title": "角色扮演提示",
+        "description": "通过赋予 AI 特定角色获得更专业的回答",
+        "content": "# 角色扮演提示\n\n让 AI 扮演特定角色，可以获得更专业、更有针对性的回答。\n\n## 什么是角色提示？\n\n角色提示是在提示词中定义 AI 应该扮演的角色或身份。\n\n## 基本语法\n\n```\n你是一个 [角色描述]。\n[任务描述]\n```\n\n## 常用角色示例\n\n### 专业人士\n```\n你是一位有 10 年经验的资深软件架构师。\n请帮我设计一个高可用的微服务架构，\n考虑容错、扩展性和性能优化。\n```\n\n### 教育者\n```\n你是一位耐心的编程老师，擅长用类比解释复杂概念。\n请向初学者解释什么是递归，\n使用生活中的例子来类比。\n```\n\n### 评论者\n```\n你是一位挑剔的技术评审专家。\n请审查这段代码，指出潜在的问题和改进空间。\n```\n\n### 创意伙伴\n```\n你是一位富有创意的头脑风暴伙伴。\n帮我想出 10 个关于「智能家居」的创新点子。\n```\n\n## 高级技巧：组合多个角色\n\n```\n你同时扮演以下角色：\n1. 产品经理 - 关注用户需求\n2. 技术负责人 - 评估技术可行性\n3. 设计师 - 考虑用户体验\n\n请从这三个角度评估我的产品想法：...\n```\n\n> **记住：** 角色描述越具体，AI 的回答越贴近你的期望！"
+      },
+      "chainOfThought": {
+        "title": "思维链推理",
+        "description": "引导 AI 展示思考过程，提高复杂问题的准确性",
+        "content": "# 思维链推理 (Chain-of-Thought)\n\n让 AI 展示其思考过程，可以显著提高复杂问题的解决质量。\n\n## 什么是思维链？\n\n思维链是一种提示技术，要求 AI 一步步展示推理过程，而不是直接给出答案。\n\n## 基本用法\n\n### 简单触发\n```\n请一步步思考并回答...\n```\n\n### 详细版本\n```\n请按照以下步骤分析：\n1. 首先，理解问题的核心\n2. 然后，列出关键因素\n3. 接着，分析各因素之间的关系\n4. 最后，得出结论并解释原因\n```\n\n## 适用场景\n\n### 数学/逻辑问题\n```\n一个农场有鸡和兔子共 35 个头，94 条腿。\n请一步步推导鸡和兔子各有多少？\n\n请展示你的思考过程。\n```\n\n### 代码调试\n```\n这段代码没有按预期工作。\n请一步步分析：\n1. 代码的预期行为是什么？\n2. 实际发生了什么？\n3. 可能的原因有哪些？\n4. 如何修复？\n```\n\n### 复杂决策\n```\n我应该在两个工作机会之间如何选择？\n请帮我分析：\n1. 列出需要考虑的因素\n2. 对比两个机会在这些因素上的表现\n3. 给出建议并解释理由\n```\n\n## 高级技巧：Few-shot CoT\n\n提供示例来展示思考方式：\n```\n问题：小明有 5 个苹果，给了小红 2 个，又买了 3 个。\n思考过程：\n- 起始：5 个苹果\n- 给出：5 - 2 = 3 个\n- 买入：3 + 3 = 6 个\n答案：6 个苹果\n\n现在请用同样的方式回答：...\n```\n\n> **提示：** 思维链不仅能提高准确性，还能帮助你理解 AI 的推理过程！"
+      },
+      "fewShotExamples": {
+        "title": "少样本示例",
+        "description": "通过提供示例教 AI 你想要的输出格式和风格",
+        "content": "# 少样本示例 (Few-shot Learning)\n\n通过提供示例，教会 AI 你期望的输出格式、风格和内容。\n\n## 什么是少样本学习？\n\n在提示中提供几个「输入-输出」示例，让 AI 学习并模仿这种模式。\n\n## 基本结构\n\n```\n任务描述：[你想让 AI 做什么]\n\n示例 1：\n输入：...\n输出：...\n\n示例 2：\n输入：...\n输出：...\n\n现在请处理：\n输入：...\n```\n\n## 实际示例\n\n### 情感分析\n```\n请判断评论的情感倾向（正面/负面/中性）。\n\n示例：\n评论：「这个产品质量很好，但物流太慢了。」\n情感：中性（有好有坏）\n\n评论：「太棒了！完全超出了我的期望！」\n情感：正面\n\n评论：「非常失望，根本不能用。」\n情感：负面\n\n现在请判断：\n评论：「客服态度很好，但产品功能一般。」\n情感：\n```\n\n### 文本转换\n```\n将正式文本转换为口语化表达。\n\n示例：\n正式：「请于规定时间内完成相关手续的办理。」\n口语：「记得在截止日期前把手续办好哦。」\n\n正式：「本产品具有优异的性能表现。」\n口语：「这东西用起来真的很棒。」\n\n现在请转换：\n正式：「如有疑问，请联系相关部门进行咨询。」\n口语：\n```\n\n### 代码注释\n```\n为代码添加简洁的中文注释。\n\n示例：\n代码：`const sum = arr.reduce((a, b) => a + b, 0);`\n注释：`// 计算数组元素的总和`\n\n代码：`const filtered = users.filter(u => u.age > 18);`\n注释：`// 筛选年龄大于 18 岁的用户`\n\n现在请注释：\n代码：`const sorted = items.sort((a, b) => b.score - a.score);`\n注释：\n```\n\n## 多少示例合适？\n\n- **1-2 个示例**：简单任务，模式明显\n- **3-5 个示例**：中等复杂度，需要展示多样性\n- **5+ 个示例**：复杂任务，需要覆盖边缘情况\n\n> **提示：** 示例的质量比数量更重要。确保示例准确、一致！"
+      },
+      "iterativeRefinement": {
+        "title": "迭代优化",
+        "description": "通过多轮对话逐步完善结果",
+        "content": "# 迭代优化\n\n不要期望一次就得到完美结果。通过多轮对话，逐步优化输出。\n\n## 为什么需要迭代？\n\n- AI 无法一次理解所有需求\n- 复杂任务需要分步完成\n- 通过反馈持续改进\n\n## 迭代工作流\n\n### 1. 从简单开始\n```\n请帮我写一个登录页面的描述。\n```\n\n### 2. 添加细节\n```\n很好！现在请加入以下元素：\n- 深色主题\n- 社交媒体登录按钮\n- 记住我选项\n```\n\n### 3. 调整风格\n```\n描述不错，但太正式了。\n请用更轻松、友好的语气重新描述。\n```\n\n### 4. 精修细节\n```\n请把「立即登录」按钮的描述改得更吸引人，\n比如用行动导向的语言。\n```\n\n## 有效反馈技巧\n\n### 具体指出问题\n**不好的反馈：**\n```\n这个不太好，改一下。\n```\n\n**好的反馈：**\n```\n第三段太长了，请拆分成两个短段落，\n每段不超过 100 字。\n```\n\n### 提供参考\n```\n风格类似于苹果官网的产品介绍，\n简洁、有画面感、突出用户价值。\n```\n\n### 保留好的部分\n```\n前两段很棒，保持不变。\n只需要修改第三段...\n```\n\n## 迭代模板\n\n```\n基于上一次的回答，请做以下调整：\n1. [具体修改 1]\n2. [具体修改 2]\n3. [具体修改 3]\n\n保持不变的部分：\n- [保留项 1]\n- [保留项 2]\n```\n\n> **记住：** 好的结果是「聊」出来的，不是一次生成的！"
+      },
+      "structuredOutput": {
+        "title": "结构化输出",
+        "description": "让 AI 以特定格式输出结果，便于阅读和使用",
+        "content": "# 结构化输出\n\n指定输出格式，让 AI 的回答更有条理，便于阅读和后续处理。\n\n## 常用格式\n\n### 列表格式\n```\n请用项目符号列出要点：\n- 第一点\n- 第二点\n- ...\n```\n\n### 表格格式\n```\n请用表格形式对比 A 和 B：\n| 特性 | A | B |\n|------|---|---|\n| 价格 | ... | ... |\n| 性能 | ... | ... |\n```\n\n### JSON 格式\n```\n请以 JSON 格式输出结果：\n{\n  \"name\": \"...\",\n  \"value\": \"...\",\n  \"items\": [...]\n}\n```\n\n### Markdown 格式\n```\n请用 Markdown 格式输出，包含：\n- 标题层级\n- 代码块\n- 引用块\n```\n\n## 实际示例\n\n### 会议总结\n```\n请按以下格式总结会议内容：\n\n## 会议信息\n- 日期：\n- 参与人：\n- 主题：\n\n## 讨论要点\n1. ...\n2. ...\n\n## 行动项\n- [ ] 任务1 - 负责人 - 截止日期\n- [ ] 任务2 - 负责人 - 截止日期\n\n## 下次会议\n- 时间：\n- 议题：\n```\n\n### 代码评审\n```\n请按以下结构进行代码评审：\n\n### 整体评价\n[1-2 句总结]\n\n### 优点\n- ...\n- ...\n\n### 问题\n1. **问题描述**\n   - 位置：文件名:行号\n   - 建议：...\n\n### 改进建议\n- ...\n```\n\n### 学习笔记\n```\n请整理成学习笔记格式：\n\n# [主题]\n\n## 概念解释\n...\n\n## 关键要点\n1. ...\n2. ...\n\n## 代码示例\n```语言\n代码...\n```\n\n## 延伸思考\n- ...\n```\n\n## 格式选择建议\n\n| 格式 | 适用场景 |\n|------|----------|\n| 列表 | 快速浏览、要点总结 |\n| 表格 | 对比分析、数据展示 |\n| JSON | 程序处理、API 对接 |\n| Markdown | 文档、博客、教程 |\n\n> **提示：** 明确的格式要求可以大大减少后续整理工作！"
+      },
+      "contextManagement": {
+        "title": "上下文管理",
+        "description": "有效管理和利用对话上下文，提升回答质量",
+        "content": "# 上下文管理\n\n学会管理和利用对话上下文，让 AI 的回答更准确、更相关。\n\n## 什么是上下文？\n\n上下文是对话中所有先前的信息，包括：\n- 之前的问题和回答\n- 提供的背景信息\n- 设定的角色和约束\n\n## 上下文最佳实践\n\n### 1. 在对话开始时设定上下文\n```\n背景：我正在开发一个 React 应用。\n目标：实现用户认证功能。\n约束：不使用第三方认证服务。\n\n我的问题是：...\n```\n\n### 2. 分段提供信息\n```\n首先，让我介绍一下项目背景...\n\n[讨论几轮后]\n\n现在，基于我们讨论的架构，\n我想问一下数据库设计的问题...\n```\n\n### 3. 引用之前的内容\n```\n基于你刚才建议的方案，\n我想深入了解第一步的实现细节。\n```\n\n## 上下文限制应对\n\n### 问题：对话太长，AI \"忘记\" 早期内容\n\n**解决方案 1：总结关键信息**\n```\n让我们总结一下目前讨论的要点：\n1. 我们决定使用 PostgreSQL\n2. API 使用 RESTful 设计\n3. 前端用 React + TypeScript\n\n基于这些，请帮我设计...\n```\n\n**解决方案 2：开新对话，带上必要上下文**\n```\n[新对话]\n背景信息：\n- 项目：电商网站后台\n- 技术栈：Next.js + Prisma + PostgreSQL\n- 当前进度：用户模块已完成\n\n现在开始实现商品模块...\n```\n\n### 问题：上下文混乱，回答不相关\n\n**解决方案：明确重置焦点**\n```\n让我们换个话题。之前讨论的先放一边。\n\n新问题：如何设计缓存策略？\n```\n\n## 高级技巧\n\n### 使用分隔符\n```\n=== 项目背景 ===\n[背景信息]\n\n=== 当前问题 ===\n[具体问题]\n```\n\n### 分层上下文\n```\n【全局约束】\n- 代码风格：函数式\n- 语言：TypeScript\n\n【当前任务】\n实现一个表单验证组件\n\n【具体问题】\n如何处理异步验证？\n```\n\n> **记住：** 好的上下文管理 = 更少的误解 + 更精准的回答！"
+      },
+      "promptTemplates": {
+        "title": "提示词模板",
+        "description": "创建可复用的提示词模板，提高效率",
+        "content": "# 提示词模板\n\n创建可复用的模板，提高日常使用效率，确保输出一致性。\n\n## 什么是提示词模板？\n\n提示词模板是预定义的提示词结构，包含占位符，可以快速填入具体内容。\n\n## 基本模板结构\n\n```\n[角色定义]\n你是一个 [角色]。\n\n[任务描述]\n请帮我 [任务]。\n\n[输入内容]\n{{input}}\n\n[输出要求]\n格式：[格式]\n长度：[长度]\n风格：[风格]\n```\n\n## 实用模板示例\n\n### 代码审查模板\n```\n你是一位资深软件工程师，擅长代码审查。\n\n请审查以下代码：\n```{{language}}\n{{code}}\n```\n\n请从以下方面进行评审：\n1. 代码质量和可读性\n2. 潜在的 bug 或问题\n3. 性能优化建议\n4. 最佳实践建议\n\n请用中文回复，格式清晰。\n```\n\n### 文档生成模板\n```\n请为以下代码生成技术文档：\n```{{language}}\n{{code}}\n```\n\n文档应包含：\n- 功能描述\n- 参数说明\n- 返回值说明\n- 使用示例\n- 注意事项\n\n使用 Markdown 格式输出。\n```\n\n### 学习解释模板\n```\n你是一位耐心的老师，擅长用简单的语言解释复杂概念。\n\n请向一个 {{level}} 解释「{{concept}}」：\n\n要求：\n1. 使用生活中的类比\n2. 避免专业术语（除非必要并解释）\n3. 提供具体例子\n4. 总结关键要点\n```\n\n### 邮件撰写模板\n```\n请帮我写一封邮件：\n\n场景：{{scenario}}\n收件人：{{recipient}}\n目的：{{purpose}}\n语气：{{tone}}\n\n要点：\n{{points}}\n\n要求：\n- 简洁明了\n- 语气得体\n- 包含明确的行动号召\n```\n\n## HuluChat 模板功能\n\nHuluChat 支持提示词模板，你可以：\n\n1. **创建模板**：在设置中定义常用模板\n2. **使用变量**：用 `{{变量名}}` 定义可替换内容\n3. **快速调用**：在对话中快速选择模板\n\n### 预定义变量\n\n| 变量 | 说明 |\n|------|------|\n| `{{date}}` | 当前日期 |\n| `{{time}}` | 当前时间 |\n| `{{datetime}}` | 日期和时间 |\n| `{{timestamp}}` | Unix 时间戳 |\n\n## 模板管理建议\n\n1. **分类整理**：按用途分组（工作、学习、创作）\n2. **定期更新**：根据使用体验优化模板\n3. **分享复用**：团队共享高质量模板\n\n> **提示：** 好的模板是效率的倍增器！一次创建，多次受益。"
+      }
+    },
+    "faq": {
+      "categories": {
+        "gettingStarted": "入门指南",
+        "models": "AI 模型",
+        "features": "功能特性",
+        "privacy": "隐私安全",
+        "troubleshooting": "故障排除"
+      },
+      "questions": {
+        "apiKey": {
+          "question": "如何配置 API Key？",
+          "answer": "点击右上角设置图标，选择「模型配置」，输入您的 API Key。HuluChat 支持 OpenAI、DeepSeek 和 Ollama（本地模型）。输入后点击「测试连接」验证是否配置成功。"
+        },
+        "firstChat": {
+          "question": "如何开始第一次对话？",
+          "answer": "配置好 API Key 后，点击左侧边栏的「新建对话」，在输入框输入问题，按回车或点击发送按钮即可。您可以在顶部下拉框选择不同的 AI 模型。"
+        },
+        "supportedModels": {
+          "question": "支持哪些 AI 模型？",
+          "answer": "HuluChat 支持：1) OpenAI 模型（GPT-4o、GPT-4、GPT-3.5），2) DeepSeek 模型（DeepSeek-Chat、DeepSeek-Reasoner），3) 通过 Ollama 的本地模型（Llama、Qwen 等），4) 任何兼容 OpenAI API 的服务。"
+        },
+        "localModels": {
+          "question": "如何使用本地模型？",
+          "answer": "先从 ollama.com 安装 Ollama，在终端运行「ollama serve」，然后用「ollama pull llama3」下载模型。在 HuluChat 设置中填写 Ollama 地址（默认 http://localhost:11434），选择已下载的本地模型即可。"
+        },
+        "modelDifference": {
+          "question": "不同 AI 模型有什么区别？",
+          "answer": "GPT-4o：能力最强，适合复杂任务。GPT-3.5：速度快、成本低，适合简单任务。DeepSeek：性价比高，中文能力强。本地模型：免费、隐私保护好，但需要硬件资源。"
+        },
+        "bestModel": {
+          "question": "应该选择哪个模型？",
+          "answer": "复杂推理和代码：GPT-4o 或 DeepSeek-Reasoner。日常聊天翻译：GPT-3.5 或 DeepSeek-Chat。注重隐私或离线：Ollama 本地模型。成本敏感：DeepSeek 或本地模型。"
+        },
+        "modelCost": {
+          "question": "使用 AI 需要多少费用？",
+          "answer": "OpenAI：按 token 计费，GPT-4o 约 $5/百万输入 token。DeepSeek：约 $0.27/百万 token，便宜很多。本地模型：免费，但需要 GPU/CPU 资源。具体请查看各供应商最新定价。"
+        },
+        "deepseekVsOpenai": {
+          "question": "DeepSeek 和 OpenAI 哪个好？",
+          "answer": "DeepSeek：价格更实惠，中文支持更好，推理模型也很强。OpenAI：生态更成熟，英文效果更好，GPT-3.5 响应更快。国内用户推荐 DeepSeek，国际多样化需求可选 OpenAI。"
+        },
+        "documentChat": {
+          "question": "文档对话（RAG）功能怎么用？",
+          "answer": "上传 PDF、TXT 或 Markdown 文件后，HuluChat 会自动分析和索引文档内容。提问时，AI 会搜索相关文档片段，基于您的内容给出答案。适合研究、学习、文档问答等场景。"
+        },
+        "mcp": {
+          "question": "什么是 MCP？如何使用？",
+          "answer": "MCP（模型上下文协议）可以让 AI 调用外部工具。在设置 > MCP 中添加服务器配置（如文件系统、网页搜索），AI 就能自动使用这些工具。详见 docs/MCP_GUIDE.md。"
+        },
+        "promptTemplates": {
+          "question": "如何使用提示词模板？",
+          "answer": "提示词模板可以保存常用提示词供重复使用。创建模板时可以使用 {{date}} 等变量。在对话时点击模板图标可快速插入预设提示词。适合代码审查、翻译等重复性任务。"
+        },
+        "exportChat": {
+          "question": "如何导出聊天记录？",
+          "answer": "在对话界面，点击任意消息的「...」菜单，或使用多选模式选择多条消息。支持导出为 Markdown、JSON 和纯文本格式。方便分享或存档对话内容。"
+        },
+        "dataCollection": {
+          "question": "HuluChat 会收集用户数据吗？",
+          "answer": "不会。HuluChat 遵循隐私优先原则：无遥测、无分析、无用户追踪。您的对话内容只保存在本地设备。API 调用直接发送到 AI 服务商。我们不收集或存储任何用户数据。"
+        },
+        "dataStorage": {
+          "question": "我的数据存储在哪里？",
+          "answer": "所有数据都存储在您的本地设备上：聊天记录、设置、文档等。数据位置因系统而异：Windows 在 AppData，macOS 在 Application Support，Linux 在 .config 目录。您可以随时导出或删除数据。"
+        },
+        "offline": {
+          "question": "可以离线使用 HuluChat 吗？",
+          "answer": "可以，使用 Ollama 本地模型即可完全离线使用。一旦下载了模型，就可以在没有网络的情况下对话。云端模型（OpenAI、DeepSeek）需要联网。这使 HuluChat 适合内网环境或出行使用。"
+        },
+        "connectionError": {
+          "question": "为什么出现连接错误？",
+          "answer": "常见原因：1) API Key 无效 - 重新输入并测试，2) 网络问题 - 检查网络/代理，3) API 服务故障 - 检查服务商状态，4) 防火墙拦截 - 允许 HuluChat 访问网络。查看具体错误信息获取更多细节。"
+        },
+        "slowResponse": {
+          "question": "AI 响应为什么很慢？",
+          "answer": "可能原因：1) 复杂请求需要更多处理时间，2) 网络延迟，3) API 限流，4) 服务器负载高。解决方法：简化提示词、使用更快的模型（如 GPT-3.5）、检查网络、或使用本地模型。"
+        },
+        "ollamaConnection": {
+          "question": "为什么连接不上 Ollama？",
+          "answer": "请确保：1) Ollama 正在运行（终端执行「ollama serve」），2) 地址正确（http://localhost:11434），3) 至少下载了一个模型（「ollama list」查看），4) 防火墙未阻止。macOS/Linux 上 Ollama 会自动启动。"
+        },
+        "update": {
+          "question": "如何更新 HuluChat？",
+          "answer": "HuluChat 启动时会自动检查更新。有新版本时会显示更新通知，点击即可下载安装。您也可以在设置 > 关于 > 检查更新中手动检查。"
+        }
+      }
+    },
+    "shortcuts": {
+      "title": "键盘快捷键",
+      "categories": {
+        "general": "常规",
+        "navigation": "导航",
+        "editor": "编辑器"
+      },
+      "footer": "按 {{key}} 加其他按键使用快捷键"
+    },
+    "feedback": {
+      "title": "反馈与支持",
+      "github": {
+        "title": "GitHub Issues",
+        "description": "在 GitHub 上报告问题或请求新功能"
+      },
+      "email": {
+        "title": "邮件联系",
+        "description": "直接发送邮件反馈问题"
+      },
+      "community": {
+        "title": "社区讨论",
+        "description": "参与讨论并获取社区帮助"
+      },
+      "privacyNote": "我们不收集任何用户数据。您的反馈是自愿的。"
+    },
+    "search": {
+      "placeholder": "搜索技巧、常见问题、模型...",
+      "typeTip": "技巧",
+      "typeFaq": "常见问题",
+      "typeModel": "模型",
+      "resultsCount": "找到 {{count}} 个结果"
+    },
+    "models": {
+      "title": "AI 模型指南",
+      "subtitle": "比较不同的 AI 模型，选择最适合您需求的模型",
+      "visitWebsite": "访问官网",
+      "bestFor": "适用场景",
+      "selectionTip": "根据任务复杂度、预算和隐私需求选择模型。",
+      "categories": {
+        "flagship": "旗舰",
+        "standard": "标准",
+        "budget": "经济",
+        "local": "本地"
+      },
+      "pricing": {
+        "label": "价格",
+        "free": "免费",
+        "low": "低",
+        "medium": "中",
+        "high": "高"
+      },
+      "speed": {
+        "label": "速度",
+        "fast": "快",
+        "medium": "中",
+        "slow": "慢",
+        "variable": "取决于硬件"
+      },
+      "features": {
+        "multimodal": "多模态",
+        "reasoning": "高级推理",
+        "codeGeneration": "代码生成",
+        "longContext": "长上下文",
+        "fastResponse": "快速响应",
+        "generalPurpose": "通用",
+        "chineseSupport": "中文支持",
+        "deepReasoning": "深度推理",
+        "local": "本地处理",
+        "privacy": "隐私优先",
+        "offline": "离线可用"
+      },
+      "providers": {
+        "openai": {
+          "name": "OpenAI",
+          "description": "领先的 AI 研究实验室，提供 GPT 系列模型"
+        },
+        "deepseek": {
+          "name": "DeepSeek",
+          "description": "性价比高的 AI，中文支持优秀"
+        },
+        "ollama": {
+          "name": "Ollama（本地）",
+          "description": "在本地设备运行 AI 模型"
+        }
+      },
+      "gpt4o": {
+        "name": "GPT-4o",
+        "description": "最强大的模型，支持视觉和音频",
+        "bestFor": "复杂任务、多模态输入、代码分析",
+        "limitations": "成本较高，复杂任务可能较慢"
+      },
+      "gpt4": {
+        "name": "GPT-4",
+        "description": "强大的推理和问题解决能力",
+        "bestFor": "复杂推理、研究、专业写作",
+        "limitations": "成本较高，响应时间较慢"
+      },
+      "gpt35": {
+        "name": "GPT-3.5 Turbo",
+        "description": "快速、经济的通用模型",
+        "bestFor": "日常聊天、翻译、简单任务",
+        "limitations": "复杂推理能力较弱"
+      },
+      "deepseekChat": {
+        "name": "DeepSeek Chat",
+        "description": "性价比高，中文支持优秀",
+        "bestFor": "中文内容、日常聊天、编程",
+        "limitations": "知名度不如 GPT，生态较新"
+      },
+      "deepseekReasoner": {
+        "name": "DeepSeek Reasoner",
+        "description": "深度推理模型，展示思考过程",
+        "bestFor": "复杂问题、数学、代码调试",
+        "limitations": "因推理步骤较多，速度较慢"
+      },
+      "llama3": {
+        "name": "Llama 3",
+        "description": "Meta 开源模型，本地运行",
+        "bestFor": "隐私敏感任务、离线使用、实验",
+        "limitations": "需要硬件资源，需要配置"
+      },
+      "qwen": {
+        "name": "Qwen（通义千问）",
+        "description": "阿里模型，中文支持优秀",
+        "bestFor": "中文任务、本地处理、隐私保护",
+        "limitations": "需要硬件资源，需要配置"
+      }
+    }
+  },
+  "featureDiscovery": {
+    "moreOptions": "更多选项",
+    "dismiss": "关闭此提示",
+    "dontShowAgain": "不再显示功能提示",
+    "features": {
+      "commandPalette": {
+        "title": "命令面板",
+        "description": "按 Ctrl+K 快速访问所有功能，无需离开键盘。",
+        "action": "试试命令面板"
+      },
+      "knowledgeCenter": {
+        "title": "知识中心",
+        "description": "探索提示词技巧、模型指南和常见问题，成为 AI 高手。",
+        "action": "打开知识中心"
+      },
+      "documentChat": {
+        "title": "文档对话",
+        "description": "上传 PDF 或文档，与您的内容对话，获取基于文档的回答。",
+        "action": "试试文档对话"
+      },
+      "sessionExport": {
+        "title": "导出对话",
+        "description": "将聊天记录导出为 Markdown、JSON 或纯文本，方便分享或存档。",
+        "action": "导出对话"
+      },
+      "folderManagement": {
+        "title": "文件夹整理",
+        "description": "创建文件夹来组织您的对话，按项目、主题或任意方式分类。",
+        "action": "创建文件夹"
+      },
+      "modelSwitch": {
+        "title": "切换 AI 模型",
+        "description": "为每个任务选择合适的 AI 模型 - GPT-4 用于复杂工作，本地模型用于隐私保护。",
+        "action": "切换模型"
+      }
+    }
+  },
+  "contextualTips": {
+    "moreOptions": "更多选项",
+    "dismiss": "关闭提示",
+    "dontShowAgain": "不再显示上下文提示",
+    "tips": {
+      "noApiKey": {
+        "title": "配置 API 密钥",
+        "description": "检测到您还未配置 API 密钥。设置密钥后即可开始与 AI 对话。",
+        "action": "前往设置"
+      },
+      "noModel": {
+        "title": "选择 AI 模型",
+        "description": "请选择一个 AI 模型来开始对话。您可以选择 GPT-4、DeepSeek 或本地模型。",
+        "action": "选择模型"
+      },
+      "emptySession": {
+        "title": "开始新对话",
+        "description": "输入消息开始与 AI 聊天。您也可以上传文档进行文档对话。",
+        "action": "了解更多"
+      },
+      "firstVisit": {
+        "title": "欢迎来到 HuluChat",
+        "description": "您的隐私优先 AI 助手。所有数据保存在本地，无追踪、无云端存储。",
+        "action": "开始使用"
+      },
+      "settingsIncomplete": {
+        "title": "完成设置",
+        "description": "您已选择模型但未配置 API 密钥。请配置密钥以开始对话。",
+        "action": "配置 API"
+      }
+    }
+  },
+  "errors": {
+    "title": "错误解决方案",
+    "searchPlaceholder": "搜索错误...",
+    "searchResults": "找到 {{count}} 个结果",
+    "noResults": "未找到匹配的错误",
+    "solutions": "解决方案",
+    "relatedSettings": "相关设置",
+    "learnMore": "了解更多",
+    "items": "项",
+    "categories": {
+      "apiKey": "API 密钥",
+      "connection": "网络连接",
+      "model": "模型",
+      "ollama": "Ollama",
+      "rag": "文档对话",
+      "general": "通用"
+    },
+    "apiKeyMissing": {
+      "title": "缺少 API 密钥",
+      "description": "未配置 AI 服务的 API 密钥。",
+      "step1": "打开设置（Ctrl+, 或 Cmd+,）",
+      "step2": "进入 API 设置区域",
+      "step3": "输入您的 API 密钥并保存"
+    },
+    "apiKeyInvalid": {
+      "title": "API 密钥无效",
+      "description": "您提供的 API 密钥被服务拒绝。",
+      "step1": "在设置中验证您的 API 密钥是否正确",
+      "step2": "检查密钥是否过期或被撤销",
+      "step3": "从服务商控制台生成新的密钥"
+    },
+    "apiKeyFormat": {
+      "title": "API 密钥格式错误",
+      "description": "API 密钥格式不符合预期。",
+      "step1": "确保密钥以正确的前缀开头（如 OpenAI 使用 'sk-'）",
+      "step2": "复制时检查是否有多余的空格或字符"
+    },
+    "connectionFailed": {
+      "title": "连接失败",
+      "description": "无法连接到 AI 服务。",
+      "step1": "检查您的网络连接",
+      "step2": "验证 API 基础 URL 是否正确",
+      "step3": "稍后重试"
+    },
+    "timeout": {
+      "title": "请求超时",
+      "description": "AI 服务响应时间过长。",
+      "step1": "检查网络速度和稳定性",
+      "step2": "如果网络较慢，增加超时设置"
+    },
+    "proxy": {
+      "title": "需要代理/VPN",
+      "description": "AI 服务在您所在的地区可能不可用。",
+      "step1": "如果在受限地区，请启用 VPN 或代理",
+      "step2": "如果使用代理服务，配置自定义 API 基础 URL",
+      "step3": "在设置 > 高级中检查代理设置"
+    },
+    "backendOffline": {
+      "title": "后端服务离线",
+      "description": "本地后端服务未运行。",
+      "step1": "重启 HuluChat 应用程序",
+      "step2": "如果问题持续，检查端口冲突（端口 8765）"
+    },
+    "modelNotFound": {
+      "title": "模型未找到",
+      "description": "所选的 AI 模型不存在或不可用。",
+      "step1": "从模型选择器中选择其他模型",
+      "step2": "在设置中检查可用模型"
+    },
+    "rateLimit": {
+      "title": "超过速率限制",
+      "description": "短时间内发送了太多请求。",
+      "step1": "等待片刻后再发送更多消息",
+      "step2": "考虑升级您的 API 套餐",
+      "step3": "降低消息发送频率"
+    },
+    "insufficientQuota": {
+      "title": "配额不足",
+      "description": "您的 API 账户余额已用完。",
+      "step1": "检查您的 API 服务商计费面板",
+      "step2": "充值或升级您的套餐"
+    },
+    "contextLength": {
+      "title": "超过上下文长度",
+      "description": "您的消息或对话对模型来说太长了。",
+      "step1": "开始新对话以重置上下文",
+      "step2": "使用具有更大上下文窗口的模型",
+      "step3": "减少消息长度"
+    },
+    "ollamaNotRunning": {
+      "title": "Ollama 未运行",
+      "description": "本地 Ollama 服务不可用。",
+      "step1": "使用 'ollama serve' 命令启动 Ollama",
+      "step2": "验证 Ollama 是否正确安装",
+      "step3": "在设置 > Ollama 中测试连接"
+    },
+    "ollamaModelNotFound": {
+      "title": "Ollama 模型未找到",
+      "description": "请求的模型未在本地下载。",
+      "step1": "运行 'ollama pull <模型名称>' 下载",
+      "step2": "使用 'ollama list' 检查可用模型",
+      "step3": "在设置中选择其他模型"
+    },
+    "ollamaOOM": {
+      "title": "Ollama 内存不足",
+      "description": "内存不足以运行模型。",
+      "step1": "关闭其他应用程序以释放内存",
+      "step2": "使用更小的模型（如 7B 而非 70B）",
+      "step3": "如果使用 GPU 加速，检查 GPU 内存"
+    },
+    "ragFileTooLarge": {
+      "title": "文件过大",
+      "description": "上传的文件超过大小限制（5MB）。",
+      "step1": "压缩或将文件拆分为较小的部分",
+      "step2": "上传 5MB 以下的文件以获得最佳效果"
+    },
+    "ragUnsupportedFormat": {
+      "title": "不支持的文件格式",
+      "description": "此文件格式不支持用于文档对话。",
+      "step1": "转换为支持的格式：PDF、TXT 或 MD",
+      "step2": "确保文件未损坏或受密码保护"
+    },
+    "ragNoDocuments": {
+      "title": "没有已索引的文档",
+      "description": "没有上传用于文档对话的文档。",
+      "step1": "使用文档上传按钮上传文档",
+      "step2": "等待索引完成后再搜索"
+    },
+    "unknown": {
+      "title": "未知错误",
+      "description": "发生了意外错误。",
+      "step1": "尝试重启应用程序",
+      "step2": "检查您的设置和配置",
+      "step3": "如果问题持续，请联系支持"
+    }
   }
 }

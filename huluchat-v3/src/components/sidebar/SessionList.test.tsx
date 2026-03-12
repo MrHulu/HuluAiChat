@@ -924,6 +924,11 @@ describe("SessionList", () => {
       // Find and click delete button
       const deleteButton = screen.getByLabelText("Delete session");
       fireEvent.click(deleteButton);
+
+      // Confirm delete in dialog
+      const confirmButtons = screen.getAllByText("Delete session");
+      fireEvent.click(confirmButtons[confirmButtons.length - 1]);
+
       expect(onDeleteSession).toHaveBeenCalledWith("1");
     });
 
@@ -1075,6 +1080,11 @@ describe("SessionList", () => {
       // Find and click delete button
       const deleteButton = screen.getByLabelText("Delete session");
       fireEvent.click(deleteButton);
+
+      // Confirm delete in dialog
+      const confirmButton = screen.getByText("Delete session");
+      fireEvent.click(confirmButton);
+
       expect(onDeleteSession).toHaveBeenCalledWith("1");
     });
   });
@@ -1132,6 +1142,11 @@ describe("SessionList", () => {
       // Find and click delete button
       const deleteButton = screen.getByLabelText("Delete session");
       fireEvent.click(deleteButton);
+
+      // Confirm delete in dialog
+      const confirmButtons = screen.getAllByText("Delete session");
+      fireEvent.click(confirmButtons[confirmButtons.length - 1]);
+
       expect(onDeleteSession).toHaveBeenCalledWith("1");
     });
   });

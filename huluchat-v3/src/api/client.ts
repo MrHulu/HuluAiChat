@@ -2,7 +2,8 @@
  * HuluChat API Client
  */
 
-const API_BASE = "http://127.0.0.1:8765/api";
+// API Base URL - configurable via environment variable
+const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:8765/api";
 
 // ============== Ollama Types ==============
 
@@ -130,11 +131,133 @@ export async function deleteSession(id: string): Promise<void> {
   await fetch(`${API_BASE}/sessions/${id}`, { method: "DELETE" });
 }
 
+// ============== Batch Operations ==============
+
+/**
+ * Batch delete result
+ */
+export interface BatchDeleteResult {
+  deleted_count: number;
+  errors?: string[];
+}
+
+/**
+ * Batch move result for a single session
+ */
+export interface BatchMoveItemResult {
+  session_id: string;
+  success: boolean;
+  error?: string;
+}
+
+/**
+ * Batch move response
+ */
+export interface BatchMoveResponse {
+  results: BatchMoveItemResult[];
+  success_count: number;
+  failed_count: number;
+}
+
+/**
+ * Export message format
+ */
+export interface ExportMessage {
+  role: string;
+  content: string;
+  created_at: string;
+}
+
+/**
+ * Export data for a single session
+ */
+export interface ExportSessionData {
+  session: Session;
+  messages: ExportMessage[];
+}
+
+/**
+ * Batch export response
+ */
+export interface BatchExportResponse {
+  sessions: ExportSessionData[];
+}
+
+/**
+ * Delete multiple sessions at once
+ */
+export async function batchDeleteSessions(sessionIds: string[]): Promise<BatchDeleteResult> {
+  const response = await fetch(`${API_BASE}/sessions/batch-delete`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ session_ids: sessionIds }),
+  });
+  if (!response.ok) {
+    throw new Error(`Batch delete failed: ${response.statusText}`);
+  }
+  return response.json();
+}
+
+/**
+ * Move multiple sessions to a folder (or root if folderId is null)
+ */
+export async function batchMoveSessions(
+  sessionIds: string[],
+  folderId: string | null
+): Promise<BatchMoveResponse> {
+  const response = await fetch(`${API_BASE}/sessions/batch-move`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ session_ids: sessionIds, folder_id: folderId }),
+  });
+  if (!response.ok) {
+    throw new Error(`Batch move failed: ${response.statusText}`);
+  }
+  return response.json();
+}
+
+/**
+ * Export multiple sessions with all messages
+ */
+export async function batchExportSessions(sessionIds: string[]): Promise<BatchExportResponse> {
+  const response = await fetch(`${API_BASE}/sessions/batch-export`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ session_ids: sessionIds }),
+  });
+  if (!response.ok) {
+    throw new Error(`Batch export failed: ${response.statusText}`);
+  }
+  return response.json();
+}
+
 /**
  * Search sessions by title and message content
  */
 export async function searchSessions(query: string): Promise<SessionSearchResult[]> {
   const response = await fetch(`${API_BASE}/sessions/search/?q=${encodeURIComponent(query)}`);
+  return response.json();
+}
+
+/**
+ * Update session title
+ */
+export async function updateSessionTitle(sessionId: string, title: string): Promise<Session> {
+  const response = await fetch(`${API_BASE}/sessions/${sessionId}/title`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title }),
+  });
+  return response.json();
+}
+
+/**
+ * Generate AI title for session
+ */
+export async function generateSessionTitle(sessionId: string): Promise<{ title: string; session_id: string }> {
+  const response = await fetch(`${API_BASE}/sessions/${sessionId}/generate-title`, {
+    method: "POST",
+  });
   return response.json();
 }
 
@@ -154,14 +277,24 @@ export async function getSessionMessages(
 
 /**
  * Update a message's content
+ * @param sessionId Session ID
+ * @param messageId Message ID to update
+ * @param content New content
+ * @param deleteAfter If True, delete all messages after this one (for edit-and-resend)
  */
 export async function updateMessage(
   sessionId: string,
   messageId: string,
-  content: string
+  content: string,
+  deleteAfter: boolean = false
 ): Promise<Message> {
+  const params = new URLSearchParams();
+  if (deleteAfter) {
+    params.append("delete_after", "true");
+  }
+
   const response = await fetch(
-    `${API_BASE}/chat/${sessionId}/messages/${messageId}`,
+    `${API_BASE}/chat/${sessionId}/messages/${messageId}?${params.toString()}`,
     {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -172,10 +305,30 @@ export async function updateMessage(
 }
 
 /**
+ * Delete a message from a session
+ */
+export async function deleteMessage(
+  sessionId: string,
+  messageId: string
+): Promise<{ status: string; message_id: string }> {
+  const response = await fetch(
+    `${API_BASE}/chat/${sessionId}/messages/${messageId}`,
+    { method: "DELETE" }
+  );
+  if (!response.ok) {
+    throw new Error(`Failed to delete message: ${response.statusText}`);
+  }
+  return response.json();
+}
+
+/**
  * Create WebSocket connection for chat
  */
 export function createChatWebSocket(sessionId: string): WebSocket {
-  return new WebSocket(`ws://127.0.0.1:8765/api/chat/ws/${sessionId}`);
+  // Convert HTTP API base URL to WebSocket URL
+  // e.g., http://127.0.0.1:8765/api -> ws://127.0.0.1:8765/api
+  const wsBase = API_BASE.replace(/^http/, "ws");
+  return new WebSocket(`${wsBase}/chat/ws/${sessionId}`);
 }
 
 // Settings types
@@ -269,6 +422,57 @@ export async function exportSession(
   }
 
   const blob = await response.blob();
+  return { blob, filename };
+}
+
+/**
+ * Export selected messages in specified format (client-side generation)
+ * Returns a blob that can be downloaded
+ */
+export function exportMessages(
+  messages: Message[],
+  format: ExportFormat = "markdown",
+  sessionTitle?: string
+): { blob: Blob; filename: string } {
+  const timestamp = new Date().toISOString().split("T")[0];
+  const baseName = sessionTitle ? sessionTitle.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, "_") : "messages";
+  let content: string;
+  let mimeType: string;
+  let extension: string;
+
+  switch (format) {
+    case "json":
+      content = JSON.stringify(messages.map(m => ({
+        role: m.role,
+        content: m.content,
+        created_at: m.created_at,
+      })), null, 2);
+      mimeType = "application/json";
+      extension = "json";
+      break;
+
+    case "txt":
+      content = messages.map(m => {
+        const role = m.role === "user" ? "You" : "AI";
+        return `[${role}] ${m.content}`;
+      }).join("\n\n---\n\n");
+      mimeType = "text/plain";
+      extension = "txt";
+      break;
+
+    case "markdown":
+    default:
+      content = messages.map(m => {
+        const role = m.role === "user" ? "**You**" : "**AI**";
+        return `${role}\n\n${m.content}`;
+      }).join("\n\n---\n\n");
+      mimeType = "text/markdown";
+      extension = "md";
+      break;
+  }
+
+  const blob = new Blob([content], { type: mimeType });
+  const filename = `${baseName}_selected_${timestamp}.${extension}`;
   return { blob, filename };
 }
 
@@ -786,4 +990,495 @@ export function downloadBlob(blob: Blob, filename: string): void {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+// ============== MCP APIs ==============
+
+/**
+ * MCP Server transport type
+ */
+export type MCPTransportType = "stdio" | "http" | "sse";
+
+/**
+ * MCP Server configuration
+ */
+export interface MCPServerConfig {
+  id: string;
+  name: string;
+  description?: string;
+  transport: MCPTransportType;
+  command?: string;
+  args?: string[];
+  env?: Record<string, string>;
+  url?: string;
+  enabled: boolean;
+  auto_connect: boolean;
+}
+
+/**
+ * MCP Server configuration for creation
+ */
+export interface MCPServerConfigCreate {
+  name: string;
+  description?: string;
+  transport: MCPTransportType;
+  command?: string;
+  args?: string[];
+  env?: Record<string, string>;
+  url?: string;
+  enabled?: boolean;
+  auto_connect?: boolean;
+}
+
+/**
+ * MCP Server configuration for update
+ */
+export interface MCPServerConfigUpdate {
+  name?: string;
+  description?: string;
+  transport?: MCPTransportType;
+  command?: string;
+  args?: string[];
+  env?: Record<string, string>;
+  url?: string;
+  enabled?: boolean;
+  auto_connect?: boolean;
+}
+
+/**
+ * MCP Tool definition
+ */
+export interface MCPTool {
+  name: string;
+  description: string;
+  inputSchema: Record<string, unknown>;
+}
+
+/**
+ * MCP Resource definition
+ */
+export interface MCPResource {
+  uri: string;
+  name: string;
+  description?: string;
+  mime_type?: string;
+}
+
+/**
+ * MCP Server status
+ */
+export interface MCPServerStatus {
+  id: string;
+  name: string;
+  connected: boolean;
+  tools: MCPTool[];
+  resources: MCPResource[];
+  error?: string;
+}
+
+/**
+ * MCP tool call request
+ */
+export interface MCPToolCall {
+  server_id: string;
+  tool_name: string;
+  arguments: Record<string, unknown>;
+}
+
+/**
+ * MCP tool call result
+ */
+export interface MCPToolResult {
+  success: boolean;
+  content: string;
+  error?: string;
+}
+
+/**
+ * All servers status response
+ */
+export interface MCPAllStatus {
+  servers: MCPServerStatus[];
+  total_tools: number;
+  connected_count: number;
+}
+
+/**
+ * List all MCP servers
+ */
+export async function listMCPServers(): Promise<MCPServerConfig[]> {
+  const response = await fetch(`${API_BASE}/mcp/servers`);
+  return response.json();
+}
+
+/**
+ * Add a new MCP server
+ */
+export async function addMCPServer(
+  config: MCPServerConfigCreate
+): Promise<MCPServerConfig> {
+  const response = await fetch(`${API_BASE}/mcp/servers`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(config),
+  });
+  return response.json();
+}
+
+/**
+ * Update an MCP server
+ */
+export async function updateMCPServer(
+  id: string,
+  config: MCPServerConfigUpdate
+): Promise<MCPServerConfig> {
+  const response = await fetch(`${API_BASE}/mcp/servers/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(config),
+  });
+  return response.json();
+}
+
+/**
+ * Delete an MCP server
+ */
+export async function deleteMCPServer(id: string): Promise<void> {
+  await fetch(`${API_BASE}/mcp/servers/${id}`, { method: "DELETE" });
+}
+
+/**
+ * Connect to an MCP server
+ */
+export async function connectMCPServer(id: string): Promise<MCPServerStatus> {
+  const response = await fetch(`${API_BASE}/mcp/servers/${id}/connect`, {
+    method: "POST",
+  });
+  return response.json();
+}
+
+/**
+ * Disconnect from an MCP server
+ */
+export async function disconnectMCPServer(id: string): Promise<void> {
+  await fetch(`${API_BASE}/mcp/servers/${id}/disconnect`, { method: "POST" });
+}
+
+/**
+ * Get status of an MCP server
+ */
+export async function getMCPServerStatus(id: string): Promise<MCPServerStatus> {
+  const response = await fetch(`${API_BASE}/mcp/servers/${id}/status`);
+  return response.json();
+}
+
+/**
+ * Get tools available on an MCP server
+ */
+export async function getMCPServerTools(id: string): Promise<MCPTool[]> {
+  const response = await fetch(`${API_BASE}/mcp/servers/${id}/tools`);
+  return response.json();
+}
+
+/**
+ * Call an MCP tool
+ */
+export async function callMCPTool(call: MCPToolCall): Promise<MCPToolResult> {
+  const response = await fetch(`${API_BASE}/mcp/tools/call`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(call),
+  });
+  return response.json();
+}
+
+/**
+ * Get status of all MCP servers
+ */
+export async function getMCPAllStatus(): Promise<MCPAllStatus> {
+  const response = await fetch(`${API_BASE}/mcp/status`);
+  return response.json();
+}
+
+/**
+ * Connect to all enabled MCP servers
+ */
+export async function connectAllMCPServers(): Promise<MCPServerStatus[]> {
+  const response = await fetch(`${API_BASE}/mcp/connect-all`, {
+    method: "POST",
+  });
+  return response.json();
+}
+
+/**
+ * Disconnect from all MCP servers
+ */
+export async function disconnectAllMCPServers(): Promise<void> {
+  await fetch(`${API_BASE}/mcp/disconnect-all`, { method: "POST" });
+}
+
+/**
+ * Get all tools from all connected servers
+ */
+export async function getAllMCPTools(): Promise<Record<string, MCPTool[]>> {
+  const response = await fetch(`${API_BASE}/mcp/tools`);
+  return response.json();
+}
+
+// ============== Preference Learning APIs ==============
+
+/**
+ * Model usage statistics
+ */
+export interface ModelUsageStats {
+  model_id: string;
+  count: number;
+  last_used: string | null;
+}
+
+/**
+ * Recommended model response
+ */
+export interface RecommendedModel {
+  model_id: string | null;
+  reason: string;
+}
+
+/**
+ * Record model usage for preference learning
+ * Privacy-first: All data stored locally
+ */
+export async function recordModelUsage(modelId: string): Promise<ModelUsageStats> {
+  const response = await fetch(`${API_BASE}/preferences/model-usage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ model_id: modelId }),
+  });
+  return response.json();
+}
+
+/**
+ * Get model usage statistics
+ */
+export async function getModelUsageStats(): Promise<ModelUsageStats[]> {
+  const response = await fetch(`${API_BASE}/preferences/model-usage`);
+  return response.json();
+}
+
+/**
+ * Get recommended model based on usage frequency
+ */
+export async function getRecommendedModel(availableModels: string[]): Promise<RecommendedModel> {
+  const response = await fetch(`${API_BASE}/preferences/recommended-model`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ available_models: availableModels }),
+  });
+  return response.json();
+}
+
+/**
+ * Clear all preference data
+ */
+export async function clearPreferences(): Promise<void> {
+  await fetch(`${API_BASE}/preferences/model-usage`, { method: "DELETE" });
+}
+
+// ============== Session Template APIs (TASK-197) ==============
+
+/**
+ * Session template for quick session creation with preset configurations
+ */
+export interface SessionTemplate {
+  id: string;
+  name: string;
+  description: string | null;
+  icon: string | null;
+  system_prompt: string | null;
+  default_model: string | null;
+  temperature: number | null;
+  top_p: number | null;
+  max_tokens: number | null;
+  mcp_servers: string[] | null;
+  is_builtin: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Session template creation data
+ */
+export interface SessionTemplateCreate {
+  name: string;
+  description?: string;
+  icon?: string;
+  system_prompt?: string;
+  default_model?: string;
+  temperature?: number;
+  top_p?: number;
+  max_tokens?: number;
+  mcp_servers?: string[];
+}
+
+/**
+ * Session template update data
+ */
+export interface SessionTemplateUpdate {
+  name?: string;
+  description?: string;
+  icon?: string;
+  system_prompt?: string;
+  default_model?: string;
+  temperature?: number;
+  top_p?: number;
+  max_tokens?: number;
+  mcp_servers?: string[];
+}
+
+/**
+ * List all session templates (built-in + user-created)
+ */
+export async function listSessionTemplates(): Promise<SessionTemplate[]> {
+  const response = await fetch(`${API_BASE}/session-templates`);
+  return response.json();
+}
+
+/**
+ * Get a specific session template by ID
+ */
+export async function getSessionTemplate(templateId: string): Promise<SessionTemplate> {
+  const response = await fetch(`${API_BASE}/session-templates/${templateId}`);
+  return response.json();
+}
+
+/**
+ * Create a new user session template
+ */
+export async function createSessionTemplate(template: SessionTemplateCreate): Promise<SessionTemplate> {
+  const response = await fetch(`${API_BASE}/session-templates`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(template),
+  });
+  return response.json();
+}
+
+/**
+ * Update a session template
+ */
+export async function updateSessionTemplate(
+  templateId: string,
+  template: SessionTemplateUpdate
+): Promise<SessionTemplate> {
+  const response = await fetch(`${API_BASE}/session-templates/${templateId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(template),
+  });
+  return response.json();
+}
+
+/**
+ * Delete a session template
+ */
+export async function deleteSessionTemplate(templateId: string): Promise<void> {
+  await fetch(`${API_BASE}/session-templates/${templateId}`, { method: "DELETE" });
+}
+
+// ============== Custom Commands APIs (TASK-198) ==============
+
+/**
+ * Custom command for quick actions
+ */
+export interface CustomCommand {
+  id: string;
+  name: string;
+  description: string | null;
+  command_type: "prompt" | "action" | "template";
+  prompt_content: string | null;
+  template_id: string | null;
+  actions: Record<string, unknown>[] | null;
+  shortcut: string | null;
+  icon: string | null;
+  is_builtin: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Custom command creation data
+ */
+export interface CustomCommandCreate {
+  name: string;
+  description?: string;
+  command_type?: "prompt" | "action" | "template";
+  prompt_content?: string;
+  template_id?: string;
+  actions?: Record<string, unknown>[];
+  shortcut?: string;
+  icon?: string;
+}
+
+/**
+ * Custom command update data
+ */
+export interface CustomCommandUpdate {
+  name?: string;
+  description?: string;
+  command_type?: "prompt" | "action" | "template";
+  prompt_content?: string;
+  template_id?: string;
+  actions?: Record<string, unknown>[];
+  shortcut?: string;
+  icon?: string;
+}
+
+/**
+ * List all custom commands (built-in + user-created)
+ */
+export async function listCustomCommands(): Promise<CustomCommand[]> {
+  const response = await fetch(`${API_BASE}/custom-commands`);
+  return response.json();
+}
+
+/**
+ * Get a specific custom command by ID
+ */
+export async function getCustomCommand(commandId: string): Promise<CustomCommand> {
+  const response = await fetch(`${API_BASE}/custom-commands/${commandId}`);
+  return response.json();
+}
+
+/**
+ * Create a new custom command
+ */
+export async function createCustomCommand(command: CustomCommandCreate): Promise<CustomCommand> {
+  const response = await fetch(`${API_BASE}/custom-commands`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(command),
+  });
+  return response.json();
+}
+
+/**
+ * Update a custom command
+ */
+export async function updateCustomCommand(
+  commandId: string,
+  command: CustomCommandUpdate
+): Promise<CustomCommand> {
+  const response = await fetch(`${API_BASE}/custom-commands/${commandId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(command),
+  });
+  return response.json();
+}
+
+/**
+ * Delete a custom command
+ */
+export async function deleteCustomCommand(commandId: string): Promise<void> {
+  await fetch(`${API_BASE}/custom-commands/${commandId}`, { method: "DELETE" });
 }
