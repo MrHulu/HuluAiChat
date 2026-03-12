@@ -32,6 +32,8 @@ export interface SendMessageOptions {
   skipLocalUserMessage?: boolean;
   /** Message ID being edited (for backend to skip saving) */
   editMessageId?: string;
+  /** Quoted message ID for reply context - TASK-200 */
+  quotedMessageId?: string;
 }
 
 export interface UseChatOptions {
@@ -295,6 +297,8 @@ export function useChat(sessionId: string | null, options?: UseChatOptions): Use
         // 如果是编辑后重发，告诉后端跳过保存用户消息
         regenerate: options?.skipLocalUserMessage || false,
         delete_from_message_id: options?.editMessageId,
+        // 引用消息 ID - TASK-200
+        quoted_message_id: options?.quotedMessageId,
       });
 
       setIsLoading(true);

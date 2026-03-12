@@ -308,6 +308,9 @@ export const ChatView = forwardRef<ChatViewRef, ChatViewProps>(function ChatView
   const isDisabled = connectionStatus !== "connected" || isLoading;
 
   const handleSend = async (content: string, images?: ImageContent[], files?: FileAttachment[]) => {
+    // Get quote message ID before clearing - TASK-200
+    const quotedMessageId = quoteMessage?.id;
+
     // Clear quote after sending - Cycle #145
     setQuoteMessage(null);
 
@@ -318,7 +321,7 @@ export const ChatView = forwardRef<ChatViewRef, ChatViewProps>(function ChatView
         if (ragResult.success && ragResult.context) {
           // Prepend RAG context to the message
           const enhancedContent = `${t("rag.ragEnabled")}\n\n${ragResult.context}\n\n---\n\n${content}`;
-          sendMessage(enhancedContent, currentModel, parameters, images, files);
+          sendMessage(enhancedContent, currentModel, parameters, images, files, undefined, { quotedMessageId });
           return;
         }
       } catch (error) {
@@ -327,7 +330,7 @@ export const ChatView = forwardRef<ChatViewRef, ChatViewProps>(function ChatView
         toast.warning(t("rag.queryError"));
       }
     }
-    sendMessage(content, currentModel, parameters, images, files);
+    sendMessage(content, currentModel, parameters, images, files, undefined, { quotedMessageId });
   };
 
   // Handle suggestion hint click
