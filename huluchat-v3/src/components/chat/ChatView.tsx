@@ -2,9 +2,10 @@
  * ChatView Component
  * 聊天主界面，整合消息列表和输入框
  */
-import { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
+import { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle, useMemo } from "react";
 import { MessageList, MessageListRef } from "./MessageList";
 import { ChatInput } from "./ChatInput";
+import { ChatSearch } from "./ChatSearch";
 import { ModelSelector } from "./ModelSelector";
 import { RAGPanel } from "@/components/rag";
 import { BookmarkPanel } from "./BookmarkPanel";
@@ -12,6 +13,7 @@ import { useChat, useModel } from "@/hooks";
 import { ConnectionStatus } from "@/hooks/useWebSocket";
 import { ToolCall } from "@/hooks/useChat";
 import { cn } from "@/lib/utils";
+import { findMatchingMessages } from "@/utils/search";
 import {
   updateMessage,
   ImageContent,
@@ -27,7 +29,7 @@ import {
 } from "@/api/client";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { Bookmark, CheckCircle, XCircle, Loader2, ListChecks, Download, X } from "lucide-react";
+import { Bookmark, CheckCircle, XCircle, Loader2, ListChecks, Download, X, Search } from "lucide-react";
 
 export interface ChatViewProps {
   sessionId: string | null;
@@ -166,6 +168,12 @@ export const ChatView = forwardRef<ChatViewRef, ChatViewProps>(function ChatView
   // Quote state - Cycle #145
   const [quoteMessage, setQuoteMessage] = useState<Message | null>(null);
 
+  // Search state - TASK-202
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [caseSensitive, setCaseSensitive] = useState(false);
+  const [currentMatchIndex, setCurrentMatchIndex] = useState(0);
+
   // Selection mode state - TASK-175
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedMessageIds, setSelectedMessageIds] = useState<Set<string>>(new Set());
@@ -258,6 +266,71 @@ export const ChatView = forwardRef<ChatViewRef, ChatViewProps>(function ChatView
     setIsSelectionMode(false);
     setSelectedMessageIds(new Set());
   }, []);
+
+  // Search handlers - TASK-202
+  const matchingMessageIds = useMemo(() => {
+    if (!searchQuery.trim()) return new Set<string>();
+    const ids = findMatchingMessages(messages, searchQuery, caseSensitive);
+    return new Set(ids);
+  }, [messages, searchQuery, caseSensitive]);
+
+  const currentMatchId = useMemo(() => {
+    const matchArray = Array.from(matchingMessageIds);
+    if (matchArray.length === 0) return undefined;
+    return matchArray[currentMatchIndex];
+  }, [matchingMessageIds, currentMatchIndex]);
+
+  const handleSearch = useCallback((query: string, isCaseSensitive: boolean) => {
+    setSearchQuery(query);
+    setCaseSensitive(isCaseSensitive);
+    setCurrentMatchIndex(0);
+
+    // Scroll to first match if exists
+    if (query.trim()) {
+      const ids = findMatchingMessages(messages, query, isCaseSensitive);
+      if (ids.length > 0) {
+        setTimeout(() => {
+          messageListRef.current?.scrollToMessage(ids[0]);
+        }, 100);
+      }
+    }
+  }, [messages]);
+
+  const handleSearchNavigate = useCallback((direction: "prev" | "next") => {
+    const matchArray = Array.from(matchingMessageIds);
+    if (matchArray.length === 0) return;
+
+    let newIndex = currentMatchIndex;
+    if (direction === "next") {
+      newIndex = (currentMatchIndex + 1) % matchArray.length;
+    } else {
+      newIndex = (currentMatchIndex - 1 + matchArray.length) % matchArray.length;
+    }
+
+    setCurrentMatchIndex(newIndex);
+    messageListRef.current?.scrollToMessage(matchArray[newIndex]);
+  }, [matchingMessageIds, currentMatchIndex]);
+
+  const handleSearchClose = useCallback(() => {
+    setIsSearchOpen(false);
+    setSearchQuery("");
+    setCurrentMatchIndex(0);
+  }, []);
+
+  // Ctrl+F shortcut for search - TASK-202
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "f") {
+        e.preventDefault();
+        if (sessionId) {
+          setIsSearchOpen(true);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [sessionId]);
 
   const handleExportSelected = useCallback((format: ExportFormat) => {
     const selectedMessages = messages.filter((m) => selectedMessageIds.has(m.id));
@@ -398,6 +471,24 @@ export const ChatView = forwardRef<ChatViewRef, ChatViewProps>(function ChatView
           )}
         </div>
         <div className="flex items-center gap-2">
+          {/* Search Button - TASK-202 */}
+          {sessionId && messages.length > 0 && (
+            <button
+              onClick={() => setIsSearchOpen(true)}
+              aria-label={t("chat.searchInConversation")}
+              className={cn(
+                "px-2 py-1 text-xs rounded-md border transition-all duration-200 ease-out flex items-center gap-1",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                "hover:scale-105 active:scale-95",
+                isSearchOpen
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-background hover:bg-accent hover:border-accent border-border"
+              )}
+            >
+              <Search className="w-3 h-3" />
+              {t("chat.search")}
+            </button>
+          )}
           {/* Selection Mode Toggle Button - TASK-175 */}
           {sessionId && messages.length > 0 && !isSelectionMode && (
             <button
@@ -557,6 +648,16 @@ export const ChatView = forwardRef<ChatViewRef, ChatViewProps>(function ChatView
         </div>
       </div>
 
+      {/* Search Bar - TASK-202 */}
+      <ChatSearch
+        isOpen={isSearchOpen}
+        onClose={handleSearchClose}
+        onSearch={handleSearch}
+        onNavigate={handleSearchNavigate}
+        matchCount={matchingMessageIds.size}
+        currentMatch={currentMatchIndex}
+      />
+
       {/* 消息列表 */}
       <MessageList
         ref={messageListRef}
@@ -574,6 +675,8 @@ export const ChatView = forwardRef<ChatViewRef, ChatViewProps>(function ChatView
         isSelectionMode={isSelectionMode}
         selectedMessageIds={selectedMessageIds}
         onMessageSelect={handleMessageSelect}
+        searchMatchIds={matchingMessageIds}
+        currentMatchId={currentMatchId}
       />
 
       {/* Tool Calls Indicator */}

@@ -110,6 +110,11 @@ export interface MessageItemProps {
   isSelectionMode?: boolean;
   isSelected?: boolean;
   onSelect?: (messageId: string, selected: boolean) => void;
+  // Search highlight props - TASK-202
+  isSearchMatch?: boolean;
+  isCurrentMatch?: boolean;
+  searchQuery?: string;
+  caseSensitive?: boolean;
 }
 
 // Stable plugin references (defined outside component to avoid recreation)
@@ -185,6 +190,8 @@ export const MessageItem = memo(function MessageItem({
   isSelectionMode = false,
   isSelected = false,
   onSelect,
+  isSearchMatch = false,
+  isCurrentMatch = false,
 }: MessageItemProps) {
   const { t } = useTranslation();
   const isUser = message.role === "user";
@@ -403,6 +410,9 @@ export const MessageItem = memo(function MessageItem({
           "max-w-[80%] rounded-2xl px-4 py-3 relative",
           "shadow-sm hover:shadow-md transition-all duration-200 ease-out",
           "hover:scale-[1.005] active:scale-[0.995]",
+          // Search highlight - TASK-202
+          isSearchMatch && !isCurrentMatch && "ring-2 ring-warning/50",
+          isCurrentMatch && "ring-2 ring-warning shadow-[0_0_12px_rgba(234,179,8,0.4)]",
           isUser
             ? cn(
                 // 用户消息 - 渐变背景
