@@ -856,7 +856,8 @@
         "deepReasoning": "Deep Reasoning",
         "local": "Local Processing",
         "privacy": "Privacy First",
-        "offline": "Offline Capable"
+        "offline": "Offline Capable",
+        "agents": "Agent Workflows"
       },
       "providers": {
         "openai": {
@@ -872,11 +873,41 @@
           "description": "Run AI models locally on your device"
         }
       },
+      "gpt41": {
+        "name": "GPT-4.1",
+        "description": "Latest GPT-4 with improved capabilities",
+        "bestFor": "Complex tasks, code generation, multimodal input",
+        "limitations": "Higher cost"
+      },
       "gpt4o": {
         "name": "GPT-4o",
         "description": "Most capable model with vision and audio support",
         "bestFor": "Complex tasks, multimodal input, code analysis",
         "limitations": "Higher cost, may be slower on complex tasks"
+      },
+      "gpt4oMini": {
+        "name": "GPT-4o Mini",
+        "description": "Fast and affordable multimodal model",
+        "bestFor": "Daily chat, simple tasks, quick responses",
+        "limitations": "Less capable on complex reasoning"
+      },
+      "o3Mini": {
+        "name": "o3-mini",
+        "description": "Latest reasoning model, fast and capable",
+        "bestFor": "Complex reasoning, math, coding",
+        "limitations": "May be slower on simple tasks"
+      },
+      "o1": {
+        "name": "o1",
+        "description": "Advanced reasoning for complex problems",
+        "bestFor": "Complex reasoning, research, problem solving",
+        "limitations": "Higher cost, slower response"
+      },
+      "o1Mini": {
+        "name": "o1-mini",
+        "description": "Fast reasoning model for everyday tasks",
+        "bestFor": "Quick reasoning tasks, coding assistance",
+        "limitations": "Less capable than full o1"
       },
       "gpt4": {
         "name": "GPT-4",
@@ -890,6 +921,24 @@
         "bestFor": "Daily chat, translation, simple tasks",
         "limitations": "Less capable on complex reasoning"
       },
+      "claudeSonnet4": {
+        "name": "Claude Sonnet 4",
+        "description": "Latest Claude, best for coding and agents",
+        "bestFor": "Coding, agents, complex tasks",
+        "limitations": "Requires OpenAI-compatible API setup"
+      },
+      "claude35Sonnet": {
+        "name": "Claude 3.5 Sonnet",
+        "description": "Anthropic's versatile model",
+        "bestFor": "Coding, analysis, creative writing",
+        "limitations": "Requires OpenAI-compatible API setup"
+      },
+      "claude35Haiku": {
+        "name": "Claude 3.5 Haiku",
+        "description": "Fast and efficient Claude",
+        "bestFor": "Quick responses, daily tasks",
+        "limitations": "Less capable on complex tasks"
+      },
       "deepseekChat": {
         "name": "DeepSeek Chat",
         "description": "Cost-effective model with great Chinese support",
@@ -902,10 +951,22 @@
         "bestFor": "Complex problems, math, code debugging",
         "limitations": "Slower due to reasoning steps"
       },
+      "llama33": {
+        "name": "Llama 3.3",
+        "description": "Meta's latest open-source model",
+        "bestFor": "Privacy-sensitive tasks, offline use",
+        "limitations": "Requires hardware resources, setup needed"
+      },
       "llama3": {
         "name": "Llama 3",
         "description": "Meta's open-source model, run locally",
         "bestFor": "Privacy-sensitive tasks, offline use, experimentation",
+        "limitations": "Requires hardware resources, setup needed"
+      },
+      "qwen25": {
+        "name": "Qwen 2.5",
+        "description": "Alibaba's latest model with excellent Chinese support",
+        "bestFor": "Chinese tasks, local processing, privacy",
         "limitations": "Requires hardware resources, setup needed"
       },
       "qwen": {

@@ -61,11 +61,17 @@ AVAILABLE_MODELS: List[ModelInfo] = [
         description="Advanced reasoning model",
         provider="deepseek"
     ),
-    # OpenAI Models
+    # OpenAI Models - Latest Generation
+    ModelInfo(
+        id="gpt-4.1",
+        name="GPT-4.1",
+        description="Latest GPT-4 with improved capabilities",
+        provider="openai"
+    ),
     ModelInfo(
         id="gpt-4o",
         name="GPT-4o",
-        description="Most capable model, best for complex tasks",
+        description="Multimodal model, best for complex tasks",
         provider="openai"
     ),
     ModelInfo(
@@ -74,6 +80,26 @@ AVAILABLE_MODELS: List[ModelInfo] = [
         description="Fast and affordable, great for daily use",
         provider="openai"
     ),
+    # OpenAI Reasoning Models
+    ModelInfo(
+        id="o3-mini",
+        name="o3-mini",
+        description="Latest reasoning model, fast and capable",
+        provider="openai"
+    ),
+    ModelInfo(
+        id="o1",
+        name="o1",
+        description="Advanced reasoning for complex problems",
+        provider="openai"
+    ),
+    ModelInfo(
+        id="o1-mini",
+        name="o1-mini",
+        description="Fast reasoning model",
+        provider="openai"
+    ),
+    # Legacy OpenAI Models
     ModelInfo(
         id="gpt-4-turbo",
         name="GPT-4 Turbo",
@@ -86,17 +112,29 @@ AVAILABLE_MODELS: List[ModelInfo] = [
         description="Fast and economical",
         provider="openai"
     ),
-    # Claude Models (via OpenAI-compatible API)
+    # Claude Models (via OpenAI-compatible API) - Latest Generation
+    ModelInfo(
+        id="claude-sonnet-4-20250514",
+        name="Claude Sonnet 4",
+        description="Latest Claude, best for coding and agents",
+        provider="openai"
+    ),
     ModelInfo(
         id="claude-3-5-sonnet-20241022",
         name="Claude 3.5 Sonnet",
-        description="Anthropic's latest",
+        description="Anthropic's versatile model",
+        provider="openai"
+    ),
+    ModelInfo(
+        id="claude-3-5-haiku-20241022",
+        name="Claude 3.5 Haiku",
+        description="Fast and efficient Claude",
         provider="openai"
     ),
     ModelInfo(
         id="claude-3-opus-20240229",
         name="Claude 3 Opus",
-        description="Most powerful Claude",
+        description="Most powerful Claude 3",
         provider="openai"
     ),
 ]

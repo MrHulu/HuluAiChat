@@ -48,7 +48,23 @@ export const MODEL_PROVIDERS: ProviderInfo[] = [
 ];
 
 export const MODELS: ModelInfo[] = [
-  // OpenAI 模型
+  // OpenAI 模型 - Latest Generation
+  {
+    id: "gpt-4.1",
+    provider: "openai",
+    category: "flagship",
+    nameKey: "knowledge.models.gpt41.name",
+    descriptionKey: "knowledge.models.gpt41.description",
+    features: [
+      "knowledge.models.features.multimodal",
+      "knowledge.models.features.reasoning",
+      "knowledge.models.features.codeGeneration",
+    ],
+    pricingKey: "knowledge.models.pricing.high",
+    speedKey: "knowledge.models.speed.medium",
+    bestForKey: "knowledge.models.gpt41.bestFor",
+    limitationsKey: "knowledge.models.gpt41.limitations",
+  },
   {
     id: "gpt-4o",
     provider: "openai",
@@ -66,35 +82,65 @@ export const MODELS: ModelInfo[] = [
     limitationsKey: "knowledge.models.gpt4o.limitations",
   },
   {
-    id: "gpt-4",
-    provider: "openai",
-    category: "flagship",
-    nameKey: "knowledge.models.gpt4.name",
-    descriptionKey: "knowledge.models.gpt4.description",
-    features: [
-      "knowledge.models.features.reasoning",
-      "knowledge.models.features.codeGeneration",
-      "knowledge.models.features.longContext",
-    ],
-    pricingKey: "knowledge.models.pricing.high",
-    speedKey: "knowledge.models.speed.slow",
-    bestForKey: "knowledge.models.gpt4.bestFor",
-    limitationsKey: "knowledge.models.gpt4.limitations",
-  },
-  {
-    id: "gpt-35-turbo",
+    id: "gpt-4o-mini",
     provider: "openai",
     category: "standard",
-    nameKey: "knowledge.models.gpt35.name",
-    descriptionKey: "knowledge.models.gpt35.description",
+    nameKey: "knowledge.models.gpt4oMini.name",
+    descriptionKey: "knowledge.models.gpt4oMini.description",
     features: [
       "knowledge.models.features.fastResponse",
       "knowledge.models.features.generalPurpose",
     ],
-    pricingKey: "knowledge.models.pricing.medium",
+    pricingKey: "knowledge.models.pricing.low",
     speedKey: "knowledge.models.speed.fast",
-    bestForKey: "knowledge.models.gpt35.bestFor",
-    limitationsKey: "knowledge.models.gpt35.limitations",
+    bestForKey: "knowledge.models.gpt4oMini.bestFor",
+    limitationsKey: "knowledge.models.gpt4oMini.limitations",
+  },
+  // OpenAI Reasoning Models
+  {
+    id: "o3-mini",
+    provider: "openai",
+    category: "flagship",
+    nameKey: "knowledge.models.o3Mini.name",
+    descriptionKey: "knowledge.models.o3Mini.description",
+    features: [
+      "knowledge.models.features.deepReasoning",
+      "knowledge.models.features.codeGeneration",
+    ],
+    pricingKey: "knowledge.models.pricing.medium",
+    speedKey: "knowledge.models.speed.medium",
+    bestForKey: "knowledge.models.o3Mini.bestFor",
+    limitationsKey: "knowledge.models.o3Mini.limitations",
+  },
+  {
+    id: "o1",
+    provider: "openai",
+    category: "flagship",
+    nameKey: "knowledge.models.o1.name",
+    descriptionKey: "knowledge.models.o1.description",
+    features: [
+      "knowledge.models.features.deepReasoning",
+      "knowledge.models.features.codeGeneration",
+    ],
+    pricingKey: "knowledge.models.pricing.high",
+    speedKey: "knowledge.models.speed.slow",
+    bestForKey: "knowledge.models.o1.bestFor",
+    limitationsKey: "knowledge.models.o1.limitations",
+  },
+  {
+    id: "o1-mini",
+    provider: "openai",
+    category: "standard",
+    nameKey: "knowledge.models.o1Mini.name",
+    descriptionKey: "knowledge.models.o1Mini.description",
+    features: [
+      "knowledge.models.features.deepReasoning",
+      "knowledge.models.features.fastResponse",
+    ],
+    pricingKey: "knowledge.models.pricing.medium",
+    speedKey: "knowledge.models.speed.medium",
+    bestForKey: "knowledge.models.o1Mini.bestFor",
+    limitationsKey: "knowledge.models.o1Mini.limitations",
   },
 
   // DeepSeek 模型
@@ -131,13 +177,61 @@ export const MODELS: ModelInfo[] = [
     limitationsKey: "knowledge.models.deepseekReasoner.limitations",
   },
 
+  // Claude 模型 - Latest Generation
+  {
+    id: "claude-sonnet-4-20250514",
+    provider: "openai",
+    category: "flagship",
+    nameKey: "knowledge.models.claudeSonnet4.name",
+    descriptionKey: "knowledge.models.claudeSonnet4.description",
+    features: [
+      "knowledge.models.features.codeGeneration",
+      "knowledge.models.features.reasoning",
+      "knowledge.models.features.agents",
+    ],
+    pricingKey: "knowledge.models.pricing.high",
+    speedKey: "knowledge.models.speed.medium",
+    bestForKey: "knowledge.models.claudeSonnet4.bestFor",
+    limitationsKey: "knowledge.models.claudeSonnet4.limitations",
+  },
+  {
+    id: "claude-3-5-sonnet-20241022",
+    provider: "openai",
+    category: "flagship",
+    nameKey: "knowledge.models.claude35Sonnet.name",
+    descriptionKey: "knowledge.models.claude35Sonnet.description",
+    features: [
+      "knowledge.models.features.codeGeneration",
+      "knowledge.models.features.multimodal",
+    ],
+    pricingKey: "knowledge.models.pricing.high",
+    speedKey: "knowledge.models.speed.medium",
+    bestForKey: "knowledge.models.claude35Sonnet.bestFor",
+    limitationsKey: "knowledge.models.claude35Sonnet.limitations",
+  },
+  {
+    id: "claude-3-5-haiku-20241022",
+    provider: "openai",
+    category: "standard",
+    nameKey: "knowledge.models.claude35Haiku.name",
+    descriptionKey: "knowledge.models.claude35Haiku.description",
+    features: [
+      "knowledge.models.features.fastResponse",
+      "knowledge.models.features.generalPurpose",
+    ],
+    pricingKey: "knowledge.models.pricing.medium",
+    speedKey: "knowledge.models.speed.fast",
+    bestForKey: "knowledge.models.claude35Haiku.bestFor",
+    limitationsKey: "knowledge.models.claude35Haiku.limitations",
+  },
+
   // Ollama 本地模型
   {
-    id: "llama3",
+    id: "llama3.3",
     provider: "ollama",
     category: "local",
-    nameKey: "knowledge.models.llama3.name",
-    descriptionKey: "knowledge.models.llama3.description",
+    nameKey: "knowledge.models.llama33.name",
+    descriptionKey: "knowledge.models.llama33.description",
     features: [
       "knowledge.models.features.local",
       "knowledge.models.features.privacy",
@@ -145,15 +239,15 @@ export const MODELS: ModelInfo[] = [
     ],
     pricingKey: "knowledge.models.pricing.free",
     speedKey: "knowledge.models.speed.variable",
-    bestForKey: "knowledge.models.llama3.bestFor",
-    limitationsKey: "knowledge.models.llama3.limitations",
+    bestForKey: "knowledge.models.llama33.bestFor",
+    limitationsKey: "knowledge.models.llama33.limitations",
   },
   {
-    id: "qwen",
+    id: "qwen2.5",
     provider: "ollama",
     category: "local",
-    nameKey: "knowledge.models.qwen.name",
-    descriptionKey: "knowledge.models.qwen.description",
+    nameKey: "knowledge.models.qwen25.name",
+    descriptionKey: "knowledge.models.qwen25.description",
     features: [
       "knowledge.models.features.local",
       "knowledge.models.features.chineseSupport",
@@ -161,8 +255,8 @@ export const MODELS: ModelInfo[] = [
     ],
     pricingKey: "knowledge.models.pricing.free",
     speedKey: "knowledge.models.speed.variable",
-    bestForKey: "knowledge.models.qwen.bestFor",
-    limitationsKey: "knowledge.models.qwen.limitations",
+    bestForKey: "knowledge.models.qwen25.bestFor",
+    limitationsKey: "knowledge.models.qwen25.limitations",
   },
 ];
 

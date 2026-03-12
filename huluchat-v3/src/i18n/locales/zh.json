@@ -853,7 +853,8 @@
         "deepReasoning": "深度推理",
         "local": "本地处理",
         "privacy": "隐私优先",
-        "offline": "离线可用"
+        "offline": "离线可用",
+        "agents": "Agent 工作流"
       },
       "providers": {
         "openai": {
@@ -869,11 +870,41 @@
           "description": "在本地设备运行 AI 模型"
         }
       },
+      "gpt41": {
+        "name": "GPT-4.1",
+        "description": "最新 GPT-4，能力增强",
+        "bestFor": "复杂任务、代码生成、多模态输入",
+        "limitations": "成本较高"
+      },
       "gpt4o": {
         "name": "GPT-4o",
         "description": "最强大的模型，支持视觉和音频",
         "bestFor": "复杂任务、多模态输入、代码分析",
         "limitations": "成本较高，复杂任务可能较慢"
+      },
+      "gpt4oMini": {
+        "name": "GPT-4o Mini",
+        "description": "快速、经济的多模态模型",
+        "bestFor": "日常聊天、简单任务、快速响应",
+        "limitations": "复杂推理能力较弱"
+      },
+      "o3Mini": {
+        "name": "o3-mini",
+        "description": "最新推理模型，快速且强大",
+        "bestFor": "复杂推理、数学、编程",
+        "limitations": "简单任务可能较慢"
+      },
+      "o1": {
+        "name": "o1",
+        "description": "高级推理，解决复杂问题",
+        "bestFor": "复杂推理、研究、问题解决",
+        "limitations": "成本较高，响应较慢"
+      },
+      "o1Mini": {
+        "name": "o1-mini",
+        "description": "快速推理模型，适合日常任务",
+        "bestFor": "快速推理任务、编程辅助",
+        "limitations": "比完整 o1 能力稍弱"
       },
       "gpt4": {
         "name": "GPT-4",
@@ -887,6 +918,24 @@
         "bestFor": "日常聊天、翻译、简单任务",
         "limitations": "复杂推理能力较弱"
       },
+      "claudeSonnet4": {
+        "name": "Claude Sonnet 4",
+        "description": "最新 Claude，编程和 Agent 最佳",
+        "bestFor": "编程、Agent、复杂任务",
+        "limitations": "需要配置 OpenAI 兼容 API"
+      },
+      "claude35Sonnet": {
+        "name": "Claude 3.5 Sonnet",
+        "description": "Anthropic 多功能模型",
+        "bestFor": "编程、分析、创意写作",
+        "limitations": "需要配置 OpenAI 兼容 API"
+      },
+      "claude35Haiku": {
+        "name": "Claude 3.5 Haiku",
+        "description": "快速、高效的 Claude",
+        "bestFor": "快速响应、日常任务",
+        "limitations": "复杂任务能力较弱"
+      },
       "deepseekChat": {
         "name": "DeepSeek Chat",
         "description": "性价比高，中文支持优秀",
@@ -899,10 +948,22 @@
         "bestFor": "复杂问题、数学、代码调试",
         "limitations": "因推理步骤较多，速度较慢"
       },
+      "llama33": {
+        "name": "Llama 3.3",
+        "description": "Meta 最新开源模型",
+        "bestFor": "隐私敏感任务、离线使用",
+        "limitations": "需要硬件资源，需要配置"
+      },
       "llama3": {
         "name": "Llama 3",
         "description": "Meta 开源模型，本地运行",
         "bestFor": "隐私敏感任务、离线使用、实验",
+        "limitations": "需要硬件资源，需要配置"
+      },
+      "qwen25": {
+        "name": "Qwen 2.5",
+        "description": "阿里最新模型，中文支持优秀",
+        "bestFor": "中文任务、本地处理、隐私保护",
         "limitations": "需要硬件资源，需要配置"
       },
       "qwen": {
