@@ -106,49 +106,59 @@
 
 ## 待开始
 
-### 🔴 v3.57.0 - 对话控制增强
+### 🔴 v3.58.0 - 消息交互增强 + 个性化体验
+**主题**: 消息交互增强 + 个性化体验 + 技术韧性
+**路线图**: `docs/v3.58.0-roadmap.md`
+**预计周期**: 5-6 Cycles
+
+#### Phase 1: 消息交互增强 (P0)
+- [ ] **TASK-200**: 💬 完善引用回复
+  - 引用预览组件（输入框上方）
+  - 后端 API 支持 quoted_message_id
+  - 前端已有引用按钮和双击引用
+  - 预计：0.5 Cycle
+
+- [ ] **TASK-202**: 🔍 会话内搜索
+  - ChatView 添加搜索栏（Ctrl+F）
+  - 关键词高亮显示
+  - 跳转到上一个/下一个匹配
+  - 预计：0.5-1 Cycle
+
+#### Phase 2: 个性化体验 (P1)
+- [ ] **TASK-203**: 🎨 主题定制（仅预设）
+  - SettingsDialog 添加外观 Tab
+  - 预设主题：Light / Dark / System
+  - localStorage 存储主题偏好
+  - 预计：0.5-1 Cycle
+
+- [ ] **TASK-204**: ⌨️ 快捷键自定义
+  - SettingsDialog 添加快捷键 Tab
+  - 快捷键录制组件
+  - 冲突检测
+  - 预计：1-2 Cycle
+
+#### Phase 3: 技术韧性 (P1) - CTO 建议
+- [ ] **TASK-205**: 🩺 前端健康监控
+  - 前端轮询后端健康状态
+  - 后端崩溃自动恢复
+  - 状态指示器
+  - 预计：1 Cycle
+
+---
+
+### v3.57.0 - 对话控制增强 ✅ **已完成**
 **主题**: 智能对话增强 + 工作流效率
 **路线图**: `docs/v3.57.0-roadmap.md`
-**预计周期**: 4.5-5 Cycles
+**实际周期**: 6 Cycles
 
-#### Phase 1: 核心对话增强 (P0)
+#### Phase 1: 核心对话增强 (P0) ✅
 - [x] **TASK-195**: 🔄 消息重新生成 ✅ 2026-03-12
-  - 用户对 AI 回复不满意时重新生成
-  - 前端: MessageItem 已有"重新生成"按钮
-  - 修复: 后端同步删除消息（之前只删除前端状态）
-  - 前端: 发送 delete_from_message_id 参数
-  - 后端: 处理 regenerate + delete_from_message_id
-  - Cycle #5
-
 - [x] **TASK-196**: ✏️ 消息编辑 ✅ 2026-03-12
-  - 编辑已发送消息，从该点重新对话
-  - 后端: PUT /sessions/{id}/messages/{id} 添加 delete_after 参数
-  - 前端: sendMessage 支持 skipLocalUserMessage 选项
-  - 后端: 处理 regenerate + skip_save_user 逻辑
-  - Cycle #5
-
 - [x] **TASK-197**: 📋 会话模板 ✅ 2026-03-12
-  - 预设配置快速创建会话
-  - 后端: SessionTemplateModel + CRUD API
-  - 内置模板: 通用对话、代码助手、翻译助手、创意写作
-  - 前端: API 客户端 + TemplateSelector 组件
-  - i18n: 中英文翻译
-  - Cycle #5
 
-#### Phase 2: 效率工具 (P1)
+#### Phase 2: 效率工具 (P1) ✅
 - [x] **TASK-198**: ⚡ 自定义命令 ✅ 2026-03-12
-  - 用户自定义快捷命令
-  - 后端: CustomCommandModel + CRUD API
-  - 内置命令: 清除上下文、解释代码、重构代码、翻译(中/英)、总结
-  - 前端: API 客户端 + CustomCommand 类型
-  - Cycle #5
-
 - [x] **TASK-199**: 📁 批量会话操作 ✅ 2026-03-12
-  - 批量删除/移动/导出会话
-  - 后端: batch-delete, batch-move, batch-export API
-  - 前端: 批量选择模式 + 工具栏 + i18n 翻译
-  - 测试: 68 个测试通过
-  - Cycle #6
 
 ---
 
