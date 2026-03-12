@@ -712,6 +712,22 @@
         "editor": "编辑器"
       },
       "footer": "按 {{key}} 加其他按键使用快捷键"
+    },
+    "feedback": {
+      "title": "反馈与支持",
+      "github": {
+        "title": "GitHub Issues",
+        "description": "在 GitHub 上报告问题或请求新功能"
+      },
+      "email": {
+        "title": "邮件联系",
+        "description": "直接发送邮件反馈问题"
+      },
+      "community": {
+        "title": "社区讨论",
+        "description": "参与讨论并获取社区帮助"
+      },
+      "privacyNote": "我们不收集任何用户数据。您的反馈是自愿的。"
     }
   }
 }

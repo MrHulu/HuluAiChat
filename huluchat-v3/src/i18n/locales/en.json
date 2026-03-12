@@ -715,6 +715,22 @@
         "editor": "Editor"
       },
       "footer": "Press {{key}} with other keys for shortcuts"
+    },
+    "feedback": {
+      "title": "Feedback & Support",
+      "github": {
+        "title": "GitHub Issues",
+        "description": "Report bugs or request features on GitHub"
+      },
+      "email": {
+        "title": "Email Contact",
+        "description": "Send us feedback directly via email"
+      },
+      "community": {
+        "title": "Community Discussions",
+        "description": "Join discussions and get help from the community"
+      },
+      "privacyNote": "We don't collect any user data. Your feedback is voluntary."
     }
   }
 }
