@@ -137,11 +137,14 @@
   - 测试：12 个测试用例通过 ✅
   - Cycle #10
 
-- [ ] **TASK-204**: ⌨️ 快捷键自定义
-  - SettingsDialog 添加快捷键 Tab
-  - 快捷键录制组件
-  - 冲突检测
-  - 预计：1-2 Cycle
+- [x] **TASK-204**: ⌨️ 快捷键自定义 ✅ 2026-03-12
+  - SettingsDialog 添加快捷键 Tab ✅
+  - useShortcutSettings hook（状态管理 + localStorage 存储）✅
+  - ShortcutSettings 组件（快捷键列表 + 录制 + 冲突检测）✅
+  - useKeyboardShortcuts hook 读取自定义快捷键 ✅
+  - i18n 翻译（EN/ZH）✅
+  - 测试：29 个测试用例通过 ✅
+  - Cycle #11
 
 #### Phase 3: 技术韧性 (P1) - CTO 建议
 - [ ] **TASK-205**: 🩺 前端健康监控

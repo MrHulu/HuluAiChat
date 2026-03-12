@@ -1,6 +1,6 @@
 # Auto Company Consensus
 
-> 最后更新: 2026-03-12 - Cycle #10
+> 最后更新: 2026-03-12 - Cycle #11
 
 ---
 
@@ -10,18 +10,19 @@
 ✅ **TASK-200: 完善引用回复 已完成**
 ✅ **TASK-202: 会话内搜索 已完成**
 ✅ **TASK-203: 主题定制 已完成**
-🔄 **准备开始 TASK-204: 快捷键自定义**
+✅ **TASK-204: 快捷键自定义 已完成**
+🔄 **准备开始 TASK-205: 前端健康监控**
 
 ---
 
 ## Next Action
-> **开始 TASK-204: 快捷键自定义**
+> **开始 TASK-205: 前端健康监控**
 >
 > v3.58.0 任务：
 > - TASK-200: 完善引用回复 ✅ (0.5 Cycle)
 > - TASK-202: 会话内搜索 ✅ (1 Cycle)
 > - TASK-203: 主题定制 ✅ (0.5 Cycle)
-> - TASK-204: 快捷键自定义 (1-2 Cycle)
+> - TASK-204: 快捷键自定义 ✅ (1 Cycle)
 > - TASK-205: 前端健康监控 (1 Cycle)
 >
 > 阻塞任务（需要 Boss 操作）：
@@ -97,6 +98,40 @@
 ---
 
 ## 最近完成
+
+### TASK-204: 快捷键自定义（Cycle #11）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- useShortcutSettings hook（状态管理 + localStorage 存储）✅
+- ShortcutSettings 组件（快捷键列表 + 录制 + 冲突检测）✅
+- useKeyboardShortcuts hook 读取自定义快捷键 ✅
+- SettingsDialog 添加快捷键 Tab（6 个 Tabs）✅
+- i18n 翻译（EN/ZH）✅
+- 测试：29 个测试用例通过 ✅
+
+**变更文件**:
+- `src/hooks/useShortcutSettings.ts` - 新建快捷键设置 hook
+- `src/hooks/useKeyboardShortcuts.ts` - 修改以读取自定义快捷键
+- `src/components/settings/ShortcutSettings.tsx` - 新建快捷键设置组件
+- `src/components/settings/SettingsDialog.tsx` - 添加快捷键 Tab
+- `src/i18n/locales/en.json` - 添加 shortcuts 翻译
+- `src/i18n/locales/zh.json` - 添加 shortcuts 翻译
+- `src/hooks/useShortcutSettings.test.ts` - 新建测试
+- `src/components/settings/ShortcutSettings.test.tsx` - 新建测试
+
+**功能特性**:
+- 设置对话框新增"快捷键"标签页
+- 点击快捷键录制新的组合键
+- 冲突检测（显示警告）
+- 重置单个快捷键或全部重置
+- 平台感知显示（Windows 显示 Ctrl，macOS 显示 ⌘）
+- 隐私提示：快捷键偏好仅存储在本地
+
+**隐私约束**: 快捷键偏好存储在 localStorage，不发送到服务器
+
+---
 
 ### TASK-203: 主题定制（Cycle #10）
 
@@ -518,9 +553,9 @@
 - **项目**: HuluChat
 - **当前版本**: v3.57.0 ✅ **已完成**
 - **下一版本**: v3.58.0 ✅ **规划完成**
-- **待开始任务**: 3 个（v3.58.0）
-- **已完成任务计数**: 43
+- **待开始任务**: 1 个（v3.58.0 - TASK-205）
+- **已完成任务计数**: 44
 
 ---
 
-*更新时间: 2026-03-12 - Cycle #10*
+*更新时间: 2026-03-12 - Cycle #11*
