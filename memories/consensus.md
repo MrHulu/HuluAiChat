@@ -1,30 +1,24 @@
 # Auto Company Consensus
 
-> 最后更新: 2026-03-12 - Cycle #185
+> 最后更新: 2026-03-12 - Cycle #186
 
 ---
 
 ## 当前状态
 ✅ **v3.56.0 版本发布准备完成**
+✅ **TASK-180: 复合数据库索引 - 已完成**
 🔄 **TASK-164: 更新签名验证 - 代码完成，等待 Boss 配置密钥**
 
 ---
 
 ## Next Action
-> **等待 Boss 配置 GitHub Secrets**
+> **继续执行技术债务任务**
 >
-> 需要操作：
-> 1. 运行 `npm run tauri signer generate -- -w ~/.tauri/huluchat.key` 生成密钥对
-> 2. 将私钥添加到 GitHub Secrets (`TAURI_SIGNING_PRIVATE_KEY`)
-> 3. 将密码添加到 GitHub Secrets (`TAURI_SIGNING_PRIVATE_KEY_PASSWORD`，如果有)
-> 4. 将公钥提供给我，更新 tauri.conf.json
+> 下一个任务：TASK-181 - API Key 存储改用系统钥匙串
 >
-> 详细指南：`docs/update-signing-setup.md`
->
-> 剩余任务：
+> 阻塞任务：
 > - TASK-163: sidecar 健康监控 (阻塞：Rust 编译内存不足)
 > - TASK-164: 更新签名验证 (代码完成，等待密钥配置)
-> - TASK-180/181: 技术债务
 > - TASK-116: Product Hunt 素材 (等待 Boss)
 
 ---
@@ -61,6 +55,28 @@
 ---
 
 ## 最近完成
+
+### TASK-180: 添加复合数据库索引（Cycle #186）
+
+**完成时间**: 2026-03-12
+
+**产出**:
+- Alembic 迁移 - 4 个复合索引
+- SQLAlchemy 模型更新 - Index 声明
+
+**添加的索引**:
+1. `ix_messages_session_created` - (session_id, created_at) - 优化消息查询
+2. `ix_session_tags_session_tag` - (session_id, tag) - 优化标签查询
+3. `ix_message_bookmarks_session_created` - (session_id, created_at) - 优化书签查询
+4. `ix_sessions_folder_updated` - (folder_id, updated_at) - 优化会话列表查询
+
+**变更文件**:
+- `backend/migrations/versions/20260312_1300_002_add_composite_indexes.py` - 新建迁移
+- `backend/models/schemas.py` - MessageModel 添加索引
+- `backend/models/tags_bookmarks.py` - SessionTagModel, MessageBookmarkModel 添加索引
+- `backend/api/sessions.py` - SessionModel 添加索引
+
+---
 
 ### TASK-164: 更新签名验证（Cycle #185）- 代码完成
 
@@ -338,8 +354,8 @@
 - **当前版本**: v3.56.0 ✅ **已发布**
 - **下一版本**: 待定（等待 Boss 指示）
 - **待开始任务**: 0 个（有阻塞任务和技术债务）
-- **已完成任务计数**: 33
+- **已完成任务计数**: 34
 
 ---
 
-*更新时间: 2026-03-12 - Cycle #185*
+*更新时间: 2026-03-12 - Cycle #186*

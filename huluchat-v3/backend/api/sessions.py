@@ -11,6 +11,7 @@ from enum import Enum
 
 from core.database import get_session as get_db_session, Base
 from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Index
 from models.schemas import MessageModel
 
 router = APIRouter()
@@ -20,6 +21,9 @@ logger = logging.getLogger(__name__)
 class SessionModel(Base):
     """Database model for sessions"""
     __tablename__ = "sessions"
+    __table_args__ = (
+        Index('ix_sessions_folder_updated', 'folder_id', 'updated_at'),
+    )
 
     id: Mapped[str] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(default="New Chat")

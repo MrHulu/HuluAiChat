@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional, List
 from pydantic import BaseModel
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import Text
+from sqlalchemy import Text, Index
 
 from core.database import Base
 
@@ -11,6 +11,9 @@ from core.database import Base
 class MessageModel(Base):
     """Database model for messages."""
     __tablename__ = "messages"
+    __table_args__ = (
+        Index('ix_messages_session_created', 'session_id', 'created_at'),
+    )
 
     id: Mapped[str] = mapped_column(primary_key=True)
     session_id: Mapped[str] = mapped_column(index=True)
