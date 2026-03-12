@@ -151,6 +151,38 @@
 
 ## 待开始
 
+### 🚨 Boss 验证发现的问题 (2026-03-12)
+> **优先级**: P0 阻塞问题需立即处理
+
+- [ ] **TASK-219**: 🐛 修复 `/api/chat/{id}/messages` 返回 500 错误 [P0]
+  - **复现**: `curl http://localhost:8765/api/chat/{session_id}/messages`
+  - **影响**: 新建会话和选择历史会话都报错 "Failed to load chat history"
+  - **可能原因**: 后端 API 实现问题
+
+- [ ] **TASK-220**: 🐛 修复发送消息一直显示思考中然后报错 [P0]
+  - **可能原因**: WebSocket 连接问题或 API 调用失败
+  - **可能与 TASK-219 同根因**
+
+- [ ] **TASK-221**: 🐛 修复自定义模型选择不生效 [P1]
+  - **问题**: 设置自定义模型后，在聊天会话里仍然显示 GPT-4o
+  - **位置**: ModelSelector / useModel hook
+
+- [ ] **TASK-222**: 🎨 修复设置 API 窗口尺寸问题 [P2]
+  - **问题**: 设置 API 时，窗口比程序还大
+  - **位置**: SettingsDialog / API Key 设置组件
+
+- [ ] **TASK-223**: 🎨 修复设置窗口快捷键和 Tab 重叠 [P2]
+  - **问题**: 设置窗口里面快捷键和后面的 tab 重叠了
+  - **位置**: SettingsDialog / QuickActionsSettings
+
+- [ ] **TASK-224**: 🔤 修复消息图标悬浮文字错误 [P3]
+  - **问题**: 在发出的文本消息里的所有图标悬浮文字都是叫"双击引用消息"
+  - **位置**: MessageItem 组件
+
+- [ ] **TASK-225**: 📖 优化文档对话状态说明 [P3]
+  - **问题**: 用户不清楚文档对话右边的状态是什么意思
+  - **建议**: 添加 tooltip 或帮助说明
+
 ### v3.59.0 - 全局快捷唤起 + 技术韧性 ✅ **Critic 审核通过**
 **主题**: Global Quick Summon + Technical Resilience
 **路线图**: `docs/v3.59.0-roadmap.md`
