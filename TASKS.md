@@ -62,7 +62,10 @@
   - 添加 MCP 翻译到 zh.json（26 个翻译键）
   - 修复 MCPSettings.tsx 中的翻译键命名
   - Cycle #167
-- [ ] **TASK-172**: 📚 编写 MCP 使用文档
+- [x] **TASK-172**: 📚 编写 MCP 使用文档 ✅ 2026-03-12
+  - 创建 docs/MCP_GUIDE.md 用户指南
+  - 包含：快速开始、推荐 Servers、使用示例、常见问题
+  - Cycle #167
 
 ### Phase 3: 用户功能增强
 - [ ] **TASK-173**: 🔍 智能消息搜索（跨会话搜索）
