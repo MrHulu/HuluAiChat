@@ -106,48 +106,54 @@
 
 ## 待开始
 
-### v3.59.0 - 多模型实时对比 + 技术韧性
-**主题**: Multi-Model Real-Time Comparison + Technical Resilience
+### v3.59.0 - 全局快捷唤起 + 技术韧性 ✅ **Critic 审核通过**
+**主题**: Global Quick Summon + Technical Resilience
 **路线图**: `docs/v3.59.0-roadmap.md`
-**预计周期**: 5-7 Cycles
-**CEO 决策日期**: 2026-03-12
+**预计周期**: 5-6 Cycles
+**决策日期**: 2026-03-12
+**决策修正**: 采纳 Critic 建议，延后多模型对比，改为全局快捷唤起
 
-#### Phase 1: 核心功能 (P0)
-- [ ] **TASK-211**: 🔀 多模型并发请求
-  - 新增 POST /sessions/{id}/compare API
-  - 支持 2-4 个模型并发
-  - asyncio.gather() 实现
-  - 错误隔离（单模型失败不影响其他）
-
-- [ ] **TASK-212**: 📊 对比视图 UI
-  - ComparisonView.tsx - 2-4 列布局
-  - 流式响应支持
-  - 响应式设计（移动端 Tab 视图）
-  - i18n 翻译 (EN/ZH)
-
-- [ ] **TASK-213**: 🎯 模型选择器
-  - 多选模型 UI（2-4 个）
-  - 显示模型特性/价格/速度
-  - 快速预设：快速模型/智能模型/全部
-  - localStorage 记忆选择
-
-#### Phase 2: 体验增强 (P1)
-- [ ] **TASK-214**: 📚 对比历史
-  - comparison_history 数据库表
-  - GET /sessions/{id}/comparisons API
-  - 历史浏览 UI
+#### Phase 1: 全局快捷唤起 (P0)
+- [ ] **TASK-211**: ⌨️ 全局热键注册
+  - Tauri global-shortcut 插件集成
+  - 默认快捷键: Ctrl+Shift+Space (Win/Linux), Cmd+Shift+Space (macOS)
+  - 支持自定义快捷键
+  - 冲突检测
   - 隐私约束：仅本地存储
 
-- [ ] **TASK-215**: 📋 一键复制最佳
-  - 每列复制按钮
-  - "使用此回复"替换原聊天
-  - 快捷键 1/2/3/4 复制
-  - Toast 通知
+- [ ] **TASK-212**: 🪟 快速提问面板
+  - 浮动小窗口 UI（400px 宽）
+  - 回车发送，Esc 关闭
+  - 暗色/亮色主题适配
+  - 响应式高度
 
-#### Phase 3: 技术债务 (P1)
-- [ ] **TASK-216**: 🩺 Sidecar 健康监控
-  - Python 后端健康检查端点
-  - Tauri 监控 sidecar 状态
+- [ ] **TASK-213**: 📋 剪贴板增强
+  - 检测剪贴板内容
+  - Quick Actions：翻译/摘要/润色/解释/代码审查
+  - 结果一键复制
+  - 自定义 Quick Actions
+
+- [ ] **TASK-214**: 🔐 权限引导
+  - macOS 辅助功能权限检测
+  - 未授权时显示引导弹窗
+  - 系统设置跳转链接
+
+#### Phase 2: 技术债务清理 (P1)
+- [ ] **TASK-215**: 🩺 Sidecar 健康监控
+  - 进程健康检查
+  - 崩溃后自动重启（指数退避）
+  - 最多重试 3 次
+  - 用户友好错误提示
+
+- [ ] **TASK-216**: 🔄 WebSocket 重连优化
+  - 断开时显示"重新连接中..."
+  - 重连期间消息队列
+  - 重连成功后自动发送队列
+
+#### Phase 3: 多模型历史对比 (P2) - 延后到 v3.60.0
+> **Critic 警告**: API 成本翻倍是硬伤，建议延后
+
+- [ ] ~~TASK-217~~: 延后到 v3.60.0
   - 崩溃自动重启（最多 3 次）
   - 用户通知
 
