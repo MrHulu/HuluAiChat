@@ -218,7 +218,14 @@
   - 更新 tests/test_rag_service.py - 使用 AsyncMock
   - 使用线程池执行器避免阻塞事件循环
   - Cycle #172
-- [ ] **TASK-180**: 📊 添加复合数据库索引
+- [x] **TASK-180**: 📊 添加复合数据库索引 ✅ 2026-03-12
+  - 创建 Alembic 迁移添加复合索引
+  - messages: (session_id, created_at) - 优化消息查询
+  - session_tags: (session_id, tag) - 优化标签查询
+  - message_bookmarks: (session_id, created_at) - 优化书签查询
+  - sessions: (folder_id, updated_at) - 优化会话列表查询
+  - 更新 SQLAlchemy 模型添加 Index 声明
+  - Cycle #186
 - [ ] **TASK-181**: 🔑 API Key 存储改用系统钥匙串
 
 ### 等待 Boss
