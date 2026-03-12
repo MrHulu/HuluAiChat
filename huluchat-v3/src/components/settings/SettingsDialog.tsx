@@ -228,9 +228,10 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
           updateData.openai_api_key = apiKey.trim();
         } catch (keyringError) {
           console.error("Failed to store API key in keyring:", keyringError);
-          toast.error(t("settings.keyringStoreFailed"));
-          setSaving(false);
-          return;
+          // Show warning but continue - API key will be stored in memory only
+          toast.warning(t("settings.keyringUnavailable"));
+          // Still send to backend for immediate use (backend stores in memory only)
+          updateData.openai_api_key = apiKey.trim();
         }
       }
 

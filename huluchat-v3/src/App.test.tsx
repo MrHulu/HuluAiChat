@@ -95,6 +95,15 @@ vi.mock("@/hooks", () => ({
     dismissTip: vi.fn(),
     disableAllTips: vi.fn(),
   })),
+  useBackendHealth: vi.fn(() => ({
+    status: "healthy",
+    version: "1.0.0",
+    isRecovering: false,
+    lastChecked: new Date(),
+    consecutiveFailures: 0,
+    triggerRecovery: vi.fn(),
+    checkHealth: vi.fn(),
+  })),
 }));
 
 // Mock API client

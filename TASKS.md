@@ -107,6 +107,50 @@
 ## 待开始
 
 ### 🔴 优先任务
+- [ ] **TASK-208**: 🐛 修复多个开发环境问题
+  - **问题 1: BackendStatusIndicator 未集成** ⚠️ 严重
+    - 文件: `src/App.tsx`
+    - 错误: 组件已创建但**未集成到 App.tsx**，导致一直显示"连接中"
+    - 修复: 需要在 App.tsx header 区域添加 `<BackendStatusIndicator />`
+    - 影响: 用户看到错误的状态指示
+  - **问题 2: Python 导入错误**
+    - 文件: `backend/api/bookmarks.py`
+    - 错误: `from models.schemas import SessionModel` - SessionModel 不在 schemas.py
+    - 修复: 改为 `from api.sessions import SessionModel`
+    - **已由秘书临时修复，需要正式提交**
+  - **问题 3: Rust 依赖版本错误**
+    - 文件: `src-tauri/Cargo.toml`
+    - 错误: `tauri-plugin-keyring = "2"` 但 crates.io 只有 0.1.0
+    - 修复: 改为 `tauri-plugin-keyring = "0.1"` 或移除
+    - **用户已临时移除 keyring 依赖**
+  - **问题 4: API Key 保存失败**
+    - 错误信息: `settings.keyringStoreFailed`
+    - 原因: keyring 插件未正确安装/配置
+    - 影响: 用户无法保存 API Key
+  - **问题 5: 端口配置说明**
+    - 前端默认连接: `127.0.0.1:8765`
+    - 后端必须启动在端口 8765，不是 8000
+  - **影响**: 开发环境无法正常启动，影响开发效率
+
+- [ ] **TASK-209**: 🔄 更新模型列表
+  - **问题**: 当前模型列表过时，跟不上模型更新速度
+  - **当前模型**: GPT-4o, GPT-4-turbo, GPT-3.5-turbo, DeepSeek V3/R1, Claude 3.5 Sonnet/3 Opus
+  - **用户反馈**: 模型更新很快，需要更新列表
+  - **建议**: 考虑动态获取模型列表或定期更新
+
+- [ ] **TASK-210**: 🧪 添加集成测试框架
+  - **问题**: 项目只有单元测试，没有集成测试
+  - **后果**: 组件集成遗漏无法被测试发现（如 BackendStatusIndicator）
+  - **当前状态**:
+    - 单元测试: ✅ ~30+ 个
+    - 集成测试: ❌ 0
+    - E2E 测试: ❌ 0
+  - **建议方案**:
+    - 方案 A: 添加 Playwright E2E 测试
+    - 方案 B: 添加 Vitest 集成测试（减少 mock 使用）
+    - 方案 C: 两者都添加
+  - **优先级**: P1 - 防止类似集成遗漏问题
+
 - [x] **TASK-206**: 🧪 全面回归测试 - v3.55.0 ~ v3.58.0 ✅ 2026-03-12
   - 暂停新功能开发，进行全面回归测试
   - 结果：**所有 1795 个测试通过** (76 个测试文件)

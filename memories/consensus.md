@@ -90,20 +90,6 @@
 
 ## 最近完成
 
-### Cycle #16: 额外测试和依赖修复
-
-**完成时间**: 2026-03-12
-
-**产出**:
-- MessageItem.test.tsx - 修复用户消息渐变背景断言
-- templateVariables.test.ts - 修复日期/时间区域设置兼容
-- bookmarks.py - 修复 SessionModel 导入路径
-- Cargo.toml - 更新 tauri-plugin-keyring 版本到 0.1
-
-**测试结果**: 所有 1795 个测试通过
-
----
-
 ### TASK-207: 官网版本号自动同步（Cycle #15）
 
 **完成时间**: 2026-03-12
@@ -644,4 +630,4 @@
 
 ---
 
-*更新时间: 2026-03-12 - Cycle #16*
+*更新时间: 2026-03-12 - Cycle #15*

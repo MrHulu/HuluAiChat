@@ -217,6 +217,8 @@
     "connectionFailed": "连接失败",
     "settingsSaved": "设置已保存",
     "settingsSaveFailed": "保存设置失败",
+    "keyringStoreFailed": "安全存储 API Key 失败。您的密钥将仅存储在内存中（重启后清除）。",
+    "keyringUnavailable": "系统钥匙串不可用。API Key 将临时存储。",
     "invalidUrl": "请输入有效的 URL",
     "invalidUrlProtocol": "URL 必须以 http:// 或 https:// 开头",
     "customModelId": "自定义模型 ID",

@@ -18,3 +18,9 @@ export {
   type ContextState,
   type UseContextualTipReturn,
 } from "./useContextualTip";
+export {
+  useBackendHealth,
+  type BackendStatus,
+  type BackendHealthState,
+  type UseBackendHealthOptions,
+} from "./useBackendHealth";

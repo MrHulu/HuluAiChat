@@ -19,7 +19,8 @@ import { ContextualTip } from "@/components/ContextualTip";
 import { BookmarkJumpDialog } from "@/components/bookmark";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
-import { useSession, useKeyboardShortcuts, useFolders, useFeatureDiscovery, useContextualTip, useModel } from "@/hooks";
+import { useSession, useKeyboardShortcuts, useFolders, useFeatureDiscovery, useContextualTip, useModel, useBackendHealth } from "@/hooks";
+import { BackendStatusIndicator } from "@/components/BackendStatusIndicator";
 import { exportSession, moveSessionToFolder, updateSettings, ExportFormat } from "@/api/client";
 import { getAPIKey, type APIKeyProvider } from "@/services/keyring";
 
@@ -95,6 +96,18 @@ function App() {
     currentModel,
     modelCount: models.length,
     settingsLoaded: true,
+  });
+
+  // Backend health monitoring hook
+  const {
+    status: backendStatus,
+    version: backendVersion,
+    isRecovering,
+    lastChecked,
+    triggerRecovery,
+  } = useBackendHealth({
+    interval: 30000, // Check every 30 seconds
+    failureThreshold: 3,
   });
 
   const handleWelcomeComplete = () => {
@@ -388,6 +401,14 @@ function App() {
             </span>
           </div>
           <div className="flex items-center gap-2">
+            <BackendStatusIndicator
+              status={backendStatus}
+              version={backendVersion}
+              isRecovering={isRecovering}
+              lastChecked={lastChecked}
+              onRetry={triggerRecovery}
+              compact={true}
+            />
             <Suspense fallback={null}>
               <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
             </Suspense>
