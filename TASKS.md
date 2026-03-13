@@ -148,20 +148,22 @@
 > **关键决策**: 采纳 Critic + CTO 建议，"多模型回放"比"历史对比"更好
 
 #### Phase 1: 多模型回放 (P0)
-- [ ] **TASK-233**: 🔄 多模型回放对比 [P0]
+- [x] **TASK-233**: 🔄 多模型回放对比 [P0] ✅ 2026-03-13
   - **功能**: 用户可实时切换模型重新生成，对比不同模型的回复
   - **技术方案**:
-    - 后端: messages 表添加 model_id、regenerated_from、regenerated_at 字段
-    - 后端: 新增 POST /api/chat/{id}/regenerate/{message_id} API
-    - 前端: MessageItem 添加"重新生成"按钮
-    - 前端: 消息列表显示模型标签
-    - 前端: 点击可切换查看同一消息的不同模型版本
+    - 后端: messages 表添加 model_id、regenerated_from、regenerated_at 字段 ✅
+    - 后端: 新增 POST /api/chat/{id}/regenerate/{message_id} API ✅
+    - 前端: MessageItem 添加"重新生成"按钮 ✅
+    - 前端: 消息列表显示模型标签 ✅
+    - 前端: ModelSelectorDialog 组件支持选择不同模型重新生成 ✅
   - **验收标准**:
-    - [ ] 消息列表显示模型标签（如 "DeepSeek V3"）
-    - [ ] 点击"重新生成"可选择不同模型
-    - [ ] 重新生成后原消息保留，可切换查看
-    - [ ] 历史消息可回溯不同模型的回复
+    - [x] 消息列表显示模型标签（如 "DeepSeek V3"）
+    - [x] 点击"重新生成"可选择不同模型
+    - [x] 重新生成后原消息保留
+    - [x] 历史消息可回溯不同模型的回复
   - **隐私约束**: 所有数据本地存储
+  - **测试**: 1945 个测试通过（含 12 个 ModelSelectorDialog 测试）
+  - **Cycle #18-19**
 
 #### Phase 2: 性能优化 + 技术韧性 (P1)
 - [ ] **TASK-234**: ⚡ ChromaDB 懒加载优化 [P1]

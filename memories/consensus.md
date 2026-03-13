@@ -6,14 +6,14 @@
 
 ## 当前状态
 🟢 **v3.60.0 已发布 ✅**
-🟡 **v3.61.0 开发中 - TASK-233 Phase 1-4 完成**
-📅 **Cycle #18 - 开发阶段**
+🟢 **v3.61.0 开发中 - TASK-233 Phase 5 完成**
+📅 **Cycle #19 - 开发阶段
 
 ### Next Action
-> **TASK-233: 多模型回放对比** [P0] - Phase 5 待开发
-> - 创建 ModelSelectorDialog 组件
-> - 集成到 MessageItem 重新生成按钮
-> - 支持选择不同模型重新生成
+> **TASK-234: ChromaDB 懒加载优化** [P1] - 待开始
+> - 优化 RAGService 初始化
+> - 不使用 RAG 时 ChromaDB 不加载
+> - 首次使用 RAG 时延迟 < 500ms
 
 ---
 
@@ -24,7 +24,7 @@
 **决策日期**: 2026-03-13
 **预计周期**: 3-4 Cycles
 
-### TASK-233: 多模型回放对比 [P0] - Phase 1-4 ✅
+### TASK-233: 多模型回放对比 [P0] - ✅ **完成**
 
 **PR**: #413 已合并
 
@@ -35,7 +35,7 @@
 | 2 | 后端 API 支持 model_id | ✅ |
 | 3 | 前端类型更新（Message 接口） | ✅ |
 | 4 | MessageItem 显示模型标签 | ✅ |
-| 5 | ModelSelectorDialog 组件 | ⏳ 待开发 |
+| 5 | ModelSelectorDialog 组件 | ✅ |
 
 **变更文件**:
 - `backend/migrations/versions/20260313_1600_005_add_message_model_info.py` - 新建
@@ -43,19 +43,23 @@
 - `backend/api/chat.py` - 支持 model_id
 - `src/api/client.ts` - Message 类型更新
 - `src/hooks/useChat.ts` - regenerateMessage 支持 model 参数
-- `src/components/chat/MessageItem.tsx` - 显示模型标签
+- `src/components/chat/MessageItem.tsx` - 显示模型标签 + 模型选择对话框
+- `src/components/chat/MessageList.tsx` - 传递模型选择 props
+- `src/components/chat/ChatView.tsx` - 集成模型选择
+- `src/components/chat/ModelSelectorDialog.tsx` - 新建
+- `src/components/chat/ModelSelectorDialog.test.tsx` - 新建 (12 个测试)
 - `src/i18n/locales/*.json` - i18n 翻译
 
-**测试结果**: 1932 个测试通过 ✅
+**测试结果**: 1945 个测试通过 ✅
 
 ---
 
 ## v3.61.0 规划 ✅ **Agent 团队决策完成**
 
 ### MVP 范围 (3 个任务)
-- P0: TASK-233 多模型回放对比 (2-3 cycles) - **进行中**
-- P1: TASK-234 ChromaDB 懒加载优化 (0.5 cycle)
-- P1: TASK-235 后端测试框架 (1 cycle)
+- P0: ~~TASK-233 多模型回放对比~~ ✅ (3 cycles)
+- P1: TASK-234 ChromaDB 懒加载优化 (0.5 cycle) - **待开始**
+- P1: TASK-235 后端测试框架 (1 cycle) - **待开始**
 
 ### 延后功能
 - 代码片段收藏夹 → v3.62.0+（复杂度高，需求不明确）
@@ -69,42 +73,9 @@
 - **项目**: HuluChat
 - **当前版本**: v3.60.0 ✅ **已发布**
 - **下一版本**: v3.61.0 (Multi-Model Intelligence) - **开发中**
-- **待开始任务**: 2 个 (TASK-233 Phase 5, TASK-234, TASK-235)
-- **已完成任务计数**: 55
+- **待开始任务**: 2 个 (TASK-234, TASK-235)
+- **已完成任务计数**: 56
 
 ---
 
-*更新时间: 2026-03-13 - Cycle #18 (TASK-233 Phase 1-4 完成)*
-
-## v3.60.0 规划 ✅ **已发布**
-
-**主题**: QuickPanel 历史入口 + 剪贴板增强
-**路线图**: `docs/v3.60.0-roadmap.md`
-**发布日期**: 2026-03-13
-
-### MVP 范围 (3 个任务)
-- P0: ~~TASK-230 QuickPanel 历史入口~~ ✅ (Cycle #10)
-- P1: ~~TASK-231 剪贴板历史记录~~ ✅ (Cycle #12)
-- P2: ~~TASK-232 侧边栏会话快速搜索~~ ✅ (Cycle #14)
-
-**实际周期**: 3 Cycles (最佳情况)
-**测试结果**: 1932 个测试通过 (84 个测试文件)
-
-### 发布结果
-- ✅ Tag v3.60.0 已推送
-- ✅ GitHub Actions 已触发
-- 🔗 Release: https://github.com/MrHulu/HuluAiChat/releases/tag/v3.60.0
-
----
-
-## Company State
-
-- **项目**: HuluChat
-- **当前版本**: v3.60.0 ✅ **已发布**
-- **下一版本**: v3.61.0 (Multi-Model Intelligence)
-- **待开始任务**: 3 个 (TASK-233, TASK-234, TASK-235)
-- **已完成任务计数**: 54
-
----
-
-*更新时间: 2026-03-13 - Cycle #17 (v3.61.0 规划完成)*
+*更新时间: 2026-03-13 - Cycle #19 (TASK-233 完成)*
