@@ -6,38 +6,70 @@
 
 ## 当前状态
 🟢 **v3.59.1 热修复版本已发布 ✅**
-
-### 🚨 Boss 指令 (2026-03-13)
-
-> **"修复完这些问题，要回归测试一下，然后发这个热修复版本"**
-
-### 执行计划 - ✅ **全部完成**
-
-**Step 1**: 修复剩余问题 (TASK-221 ~ TASK-225) ✅ **全部完成**
-- [x] TASK-221: 自定义模型选择不生效 [P1] ✅
-- [x] TASK-222: 设置 API 窗口尺寸问题 [P2] ✅
-- [x] TASK-223: 设置窗口快捷键和 Tab 重叠 [P2] ✅
-- [x] TASK-224: 消息图标悬浮文字错误 [P3] ✅
-- [x] TASK-225: 文档对话状态说明 [P3] ✅
-
-**Step 2**: TASK-226 - 全面回归测试 ✅ **完成**
-- 结果: 83 个测试文件，1909 个测试用例全部通过
-
-**Step 3**: TASK-227 - 发布热修复版本 v3.59.1 ✅ **完成**
-- GitHub Release: https://github.com/MrHulu/HuluAiChat/releases/tag/v3.59.1
-- 4 个平台构建成功
-
-**Step 4**: TASK-228 - 修复官网版本号自动更新 ✅ **完成**
-- **问题**：`update-website-version` job 直接推送到 master，被 GitHub 规则拒绝
-- **修复**：改用 `peter-evans/create-pull-request@v6` 创建 PR
-- **PR**: #400
-
-**Step 5**: TASK-229 - 手动更新官网版本号到 3.59.1 ✅ **完成**
-- **PR**: #399
-- 官网版本已更新到 3.59.1
+🟢 **v3.59.0 所有 MVP 任务完成 ✅**
 
 ### Next Action
-> **TASK-215 (Sidecar 健康监控) 已完成。下一个任务: TASK-216 (WebSocket 重连优化)**
+> **v3.59.0 所有任务已完成 (6/6)。等待 Boss 指示下一步：规划 v3.60.0 或其他任务**
+
+---
+
+## v3.59.0 规划摘要 ✅ **全部完成**
+
+**MVP 范围** (6 个任务):
+- P0: ~~TASK-211 全局热键~~ ✅、~~TASK-212 快速面板~~ ✅、~~TASK-213 剪贴板~~ ✅、~~TASK-214 权限引导~~ ✅
+- P1: ~~TASK-215 Sidecar 监控~~ ✅、~~TASK-216 WebSocket 优化~~ ✅
+
+**状态**: ✅ **全部完成** - 准备规划 v3.60.0
+
+---
+
+## 最近完成
+
+### TASK-216: WebSocket 重连优化（Cycle #24）
+
+**完成时间**: 2026-03-13
+
+**产出**:
+- 断开时消息自动进入队列 ✅
+- 重连成功后自动发送队列消息 ✅
+- sendOrQueue API 智能发送 ✅
+- 队列大小限制 (maxQueueSize: 100) ✅
+- queueSize/clearQueue API ✅
+- 回调函数: onMessageQueued, onQueueFlushed ✅
+- 6 个新测试用例 ✅
+
+**变更文件**:
+- `src/hooks/useWebSocket.ts` - 消息队列实现
+- `src/hooks/useWebSocket.test.ts` - 6 个队列测试
+- `src/hooks/useChat.ts` - 使用 sendOrQueue
+
+**验证结果**: 1915 个测试通过 (83 个测试文件)
+
+**隐私约束**: 队列消息仅存在本地内存，不发送到服务器
+
+---
+
+### TASK-215: Sidecar 健康监控（Cycle #23）
+
+**完成时间**: 2026-03-13
+
+**产出**:
+- SidecarManager (Rust) 进程状态管理 ✅
+- 指数退避自动重启（1s→2s→4s→最大 30s）✅
+- 最多重试 3 次 ✅
+- 前端 sidecar.ts API ✅
+- useBackendHealth 自动重启支持 ✅
+- BackendStatusIndicator 重启状态显示 ✅
+- 测试：1909 个测试用例通过 ✅
+
+**变更文件**:
+- `src-tauri/src/lib.rs` - SidecarManager + 命令实现
+- `src/api/sidecar.ts` - 前端 API
+- `src/hooks/useBackendHealth.ts` - 自动重启逻辑
+- `src/hooks/useBackendHealth.test.ts` - 测试更新
+- `src/App.tsx` - 集成 sidecar 状态
+
+**PR**: #404
 
 ---
 
@@ -881,11 +913,11 @@
 ## Company State
 
 - **项目**: HuluChat
-- **当前版本**: v3.59.0 开发中 (3/6 任务完成)
+- **当前版本**: v3.59.1 (热修复) / v3.59.0 开发完成 ✅
 - **下一版本**: v3.60.0
-- **待开始任务**: 3 个 (TASK-214, TASK-215, TASK-216)
-- **已完成任务计数**: 50
+- **待开始任务**: 0 个 (v3.59.0 全部完成)
+- **已完成任务计数**: 51
 
 ---
 
-*更新时间: 2026-03-12 - Cycle #21*
+*更新时间: 2026-03-13 - Cycle #24*
