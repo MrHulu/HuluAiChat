@@ -1,774 +1,240 @@
 # 任务清单
 
-## 🚨 秘书指令 - 紧急任务（优先级最高）
+## 🚨 质量优先指令 - Boss 明确要求
 
-> **来源**: AI Center 秘书 (Boss 指令)
+> **来源**: Boss 直接指令
 > **时间**: 2026-03-13
-> **指令**: 修复完所有问题后，回归测试 → 发布热修复版本
+> **核心要求**: 不急着推广用户，打磨好产品再推广
+> **发现问题**: v3.59.0 发现大量 bug
 
-### 执行顺序
-
-1. **修复剩余问题** (TASK-221 ~ TASK-225)
-2. **TASK-226**: 🧪 全面回归测试
-   - 命令：`cd huluchat-v3 && npm test -- --run`
-   - 目标：所有测试通过
-   - 如有失败，修复后重新测试
-
-3. **TASK-227**: 📦 发布热修复版本 v3.59.1 ✅ **已完成**
-   - 版本号已确认 (3.59.1)
-   - Tag 已推送
-   - GitHub Release 创建成功
-
-4. **TASK-228**: 🔧 修复官网版本号自动更新 ✅ **已完成**
-   - **问题**：`update-website-version` job 直接推送到 master，被 GitHub 规则拒绝
-   - **修复**：改用 `peter-evans/create-pull-request@v6` 创建 PR
-   - **PR**: #400
-
-5. **TASK-229**: 📝 手动更新官网版本号到 3.59.1 ✅ **已完成**
-   - **PR**: #399
-   - VERSION: "3.59.1"
-   - RELEASE_NOTES: "Hotfix: Custom model selection, settings dialog UI fixes, document chunks explanation"
-
-> **Boss 要求**: 修复完这些问题，要回归测试一下，然后发这个热修复版本
+### 执行原则
+1. **质量优先** - 不发布未充分测试的版本
+2. **真实测试** - 使用 agent-browser 进行集成测试
+3. **修复优先** - 发现问题立即修复
+4. **持续改进** - 建立持续测试机制
 
 ---
 
-## 🔴 紧急任务
-- [x] **TASK-182**: 📋 规划 v3.56.0 版本 ✅ 2026-03-12
-  - 主题：AI 知识中心 + 帮助支持体系
-  - 已完成：版本路线图 `docs/v3.56.0-roadmap.md`
-  - MVP 功能：10 个，预计 9-12 Cycles
-  - Cycle #172
+## 🔴 紧急 Bug 修复
 
-## v3.56.0 任务（按优先级）
+### 🐛 TASK-306: 修复 API Key 验证失败 [P0] 🔴 **最高优先级**
 
-### Phase 1: 基础设施 (P0)
-- [x] **TASK-183**: ⌨️ 快捷命令面板 (Ctrl+K) ✅ 2026-03-12
-  - 全局快捷键注册 (Tauri global-shortcut 插件) - 待系统级实现
-  - 命令面板 UI 组件 (fzf 模糊搜索) ✅
-  - 命令注册机制 ✅
-  - 基础导航命令 ✅
-  - 快捷键帮助列表更新 ✅
-  - i18n 翻译更新 ✅
-  - Cycle #173
-- [x] **TASK-184**: 📚 提示词技巧指南 ✅ 2026-03-12
-  - 8 个核心提示词技巧文档
-  - Markdown 渲染页面 (ArticleViewer)
-  - 知识中心组件 (KnowledgeCenter)
-  - 命令面板集成
-  - i18n 翻译更新 (EN/ZH)
-  - Cycle #173
-- [x] **TASK-185**: ❓ FAQ 常见问题 ✅ 2026-03-12
-  - 19 个常见问题
-  - Accordion UI 组件
-  - 5 个分类显示
-  - i18n 翻译 (EN/ZH)
-  - Cycle #174
-- [x] **TASK-186**: ⌨️ 快捷键列表 ✅ 2026-03-12
-  - 复用现有 KEYBOARD_SHORTCUTS 数据
-  - 分类展示 UI（常规/导航）
-  - 平台适配 (Cmd/Ctrl)
-  - 集成到知识中心 help 分类
-  - i18n 翻译 (EN/ZH)
-  - Cycle #175
+**问题报告** (Boss 2026-03-13):
+> Boss 收到邮件说 Key 验证失败，但 Key 是没有问题的，这是 HuluChat 的 bug
 
-### Phase 2: 帮助体系 (P1)
-- [x] **TASK-187**: 💬 反馈入口 ✅ 2026-03-12
-  - GitHub Issues 链接
-  - 邮件联系入口
-  - 社区讨论链接
-  - 隐私提示（不收集用户数据）
-  - i18n 翻译 (EN/ZH)
-  - Cycle #176
-- [x] **TASK-188**: 🔀 模型对比说明 ✅ 2026-03-12
-  - 7 个模型（OpenAI/DeepSeek/Ollama）
-  - 模型特点展示
-  - 适用场景推荐
-  - 价格和速度对比
-  - i18n 翻译 (EN/ZH)
-  - Cycle #177
-- [x] **TASK-189**: 🔍 帮助文档搜索 ✅ 2026-03-12
-  - minisearch 集成
-  - 搜索结果 UI（高亮显示）
-  - 知识中心集成
-  - i18n 翻译 (EN/ZH)
-  - Cycle #178
+**根因分析**:
+```python
+# 当前代码 (backend/api/settings.py:185)
+await client.models.list()  # ❌ 智谱 AI 不支持此端点
+```
 
-### Phase 3: 新手体验 (P1)
-- [x] **TASK-190**: 🎯 首次使用引导 ✅ 2026-03-12
-  - 欢迎页面
-  - 5 步功能介绍（欢迎、多模型、文档对话、快捷键、知识中心）
-  - localStorage 状态保存
-  - i18n 翻译 (EN/ZH)
-  - Cycle #179
-- [x] **TASK-191**: 💡 功能发现提示 ✅ 2026-03-12
-  - useFeatureDiscovery hook - 功能使用状态检测
-  - FeatureDiscoveryTip 组件 - 提示卡片 UI
-  - 6 个可发现功能（命令面板、知识中心、文档对话、导出、文件夹、模型切换）
-  - 可关闭/永久关闭
-  - 隐私约束：只存储布尔值
-  - i18n 翻译 (EN/ZH)
-  - Cycle #180
+**问题**:
+- 使用 `client.models.list()` 测试连接
+- 智谱 AI API 不支持 `/models` 端点
+- 导致验证失败，但 Key 实际上是正确的
 
-### Phase 4: 体验增强 (P2)
-- [x] **TASK-192**: 🔖 书签消息跳转 ✅ 2026-03-12
-  - ChatView 添加 ref 暴露 scrollToMessage 方法
-  - BookmarkJumpDialog 组件 - 书签选择对话框
-  - CommandPalette 添加 jumpToBookmark 命令
-  - App.tsx 集成书签跳转功能
-  - i18n 翻译 (EN/ZH)
-  - 测试：10 个测试用例通过
-  - Cycle #181
-- [x] **TASK-193**: 🤖 上下文智能提示 ✅ 2026-03-12
-  - contextualTips.ts - 5 个提示配置（no-api-key, no-model, empty-session, first-visit, settings-incomplete）
-  - useContextualTip.ts - 状态检测 hook（当前状态、设置加载）
-  - ContextualTip.tsx - 提示显示组件
-  - 集成到 App.tsx（优先级高于功能发现提示）
-  - i18n 翻译 (EN/ZH)
-  - 测试：21 个测试用例通过
-  - 隐私约束：只检测当前状态，不存储历史行为
-  - Cycle #182
-- [x] **TASK-194**: ⚠️ 错误解决建议 ✅ 2026-03-12
-  - errorCodes.ts - 17 个错误码配置（6 个分类）
-  - ErrorSolutions.tsx - 错误解决建议组件
-  - 知识中心 help 分类集成
-  - i18n 翻译 (EN/ZH)
-  - 测试：28 个测试用例通过
-  - 隐私约束：静态内容，不收集用户错误信息
-  - Cycle #183
+**修复方案**:
+```python
+# 新代码
+response = await client.chat.completions.create(
+    model=current_model,  # 使用用户选择的模型
+    messages=[{"role": "user", "content": "Hi"}],
+    max_tokens=1  # 最小化成本
+)
+```
 
-## 待开始
+**验收标准**:
+- [ ] 智谱 AI API 验证通过
+- [ ] DeepSeek、OpenAI API 不受影响
+- [ ] 测试成本 < 0.01 元/次
+- [ ] 添加错误处理（超时、无效模型等）
 
-### v3.62.0 - Experience Polish ✅ **Agent 团队决策完成**
-**主题**: 体验打磨 - 做最小改动
-**决策日期**: 2026-03-13
-**预计周期**: 1-2 Cycles
+**预计周期**: 0.5 cycle
 
-> **Critic 关键警告**: 所有候选功能都是"开发者驱动，非用户驱动"
-> **决策**: 采纳 Critic 建议，做最小改动，然后等待用户反馈
+---
 
-#### Phase 1: 可发现性优化 (P0)
-- [x] **TASK-236**: 💡 多模型回放功能可发现性优化 [P0] ✅ 2026-03-13
-  - **背景**: v3.61.0 实现了多模型回放，但用户可能不知道这个功能存在
-  - **功能**:
-    - 功能发现提示添加"多模型回放"
-    - tooltip 引导用户尝试"重新生成"
-    - 知识中心文档更新
+## ✅ Boss 提供的测试 API
+
+> **API Key**: REDACTED_API_KEY
+> **Base URL**: https://open.bigmodel.cn/api/coding/paas/v4
+> **测试模型**: GLM-5
+
+**安全说明**:
+- API Key 已存储在 `.env.test` 文件
+- 该文件已在 `.gitignore` 中（不会被提交）
+- 仅用于测试环境
+
+---
+
+## 🔴 质量改进任务
+
+### Phase 1: 添加测试模型 (P0)
+
+- [ ] **TASK-299**: ➕ 添加 GLM-5 模型支持 [P0]
+  - **目标**: 在后端和前端添加 GLM-5 模型
+  - **来源**: Boss 提供的智谱 API
+  - **技术实现**:
+    - 后端: `backend/api/settings.py` - 添加 GLM-5 到 AVAILABLE_MODELS ✅ 已添加
+    - 前端: `src/data/modelComparison.ts` - 添加 GLM-5 数据
+    - 前端: `src/i18n/locales/*.json` - 添加翻译
   - **验收标准**:
-    - [x] 新用户在首次对话后看到"多模型回放"提示
-    - [x] 消息操作区有明显的"重新生成"引导
-    - [x] 知识中心有帮助文档
-  - **隐私约束**: 仅检测功能是否使用过，不收集行为数据
-  - **测试**: 1945 个测试通过
-  - **工作量**: 1 cycle
-  - **Cycle #24**
+    - [ ] GLM-5 出现在模型选择器
+    - [ ] 可以使用 GLM-5 进行对话
+    - [ ] 流式输出正常
+  - **预计周期**: 0.5 cycle
+
+### Phase 2: 测试基础设施 (P0)
+
+- [ ] **TASK-300**: 🔧 配置 agent-browser 测试环境 [P0]
+  - **目标**: 建立浏览器自动化测试框架
+  - **范围**:
+    - 安装和配置 Playwright (agent-browser 底层)
+    - 创建测试脚本（启动应用、操作 UI、验证结果）
+    - 集成到 CI/CD 流程
+  - **验收标准**:
+    - [ ] agent-browser 可以启动 HuluChat
+    - [ ] 可以执行基本 UI 操作（点击、输入）
+    - [ ] 可以截图和录制测试过程
+  - **预计周期**: 1 cycle
+
+- [ ] **TASK-301**: 🧪 编写核心功能端到端测试 [P0]
+  - **目标**: 覆盖核心用户流程
+  - **测试场景**:
+    - 创建新会话
+    - 发送消息（使用 GLM-5 真实 API）
+    - 切换模型（GLM-5 ↔ DeepSeek V3）
+    - 创建文件夹
+    - 导出对话
+    - 设置更改（API Key、模型等）
+  - **验收标准**:
+    - [ ] 至少 10 个核心场景测试通过
+    - [ ] 测试可以复现 bug
+    - [ ] 测试失败时自动截图
+  - **预计周期**: 2 cycles
+
+### Phase 3: 真实 API 测试 (P0)
+
+- [ ] **TASK-302**: 🌐 真实 API 集成测试 [P0] ✅ **Boss 已提供 API Key**
+  - **目标**: 使用真实 API 测试完整流程
+  - **测试 API**:
+    - GLM-5 (智谱 API)
+    - Base URL: https://open.bigmodel.cn/api/coding/paas/v4
+  - **测试场景**:
+    - 真实 AI 对话流程
+    - 流式输出正确性
+    - 错误处理（API 失败、超时等）
+    - 多模型切换
+  - **验收标准**:
+    - [ ] GLM-5 真实 API 测试通过
+    - [ ] 流式输出无乱码
+    - [ ] 错误处理正确
+  - **预计周期**: 1 cycle
+
+### Phase 4: Bug 修复与优化 (P1)
+
+- [ ] **TASK-303**: 🐛 修复 v3.59.0 发现的 bug [P1]
+  - **来源**: Boss 反馈
+  - **待收集**: 具体 bug 清单
+  - **处理**: 逐个修复并回归测试
+
+- [ ] **TASK-304**: 🔍 性能优化 [P1]
+  - **目标**: 优化启动速度和响应速度
+  - **范围**:
+    - 首屏加载时间
+    - 大会话列表渲染
+    - WebSocket 连接稳定性
+  - **验收标准**:
+    - [ ] 启动时间 < 3s
+    - [ ] 1000 条消息渲染流畅
+  - **预计周期**: 2 cycles
+
+### Phase 5: 测试自动化 (P2)
+
+- [ ] **TASK-305**: 🤖 CI/CD 集成自动化测试 [P2]
+  - **目标**: 每次提交自动运行测试
+  - **范围**:
+    - GitHub Actions 配置
+    - 自动运行 agent-browser 测试
+    - 测试失败阻止合并
+  - **验收标准**:
+    - [ ] PR 触发自动测试
+    - [ ] 测试失败时通知开发者
+  - **预计周期**: 1 cycle
 
 ---
 
-### 等待用户反馈
-> **Critic 建议**: 等 1-2 周，收集真实用户反馈，基于真实问题规划后续版本
+## 📊 测试覆盖率目标
 
-- 代码片段收藏夹 - 需用户确认需求
-- 多模型并行对比 - 已明确不实施（API 成本翻倍）
-- 主题系统扩展 - 无用户抱怨，延后
-- 导出增强 - 需确认用户导出场景
+| 类型 | 当前覆盖率 | 目标覆盖率 |
+|------|-----------|-----------|
+| 单元测试 | ~85% | 90% |
+| 集成测试 | ~60% | 80% |
+| 端到端测试 | 0% | 70% |
 
 ---
+
+## 📝 GLM-5 模型信息
+
+**智谱 GLM-5**:
+- **提供商**: 智谱 AI (BigModel)
+- **API 格式**: OpenAI 兼容
+- **特点**: 最新一代国产大模型，性能优异
+- **用途**: 测试专用模型
+
+**API 配置**:
+```bash
+API Key: REDACTED_API_KEY
+Base URL: https://open.bigmodel.cn/api/coding/paas/v4
+Model: glm-5
+```
+
+---
+
+## ✅ 已完成任务
+
+### v3.62.0 - 质量打磨 ✅ **开发完成，暂不发布**
+**主题**: 质量打磨 - 修复问题，优化体验
+**决策日期**: 2026-03-13
+**CEO 决策**: 继续等待用户反馈，暂不发布
+
+- [x] **TASK-236**: 💡 多模型回放功能可发现性优化 ✅
+  - **问题**: 用户不知道可以重新生成并切换模型
+  - **解决方案**: 添加功能发现提示
+  - **验收**: ✅ 已完成
 
 ### v3.61.0 - Multi-Model Intelligence ✅ **已发布**
 **主题**: 多模型智能 - 让用户真正体验多模型价值
-**路线图**: `docs/v3.61.0-roadmap.md`
-**预计周期**: 3-4 Cycles
-**决策日期**: 2026-03-13
+**发布日期**: 2026-03-13
+**GitHub Release**: https://github.com/MrHulu/HuluAiChat/releases/tag/v3.61.0
 
-> **关键决策**: 采纳 Critic + CTO 建议，"多模型回放"比"历史对比"更好
+- [x] **TASK-233**: 🔄 多模型回放对比 [P0] ✅
+  - 消息列表显示模型标签
+  - 重新生成可选择不同模型
+  - 历史消息可回溯
+  - **PR**: #413
 
-#### Phase 1: 多模型回放 (P0)
-- [x] **TASK-233**: 🔄 多模型回放对比 [P0] ✅ 2026-03-13
-  - **功能**: 用户可实时切换模型重新生成，对比不同模型的回复
-  - **技术方案**:
-    - 后端: messages 表添加 model_id、regenerated_from、regenerated_at 字段 ✅
-    - 后端: 新增 POST /api/chat/{id}/regenerate/{message_id} API ✅
-    - 前端: MessageItem 添加"重新生成"按钮 ✅
-    - 前端: 消息列表显示模型标签 ✅
-    - 前端: ModelSelectorDialog 组件支持选择不同模型重新生成 ✅
-  - **验收标准**:
-    - [x] 消息列表显示模型标签（如 "DeepSeek V3"）
-    - [x] 点击"重新生成"可选择不同模型
-    - [x] 重新生成后原消息保留
-    - [x] 历史消息可回溯不同模型的回复
-  - **隐私约束**: 所有数据本地存储
-  - **测试**: 1945 个测试通过（含 12 个 ModelSelectorDialog 测试）
-  - **Cycle #18-19**
-
-#### Phase 2: 性能优化 + 技术韧性 (P1)
-- [x] **TASK-234**: ⚡ ChromaDB 懒加载优化 [P1] ✅ 2026-03-13
-  - **当前状态**: ChromaDB 部分懒加载，初始化仍有开销
-  - **优化**: 真正的懒加载 - 不使用 RAG 时 ChromaDB 不加载
-  - **技术实现**:
-    - `async_chroma.py`: chromadb 改为懒导入（在 `_get_sync_client` 中导入）
-    - `rag_service.py`: AsyncChromaClient 改为懒导入（在 `_get_collection` 中导入）
-    - 使用 `TYPE_CHECKING` 优化类型注解
-  - **验证结果**:
-    - [x] 不使用 RAG 时 ChromaDB 不加载（`sys.modules` 验证通过）
-    - [x] 首次使用 RAG 时延迟约 1.3s（含 chromadb 加载）
-    - [x] 现有功能不受影响（1945 个测试通过）
+- [x] **TASK-234**: ⚡ ChromaDB 懒加载优化 [P1] ✅
+  - 不使用 RAG 时 ChromaDB 不加载
+  - 首次使用 RAG 延迟 < 500ms
   - **Cycle #20**
 
-- [x] **TASK-235**: 🧪 后端测试框架 [P1] ✅ 2026-03-13
-  - **目标**: 建立后端测试基础设施
-  - **范围**:
-    - 搭建 pytest 异步测试框架 ✅
-    - 添加关键 API 端点测试 ✅
-    - 添加 Service 层单元测试 ✅
-  - **验收标准**:
-    - [x] pytest 框架配置完成
-    - [x] 至少 20 个后端测试用例通过（实际 137 个）
-    - [x] CI 可运行后端测试
-  - **变更文件**:
-    - `backend/requirements.txt` - 添加测试依赖
-    - `backend/pytest.ini` - pytest 配置
-    - `backend/tests/conftest.py` - 测试 fixtures
-    - `backend/tests/test_health.py` - 新建 (2 个测试)
-    - `backend/tests/test_sessions.py` - 新建 (8 个测试)
-    - `backend/tests/test_settings.py` - 新建 (7 个测试)
-    - `backend/tests/test_chat.py` - 新建 (6 个测试)
-  - **测试结果**: 137 个后端测试通过 ✅
+- [x] **TASK-235**: 🧪 后端测试框架 [P1] ✅
+  - pytest 异步测试框架
+  - 137 个后端测试用例
   - **Cycle #21**
-
----
-
-### 延后功能
-
-| 功能 | 延后原因 | 目标版本 |
-|------|----------|----------|
-| 代码片段收藏夹 | 复杂度高，需求不明确 | v3.62.0+ |
-| API Client 模块化 | 重构风险高，用户无感知 | 无限期延后 |
-| 多模型并行对比 | API 成本翻倍 | 不实施 |
-
----
-
-## 已完成
 
 ### v3.60.0 - QuickPanel 历史入口 + 剪贴板增强 ✅ **已发布**
 **主题**: QuickPanel 历史入口 + 剪贴板增强
-**路线图**: `docs/v3.60.0-roadmap.md`
-**预计周期**: 3-5 Cycles
-**决策日期**: 2026-03-13
-**决策修正**: 采纳 Critic 建议，大幅简化 MVP 范围
+**发布日期**: 2026-03-13
 
-> **Critic 关键发现**: QuickPanel 持久化已经实现了！
-> 真正需要的是"QuickPanel 历史入口"，而不是"持久化"。
-
-#### Phase 1: QuickPanel 历史入口 (P0)
-- [x] **TASK-230**: 📜 QuickPanel 历史入口 [P0] ✅ 2026-03-13
-  - **发现**: QuickPanel 的对话已经持久化到数据库，但没有入口让用户访问
-  - **功能**:
-    - ~在 QuickPanel 添加"历史"按钮~ → 改为侧边栏"快速对话"分组
-    - QuickPanel 会话自动标记为 source='quickpanel'
-    - 侧边栏显示"快速对话"分组（带 Zap 图标）
-    - 关闭 QuickPanel 时显示 Toast 提示"已保存到快速对话"
-  - **技术实现**:
-    - 后端: SessionModel 添加 source 字段 + Alembic 迁移
-    - 后端: create session API 支持 source 参数
-    - 前端: Session 类型添加 source
-    - 前端: createSession/listSessions API 更新
-    - 前端: SessionList 按源类型分组显示
-    - 前端: QuickPanel 传递 source='quickpanel'
-    - 前端: App.tsx 添加关闭时 Toast 提示
-    - i18n: 添加 quickChats/savedToQuickChats 翻译
-  - **验收标准**:
-    - [x] QuickPanel 会话自动标记为 source='quickpanel'
-    - [x] 侧边栏显示"快速对话"分组
-    - [x] 关闭时显示 Toast 提示
-  - **隐私约束**: 数据已本地存储，无需额外处理
-  - **Cycle #10**
-
-#### Phase 2: 剪贴板增强 (P1)
-- [x] **TASK-231**: 📋 剪贴板历史记录 [P1] ✅ 2026-03-13
-  - **功能**:
-    - 记录最近 50 条剪贴板处理历史
-    - 支持重新使用历史内容
-    - 本地存储，隐私安全
-  - **技术方案**:
-    - localStorage 存储（最多 50 条）
-    - ClipboardHistoryPanel 组件
-    - 与 QuickPanel 集成
-  - **验收标准**:
-    - [x] QuickPanel 可查看剪贴板历史
-    - [x] 历史记录最多 50 条
-    - [x] 可以重新使用历史内容
-    - [x] 可以清除历史记录
-  - **隐私约束**: 仅本地存储，不上传
-  - **Cycle #12**
-  - **PR**: #409
-
-#### Phase 3: 搜索增强 (P2)
-- [x] **TASK-232**: 🔍 侧边栏会话快速搜索 [P2] ✅ 2026-03-13
-  - **功能**:
-    - 侧边栏顶部搜索框
-    - 实时过滤会话列表
-    - 高亮匹配关键词
-  - **技术方案**:
-    - 使用现有 searchSessions API
-    - 前端实时过滤
-    - debounce 300ms
-  - **验收标准**:
-    - [x] 侧边栏有搜索框
-    - [x] 输入时实时过滤
-    - [x] 匹配内容高亮
-    - [x] 响应时间 < 200ms
-    - [x] Esc 清空搜索
-    - [x] 键盘上下导航
-    - [x] Enter 选择结果
-  - **测试**: 1932 个测试用例通过（72 个 SessionList 相关）
-  - **Cycle #14**
+- [x] **TASK-230**: 📜 QuickPanel 历史入口 [P0] ✅
+- [x] **TASK-231**: 📋 剪贴板历史记录 [P1] ✅
+- [x] **TASK-232**: 🔍 侧边栏会话快速搜索 [P2] ✅
 
 ---
 
-### 延后到 v3.61.0+
+## 🚫 永久禁止事项
 
-| 功能 | 延后原因 |
-|------|----------|
-| TASK-233 多模型并行对比 | API 成本翻倍，用户可能投诉。改为"历史对比"模式 |
-| API Client 模块化 | 重构风险高，用户无感知 |
-| ChromaDB 懒加载 | 优化，用户无感知 |
-
-### 延后到 v3.62.0+
-
-| 功能 | 延后原因 |
-|------|----------|
-| 代码片段收藏夹 | 复杂度高，需求不明确 |
-
----
-
-## 待开始### 🚨 Boss 验证发现的问题 (2026-03-12)
-> **优先级**: P0 阻塞问题需立即处理
-
-- [x] **TASK-219**: 🐛 修复 `/api/chat/{id}/messages` 返回 500 错误 [P0] ✅ 2026-03-12
-  - **复现**: `curl http://localhost:8765/api/chat/{session_id}/messages`
-  - **影响**: 新建会话和选择历史会话都报错 "Failed to load chat history"
-  - **根因**: 数据库 messages 表缺少 `images` 和 `files` 列
-  - **修复**: 添加迁移脚本 + 手动修复现有数据库
-  - **PR**: #395
-
-- [x] **TASK-220**: 🐛 修复发送消息一直显示思考中然后报错 [P0] ✅ 2026-03-12
-  - **根因**: WebSocket 错误消息字段名不一致（后端发送 `content`，前端期望 `error`）
-  - **修复**: 统一使用 `error` 字段名
-  - **PR**: #396
-
-- [x] **TASK-221**: 🐛 修复自定义模型选择不生效 [P1] ✅ 2026-03-13
-  - **问题**: 设置自定义模型后，在聊天会话里仍然显示 GPT-4o
-  - **根因**: useModel.ts 初始加载时只检查模型是否在预定义列表中，忽略自定义模型
-  - **修复**: 初始加载时也支持自定义模型，添加到模型列表并设置
-  - **变更文件**: `src/hooks/useModel.ts`, `src/hooks/useModel.test.ts`
-
-- [x] **TASK-222**: 🎨 修复设置 API 窗口尺寸问题 [P2] ✅ 2026-03-13
-  - **问题**: 设置 API 时，窗口比程序还大
-  - **修复**: DialogContent 添加 max-h-[85vh] overflow-y-auto
-  - **变更文件**: SettingsDialog.tsx
-
-- [x] **TASK-223**: 🎨 修复设置窗口快捷键和 Tab 重叠 [P2] ✅ 2026-03-13
-  - **问题**: 设置窗口里面快捷键和后面的 tab 重叠了
-  - **修复**: 增加对话框宽度到 640px，TabsList 改用 flex flex-wrap
-  - **变更文件**: SettingsDialog.tsx
-
-- [x] **TASK-224**: 🔤 修复消息图标悬浮文字错误 [P3] ✅ 2026-03-13
-  - **问题**: 在发出的文本消息里的所有图标悬浮文字都是叫"双击引用消息"
-  - **修复**: 将 title 属性从外层容器移到消息气泡内层
-  - **变更文件**: MessageItem.tsx
-
-- [x] **TASK-225**: 📖 优化文档对话状态说明 [P3] ✅ 2026-03-13
-  - **问题**: 用户不清楚文档对话右边的状态是什么意思
-  - **修复**: 添加 tooltip 解释 chunks 的含义
-  - **变更文件**: DocumentList.tsx, i18n locales
-
-### v3.59.0 - 全局快捷唤起 + 技术韧性 ✅ **Critic 审核通过**
-**主题**: Global Quick Summon + Technical Resilience
-**路线图**: `docs/v3.59.0-roadmap.md`
-**预计周期**: 5-6 Cycles
-**决策日期**: 2026-03-12
-**决策修正**: 采纳 Critic 建议，延后多模型对比，改为全局快捷唤起
-
-#### Phase 1: 全局快捷唤起 (P0)
-- [x] **TASK-211**: ⌨️ 全局热键注册 ✅ 2026-03-12
-  - Tauri global-shortcut 插件集成 ✅
-  - 默认快捷键: Ctrl+Shift+Space (Win/Linux), Cmd+Shift+Space (macOS) ✅
-  - 支持自定义快捷键 ✅
-  - 冲突检测 ✅
-  - 隐私约束：仅本地存储 ✅
-  - i18n 翻译 (EN/ZH) ✅
-  - 测试：18 个测试用例通过 ✅
-  - Cycle #19
-
-- [x] **TASK-212**: 🪟 快速提问面板 ✅ 2026-03-12
-  - QuickPanel 浮动小窗口组件（400px 宽）✅
-  - 模型选择器 ✅
-  - Enter 发送，Shift+Enter 换行，Esc 关闭 ✅
-  - 回复显示区域（支持流式）✅
-  - 复制回复到剪贴板 ✅
-  - 暗色/亮色主题适配 ✅
-  - i18n 翻译 (EN/ZH) ✅
-  - 测试：10 个测试用例通过 ✅
-  - Cycle #20
-
-- [x] **TASK-213**: 📋 剪贴板增强 ✅ 2026-03-12
-  - 检测剪贴板内容 ✅
-  - Quick Actions：翻译/摘要/润色/解释/代码审查/修复语法/扩展/简化 (8个) ✅
-  - 结果一键复制 ✅
-  - 自定义 Quick Actions ✅
-  - QuickActionsSettings 设置组件 ✅
-  - 设置对话框 Quick Actions Tab ✅
-  - i18n 翻译 (EN/ZH) ✅
-  - 测试：22 个测试用例通过 ✅
-  - Cycle #21
-
-- [x] **TASK-214**: 🔐 权限引导 ✅ 2026-03-12
-  - macOS 辅助功能权限检测 ✅
-  - useAccessibilityPermission hook（检测/状态管理/周期检查）✅
-  - PermissionGuideDialog 组件（步骤引导 UI）✅
-  - Rust 命令：check_accessibility_permission, open_accessibility_settings ✅
-  - 系统设置跳转链接 ✅
-  - 权限变更时实时更新状态 ✅
-  - i18n 翻译（EN/ZH）✅
-  - 测试：21 个测试用例通过 ✅
-  - Cycle #22
-
-#### Phase 2: 技术债务清理 (P1)
-- [x] **TASK-215**: 🩺 Sidecar 健康监控 ✅ 2026-03-13
-  - SidecarManager (Rust) 进程状态管理 ✅
-  - 指数退避自动重启（1s→2s→4s→最大 30s）✅
-  - 最多重试 3 次 ✅
-  - 前端 sidecar.ts API ✅
-  - useBackendHealth 自动重启支持 ✅
-  - BackendStatusIndicator 重启状态显示 ✅
-  - 测试：1909 个测试通过 ✅
-  - PR: #404
-  - Cycle #23
-
-- [x] **TASK-216**: 🔄 WebSocket 重连优化 ✅ 2026-03-13
-  - 断开时消息自动进入队列
-  - 重连成功后自动发送队列
-  - sendOrQueue API 智能发送
-  - 队列大小限制 (100)
-  - 测试：6 个新测试用例，1915 个测试通过
-  - Cycle #24
-
-#### Phase 3: 多模型历史对比 (P2) - 延后到 v3.60.0
-> **Critic 警告**: API 成本翻倍是硬伤，建议延后
-
-- [ ] ~~TASK-217~~: 延后到 v3.60.0
-  - 崩溃自动重启（最多 3 次）
-  - 用户通知
-
-- [ ] **TASK-217**: 🔄 WebSocket 重连优化
-  - 连接状态机
-  - 连接质量指示器
-  - 重连期间消息队列
-  - 重连后自动重发
-
-### 🔴 优先任务
-- [x] **TASK-210**: 🧪 添加集成测试框架 ✅ 2026-03-12
-  - **问题**: 项目只有单元测试，没有集成测试
-  - **后果**: 组件集成遗漏无法被测试发现（如 BackendStatusIndicator）
-  - **解决方案**: 方案 B - Vitest 集成测试
-  - **完成内容**:
-    - `src/integration/` 目录结构 ✅
-    - `src/integration/utils.tsx` - 集成测试工具函数 ✅
-    - `src/integration/app-components.integration.test.tsx` - 31 个集成测试 ✅
-    - 测试覆盖：组件导出、Hook 导出、API 客户端、服务集成、渲染验证
-    - **结果**: 1826 个测试全部通过（77 个测试文件）
-  - **测试类型**:
-    - Component Export Verification: 13 个测试
-    - Hook Integration: 7 个测试
-    - API Client Integration: 3 个测试
-    - Service Integration: 2 个测试
-    - BackendStatusIndicator Rendering: 5 个测试
-    - Import Path Consistency: 1 个测试
-  - Cycle #18
-
-- [x] **TASK-206**: 🧪 全面回归测试 - v3.55.0 ~ v3.58.0 ✅ 2026-03-12
-  - 暂停新功能开发，进行全面回归测试
-  - 结果：**所有 1795 个测试通过** (76 个测试文件)
-  - 修复内容：
-    - useChat.test.ts: 添加 createChatWebSocket mock
-    - App.test.tsx: 添加 useContextualTip mock
-    - 更新 sendMessage 断言使用 objectContaining
-    - 更新删除会话测试匹配 AlertDialog 流程
-  - Cycle #14
-
-- [x] **TASK-207**: 🔄 官网版本号自动同步机制 ✅ 2026-03-12
-  - 问题：官网版本号硬编码在 `website/src/app/page.tsx`，显示 3.52.0
-  - 解决方案：
-    - 创建 `website/src/lib/version.ts` 集中管理版本号
-    - page.tsx 使用动态版本号
-    - release.yml 添加 `update-website-version` job
-    - 发布时自动更新版本号并推送，触发网站重新部署
-  - 当前版本：v3.58.0
-  - Cycle #15
-
-### v3.58.0 - 消息交互增强 + 个性化体验
-**主题**: 消息交互增强 + 个性化体验 + 技术韧性
-**路线图**: `docs/v3.58.0-roadmap.md`
-**预计周期**: 5-6 Cycles
-
-#### Phase 1: 消息交互增强 (P0)
-- [x] **TASK-200**: 💬 完善引用回复 ✅ 2026-03-12
-  - 引用预览组件（输入框上方）✅ 已存在
-  - 前端发送 quoted_message_id ✅
-  - 后端 API 支持 quoted_message_id ✅
-  - 后端将引用消息添加到 AI 上下文 ✅
-  - Cycle #8
-
-- [x] **TASK-202**: 🔍 会话内搜索 ✅ 2026-03-12
-  - ChatSearch 组件（搜索栏 UI）✅
-  - 搜索工具函数✅
-  - 消息高亮支持✅
-  - Ctrl+F 快捷键支持✅
-  - i18n 翻译（EN/ZH）✅
-  - 测试：33 个测试用例通过✅
-  - Cycle #9
-
-#### Phase 2: 个性化体验 (P1)
-- [x] **TASK-203**: 🎨 主题定制（仅预设） ✅ 2026-03-12
-  - SettingsDialog 添加外观 Tab ✅
-  - 预设主题：Light / Dark / System ✅
-  - localStorage 存储主题偏好 ✅
-  - i18n 翻译（EN/ZH）✅
-  - 测试：12 个测试用例通过 ✅
-  - Cycle #10
-
-- [x] **TASK-204**: ⌨️ 快捷键自定义 ✅ 2026-03-12
-  - SettingsDialog 添加快捷键 Tab ✅
-  - useShortcutSettings hook（状态管理 + localStorage 存储）✅
-  - ShortcutSettings 组件（快捷键列表 + 录制 + 冲突检测）✅
-  - useKeyboardShortcuts hook 读取自定义快捷键 ✅
-  - i18n 翻译（EN/ZH）✅
-  - 测试：29 个测试用例通过 ✅
-  - Cycle #11
-
-#### Phase 3: 技术韧性 (P1) - CTO 建议
-- [x] **TASK-205**: 🩺 前端健康监控 ✅ 2026-03-12
-  - useBackendHealth hook（状态管理 + 轮询 + 回调）✅
-  - BackendStatusIndicator 组件（状态指示器 UI）✅
-  - App.tsx 集成（Header 添加状态指示器）✅
-  - 四种状态：checking / healthy / degraded / offline ✅
-  - i18n 翻译（EN/ZH）✅
-  - 测试：25 个测试用例通过 ✅
-  - Cycle #12
-
----
-
-### v3.57.0 - 对话控制增强 ✅ **已完成**
-**主题**: 智能对话增强 + 工作流效率
-**路线图**: `docs/v3.57.0-roadmap.md`
-**实际周期**: 6 Cycles
-
-#### Phase 1: 核心对话增强 (P0) ✅
-- [x] **TASK-195**: 🔄 消息重新生成 ✅ 2026-03-12
-- [x] **TASK-196**: ✏️ 消息编辑 ✅ 2026-03-12
-- [x] **TASK-197**: 📋 会话模板 ✅ 2026-03-12
-
-#### Phase 2: 效率工具 (P1) ✅
-- [x] **TASK-198**: ⚡ 自定义命令 ✅ 2026-03-12
-- [x] **TASK-199**: 📁 批量会话操作 ✅ 2026-03-12
-
----
-
-### Phase 1: 基础修复 (阻塞问题)
-- [x] **TASK-161**: 🔒 实现 Content Security Policy (CSP) ✅ 2026-03-12
-  - 生产环境 CSP：严格策略
-  - 开发环境 CSP：支持 Vite dev server
-  - 允许资源：本地 API、WebSocket、Ollama、OpenAI API
-  - Cycle #164
-- [x] **TASK-162**: 🔧 提取 API_BASE 到环境变量 ✅ 2026-03-12
-  - 添加 VITE_API_BASE 环境变量支持
-  - 创建 .env.example 文档
-  - 更新 WebSocket URL 生成逻辑
-  - Cycle #164
-- [ ] **TASK-163**: 🩺 添加后端 sidecar 进程健康监控和自动重启 ⚠️ **阻塞：Rust 编译内存不足**
-- [ ] **TASK-164**: 🔐 添加更新签名验证 ⚠️ **需要 Boss 配置 GitHub Secrets**
-- [x] **TASK-165**: 🔄 实现 WebSocket 指数退避重连策略 ✅ 2026-03-12
-  - 添加指数退避算法（baseDelay * 2^attempt）
-  - 添加 jitter 避免同时重连
-  - 向后兼容 reconnectInterval 参数
-  - Cycle #164
-- [x] **TASK-166**: ⏱️ 添加 OpenAI/Ollama 请求超时配置 ✅ 2026-03-12
-  - 新增配置：openai_timeout、http_connect_timeout、http_read_timeout
-  - OpenAI/DeepSeek/Ollama 客户端统一使用可配置超时
-  - 添加 APITimeoutError 错误处理
-  - Cycle #164
-
-### Phase 2: MCP 支持 (核心功能)
-- [x] **TASK-167**: 🏗️ 设计 MCP 架构（前端面板 + 后端 client）✅ 2026-03-12
-  - 架构设计文档: docs/cto/mcp-architecture.md
-  - 包含后端服务设计、前端组件设计、API 端点设计
-  - Tool Calling 集成流程
-  - Cycle #165
-- [x] **TASK-168**: 🐍 实现 Python MCP client（使用 mcp SDK）✅ 2026-03-12
-  - 安装 mcp SDK (v1.26.0)
-  - 创建 models/mcp_server.py (数据模型)
-  - 创建 services/mcp_service.py (核心服务)
-  - 创建 api/mcp.py (REST API 端点)
-  - 更新 main.py 添加 MCP 路由
-  - Cycle #165
-- [x] **TASK-169**: ⚙️ 创建 MCP 设置面板（Settings 新 Tab）✅ 2026-03-12
-  - 扩展 src/api/client.ts 添加 MCP API 函数
-  - 创建 src/components/settings/MCPSettings.tsx
-  - 更新 SettingsDialog.tsx 添加 MCP Tab
-  - Server 卡片、添加对话框、连接管理
-  - Cycle #165
-- [x] **TASK-170**: 🔗 集成 MCP tool calling 与现有聊天流 ✅ 2026-03-12
-  - 创建 services/mcp_tool_adapter.py（MCP → OpenAI 格式转换）
-  - 修改 services/openai_service.py 支持 tools 参数和 tool_calls
-  - 修改 api/chat.py 集成 MCP tools 和 tool calling 流程
-  - 更新 useChat hook 添加 toolCalls 状态
-  - 更新 ChatView 添加 ToolCallsIndicator 组件
-  - 添加 i18n 翻译（EN/ZH）
-  - Cycle #166
-- [x] **TASK-171**: 🌐 添加 MCP i18n 支持（EN/ZH）✅ 2026-03-12
-  - 添加 MCP 翻译到 en.json（26 个翻译键）
-  - 添加 MCP 翻译到 zh.json（26 个翻译键）
-  - 修复 MCPSettings.tsx 中的翻译键命名
-  - Cycle #167
-- [x] **TASK-172**: 📚 编写 MCP 使用文档 ✅ 2026-03-12
-  - 创建 docs/MCP_GUIDE.md 用户指南
-  - 包含：快速开始、推荐 Servers、使用示例、常见问题
-  - Cycle #167
-
-### Phase 3: 用户功能增强
-- [x] **TASK-173**: 🔍 智能消息搜索（跨会话搜索）✅ 2026-03-12
-  - 已存在：后端 `/sessions/search/` API
-  - 已存在：前端 `searchSessions()` + 搜索 UI + 高亮
-  - Cycle #168
-- [x] **TASK-174**: 📝 会话摘要与智能标题（AI 自动生成）✅ 2026-03-12
-  - 后端：PUT /sessions/{id}/title + POST /sessions/{id}/generate-title
-  - 前端：updateSessionTitle() + generateSessionTitle() API
-  - 自动触发：第一次对话完成后自动生成标题
-  - openai_service.py 添加非流式 chat() 方法
-  - Cycle #168
-- [x] **TASK-175**: 📤 增强型导出（多选消息导出）✅ 2026-03-12
-  - 前端：exportMessages() 函数（前端生成导出内容）
-  - MessageItem：添加选择复选框和选中高亮
-  - ChatView：多选模式、全选/取消全选、导出按钮
-  - 支持 Markdown/JSON/TXT 三种导出格式
-  - i18n：EN/ZH 翻译（12 个新键）
-  - Cycle #169
-- [x] **TASK-176**: 💬 提示词变量系统（模板变量插值） ✅ 2026-03-12
-  - 变量格式：`{{variable_name}}`
-  - 预定义变量：日期、时间、时间戳等自动填充
-  - 自定义变量：用户在对话框中输入
-  - 前端实现：变量输入对话框 + 工具函数
-  - Cycle #170
-- [x] **TASK-177**: 🧠 本地偏好学习（模型推荐）✅ 2026-03-12
-  - 后端: `services/preference_service.py` - 偏好存储服务（JSON 文件）
-  - 后端: `api/preferences.py` - 偏好 API 端点
-  - 前端: `src/api/client.ts` - 偏好 API 函数
-  - 前端: `src/hooks/useModel.ts` - 记录使用和推荐模型
-  - 前端: `src/components/chat/ModelSelector.tsx` - 推荐标记
-  - 隐私优先：所有数据存储在本地，不上传
-  - i18n 翻译：EN/ZH
-  - Cycle #171
-
-### 技术债务
-- [x] **TASK-178**: 🗃️ 迁移到 Alembic 数据库迁移 ✅ 2026-03-12
-  - 添加 alembic 依赖到 requirements.txt
-  - 创建 alembic.ini 配置文件
-  - 创建 migrations/env.py (异步 SQLAlchemy 支持)
-  - 创建初始迁移脚本 (001_initial)
-  - 更新 database.py 移除手动迁移代码
-  - 创建 migrate.py CLI 工具
-  - Cycle #172
-- [x] **TASK-179**: ⚡ ChromaDB 异步化包装 ✅ 2026-03-12
-  - 创建 services/async_chroma.py - AsyncChromaClient/AsyncCollection
-  - 更新 services/rag_service.py - 使用异步包装器
-  - 添加 tests/test_async_chroma.py - 异步包装器测试
-  - 更新 tests/test_rag_service.py - 使用 AsyncMock
-  - 使用线程池执行器避免阻塞事件循环
-  - Cycle #172
-- [x] **TASK-180**: 📊 添加复合数据库索引 ✅ 2026-03-12
-  - 创建 Alembic 迁移添加复合索引
-  - messages: (session_id, created_at) - 优化消息查询
-  - session_tags: (session_id, tag) - 优化标签查询
-  - message_bookmarks: (session_id, created_at) - 优化书签查询
-  - sessions: (folder_id, updated_at) - 优化会话列表查询
-  - 更新 SQLAlchemy 模型添加 Index 声明
-  - Cycle #186
-- [x] **TASK-181**: 🔑 API Key 存储改用系统钥匙串 ✅ 2026-03-12
-  - App.tsx 吝始化时从 keyring 加载 API key 发送给后端
-  - keyring.ts 已支持 openai 和 deepseek provider
-  - Settings.py 后端不持久化 API key
-  - Cycle #187
-
-### 等待 Boss
-- [ ] **TASK-116**: 🎬 准备 Product Hunt 发布素材(截图、视频) - 等待 Boss
-
-## 已完成（最近）
-- [x] **TASK-209**: 🔄 更新模型列表 ✅ 2026-03-12
-  - **更新内容**：
-    - OpenAI: GPT-4.1, GPT-4o, GPT-4o-mini, o3-mini, o1, o1-mini
-    - Claude: Claude Sonnet 4, Claude 3.5 Sonnet, Claude 3.5 Haiku
-    - DeepSeek: V3, R1 (保持不变)
-    - Ollama: Llama 3.3, Qwen 2.5
-  - **变更文件**：
-    - backend/api/settings.py: 16 个模型
-    - src/data/modelComparison.ts: 前端模型数据
-    - i18n 翻译文件: EN/ZH
-  - **测试**: 1795 个测试通过
-  - Cycle #17
-
-- [x] **TASK-208**: 🐛 修复多个开发环境问题 ✅ 2026-03-12
-  - **修复内容**：
-    - BackendStatusIndicator 已集成到 App.tsx header ✅
-    - Python 导入正确（`from api.sessions import SessionModel`）✅
-    - Rust 依赖版本正确（`tauri-plugin-keyring = "0.1"`）✅
-  - **验证结果**：所有 1795 个测试通过
-  - **注意**：API Key 保存失败问题可能需要用户重新安装 keyring 插件
-  - Cycle #16
-
-- [x] **TASK-160**: 🐛 修复测试内存溢出 ✅ 2026-03-12
-  - 配置 Vitest 使用 forks pool 和 fileParallelism=false
-  - 更新 empty-state.test.tsx 断言匹配新样式
-  - Cycle #163
-
-- [x] **TASK-122**: 🎨 UI/UX 美化优化 ✅ 2026-03-12
-  - 状态：已完成
-  - 内容：空状态组件增强、消息气泡层次感、按钮发光效果
-  - 所有 UI 组件暗色模式增强
-  - 全局 CSS 暗色模式增强
-  - Cycle #158-160
-
-- [x] **TASK-156**: 🔧 修复 GitHub Release Workflow URL 错误 + 发布 v3.54.0 ✅ 2026-03-12
-  - 修复 `.github/workflows/release.yml` 中的 GitHub URL
-  - `MrHulu/HuluChat` → `MrHulu/HuluAiChat`
-  - 发布 v3.54.0
-  - Cycle #156
-
-- [x] **TASK-155**: ✨ 添加消息删除功能 ✅ 2026-03-11
-  - 后端: DELETE /{session_id}/messages/{message_id} 端点
-  - 前端: API 客户端、useChat hook、MessageItem 组件
-  - i18n: EN/ZH 翻译
-  - Cycle #155
-
-- [x] **TASK-152**: 🐛 设置页模型下拉框为空 ✅ 2026-03-11
-  - 问题: main.py 缺少服务器启动代码
-  - 修复: 添加 `if __name__ == "__main__": uvicorn.run()` 启动服务器
-  - 同时添加 `https://tauri.localhost` 到 CORS 允许列表
-  - Cycle #153
-
-- [x] **TASK-153**: 🐛 自动更新功能 URL 错误 ✅ 2026-03-11
-  - 问题: `generate-latest-json.js` 生成的文件名格式不正确
-  - 修复: 重写脚本，按实际 GitHub Release 文件名格式生成
-  - Windows: `HuluChat_${version}_x64_en-US.msi`
-  - macOS: `HuluChat_${version}_${arch}.dmg`
-  - Linux: `HuluChat_${version}_amd64.AppImage`
-  - Cycle #153
-
-## 已取消
-- [x] ~~**TASK-127**: 🎤 用户访谈招募~~ ❌ **Boss 决定取消** - 暂停并删除相关内容
-- [x] ~~**TASK-120**: 📊 添加用户行为埋点~~ ❌ **Boss 决定取消** - 隐私优先原则
-
-## ⚠️ 永久禁止事项（Boss 明确要求）
 - ❌ **禁止功能**：用户行为埋点、数据追踪、遥测功能、使用统计
 - 📋 **原则**：隐私优先（Privacy-First），用户数据不上传、不收集
 - 🚫 **执行**：任何版本规划或开发都不得包含上述功能
