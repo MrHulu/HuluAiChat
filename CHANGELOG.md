@@ -2,6 +2,62 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [3.59.1] - 2026-03-13
+
+### 🐛 Bug Fixes
+
+- **TASK-221**: Fixed custom model selection not persisting
+  - Custom models now properly saved and loaded on startup
+  - Files: `src/hooks/useModel.ts`, `src/hooks/useModel.test.ts`
+
+- **TASK-222**: Fixed settings dialog exceeding window size
+  - Added max-height constraint (85vh) with scroll support
+  - Files: `src/components/settings/SettingsDialog.tsx`
+
+- **TASK-223**: Fixed tab overlap in settings dialog
+  - Increased dialog width to 640px
+  - TabList now uses flex-wrap for responsive layout
+  - Files: `src/components/settings/SettingsDialog.tsx`
+
+- **TASK-224**: Fixed incorrect tooltip on message icons
+  - "Double-click to quote" tooltip now only shows on message bubble
+  - Files: `src/components/chat/MessageItem.tsx`
+
+- **TASK-225**: Added explanation for document chunks
+  - Added tooltip explaining what chunks mean for document chat
+  - Files: `src/components/rag/DocumentList.tsx`, i18n locales
+
+## [3.59.0] - 2026-03-12
+
+### ✨ New Features
+
+- **TASK-211**: Global Hotkey Registration
+  - Tauri global-shortcut plugin integration
+  - Default shortcut: Ctrl+Shift+Space (Win/Linux), Cmd+Shift+Space (macOS)
+  - Customizable shortcuts with conflict detection
+  - Files: `src/hooks/useGlobalShortcut.ts`, `src-tauri/src/lib.rs`
+
+- **TASK-212**: Quick Panel
+  - Floating mini-window for quick questions (400px width)
+  - Model selector integration
+  - Enter to send, Shift+Enter for newline, Esc to close
+  - Streaming response support
+  - Copy to clipboard functionality
+  - Files: `src/components/quickpanel/QuickPanel.tsx`
+
+- **TASK-213**: Clipboard Enhancement
+  - Clipboard content detection when opening Quick Panel
+  - 8 preset Quick Actions (Translate, Summarize, Polish, Explain, Code Review, Fix Syntax, Expand, Simplify)
+  - Custom Quick Actions support
+  - QuickActionsSettings component
+  - Files: `src/data/quickActions.ts`, `src/components/quickpanel/QuickActions.tsx`
+
+- **TASK-214**: Permission Guide
+  - macOS accessibility permission detection
+  - PermissionGuideDialog with step-by-step guide
+  - Rust commands for permission check and system settings
+  - Files: `src/hooks/useAccessibilityPermission.ts`, `src/components/PermissionGuideDialog.tsx`
+
 ## [3.55.0] - 2026-03-12 (In Progress)
 
 ### 🔒 Security
