@@ -250,6 +250,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -293,10 +294,19 @@ jobs:
           echo "Updated version.ts:"
           cat website/src/lib/version.ts
 
-      - name: Commit and push version update
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add website/src/lib/version.ts
-          git commit -m "chore(website): update version to v${{ steps.get-version.outputs.VERSION }} [skip ci]" || echo "No changes to commit"
-          git push
+      - name: Create Pull Request for version update
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(website): update version to v${{ steps.get-version.outputs.VERSION }} [skip ci]"
+          title: "chore(website): update version to v${{ steps.get-version.outputs.VERSION }}"
+          body: |
+            ## Summary
+            - Update VERSION from previous to ${{ steps.get-version.outputs.VERSION }}
+            - Update RELEASE_NOTES for v${{ steps.get-version.outputs.VERSION }}
+
+            This PR is automatically created by the release workflow.
+          branch: chore/update-website-version-${{ steps.get-version.outputs.VERSION }}
+          base: master
+          delete-branch: true
+          labels: chore,website
