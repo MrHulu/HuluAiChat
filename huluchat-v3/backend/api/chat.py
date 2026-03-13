@@ -2,6 +2,7 @@
 import uuid
 import json
 import logging
+import asyncio
 from datetime import datetime
 from typing import Optional, List
 
@@ -25,6 +26,10 @@ from services.mcp_tool_adapter import (
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+# WebSocket heartbeat configuration
+WEBSOCKET_PING_INTERVAL = 30  # seconds
+WEBSOCKET_PING_TIMEOUT = 10   # seconds to wait for pong response
 
 
 def get_service_for_model(model: Optional[str]):
@@ -210,13 +215,51 @@ async def chat_websocket(
     session_id: str,
     db: AsyncSession = Depends(get_db_session),
 ):
-    """WebSocket endpoint for streaming chat with AI."""
+    """WebSocket endpoint for streaming chat with AI.
+
+    Supports heartbeat mechanism:
+    - Server sends ping every 30 seconds
+    - Client must respond with pong within 10 seconds
+    - If no pong received, connection is considered stale and closed
+    """
     await manager.connect(websocket, session_id)
+
+    # Heartbeat state
+    last_pong_time = datetime.utcnow()
+    heartbeat_task = None
+
+    async def heartbeat_sender():
+        """Send periodic ping messages to keep connection alive."""
+        nonlocal last_pong_time
+        while True:
+            try:
+                await asyncio.sleep(WEBSOCKET_PING_INTERVAL)
+                # Check if last pong was received within timeout
+                elapsed = (datetime.utcnow() - last_pong_time).total_seconds()
+                if elapsed > WEBSOCKET_PING_INTERVAL + WEBSOCKET_PING_TIMEOUT:
+                    logger.warning(f"Heartbeat timeout for session {session_id}, closing connection")
+                    await websocket.close(code=1001, reason="Heartbeat timeout")
+                    break
+                # Send ping
+                await websocket.send_json({"type": "ping"})
+            except asyncio.CancelledError:
+                break
+            except Exception as e:
+                logger.debug(f"Heartbeat task ended: {e}")
+                break
+
+    # Start heartbeat task
+    heartbeat_task = asyncio.create_task(heartbeat_sender())
 
     try:
         while True:
             # Receive message from client
             data = await websocket.receive_json()
+
+            # Handle pong response for heartbeat
+            if data.get("type") == "pong":
+                last_pong_time = datetime.utcnow()
+                continue
             user_content = data.get("content", "")
             # Get images from client (list of base64 data URLs)
             images = data.get("images", [])
@@ -522,6 +565,15 @@ async def chat_websocket(
         # SECURITY: Log error type only, not full message which may contain sensitive info
         logger.error(f"WebSocket error: {get_safe_error_type(e)}")
         manager.disconnect(session_id)
+
+    finally:
+        # Cancel heartbeat task on exit
+        if heartbeat_task and not heartbeat_task.done():
+            heartbeat_task.cancel()
+            try:
+                await heartbeat_task
+            except asyncio.CancelledError:
+                pass
 
 
 @router.get("/{session_id}/messages")

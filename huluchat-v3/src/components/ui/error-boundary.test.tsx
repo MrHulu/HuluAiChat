@@ -14,10 +14,19 @@ vi.mock("@/i18n", () => ({
         "errorBoundary.description": "An unexpected error occurred. Please try again.",
         "errorBoundary.tryAgain": "Try Again",
         "errorBoundary.goHome": "Go Home",
+        "errorBoundary.exportLogs": "Export Logs",
+        "errorBoundary.helpText": "Error details are saved locally.",
       };
       return translations[key] || key;
     },
   },
+}));
+
+// Mock errorLogger
+vi.mock("@/utils/errorLogger", () => ({
+  logError: vi.fn(),
+  exportErrorLogs: vi.fn(() => "[]"),
+  clearErrorLogs: vi.fn(),
 }));
 
 // Suppress console.error for cleaner test output
@@ -216,6 +225,28 @@ describe("ErrorBoundary", () => {
       );
 
       expect(screen.getByRole("alert")).toBeInTheDocument();
+    });
+  });
+
+  describe("error logging", () => {
+    it("renders Export Logs button", () => {
+      render(
+        <ErrorBoundary>
+          <ThrowError shouldThrow={true} />
+        </ErrorBoundary>
+      );
+
+      expect(screen.getByText("Export Logs")).toBeInTheDocument();
+    });
+
+    it("displays help text", () => {
+      render(
+        <ErrorBoundary>
+          <ThrowError shouldThrow={true} />
+        </ErrorBoundary>
+      );
+
+      expect(screen.getByText("Error details are saved locally.")).toBeInTheDocument();
     });
   });
 });

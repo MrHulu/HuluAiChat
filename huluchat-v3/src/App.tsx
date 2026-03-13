@@ -14,6 +14,7 @@ import { FeatureDiscoveryTip } from "@/components/FeatureDiscoveryTip";
 import { ContextualTip } from "@/components/ContextualTip";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { SidebarErrorFallback } from "@/components/ui/sidebar-error-fallback";
 import { useSession, useKeyboardShortcuts, useFolders, useFeatureDiscovery, useContextualTip, useModel, useBackendHealth, useGlobalShortcut, useAccessibilityPermission } from "@/hooks";
 import { BackendStatusIndicator } from "@/components/BackendStatusIndicator";
 import { exportSession, moveSessionToFolder, updateSettings, ExportFormat } from "@/api/client";
@@ -94,6 +95,7 @@ function App() {
         // Only show QuickPanel if permission is granted or not required
         if (permissionStatus === "granted") {
           setQuickPanelOpen(true);
+          markFeatureUsed("quick-panel"); // TASK-324: 标记 QuickPanel 功能已使用
         }
       },
       description: "Quick summon HuluChat from anywhere",
@@ -468,23 +470,25 @@ function App() {
         {t("accessibility.skipToMain")}
       </a>
       {/* 侧边栏 */}
-      <SessionList
-        ref={sessionListRef}
-        sessions={sessions}
-        folders={folders}
-        currentSessionId={currentSession?.id || null}
-        isLoading={isSessionLoading}
-        onSelectSession={selectSession}
-        onCreateSession={handleCreateSession}
-        onDeleteSession={handleDeleteSession}
-        onExportSession={handleExportSession}
-        onCreateFolder={handleCreateFolder}
-        onDeleteFolder={handleDeleteFolder}
-        onRenameFolder={handleRenameFolder}
-        onMoveSession={handleMoveSessionToFolder}
-        isCollapsed={sidebarCollapsed}
-        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-      />
+      <ErrorBoundary fallback={<SidebarErrorFallback />}>
+        <SessionList
+          ref={sessionListRef}
+          sessions={sessions}
+          folders={folders}
+          currentSessionId={currentSession?.id || null}
+          isLoading={isSessionLoading}
+          onSelectSession={selectSession}
+          onCreateSession={handleCreateSession}
+          onDeleteSession={handleDeleteSession}
+          onExportSession={handleExportSession}
+          onCreateFolder={handleCreateFolder}
+          onDeleteFolder={handleDeleteFolder}
+          onRenameFolder={handleRenameFolder}
+          onMoveSession={handleMoveSessionToFolder}
+          isCollapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        />
+      </ErrorBoundary>
 
       {/* 主内容区 */}
       <div className="flex-1 flex flex-col min-w-0">

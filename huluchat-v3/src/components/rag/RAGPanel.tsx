@@ -10,12 +10,15 @@ import { cn } from "@/lib/utils";
 
 export interface RAGPanelProps {
   onDocumentChange?: (docId?: string) => void;
+  /** Called when a document is successfully uploaded - TASK-324 */
+  onDocumentUpload?: () => void;
   disabled?: boolean;
   className?: string;
 }
 
 export function RAGPanel({
   onDocumentChange,
+  onDocumentUpload,
   disabled = false,
   className,
 }: RAGPanelProps) {
@@ -24,8 +27,9 @@ export function RAGPanel({
   const handleUploadSuccess = useCallback(
     (result: RAGUploadResponse) => {
       onDocumentChange?.(result.doc_id);
+      onDocumentUpload?.(); // TASK-324: 通知文档上传成功
     },
-    [onDocumentChange]
+    [onDocumentChange, onDocumentUpload]
   );
 
   const handleUploadError = useCallback((error: string) => {

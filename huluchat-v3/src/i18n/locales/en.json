@@ -13,7 +13,11 @@
     "title": "Something went wrong",
     "description": "An unexpected error occurred. Please try again.",
     "tryAgain": "Try Again",
-    "goHome": "Go Home"
+    "goHome": "Go Home",
+    "exportLogs": "Export Logs",
+    "helpText": "Error details are saved locally. You can export them for debugging.",
+    "sidebarError": "Sidebar Error",
+    "sidebarErrorDesc": "Failed to load session list. Please try again."
   },
   "mermaid": {
     "loading": "Loading chart...",
@@ -119,6 +123,7 @@
     "connecting": "Connecting...",
     "connected": "Connected",
     "disconnected": "Disconnected",
+    "reconnecting": "Reconnecting",
     "connectionError": "Connection Error",
     "uploadImage": "Upload image",
     "removeImage": "Remove image",
@@ -141,7 +146,7 @@
     "scrollToBottom": "Scroll to bottom",
     "exportJSON": "Export as JSON",
     "exportMarkdown": "Export as Markdown",
-    "exportSuccess": "Bookmarks exported successfully",
+    "bookmarkExportSuccess": "Bookmarks exported successfully",
     "exportError": "Failed to export bookmarks",
     "exportBookmarks": "Export bookmarks",
     "jumpToBookmark": "Jump to bookmark: {{content}}",
@@ -190,7 +195,7 @@
     "deselectAll": "Deselect all",
     "selectedCount": "{{count}} selected",
     "noMessagesSelected": "No messages selected",
-    "exportSuccess": "{{count}} messages exported",
+    "messagesExportSuccess": "{{count}} messages exported",
     "exportTxt": "Export as TXT",
     "search": "Search",
     "searchInConversation": "Search in conversation",
@@ -1149,6 +1154,11 @@
         "title": "Compare Model Responses",
         "description": "Not satisfied with an answer? Use the regenerate button to try a different AI model and compare responses.",
         "action": "Try Regenerate"
+      },
+      "quickPanel": {
+        "title": "Quick Panel",
+        "description": "Press Ctrl+Shift+Space to quickly ask AI questions from anywhere. Great for instant translations, summaries, and quick queries.",
+        "action": "Open Quick Panel"
       }
     }
   },

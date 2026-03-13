@@ -39,7 +39,7 @@ describe("useFeatureDiscovery Hook", () => {
       const { result } = renderHook(() => useFeatureDiscovery());
 
       expect(result.current.features).toEqual(DISCOVERABLE_FEATURES);
-      expect(result.current.features.length).toBe(7); // TASK-236: added model-regenerate
+      expect(result.current.features.length).toBe(8); // TASK-324: added quick-panel
     });
 
     it("应该初始化所有功能为未使用状态", () => {
@@ -53,6 +53,7 @@ describe("useFeatureDiscovery Hook", () => {
         "folder-management": false,
         "model-switch": false,
         "model-regenerate": false, // TASK-236
+        "quick-panel": false, // TASK-324
       });
     });
 
@@ -67,6 +68,7 @@ describe("useFeatureDiscovery Hook", () => {
           "folder-management": false,
           "model-switch": false,
           "model-regenerate": false, // TASK-236
+          "quick-panel": false, // TASK-324
         })
       );
 
@@ -105,6 +107,7 @@ describe("useFeatureDiscovery Hook", () => {
           "folder-management": false,
           "model-switch": false,
           "model-regenerate": false, // TASK-236
+          "quick-panel": false, // TASK-324
         })
       );
     });
@@ -132,7 +135,7 @@ describe("useFeatureDiscovery Hook", () => {
       const { result } = renderHook(() => useFeatureDiscovery());
 
       const unused = result.current.getUnusedFeatures();
-      expect(unused.length).toBe(7); // TASK-236: added model-regenerate
+      expect(unused.length).toBe(8); // TASK-324: added quick-panel
     });
 
     it("应该排除已使用的功能", () => {
@@ -144,7 +147,7 @@ describe("useFeatureDiscovery Hook", () => {
       });
 
       const unused = result.current.getUnusedFeatures();
-      expect(unused.length).toBe(5); // 7 - 2 = 5
+      expect(unused.length).toBe(6); // 8 - 2 = 6
       expect(unused.find((f) => f.id === "command-palette")).toBeUndefined();
       expect(unused.find((f) => f.id === "knowledge-center")).toBeUndefined();
     });
