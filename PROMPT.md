@@ -93,6 +93,32 @@
 
 ---
 
+## 🚨 安全红线 🔴 **死命令 - 违反立即中断**
+
+**绝对禁止硬编码以下内容到代码中**：
+
+| 类型 | 示例 | 后果 |
+|------|------|------|
+| API Keys | `sk-xxxx`, `ghp_xxxx` | 🔴 泄露导致滥用 |
+| Tokens | `Bearer xxxx` | 🔴 账户被盗用 |
+| Secrets/密码 | 任何明文密码 | 🔴 安全漏洞 |
+| 数据库连接串 | `postgres://user:pass@...` | 🔴 数据泄露 |
+
+**正确做法**：
+```python
+# ❌ 绝对禁止 - 硬编码默认值
+API_KEY = os.getenv("API_KEY", "sk-xxxxx")
+
+# ✅ 正确 - 必须从环境变量获取，无默认值
+API_KEY = os.getenv("API_KEY")
+if not API_KEY:
+    raise ValueError("API_KEY environment variable is required")
+```
+
+**检测工具**：项目已配置 `detect-secrets`，提交前自动扫描
+
+---
+
 ## 禁止事项
 
 根据 Boss 明确要求，以下功能**禁止实施**：
