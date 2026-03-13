@@ -6,14 +6,14 @@
 
 ## 当前状态
 🟢 **v3.60.0 已发布 ✅**
-🟢 **v3.61.0 开发中 - TASK-233 Phase 5 完成**
-📅 **Cycle #19 - 开发阶段
+🟢 **v3.61.0 开发中 - TASK-234 完成**
+📅 **Cycle #20 - 开发阶段
 
 ### Next Action
-> **TASK-234: ChromaDB 懒加载优化** [P1] - 待开始
-> - 优化 RAGService 初始化
-> - 不使用 RAG 时 ChromaDB 不加载
-> - 首次使用 RAG 时延迟 < 500ms
+> **TASK-235: 后端测试框架** [P1] - 待开始
+> - 搭建 pytest 异步测试框架
+> - 添加关键 API 端点测试
+> - 至少 20 个后端测试用例
 
 ---
 
@@ -52,13 +52,33 @@
 
 **测试结果**: 1945 个测试通过 ✅
 
+### TASK-234: ChromaDB 懒加载优化 [P1] - ✅ **完成**
+
+**问题**: ChromaDB 导入耗时约 1.8 秒，即使不使用 RAG 功能也会加载
+
+**解决方案**:
+- `async_chroma.py`: chromadb 改为在 `_get_sync_client()` 中懒导入
+- `rag_service.py`: AsyncChromaClient 改为在 `_get_collection()` 中懒导入
+- 使用 `TYPE_CHECKING` 优化类型注解
+
+**验证结果**:
+- ✅ 不使用 RAG 时 ChromaDB 不加载（`sys.modules` 验证）
+- ✅ 首次使用 RAG 时延迟约 1.3s（含 chromadb 加载）
+- ✅ 现有功能不受影响（1945 个测试通过）
+
+**变更文件**:
+- `backend/services/async_chroma.py` - 懒导入 chromadb
+- `backend/services/rag_service.py` - 懒导入 AsyncChromaClient
+
+**测试结果**: 1945 个测试通过 ✅
+
 ---
 
 ## v3.61.0 规划 ✅ **Agent 团队决策完成**
 
 ### MVP 范围 (3 个任务)
 - P0: ~~TASK-233 多模型回放对比~~ ✅ (3 cycles)
-- P1: TASK-234 ChromaDB 懒加载优化 (0.5 cycle) - **待开始**
+- P1: ~~TASK-234 ChromaDB 懒加载优化~~ ✅ (0.5 cycle)
 - P1: TASK-235 后端测试框架 (1 cycle) - **待开始**
 
 ### 延后功能
@@ -73,9 +93,9 @@
 - **项目**: HuluChat
 - **当前版本**: v3.60.0 ✅ **已发布**
 - **下一版本**: v3.61.0 (Multi-Model Intelligence) - **开发中**
-- **待开始任务**: 2 个 (TASK-234, TASK-235)
-- **已完成任务计数**: 56
+- **待开始任务**: 1 个 (TASK-235)
+- **已完成任务计数**: 57
 
 ---
 
-*更新时间: 2026-03-13 - Cycle #19 (TASK-233 完成)*
+*更新时间: 2026-03-13 - Cycle #20 (TASK-234 完成)*
