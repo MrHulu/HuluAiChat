@@ -52,13 +52,75 @@ export function TemplateSelector({
     );
   }
 
+  const handleRetry = () => {
+    setError(null);
+    setIsLoading(true);
+    // Re-trigger the effect by calling loadTemplates directly
+    const loadTemplates = async () => {
+      try {
+        setIsLoading(true);
+        const data = await listSessionTemplates();
+        setTemplates(data);
+        setError(null);
+      } catch (err) {
+        console.error("Failed to load templates:", err);
+        setError(err instanceof Error ? err.message : t("templates.loadError"));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadTemplates();
+  };
+
   if (error) {
     return (
-      <div className={cn("text-center py-8 text-destructive", className)}>
-        {error}
+      <div className={cn("text-center py-8", className)}>
+        <p className="text-destructive mb-3">{error}</p>
+        <button
+          onClick={handleRetry}
+          className={cn(
+            "inline-flex items-center gap-2 px-4 py-2 rounded-md",
+            "bg-secondary text-secondary-foreground",
+            "hover:bg-secondary/80 transition-colors",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          )}
+        >
+          <span>{t("common.retry", "Retry")}</span>
+        </button>
       </div>
     );
   }
+
+  // Helper function to get localized template name
+  const getTemplateName = (template: SessionTemplate): string => {
+    // For built-in templates, try to use translation first
+    if (template.is_builtin) {
+      const translationKey = `templates.builtIn.${template.id}.name`;
+      const translatedName = t(translationKey);
+      // If translation exists (key doesn't return itself), use it
+      if (translatedName !== translationKey) {
+        return translatedName;
+      }
+    }
+    // Fallback to server-provided name
+    return template.name;
+  };
+
+  // Helper function to get localized template description
+  const getTemplateDescription = (template: SessionTemplate): string | null => {
+    if (!template.description) return null;
+    // For built-in templates, try to use translation first
+    if (template.is_builtin) {
+      const translationKey = `templates.builtIn.${template.id}.description`;
+      const translatedDesc = t(translationKey);
+      // If translation exists (key doesn't return itself), use it
+      if (translatedDesc !== translationKey) {
+        return translatedDesc;
+      }
+    }
+    // Fallback to server-provided description
+    return template.description;
+  };
 
   return (
     <div className={cn("grid grid-cols-2 gap-3", className)}>
@@ -75,11 +137,11 @@ export function TemplateSelector({
         >
           <div className="flex items-center gap-2 mb-2">
             <span className="text-2xl">{template.icon || "📝"}</span>
-            <span className="font-medium">{template.name}</span>
+            <span className="font-medium">{getTemplateName(template)}</span>
           </div>
-          {template.description && (
+          {getTemplateDescription(template) && (
             <p className="text-xs text-muted-foreground line-clamp-2">
-              {template.description}
+              {getTemplateDescription(template)}
             </p>
           )}
           {template.default_model && (

@@ -163,7 +163,7 @@ export function QuickActionsSettings({ onSettingsChange }: QuickActionsSettingsP
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          {t("settings.quickActions.description")}
+          {t("settings.quickActions.settingsDescription")}
         </p>
         <div className="flex gap-2">
           <Button
@@ -235,7 +235,7 @@ export function QuickActionsSettings({ onSettingsChange }: QuickActionsSettingsP
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">{t("settings.quickActions.description")}</Label>
+            <Label htmlFor="description">{t("settings.quickActions.actionDescription")}</Label>
             <Input
               id="description"
               value={formData.descriptionKey || ""}

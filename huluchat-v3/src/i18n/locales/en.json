@@ -252,13 +252,13 @@
     "customModelName": "Custom Model",
     "customModelDescription": "Use a custom model ID (e.g., GLM-4, Qwen)",
     "quickActions": {
-      "description": "Customize Quick Actions for the Quick Panel. Use {{text}} as placeholder for selected text.",
+      "settingsDescription": "Customize Quick Actions for the Quick Panel. Use {{text}} as placeholder for selected text.",
       "addAction": "Add Action",
       "editAction": "Edit Action",
       "reset": "Reset to Defaults",
       "name": "Name",
       "namePlaceholder": "e.g., Translate",
-      "description": "Description",
+      "actionDescription": "Description",
       "descriptionPlaceholder": "e.g., Translate text to target language",
       "icon": "Icon",
       "category": "Category",
@@ -514,6 +514,24 @@
       "analysis": "Analysis",
       "translation": "Translation",
       "custom": "Custom"
+    },
+    "builtIn": {
+      "general-chat": {
+        "name": "General Chat",
+        "description": "Suitable for daily Q&A and general conversations"
+      },
+      "code-assistant": {
+        "name": "Code Assistant",
+        "description": "Focus on coding, debugging, and code review"
+      },
+      "translation": {
+        "name": "Translation Assistant",
+        "description": "Professional multilingual translation service"
+      },
+      "creative-writing": {
+        "name": "Creative Writing",
+        "description": "Help with articles, emails, and creative content"
+      }
     }
   },
   "app": {
