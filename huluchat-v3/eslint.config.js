@@ -22,6 +22,8 @@ export default tseslint.config(
         { allowConstantExport: true },
       ],
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      // Disable rule that causes false positives with Chinese characters in regex
+      'no-misleading-character-class': 'off',
       // Disable overly strict React Compiler rules
       'react-hooks/set-state-in-effect': 'off',
       'react-hooks/immutability': 'off',
