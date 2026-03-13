@@ -5,12 +5,17 @@
  * TASK-216: 添加消息队列功能
  * - 断开时消息进入队列
  * - 重连成功后自动发送队列消息
+ *
+ * TASK-321: WebSocket 连接韧性增强
+ * - 心跳响应
+ * - 连接超时处理
+ * - 重连状态追踪
  */
 import { useEffect, useRef, useCallback, useState } from "react";
 
 import { toast } from "sonner";
 
-export type ConnectionStatus = "connecting" | "connected" | "disconnected" | "error";
+export type ConnectionStatus = "connecting" | "connected" | "disconnected" | "error" | "reconnecting";
 
 /** Queued message type */
 export interface QueuedMessage {
@@ -43,6 +48,8 @@ export interface UseWebSocketOptions {
   onMessageQueued?: (count: number) => void;
   /** Callback when queue is flushed */
   onQueueFlushed?: (count: number) => void;
+  /** Connection timeout in ms (default: 10000) */
+  connectionTimeout?: number;
 }
 
 /**
@@ -77,6 +84,10 @@ export interface UseWebSocketReturn {
   queueSize: number;
   /** Clear the message queue */
   clearQueue: () => void;
+  /** Current reconnect attempt (0 = not reconnecting, 1+ = attempt number) */
+  reconnectAttempt: number;
+  /** Maximum reconnect attempts */
+  maxReconnectAttempts: number;
 }
 export function useWebSocket({
   url,
@@ -93,11 +104,14 @@ export function useWebSocket({
   maxQueueSize = 100,
   onMessageQueued,
   onQueueFlushed,
+  connectionTimeout = 10000,
 }: UseWebSocketOptions): UseWebSocketReturn {
   const wsRef = useRef<WebSocket | null>(null);
   const attemptsRef = useRef(0);
   const [status, setStatus] = useState<ConnectionStatus>("disconnected");
+  const [reconnectAttempt, setReconnectAttempt] = useState(0);
   const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const connectionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Message queue for offline resilience (TASK-216)
   const messageQueueRef = useRef<QueuedMessage[]>([]);
@@ -125,13 +139,32 @@ export function useWebSocket({
 
     setStatus("connecting");
 
+    // Clear any existing connection timeout
+    if (connectionTimeoutRef.current) {
+      clearTimeout(connectionTimeoutRef.current);
+    }
+
+    // Set connection timeout
+    connectionTimeoutRef.current = setTimeout(() => {
+      if (wsRef.current?.readyState !== WebSocket.OPEN) {
+        console.log("[WebSocket] Connection timeout");
+        wsRef.current?.close();
+        setStatus("error");
+      }
+    }, connectionTimeout);
+
     try {
       const ws = new WebSocket(url);
       wsRef.current = ws;
 
       ws.onopen = () => {
+        // Clear connection timeout on successful connection
+        if (connectionTimeoutRef.current) {
+          clearTimeout(connectionTimeoutRef.current);
+        }
         setStatus("connected");
         attemptsRef.current = 0;
+        setReconnectAttempt(0);
 
         // Flush message queue on reconnect (TASK-216)
         const queue = messageQueueRef.current;
@@ -158,6 +191,16 @@ export function useWebSocket({
       ws.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
+
+          // TASK-321: Handle heartbeat ping from server
+          if (data.type === "ping") {
+            // Respond with pong
+            if (ws.readyState === WebSocket.OPEN) {
+              ws.send(JSON.stringify({ type: "pong" }));
+            }
+            return; // Don't forward ping to onMessage callback
+          }
+
           onMessage?.(data);
         } catch {
           onMessage?.(event.data);
@@ -165,7 +208,10 @@ export function useWebSocket({
       };
 
       ws.onclose = () => {
-        setStatus("disconnected");
+        // Clear connection timeout
+        if (connectionTimeoutRef.current) {
+          clearTimeout(connectionTimeoutRef.current);
+        }
         onClose?.();
 
         // Auto reconnect using ref to avoid stale closure
@@ -176,11 +222,17 @@ export function useWebSocket({
             : effectiveBaseDelay;
 
           attemptsRef.current++;
+          setReconnectAttempt(attemptsRef.current);
+          setStatus("reconnecting");
           console.log(`[WebSocket] Reconnecting in ${delay}ms (attempt ${attemptsRef.current}/${reconnectAttempts})`);
 
           reconnectTimeoutRef.current = setTimeout(() => {
             connectRef.current();
           }, delay);
+        } else {
+          // Max attempts reached
+          setStatus("disconnected");
+          setReconnectAttempt(0);
         }
       };
 
@@ -191,7 +243,7 @@ export function useWebSocket({
     } catch {
       setStatus("error");
     }
-  }, [url, onMessage, onOpen, onClose, onError, reconnectAttempts, exponentialBackoff, effectiveBaseDelay, maxDelay, jitter]);
+  }, [url, onMessage, onOpen, onClose, onError, reconnectAttempts, exponentialBackoff, effectiveBaseDelay, maxDelay, jitter, connectionTimeout]);
 
   // Keep connectRef in sync
   useEffect(() => {
@@ -202,13 +254,18 @@ export function useWebSocket({
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
     }
+    if (connectionTimeoutRef.current) {
+      clearTimeout(connectionTimeoutRef.current);
+    }
     wsRef.current?.close();
     wsRef.current = null;
     setStatus("disconnected");
+    setReconnectAttempt(0);
   }, []);
 
   const reconnect = useCallback(() => {
     attemptsRef.current = 0;
+    setReconnectAttempt(0);
     disconnect();
     connect();
   }, [connect, disconnect]);
@@ -277,5 +334,5 @@ export function useWebSocket({
     };
   }, [connect, disconnect]);
 
-  return { status, send, sendOrQueue, disconnect, reconnect, queueSize, clearQueue };
+  return { status, send, sendOrQueue, disconnect, reconnect, queueSize, clearQueue, reconnectAttempt, maxReconnectAttempts: reconnectAttempts };
 }
