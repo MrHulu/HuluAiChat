@@ -556,6 +556,7 @@
     "documents": "文档",
     "noDocuments": "未上传文档",
     "chunks": "{{count}} 个片段",
+    "chunksHint": "片段数：文档被分割成的语义块数量，用于 AI 智能检索",
     "delete": "删除",
     "deleteDocument": "删除文档 {{filename}}",
     "deleteConfirm": "确定要删除此文档吗？",

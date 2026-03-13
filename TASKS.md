@@ -2,46 +2,25 @@
 
 ## 🚨 秘书指令 - 紧急任务（优先级最高）
 
-> **来源**: AI Center 秘书
-> **时间**: 2026-03-12 22:15
-> **原因**: 任务太大导致超时，拆分成小步骤
+> **来源**: AI Center 秘书 (Boss 指令)
+> **时间**: 2026-03-13
+> **指令**: 修复完所有问题后，回归测试 → 发布热修复版本
 
-### TASK-217 拆分（每步 5-10 分钟）
+### 执行顺序
 
-- [ ] **TASK-217a**: 添加 useAccessibilityPermission mock
-  - 文件：`huluchat-v3/src/App.test.tsx`
-  - 在 `vi.mock("@/hooks", ...)` 中添加：
-    ```typescript
-    useAccessibilityPermission: vi.fn(() => ({
-      hasPermission: true,
-      showGuide: false,
-      dismissGuide: vi.fn(),
-      dismissPermanently: vi.fn(),
-    })),
-    ```
-  - 只添加这个 mock，不做其他修改
+1. **修复剩余问题** (TASK-221 ~ TASK-225)
+2. **TASK-226**: 🧪 全面回归测试
+   - 命令：`cd huluchat-v3 && npm test -- --run`
+   - 目标：所有测试通过
+   - 如有失败，修复后重新测试
 
-- [ ] **TASK-217b**: 添加 useGlobalShortcut mock
-  - 文件：`huluchat-v3/src/App.test.tsx`
-  - 在同一个 mock 中添加：
-    ```typescript
-    useGlobalShortcut: vi.fn(() => ({
-      isRegistered: false,
-      registerShortcut: vi.fn(),
-      unregisterShortcut: vi.fn(),
-      updateShortcut: vi.fn(),
-      currentShortcut: 'CommandOrControl+Shift+Space',
-    })),
-    ```
-  - 只添加这个 mock，不做其他修改
+3. **TASK-227**: 📦 发布热修复版本 v3.59.1
+   - 更新版本号：package.json, tauri.conf.json
+   - 更新 CHANGELOG.md
+   - 创建 tag 并推送
+   - 等待 GitHub Release 构建
 
-- [ ] **TASK-217c**: 运行测试验证
-  - 命令：`cd huluchat-v3 && npm test -- --run`
-  - 目标：所有测试通过
-  - 如果失败，只修复失败的测试
-
-- [ ] **TASK-218**: 📦 发布 v3.59.0 ⏳ **等待 217c**
-  - 更新版本号 + 创建 tag + 推送
+> **Boss 要求**: 修复完这些问题，要回归测试一下，然后发这个热修复版本
 
 ---
 
@@ -166,25 +145,31 @@
   - **修复**: 统一使用 `error` 字段名
   - **PR**: #396
 
-- [ ] **TASK-221**: 🐛 修复自定义模型选择不生效 [P1]
+- [x] **TASK-221**: 🐛 修复自定义模型选择不生效 [P1] ✅ 2026-03-13
   - **问题**: 设置自定义模型后，在聊天会话里仍然显示 GPT-4o
-  - **位置**: ModelSelector / useModel hook
+  - **根因**: useModel.ts 初始加载时只检查模型是否在预定义列表中，忽略自定义模型
+  - **修复**: 初始加载时也支持自定义模型，添加到模型列表并设置
+  - **变更文件**: `src/hooks/useModel.ts`, `src/hooks/useModel.test.ts`
 
-- [ ] **TASK-222**: 🎨 修复设置 API 窗口尺寸问题 [P2]
+- [x] **TASK-222**: 🎨 修复设置 API 窗口尺寸问题 [P2] ✅ 2026-03-13
   - **问题**: 设置 API 时，窗口比程序还大
-  - **位置**: SettingsDialog / API Key 设置组件
+  - **修复**: DialogContent 添加 max-h-[85vh] overflow-y-auto
+  - **变更文件**: SettingsDialog.tsx
 
-- [ ] **TASK-223**: 🎨 修复设置窗口快捷键和 Tab 重叠 [P2]
+- [x] **TASK-223**: 🎨 修复设置窗口快捷键和 Tab 重叠 [P2] ✅ 2026-03-13
   - **问题**: 设置窗口里面快捷键和后面的 tab 重叠了
-  - **位置**: SettingsDialog / QuickActionsSettings
+  - **修复**: 增加对话框宽度到 640px，TabsList 改用 flex flex-wrap
+  - **变更文件**: SettingsDialog.tsx
 
-- [ ] **TASK-224**: 🔤 修复消息图标悬浮文字错误 [P3]
+- [x] **TASK-224**: 🔤 修复消息图标悬浮文字错误 [P3] ✅ 2026-03-13
   - **问题**: 在发出的文本消息里的所有图标悬浮文字都是叫"双击引用消息"
-  - **位置**: MessageItem 组件
+  - **修复**: 将 title 属性从外层容器移到消息气泡内层
+  - **变更文件**: MessageItem.tsx
 
-- [ ] **TASK-225**: 📖 优化文档对话状态说明 [P3]
+- [x] **TASK-225**: 📖 优化文档对话状态说明 [P3] ✅ 2026-03-13
   - **问题**: 用户不清楚文档对话右边的状态是什么意思
-  - **建议**: 添加 tooltip 或帮助说明
+  - **修复**: 添加 tooltip 解释 chunks 的含义
+  - **变更文件**: DocumentList.tsx, i18n locales
 
 ### v3.59.0 - 全局快捷唤起 + 技术韧性 ✅ **Critic 审核通过**
 **主题**: Global Quick Summon + Technical Resilience

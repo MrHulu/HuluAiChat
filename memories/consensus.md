@@ -1,13 +1,64 @@
 # Auto Company Consensus
 
-> 最后更新: 2026-03-12
+> 最后更新: 2026-03-13
 
 ---
 
 ## 当前状态
-🟢 **v3.59.0 发布完成 + Boss 验证问题修复中**
+🟢 **v3.59.1 热修复版本发布中**
 
-### Boss 验证发现问题修复 (2026-03-12)
+### 🚨 Boss 指令 (2026-03-13)
+
+> **"修复完这些问题，要回归测试一下，然后发这个热修复版本"**
+
+### 执行计划
+
+**Step 1**: 修复剩余问题 (TASK-221 ~ TASK-225) ✅ **全部完成**
+- [x] TASK-221: 自定义模型选择不生效 [P1] ✅
+- [x] TASK-222: 设置 API 窗口尺寸问题 [P2] ✅
+- [x] TASK-223: 设置窗口快捷键和 Tab 重叠 [P2] ✅
+- [x] TASK-224: 消息图标悬浮文字错误 [P3] ✅
+- [x] TASK-225: 文档对话状态说明 [P3] ✅
+
+**Step 2**: TASK-226 - 全面回归测试 ✅ **完成**
+- 结果: 83 个测试文件，1909 个测试用例全部通过
+
+**Step 3**: TASK-227 - 发布热修复版本 v3.59.1 ⏳ **进行中**
+
+### Next Action
+> **更新版本号 → 更新 CHANGELOG → 创建 tag → 推送发布**
+
+---
+
+### 已修复问题 (v3.59.1)
+
+**TASK-222**: 设置 API 窗口尺寸问题 ✅ **已修复** (2026-03-13)
+- **问题**: 设置 API 时，窗口比程序还大
+- **修复**: DialogContent 添加 `max-h-[85vh] overflow-y-auto` 限制最大高度并支持滚动
+- **变更文件**: `src/components/settings/SettingsDialog.tsx`
+
+**TASK-223**: 设置窗口快捷键和 Tab 重叠 ✅ **已修复** (2026-03-13)
+- **问题**: 设置窗口里面快捷键和后面的 tab 重叠了
+- **修复**: 增加对话框宽度到 640px，TabsList 改用 `flex flex-wrap` 自动换行
+- **变更文件**: `src/components/settings/SettingsDialog.tsx`
+
+**TASK-224**: 消息图标悬浮文字错误 ✅ **已修复** (2026-03-13)
+- **问题**: 发出的文本消息里的所有图标悬浮文字都是"双击引用消息"
+- **修复**: 将 title 属性从外层容器移到消息气泡内层，并添加条件判断
+- **变更文件**: `src/components/chat/MessageItem.tsx`
+
+**TASK-225**: 文档对话状态说明 ✅ **已修复** (2026-03-13)
+- **问题**: 用户不清楚文档对话右边的状态（chunks 数量）是什么意思
+- **修复**: 添加 tooltip 解释 chunks 的含义
+- **变更文件**: `src/components/rag/DocumentList.tsx`, `src/i18n/locales/*.json`
+
+### 已修复问题 (v3.59.0)
+
+**TASK-221**: 自定义模型选择不生效 ✅ **已修复** (2026-03-13)
+- **问题**: 设置自定义模型后，在聊天会话里仍然显示 GPT-4o
+- **根因**: useModel.ts 初始加载时只检查模型是否在预定义列表中，忽略自定义模型
+- **修复**: 初始加载时也支持自定义模型，添加到模型列表并设置
+- **变更文件**: `src/hooks/useModel.ts`, `src/hooks/useModel.test.ts`
 
 **TASK-219**: `/api/chat/{id}/messages` 返回 500 错误 ✅ **已修复**
 - **根因**: 数据库 messages 表缺少 `images` 和 `files` 列
@@ -19,43 +70,18 @@
 - **修复**: 统一使用 `error` 字段名
 - **PR**: #396
 
-### 待修复问题
-- **TASK-221**: 自定义模型选择不生效 [P1]
-- **TASK-222**: 设置 API 窗口尺寸问题 [P2]
-- **TASK-223**: 设置窗口快捷键和 Tab 重叠 [P2]
-- **TASK-224**: 消息图标悬浮文字错误 [P3]
-- **TASK-225**: 文档对话状态说明 [P3]
-
-### Next Action
-> **继续修复 TASK-221: 自定义模型选择不生效**
-
 ---
 
 ### v3.59.0 发布记录
 
 ✅ **GitHub Release: https://github.com/MrHulu/HuluAiChat/releases/tag/v3.59.0**
 
-### 发布问题修复记录
-- **问题**: 所有平台 Tauri 构建失败
-- **原因**: `TAURI_SIGNING_PRIVATE_KEY` 格式不正确
-- **错误信息**: `failed to decode secret key: incorrect updater private key password: Missing comment in secret key`
-- **解决方案**: 禁用 `createUpdaterArtifacts`（临时）
-- **后续**: Boss 需要重新配置正确格式的签名密钥
-
-### 发布结果
+**发布结果**:
 1. ✅ 测试验证通过（1909/1909 测试用例）
 2. ✅ 版本号确认（package.json + tauri.conf.json = 3.59.0）
-3. ✅ 代码合并到 master
-4. ✅ Tag v3.59.0 已推送
-5. ✅ GitHub Release 创建成功
-6. ✅ 4 个平台构建产物上传成功：
-   - Windows: MSI + NSIS 安装包
-   - macOS Intel: DMG + app.tar.gz
-   - macOS ARM: DMG + app.tar.gz
-   - Linux: AppImage + RPM + DEB
-
-### Next Action
-> **发送邮件通知 Boss 发布完成**
+3. ✅ Tag v3.59.0 已推送
+4. ✅ GitHub Release 创建成功
+5. ✅ 4 个平台构建产物上传成功
 
 ---
 
