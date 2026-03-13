@@ -4,7 +4,7 @@
 
 ---
 
-## ✅ Bug 修复完成 - 所有 3 个 Bug 已修复 ✅
+## ✅ Bug 修复完成 - 所有 3 个 Bug 已修复并发布 ✅
 
 > **Boss 直接指令 (2026-03-13)**: 暂停一切功能开发！
 
@@ -12,74 +12,61 @@
 
 | Bug | 描述 | 状态 | 修复方案 |
 |-----|------|------|----------|
-| Bug #1 | 消息悬浮文字错误 | ✅ **已修复** | 移除容器上的 `title` 属性 (PR #437) |
-| Bug #2 | API Key 保存后消失 | ✅ **已修复** | 修复 API Key 初始化逻辑 (PR #440) |
-| Bug #3 | 消息卡在"思考中" | ✅ **已修复** | 添加连接状态监听重置 isLoading (PR #444) |
+| Bug #1 | 消息悬浮文字错误 | ✅ **已修复+发布** | 移除容器上的 `title` 属性 (PR #437) |
+| Bug #2 | API Key 保存后消失 | ✅ **已修复+发布** | 修复 API Key 初始化逻辑 (PR #440) |
+| Bug #3 | 消息卡在"思考中" | ✅ **已修复+发布** | 添加连接状态监听重置 isLoading (PR #444) |
 
 ---
 
-## Bug #2 修复详情 (TASK-310)
+## v3.65.0 发布完成 ✅
 
-**问题**: App.tsx 中 API Key 初始化逻辑错误
+**主题**: Bug Fix - Loading Stuck
+**发布日期**: 2026-03-14
+**实际周期**: 1 Cycle (#40)
 
-```typescript
-// 问题代码
-const providers: APIKeyProvider[] = ["openai", "deepseek"];
-for (const provider of providers) {
-  const apiKey = await getAPIKey(provider);
-  if (apiKey) {
-    // 问题：无论 provider 是什么，都发送 openai_api_key
-    await updateSettings({ openai_api_key: apiKey });
-  }
-}
-```
+### 完成任务
+| 任务 | 内容 | 状态 |
+|------|------|------|
+| TASK-311 | 修复消息卡在"思考中" | ✅ |
 
-**影响**: 如果存在 deepseek key，会覆盖 openai key，导致 API Key 失效
-
-**修复**: 只加载 openai provider 的 key 发送到后端
-
-**PR**: #440 ✅ 已合并
-
----
-
-## Bug #3 修复详情 (TASK-311)
-
-**问题**: WebSocket 连接断开时 `isLoading` 不会重置
-
-**根本原因**: `useChat.ts` 没有监听 `connectionStatus` 变化。当 WebSocket 断开（网络问题、后端崩溃）时，`isLoading` 一直保持 `true`，导致 UI 显示"思考中"状态。
-
-**修复方案**:
-```typescript
-// TASK-311: 监听连接状态变化，断开时重置 isLoading
-useEffect(() => {
-  if (connectionStatus === "disconnected" || connectionStatus === "error") {
-    setIsLoading(false);
-    setStreamingMessage(null);
-  }
-}, [connectionStatus]);
-```
-
-**PR**: #444 ✅ 已合并
-**测试**: 1947 passed ✅ (新增 2 个测试用例)
+### 技术指标
+- 前端测试: 1947 passed ✅
+- Tag: v3.65.0 ✅
+- PR: #446 ✅
 
 ---
 
 ## Next Action
-> **✅ 所有 3 个 Bug 已修复，等待 Boss 确认或指示下一步**
+> **✅ 所有 3 个 Bug 已修复并发布**
 >
-> **选项**:
-> - A. 发布 v3.65.0（包含 Bug #3 修复）
-> - B. 等待 Boss 反馈是否还有其他 bug
-> - C. 修复后端 mypy 类型错误（35 个错误）
+> **待开始任务**:
+> - TASK-300: 🔧 配置 agent-browser 测试环境 [P0]
+> - TASK-301: 🧪 编写核心功能端到端测试 [P0]
+> - TASK-302: 🌐 真实 API 集成测试 [P0]
+> - TASK-303: 🐛 修复 v3.59.0 发现的 bug [P1]
+> - TASK-304: 🔍 性能优化 [P1]
+>
+> **建议**: 等待 Boss 确认是否还有其他 bug，或执行 TASK-300 (测试基础设施)
 
 ---
 
-## TASK-309 完成记录 (2026-03-13)
+## v3.64.0 发布完成 ✅
 
-**修复**: 移除消息容器上的 `title` 属性
-- **文件**: `src/components/chat/MessageItem.tsx`
-- **PR**: #437 ✅ 已合并
-- **验证**: test-frontend passed ✅
+**主题**: Bug Fix - UI 问题修复
+**发布日期**: 2026-03-14
+**实际周期**: 1 Cycle (#38)
+
+### 完成任务
+| 任务 | 内容 | 状态 |
+|------|------|------|
+| TASK-309 | 修复消息容器悬浮文字错误 | ✅ |
+| TASK-310 | 修复 API Key 初始化逻辑错误 | ✅ |
+
+### 技术指标
+- 前端测试: 1945 passed ✅
+- 后端测试: 137 passed ✅
+- Tag: v3.64.0 ✅
+- PR: #442 ✅
 
 ---
 
@@ -216,20 +203,11 @@ useEffect(() => {
 ## Company State
 
 - **项目**: HuluChat
-- **当前版本**: v3.64.0 ✅ **已发布**
-- **下一版本**: v3.65.0 (待发布 - 包含 Bug #3 修复)
-- **当前任务**: 所有 Bug 已修复，等待 Boss 指示
-- **已完成任务计数**: 71
+- **当前版本**: v3.65.0 ✅ **已发布**
+- **下一版本**: v3.66.0 (待规划)
+- **当前任务**: 所有 Bug 已修复并发布，等待 Boss 指示
+- **已完成任务计数**: 72
 
 ---
 
-## TASK-311 完成记录 (2026-03-14)
-
-**修复**: 添加 WebSocket 连接状态监听
-- **文件**: `src/hooks/useChat.ts`
-- **PR**: #444 ✅ 已合并
-- **验证**: test-frontend passed ✅ (1947 tests)
-
----
-
-*更新时间: 2026-03-14 - Cycle #39 (Bug #3 修复完成)*
+*更新时间: 2026-03-14 - Cycle #40 (v3.65.0 发布完成)*
