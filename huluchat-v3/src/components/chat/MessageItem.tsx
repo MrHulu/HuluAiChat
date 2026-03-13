@@ -7,11 +7,12 @@ import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { Message } from "@/api/client";
+import { Message, ModelInfo, OllamaModel } from "@/api/client";
 import { Button } from "@/components/ui/button";
 import { Pencil, Check, X, Bookmark, BookmarkCheck, Copy, Clock, RefreshCw, Quote, Trash2, CheckCircle2 } from "lucide-react";
 import { CodeBlock } from "./CodeBlock";
 import { MermaidBlock } from "./MermaidBlock";
+import { ModelSelectorDialog } from "./ModelSelectorDialog";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
@@ -102,9 +103,12 @@ export interface MessageItemProps {
   // Regenerate props
   onRegenerate?: (messageId: string, model?: string) => void;
   isRegenerating?: boolean;
-  // Model selection for regeneration
-  availableModels?: { id: string; name: string }[];
+  // Model selection for regeneration - TASK-233 Phase 5
+  availableModels?: ModelInfo[];
   currentModel?: string;
+  ollamaModels?: OllamaModel[];
+  ollamaAvailable?: boolean;
+  recommendedModel?: string | null;
   // Quote props
   onQuote?: (message: Message) => void;
   // Delete props
@@ -188,6 +192,11 @@ export const MessageItem = memo(function MessageItem({
   onBookmarkToggle,
   onRegenerate,
   isRegenerating = false,
+  availableModels = [],
+  currentModel,
+  ollamaModels = [],
+  ollamaAvailable = false,
+  recommendedModel,
   onQuote,
   onDelete,
   isSelectionMode = false,
@@ -203,6 +212,7 @@ export const MessageItem = memo(function MessageItem({
   const [editContent, setEditContent] = useState(message.content);
   const [isSaving, setIsSaving] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [showModelSelector, setShowModelSelector] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Sync editContent when message content changes (e.g., during streaming)
@@ -557,12 +567,12 @@ export const MessageItem = memo(function MessageItem({
                 )}
               </button>
             )}
-            {/* Regenerate button for AI messages - Cycle #143 */}
+            {/* Regenerate button for AI messages - Cycle #143 + TASK-233 Phase 5 */}
             {!isUser && onRegenerate && !isEditing && !isStreaming && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onRegenerate(message.id);
+                  setShowModelSelector(true);
                 }}
                 aria-label={t("chat.regenerate")}
                 disabled={isRegenerating}
@@ -732,6 +742,23 @@ export const MessageItem = memo(function MessageItem({
           </div>
         )}
       </div>
+
+      {/* Model Selector Dialog for regeneration - TASK-233 Phase 5 */}
+      {onRegenerate && !isUser && (
+        <ModelSelectorDialog
+          open={showModelSelector}
+          onOpenChange={setShowModelSelector}
+          models={availableModels}
+          currentModel={currentModel}
+          ollamaModels={ollamaModels}
+          ollamaAvailable={ollamaAvailable}
+          recommendedModel={recommendedModel}
+          onSelectModel={(modelId) => {
+            onRegenerate(message.id, modelId);
+          }}
+          isRegenerating={isRegenerating}
+        />
+      )}
     </div>
   );
 });

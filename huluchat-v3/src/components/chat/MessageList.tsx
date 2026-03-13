@@ -4,7 +4,7 @@
  */
 import { useState, useEffect, useRef, useCallback, useImperativeHandle, forwardRef, useMemo } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { Message } from "@/api/client";
+import { Message, ModelInfo, OllamaModel } from "@/api/client";
 import { MessageItem } from "./MessageItem";
 import { DateSeparator } from "./DateSeparator";
 import { StreamingMessage } from "@/hooks/useChat";
@@ -27,8 +27,14 @@ export interface MessageListProps {
   bookmarkedMessages?: Map<string, string>; // messageId -> bookmarkId
   onBookmarkToggle?: (messageId: string, isBookmarked: boolean, bookmarkId?: string) => void;
   // Regenerate props
-  onRegenerate?: (messageId: string) => void;
+  onRegenerate?: (messageId: string, model?: string) => void;
   isRegenerating?: boolean;
+  // Model selection props - TASK-233 Phase 5
+  availableModels?: ModelInfo[];
+  currentModel?: string;
+  ollamaModels?: OllamaModel[];
+  ollamaAvailable?: boolean;
+  recommendedModel?: string | null;
   // Suggestion hints props
   onSuggestionClick?: (suggestion: string) => void;
   // Quote props - Cycle #145
@@ -99,7 +105,7 @@ function buildVirtualItems(messages: Message[]): VirtualItem[] {
 }
 
 export const MessageList = forwardRef<MessageListRef, MessageListProps>(function MessageList(
-  { messages, streamingMessage, isLoading, onEditMessage, bookmarkedMessages, onBookmarkToggle, onRegenerate, isRegenerating, onSuggestionClick, onQuote, onDelete, isSelectionMode, selectedMessageIds, onMessageSelect, searchMatchIds, currentMatchId },
+  { messages, streamingMessage, isLoading, onEditMessage, bookmarkedMessages, onBookmarkToggle, onRegenerate, isRegenerating, availableModels, currentModel, ollamaModels, ollamaAvailable, recommendedModel, onSuggestionClick, onQuote, onDelete, isSelectionMode, selectedMessageIds, onMessageSelect, searchMatchIds, currentMatchId },
   ref
 ) {
   const { t } = useTranslation();
@@ -273,6 +279,11 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
                   onBookmarkToggle={onBookmarkToggle}
                   onRegenerate={onRegenerate}
                   isRegenerating={isRegenerating}
+                  availableModels={availableModels}
+                  currentModel={currentModel}
+                  ollamaModels={ollamaModels}
+                  ollamaAvailable={ollamaAvailable}
+                  recommendedModel={recommendedModel}
                   onQuote={onQuote}
                   onDelete={onDelete}
                   isSelectionMode={isSelectionMode}

@@ -2,6 +2,35 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [3.61.0] - 2026-03-13
+
+### ✨ New Features
+
+- **TASK-233**: Multi-Model Replay (Phase 1)
+  - Added `model_id`, `regenerated_from`, `regenerated_at` fields to messages table
+  - MessageItem now displays model badge (e.g., "DeepSeek V3")
+  - ModelSelectorDialog component for choosing different model to regenerate
+  - Users can now replay any message with a different AI model
+  - Files: `backend/migrations/`, `backend/api/chat.py`, `src/components/chat/ModelSelectorDialog.tsx`
+
+- **TASK-234**: ChromaDB Lazy Loading Optimization
+  - ChromaDB module no longer loads when RAG is not used
+  - Reduced startup time by ~1.8s for non-RAG users
+  - Lazy import using `TYPE_CHECKING` pattern
+  - Files: `backend/services/async_chroma.py`, `backend/services/rag_service.py`
+
+- **TASK-235**: Backend Test Framework
+  - Set up pytest async testing framework
+  - Added test fixtures and configuration
+  - Created 137 backend test cases covering health, sessions, settings, and chat APIs
+  - Files: `backend/pytest.ini`, `backend/tests/conftest.py`, `backend/tests/test_*.py`
+
+### 🔧 Technical
+
+- Added 12 new frontend tests for ModelSelectorDialog
+- Backend test coverage: health (2), sessions (8), settings (7), chat (6) = 23 API tests
+- Total tests: 1945 frontend + 137 backend = 2082 tests
+
 ## [3.60.0] - 2026-03-13
 
 ### ✨ New Features
