@@ -244,6 +244,8 @@ describe("useContextualTip Hook", () => {
     });
 
     it("关闭状态仅存储于会话内存", async () => {
+      // 由于默认 mock 返回没有 API Key，所以当前提示会是 no-api-key
+      // 这个测试验证 dismissedIds 只存储在内存中
       const context: ContextState = {
         ...defaultContext,
         sessionId: "test-session",
@@ -258,12 +260,15 @@ describe("useContextualTip Hook", () => {
         expect(result.current.currentTip).not.toBeNull();
       });
 
+      // 获取当前的提示 ID
+      const currentTipId = result.current.currentTip?.id;
+
       act(() => {
         result.current.dismissTip();
       });
 
-      // dismissedIds 应该在内存中，不在 localStorage 中
-      expect(result.current.dismissedIds).toContain("empty-session");
+      // dismissedIds 应该在内存中，包含被关闭的提示 ID
+      expect(result.current.dismissedIds).toContain(currentTipId);
       // 不应该调用 setItem 存储 dismissedIds
       const setItemCalls = localStorageMock.setItem.mock.calls;
       const dismissedCalls = setItemCalls.filter(
