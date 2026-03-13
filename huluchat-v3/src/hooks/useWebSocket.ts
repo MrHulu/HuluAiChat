@@ -12,8 +12,6 @@ import { toast } from "sonner";
 
 export type ConnectionStatus = "connecting" | "connected" | "disconnected" | "error";
 
-import { createChatWebSocket } from "@/api/client";
-
 /** Queued message type */
 export interface QueuedMessage {
   id: string;
