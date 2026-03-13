@@ -23,6 +23,12 @@ class MessageModel(Base):
     images: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     # Store files as JSON string: [{"id": "...", "name": "...", "type": "...", "size": 123, "content": "data:..."}]
     files: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    # Model used to generate this message (for AI messages)
+    model_id: Mapped[Optional[str]] = mapped_column(nullable=True)
+    # Original message ID if this is a regenerated response
+    regenerated_from: Mapped[Optional[str]] = mapped_column(nullable=True)
+    # When this message was regenerated
+    regenerated_at: Mapped[Optional[datetime]] = mapped_column(nullable=True)
     created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
 
 
@@ -39,6 +45,9 @@ class MessageResponse(BaseModel):
     session_id: str
     role: str
     content: str
+    model_id: Optional[str] = None
+    regenerated_from: Optional[str] = None
+    regenerated_at: Optional[datetime] = None
     created_at: datetime
 
     class Config:
