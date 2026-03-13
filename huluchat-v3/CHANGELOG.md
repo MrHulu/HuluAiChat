@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [3.65.0] - 2026-03-14
+
+### Fixed
+- **Loading Stuck Bug**: Fixed issue where messages get stuck in "thinking" state
+  - Added WebSocket connection status monitoring
+  - Automatically reset loading state when connection drops
+  - Prevents UI from being stuck when network errors occur
+
+### Technical
+- Added `useEffect` hook in `useChat.ts` to monitor `connectionStatus`
+- Reset `isLoading` and `streamingMessage` on disconnect/error
+- 2 new test cases for connection state handling
+- Total tests: 1947 passed
+
 ## [3.50.0] - 2026-03-07
 
 ### Added
