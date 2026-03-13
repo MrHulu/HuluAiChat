@@ -2,6 +2,27 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [3.62.0] - 2026-03-13
+
+### ✨ Improvements
+
+- **TASK-236**: Multi-Model Replay Discoverability
+  - Added "Multi-Model Replay" to feature discovery tips
+  - Tooltip guides users to try "Regenerate" button
+  - Knowledge Center documentation updated
+  - Files: `src/hooks/useFeatureDiscovery.ts`, `src/components/chat/MessageItem.tsx`, `src/data/knowledgeArticles.ts`
+
+### 🐛 Bug Fixes
+
+- Fixed search result keyboard navigation timing issue in SessionList tests
+  - Added proper async wait for search results before keyboard navigation
+  - Files: `src/components/sidebar/SessionList.test.tsx`
+
+### 🔧 Technical
+
+- All 1945 frontend tests passing
+- All 137 backend tests passing
+
 ## [3.61.0] - 2026-03-13
 
 ### ✨ New Features

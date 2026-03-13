@@ -225,6 +225,11 @@ describe("SessionList", () => {
         expect(mockSearchSessions).toHaveBeenCalledWith("Session");
       }, { timeout: 500 });
 
+      // Wait for search results to render (important for timing)
+      await waitFor(() => {
+        expect(screen.getByText("Session 1")).toBeInTheDocument();
+      });
+
       // Navigate to first result
       fireEvent.keyDown(searchInput, { key: "ArrowDown" });
 
