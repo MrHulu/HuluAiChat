@@ -124,6 +124,7 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
   const [activeFolderFilter, setActiveFolderFilter] = useState<string | null>(null);
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const [focusedSearchIndex, setFocusedSearchIndex] = useState<number>(-1);
 
   // Expose focusSearch method to parent
   useImperativeHandle(ref, () => ({
@@ -370,6 +371,11 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
     };
   }, [searchQuery, performSearch]);
 
+  // Reset focused index when search results change
+  useEffect(() => {
+    setFocusedSearchIndex(-1);
+  }, [searchResults]);
+
   // Group sessions by folder and including quickpanel source
   const sessionsByFolder = useMemo(() => {
     const grouped: Record<string, Session[]> = {
@@ -427,6 +433,41 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
   const selectAllVisible = useCallback(() => {
     setSelectedSessionIds(new Set(displaySessions.map((s) => s.id)));
   }, [displaySessions]);
+
+  // Keyboard navigation for search results
+  const handleSearchKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Handle Escape key regardless of search state
+    if (e.key === "Escape") {
+      e.preventDefault();
+      setSearchQuery("");
+      setFocusedSearchIndex(-1);
+      searchInputRef.current?.blur();
+      return;
+    }
+
+    // Other shortcuts require search query and results
+    if (!searchQuery || !displaySessions.length) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setFocusedSearchIndex((prev) =>
+        prev < displaySessions.length - 1 ? prev + 1 : 0
+      );
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setFocusedSearchIndex((prev) =>
+        prev > 0 ? prev - 1 : displaySessions.length - 1
+      );
+    } else if (e.key === "Enter" && focusedSearchIndex >= 0) {
+      e.preventDefault();
+      const session = displaySessions[focusedSearchIndex];
+      if (session) {
+        onSelectSession(session.id);
+        setSearchQuery("");
+        setFocusedSearchIndex(-1);
+      }
+    }
+  }, [searchQuery, displaySessions, focusedSearchIndex, onSelectSession]);
 
   const toggleFolder = (folderId: string) => {
     setExpandedFolders((prev) => {
@@ -659,6 +700,7 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
             placeholder={t("sidebar.searchChats")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
             className="pl-9 h-8 text-sm bg-background"
             aria-label={t("sidebar.searchChats")}
           />
@@ -717,11 +759,15 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
               {displaySessions.map((session, sessionIndex) => {
                 const searchResult = searchResults?.find((r) => r.session.id === session.id);
                 const matchedMessages = searchResult?.matched_messages || [];
+                const isFocused = focusedSearchIndex === sessionIndex;
 
                 return (
                   <div
                     key={session.id}
-                    className="animate-list-enter"
+                    className={cn(
+                      "animate-list-enter rounded-md transition-colors",
+                      isFocused && "ring-2 ring-primary bg-primary/5"
+                    )}
                     style={{ animationDelay: `${sessionIndex * 50}ms` }}
                   >
                     <SessionItem

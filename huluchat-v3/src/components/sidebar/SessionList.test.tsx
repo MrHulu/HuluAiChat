@@ -152,6 +152,120 @@ describe("SessionList", () => {
 
       expect(searchInput).toHaveValue("");
     });
+
+    it("should clear search when Escape key pressed", () => {
+      render(<SessionList {...defaultProps} />);
+
+      const searchInput = screen.getByPlaceholderText("Search chats...");
+      fireEvent.change(searchInput, { target: { value: "test" } });
+      expect(searchInput).toHaveValue("test");
+
+      // Press Escape
+      fireEvent.keyDown(searchInput, { key: "Escape" });
+
+      expect(searchInput).toHaveValue("");
+    });
+
+    it("should navigate search results with arrow keys", async () => {
+      const sessions = [
+        createSession("1", "Session 1"),
+        createSession("2", "Session 2"),
+      ];
+      const mockSearchSessions = vi.mocked(apiClient.searchSessions);
+      mockSearchSessions.mockResolvedValue([
+        { session: sessions[0], matched_messages: [] },
+        { session: sessions[1], matched_messages: [] },
+      ]);
+
+      render(<SessionList {...defaultProps} sessions={sessions} />);
+
+      const searchInput = screen.getByPlaceholderText("Search chats...");
+      fireEvent.change(searchInput, { target: { value: "Session" } });
+
+      // Wait for debounce and search
+      await waitFor(() => {
+        expect(mockSearchSessions).toHaveBeenCalledWith("Session");
+      }, { timeout: 500 });
+
+      // Press ArrowDown to focus first result
+      fireEvent.keyDown(searchInput, { key: "ArrowDown" });
+
+      // Wait for state update
+      await waitFor(() => {
+        // Find the container with ring-2 class (keyboard focus indicator)
+        const containers = document.querySelectorAll(".ring-2");
+        expect(containers.length).toBe(1);
+      });
+    });
+
+    it("should select focused search result when Enter pressed", async () => {
+      const sessions = [
+        createSession("1", "Session 1"),
+        createSession("2", "Session 2"),
+      ];
+      const onSelectSession = vi.fn();
+      const mockSearchSessions = vi.mocked(apiClient.searchSessions);
+      mockSearchSessions.mockResolvedValue([
+        { session: sessions[0], matched_messages: [] },
+        { session: sessions[1], matched_messages: [] },
+      ]);
+
+      render(<SessionList {...defaultProps} sessions={sessions} onSelectSession={onSelectSession} />);
+
+      const searchInput = screen.getByPlaceholderText("Search chats...");
+      fireEvent.change(searchInput, { target: { value: "Session" } });
+
+      // Wait for debounce and search
+      await waitFor(() => {
+        expect(mockSearchSessions).toHaveBeenCalledWith("Session");
+      }, { timeout: 500 });
+
+      // Navigate to first result
+      fireEvent.keyDown(searchInput, { key: "ArrowDown" });
+
+      // Wait for focus state
+      await waitFor(() => {
+        expect(document.querySelector(".ring-2")).toBeInTheDocument();
+      });
+
+      // Press Enter to select
+      fireEvent.keyDown(searchInput, { key: "Enter" });
+
+      expect(onSelectSession).toHaveBeenCalledWith("1");
+    });
+
+    it("should wrap around when navigating past last result", async () => {
+      const sessions = [
+        createSession("1", "Session 1"),
+        createSession("2", "Session 2"),
+      ];
+      const mockSearchSessions = vi.mocked(apiClient.searchSessions);
+      mockSearchSessions.mockResolvedValue([
+        { session: sessions[0], matched_messages: [] },
+        { session: sessions[1], matched_messages: [] },
+      ]);
+
+      render(<SessionList {...defaultProps} sessions={sessions} />);
+
+      const searchInput = screen.getByPlaceholderText("Search chats...");
+      fireEvent.change(searchInput, { target: { value: "Session" } });
+
+      // Wait for debounce and search
+      await waitFor(() => {
+        expect(mockSearchSessions).toHaveBeenCalledWith("Session");
+      }, { timeout: 500 });
+
+      // Navigate down 3 times (2 sessions + wrap to first)
+      fireEvent.keyDown(searchInput, { key: "ArrowDown" });
+      fireEvent.keyDown(searchInput, { key: "ArrowDown" });
+      fireEvent.keyDown(searchInput, { key: "ArrowDown" });
+
+      // Should wrap back to first result
+      await waitFor(() => {
+        const container = document.querySelector(".ring-2");
+        expect(container).toBeInTheDocument();
+      });
+    });
   });
 
   describe("Session List", () => {
