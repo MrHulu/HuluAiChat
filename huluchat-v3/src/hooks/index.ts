@@ -37,3 +37,7 @@ export {
   type PermissionStatus,
   type UseAccessibilityPermissionResult,
 } from "./useAccessibilityPermission";
+export {
+  useClipboardHistory,
+  type ClipboardHistoryItem,
+} from "./useClipboardHistory";
