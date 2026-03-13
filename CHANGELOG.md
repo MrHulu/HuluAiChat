@@ -2,6 +2,61 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [3.67.0] - 2026-03-14
+
+### 🔒 Security
+
+- **TASK-320**: API Key Security Audit
+  - Added `core/security.py` with masking and sanitization utilities
+  - `mask_api_key()`: Masks API keys for safe logging (shows first 4 and last 4 chars)
+  - `sanitize_error_message()`: Removes sensitive data from error messages
+  - `get_safe_error_type()`: Returns safe error type without details
+  - Updated `api/chat.py` WebSocket error handling to use sanitization
+  - Created `backend/.env.example` for configuration documentation
+  - Files: `backend/core/security.py`, `backend/api/chat.py`
+
+### 🔄 Reliability
+
+- **TASK-321**: WebSocket Connection Resilience
+  - Auto-reconnect within 2 seconds (`reconnectInterval: 2000ms`)
+  - Connection status UI feedback via `ConnectionIndicator`
+  - Message queuing when disconnected (`sendOrQueue`)
+  - Heartbeat mechanism (30s ping interval, 10s timeout)
+  - Exponential backoff reconnection (1s - 30s)
+  - Files: `src/hooks/useWebSocket.ts`, `src/hooks/useChat.ts`
+
+### 🧪 Testing
+
+- **TASK-322**: E2E Test Coverage Boost (124 tests, +77% over target)
+  - `e2e/error-handling.spec.ts`: Backend unavailable, API errors, input validation, timeout handling (18 tests)
+  - `e2e/websocket-resilience.spec.ts`: Connection states, reconnect, message queuing, heartbeat (13 tests)
+  - `e2e/session-operations.spec.ts`: CRUD, batch operations, search, sort, export (30 tests)
+  - `e2e/edge-cases.spec.ts`: Empty sessions, long messages, special chars, performance, responsive (26 tests)
+  - Previous: 47 tests → Now: 124 tests
+
+### 🛡️ Error Handling
+
+- **TASK-323**: Error Boundary Enhancement
+  - Added `errorLogger.ts` for local error persistence (max 50 entries)
+  - `SidebarErrorFallback` component for compact sidebar error UI
+  - Error log export functionality (JSON download for debugging)
+  - SessionList wrapped with ErrorBoundary protection
+  - Files: `src/utils/errorLogger.ts`, `src/components/ui/sidebar-error-fallback.tsx`, `src/components/ui/error-boundary.tsx`
+
+### 💡 UX
+
+- **TASK-324**: Feature Discoverability Optimization
+  - QuickPanel added to feature discovery list (`quick-panel`)
+  - Model switch tracking (`model-switch`)
+  - Document chat tracking (`document-chat`)
+  - Files: `src/hooks/useFeatureDiscovery.ts`, `src/components/chat/ChatView.tsx`, `src/components/rag/RAGPanel.tsx`
+
+### 🔧 Technical
+
+- All 1968 frontend tests passing
+- All 137 backend tests passing
+- v3.67.0 focused on stability and quality (no new features)
+
 ## [3.64.0] - 2026-03-13
 
 ### 🐛 Bug Fixes
