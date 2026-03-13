@@ -300,6 +300,9 @@
     "loading": "Loading plugins...",
     "refresh": "Refresh plugins",
     "installed": "{{count}} installed",
+    "installedPlugins": "Installed Plugins",
+    "installedBadge": "Installed",
+    "install": "Install",
     "noPlugins": "No plugins installed",
     "installHint": "Drop a plugin folder or click Browse to install",
     "togglePlugin": "Toggle plugin",
@@ -335,11 +338,56 @@
     "checkUpdate": "Check for updates",
     "checkUpdateFailed": "Failed to check for updates: {{error}}",
     "update": "Update",
+    "permissionsCount": "{{count}} permissions",
     "state": {
       "active": "Active",
       "inactive": "Inactive",
       "activating": "Activating",
       "error": "Error"
+    },
+    "tabs": {
+      "installed": "Installed",
+      "marketplace": "Marketplace"
+    },
+    "badges": {
+      "official": "Official",
+      "new": "New",
+      "popular": "Popular",
+      "featured": "Featured"
+    },
+    "categories": {
+      "all": "All",
+      "productivity": "Productivity",
+      "developer": "Developer",
+      "communication": "Communication",
+      "export": "Export",
+      "appearance": "Appearance",
+      "utility": "Utility",
+      "integration": "Integration"
+    },
+    "permissions": {
+      "chat.read": "Read Messages",
+      "chat.write": "Write Messages",
+      "storage": "Local Storage",
+      "api": "API Access",
+      "clipboard": "Clipboard Access",
+      "network": "Network Access",
+      "files": "File System"
+    },
+    "marketplace": {
+      "title": "Plugin Marketplace",
+      "available": "{{count}} available",
+      "search": "Search plugins...",
+      "allPlugins": "All",
+      "featured": "Featured",
+      "sortBy": "Sort by",
+      "sort": {
+        "name": "Name",
+        "downloads": "Downloads",
+        "rating": "Rating"
+      },
+      "noResults": "No plugins found",
+      "noResultsHint": "Try a different search term or category"
     }
   },
   "ollama": {

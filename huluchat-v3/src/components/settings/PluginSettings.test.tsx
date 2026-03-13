@@ -118,16 +118,18 @@ describe("PluginSettings", () => {
   });
 
   describe("rendering", () => {
-    it("should render plugin settings header", async () => {
+    it("should render plugin settings tabs", async () => {
       await renderPluginSettings();
 
-      expect(screen.getByText("Plugins")).toBeInTheDocument();
+      expect(screen.getByText("Installed")).toBeInTheDocument();
+      expect(screen.getByText("Marketplace")).toBeInTheDocument();
     });
 
     it("should show installed count badge", async () => {
       await renderPluginSettings();
 
-      expect(screen.getByText("0 installed")).toBeInTheDocument();
+      // The count is now shown in a badge within the Installed tab
+      expect(screen.getByText("0")).toBeInTheDocument();
     });
 
     it("should render drop zone for installation", async () => {

@@ -185,15 +185,22 @@
 
 ### 核心任务
 
-- [ ] **TASK-328**: 🏪 Plugin Discovery & Marketplace [P0]
+- [x] **TASK-328**: 🏪 Plugin Discovery & Marketplace [P0] ✅
   - **来源**: CEO Bezos 战略决策
   - **目标**: 让用户能发现和安装插件
-  - **内容**:
-    - [ ] 插件市场 UI（本地索引）
-    - [ ] 一键安装/卸载
-    - [ ] 插件搜索和分类
-  - **约束**: 无云端服务，本地索引
-  - **周期**: 预计 2 个
+  - **完成内容**:
+    - [x] 插件注册表索引 (`src/plugins/registry.ts`)
+    - [x] PluginMarketplace 组件 (`src/components/settings/PluginMarketplace.tsx`)
+    - [x] 分类过滤（7 个分类）
+    - [x] 搜索功能
+    - [x] 精选/全部切换
+    - [x] 排序功能
+    - [x] 国际化支持 (en/zh)
+    - [x] 集成到 PluginSettings (Tabs UI)
+  - **测试**: 55 个新测试 (registry: 37, marketplace: 18)
+  - **约束**: 无云端服务，本地索引 ✅
+  - **完成日期**: 2026-03-14
+  - **周期**: Cycle #28
 
 - [ ] **TASK-329**: 🔌 Plugin API 扩展 (Phase 1) [P0]
   - **来源**: CEO Bezos 战略决策

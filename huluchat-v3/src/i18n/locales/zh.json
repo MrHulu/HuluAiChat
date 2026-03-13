@@ -288,6 +288,9 @@
     "loading": "加载插件中...",
     "refresh": "刷新插件",
     "installed": "已安装 {{count}} 个",
+    "installedPlugins": "已安装插件",
+    "installedBadge": "已安装",
+    "install": "安装",
     "noPlugins": "没有安装插件",
     "installHint": "拖放插件文件夹或点击浏览来安装",
     "togglePlugin": "切换插件",
@@ -323,11 +326,56 @@
     "checkUpdate": "检查更新",
     "checkUpdateFailed": "检查更新失败：{{error}}",
     "update": "更新",
+    "permissionsCount": "{{count}} 个权限",
     "state": {
       "active": "已激活",
       "inactive": "未激活",
       "activating": "激活中",
       "error": "错误"
+    },
+    "tabs": {
+      "installed": "已安装",
+      "marketplace": "市场"
+    },
+    "badges": {
+      "official": "官方",
+      "new": "新",
+      "popular": "热门",
+      "featured": "精选"
+    },
+    "categories": {
+      "all": "全部",
+      "productivity": "效率",
+      "developer": "开发",
+      "communication": "交流",
+      "export": "导出",
+      "appearance": "外观",
+      "utility": "工具",
+      "integration": "集成"
+    },
+    "permissions": {
+      "chat.read": "读取消息",
+      "chat.write": "发送消息",
+      "storage": "本地存储",
+      "api": "API 访问",
+      "clipboard": "剪贴板访问",
+      "network": "网络访问",
+      "files": "文件系统"
+    },
+    "marketplace": {
+      "title": "插件市场",
+      "available": "{{count}} 个可用",
+      "search": "搜索插件...",
+      "allPlugins": "全部",
+      "featured": "精选",
+      "sortBy": "排序方式",
+      "sort": {
+        "name": "名称",
+        "downloads": "下载量",
+        "rating": "评分"
+      },
+      "noResults": "未找到插件",
+      "noResultsHint": "尝试不同的搜索词或分类"
     }
   },
   "ollama": {

@@ -46,3 +46,23 @@ export {
   initializePluginSystem,
   PluginManagerImpl,
 } from "./manager";
+
+// Registry exports
+export type {
+  PluginCategory,
+  PluginBadge,
+  PluginRegistryEntry,
+} from "./registry";
+
+export {
+  OFFICIAL_PLUGIN_REGISTRY,
+  getAvailablePlugins,
+  getPluginsByCategory,
+  searchPlugins,
+  getPluginById,
+  getCategories,
+  getFeaturedPlugins,
+  sortPlugins,
+  getPermissionInfo,
+  getCategoryInfo,
+} from "./registry";

@@ -20,6 +20,8 @@ import {
   FolderOpen,
   Download,
   ArrowUpCircle,
+  Store,
+  Package,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -42,8 +44,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePluginManager } from "@/hooks";
 import type { PluginInstance, PluginUpdateInfo, PluginUpdateState } from "@/plugins";
+import { PluginMarketplace } from "./PluginMarketplace";
 
 /**
  * Get badge variant based on plugin state
@@ -591,54 +595,76 @@ export function PluginSettings() {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Puzzle className="h-5 w-5 text-muted-foreground" />
-          <h3 className="text-sm font-medium">{t("plugins.title")}</h3>
-          <Badge variant="secondary" className="text-xs">
-            {t("plugins.installed", { count: plugins.length })}
-          </Badge>
-        </div>
-        <Button variant="ghost" size="sm" onClick={refreshPlugins} className="group/refresh">
-          <RefreshCw className="h-4 w-4 transition-transform duration-300 ease-out group-hover/refresh:rotate-180" />
-          <span className="sr-only">{t("plugins.refresh")}</span>
-        </Button>
-      </div>
+      {/* Tabs for Installed and Marketplace */}
+      <Tabs defaultValue="installed" className="w-full">
+        <TabsList className="w-full">
+          <TabsTrigger value="installed" className="gap-1 flex-1">
+            <Package className="h-3 w-3" />
+            {t("plugins.tabs.installed")}
+            <Badge variant="secondary" className="ml-1 text-xs">
+              {plugins.length}
+            </Badge>
+          </TabsTrigger>
+          <TabsTrigger value="marketplace" className="gap-1 flex-1">
+            <Store className="h-3 w-3" />
+            {t("plugins.tabs.marketplace")}
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Install drop zone */}
-      <DropZone onInstall={handleInstall} isInstalling={isInstalling} />
-
-      {/* Plugin list */}
-      {plugins.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-8 text-center border rounded-lg animate-bounce-in">
-          <Puzzle className="h-8 w-8 text-muted-foreground mb-2" />
-          <p className="text-sm text-muted-foreground">{t("plugins.noPlugins")}</p>
-          <p className="text-xs text-muted-foreground mt-1">{t("plugins.installHint")}</p>
-        </div>
-      ) : (
-        <div className="grid gap-3">
-          {plugins.map((plugin, index) => (
-            <div
-              key={plugin.manifest.id}
-              className="animate-list-enter"
-              style={{ animationDelay: `${index * 50}ms` }}
-            >
-              <PluginCard
-                plugin={plugin}
-                updateInfo={updateInfos.get(plugin.manifest.id) ?? null}
-                updateState={updateStates.get(plugin.manifest.id) ?? "idle"}
-                onActivate={() => handleActivate(plugin.manifest.id)}
-                onDeactivate={() => handleDeactivate(plugin.manifest.id)}
-                onUninstall={() => handleUninstall(plugin.manifest.id)}
-                onCheckUpdate={() => handleCheckUpdate(plugin.manifest.id)}
-                onUpdate={() => handleUpdate(plugin.manifest.id)}
-                isProcessing={processingId === plugin.manifest.id}
-              />
+        {/* Installed Plugins Tab */}
+        <TabsContent value="installed" className="space-y-4 mt-4">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Puzzle className="h-5 w-5 text-muted-foreground" />
+              <h3 className="text-sm font-medium">{t("plugins.installedPlugins")}</h3>
             </div>
-          ))}
-        </div>
-      )}
+            <Button variant="ghost" size="sm" onClick={refreshPlugins} className="group/refresh">
+              <RefreshCw className="h-4 w-4 transition-transform duration-300 ease-out group-hover/refresh:rotate-180" />
+              <span className="sr-only">{t("plugins.refresh")}</span>
+            </Button>
+          </div>
+
+          {/* Install drop zone */}
+          <DropZone onInstall={handleInstall} isInstalling={isInstalling} />
+
+          {/* Plugin list */}
+          {plugins.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-8 text-center border rounded-lg animate-bounce-in">
+              <Puzzle className="h-8 w-8 text-muted-foreground mb-2" />
+              <p className="text-sm text-muted-foreground">{t("plugins.noPlugins")}</p>
+              <p className="text-xs text-muted-foreground mt-1">{t("plugins.installHint")}</p>
+            </div>
+          ) : (
+            <div className="grid gap-3">
+              {plugins.map((plugin, index) => (
+                <div
+                  key={plugin.manifest.id}
+                  className="animate-list-enter"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  <PluginCard
+                    plugin={plugin}
+                    updateInfo={updateInfos.get(plugin.manifest.id) ?? null}
+                    updateState={updateStates.get(plugin.manifest.id) ?? "idle"}
+                    onActivate={() => handleActivate(plugin.manifest.id)}
+                    onDeactivate={() => handleDeactivate(plugin.manifest.id)}
+                    onUninstall={() => handleUninstall(plugin.manifest.id)}
+                    onCheckUpdate={() => handleCheckUpdate(plugin.manifest.id)}
+                    onUpdate={() => handleUpdate(plugin.manifest.id)}
+                    isProcessing={processingId === plugin.manifest.id}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        {/* Marketplace Tab */}
+        <TabsContent value="marketplace" className="mt-4">
+          <PluginMarketplace />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
