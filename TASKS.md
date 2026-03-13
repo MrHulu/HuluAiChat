@@ -40,20 +40,21 @@
 
 ## 🔴 质量改进任务
 
-### Phase 1: 添加测试模型 (P0)
+### Phase 1: 添加测试模型 (P0) ✅ **已完成**
 
-- [ ] **TASK-299**: ➕ 添加 GLM-5 模型支持 [P0]
+- [x] **TASK-299**: ➕ 添加 GLM-5 模型支持 [P0] ✅
   - **目标**: 在后端和前端添加 GLM-5 模型
   - **来源**: Boss 提供的智谱 API
   - **技术实现**:
-    - 后端: `backend/api/settings.py` - 添加 GLM-5 到 AVAILABLE_MODELS ✅ 已添加
-    - 前端: `src/data/modelComparison.ts` - 添加 GLM-5 数据
-    - 前端: `src/i18n/locales/*.json` - 添加翻译
+    - 后端: `backend/api/settings.py` - 添加 GLM-5 到 AVAILABLE_MODELS ✅
+    - 前端: `src/data/modelComparison.ts` - 添加 GLM-5 数据 ✅
+    - 前端: `src/i18n/locales/*.json` - 添加翻译 ✅
   - **验收标准**:
-    - [ ] GLM-5 出现在模型选择器
-    - [ ] 可以使用 GLM-5 进行对话
-    - [ ] 流式输出正常
-  - **预计周期**: 0.5 cycle
+    - [x] GLM-5 出现在模型选择器（代码已添加）
+    - [ ] 可以使用 GLM-5 进行对话（需 TASK-302 验证）
+    - [ ] 流式输出正常（需 TASK-302 验证）
+  - **完成日期**: 2026-03-13
+  - **周期**: Cycle #36
 
 ### Phase 2: 测试基础设施 (P0)
 
