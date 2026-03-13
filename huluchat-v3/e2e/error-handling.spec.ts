@@ -111,13 +111,13 @@ test.describe('API 错误处理', () => {
 
   test('API 错误应该显示友好消息', async ({ page }) => {
     // 打开设置对话框
-    const settingsButton = page.getByRole('button', { name: /settings|设置/i });
+    const settingsButton = page.getByRole('button', { name: /settings|设置/ui });
     await settingsButton.first().click();
     await page.waitForTimeout(500);
 
     // 查找错误提示区域
     const errorArea = page.locator('[class*="error"]')
-      .or(page.locator('text=/error|错误|失败/i'));
+      .or(page.locator('text=/error|错误|失败/ui'));
 
     // 记录是否存在错误区域
     const count = await errorArea.count();
@@ -176,7 +176,7 @@ test.describe('输入验证', () => {
     await inputArea.first().fill(longText);
 
     // 检查是否有长度限制提示
-    const charCounter = page.locator('text=/\\d+\\/\\d+|字符|character/i');
+    const charCounter = page.locator('text=/\\d+\\/\\d+|字符|character/ui');
     const hasCounter = await charCounter.count() > 0;
 
     console.log(`Character counter present: ${hasCounter}`);
@@ -226,7 +226,7 @@ test.describe('超时处理', () => {
     // 查找加载指示器
     const loadingIndicator = page.locator('[class*="loading"]')
       .or(page.locator('[class*="spinner"]'))
-      .or(page.locator('text=/loading|加载|thinking|思考/i'));
+      .or(page.locator('text=/loading|加载|thinking|思考/ui'));
 
     const hasLoading = await loadingIndicator.count() > 0;
     console.log(`Loading indicator present: ${hasLoading}`);
@@ -252,7 +252,7 @@ test.describe('并发处理', () => {
     await page.waitForLoadState('networkidle');
     await skipWelcomeIfNeeded(page);
 
-    const newChatButton = page.getByRole('button', { name: /new|新建/i });
+    const newChatButton = page.getByRole('button', { name: /new|新建/ui });
 
     // 快速连续点击 5 次
     for (let i = 0; i < 5; i++) {
