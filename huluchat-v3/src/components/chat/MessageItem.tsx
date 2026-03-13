@@ -100,8 +100,11 @@ export interface MessageItemProps {
   bookmarkId?: string;
   onBookmarkToggle?: (messageId: string, isBookmarked: boolean, bookmarkId?: string) => void;
   // Regenerate props
-  onRegenerate?: (messageId: string) => void;
+  onRegenerate?: (messageId: string, model?: string) => void;
   isRegenerating?: boolean;
+  // Model selection for regeneration
+  availableModels?: { id: string; name: string }[];
+  currentModel?: string;
   // Quote props
   onQuote?: (message: Message) => void;
   // Delete props
@@ -457,6 +460,32 @@ export const MessageItem = memo(function MessageItem({
         >
           <div className="flex items-center gap-2">
             <span>{isUser ? t("chat.you") : t("chat.ai")}</span>
+            {/* Model tag for AI messages - TASK-233 */}
+            {!isUser && message.model_id && (
+              <span
+                className={cn(
+                  "text-[10px] px-1.5 py-0.5 rounded",
+                  "bg-primary/15 text-primary",
+                  "dark:bg-primary/20 dark:text-primary"
+                )}
+                title={t("chat.modelUsed", { model: message.model_id })}
+              >
+                {message.model_id}
+              </span>
+            )}
+            {/* Regenerated indicator - TASK-233 */}
+            {!isUser && message.regenerated_from && (
+              <span
+                className={cn(
+                  "text-[10px] px-1.5 py-0.5 rounded",
+                  "bg-amber-500/15 text-amber-600",
+                  "dark:bg-amber-500/20 dark:text-amber-400"
+                )}
+                title={t("chat.regenerated")}
+              >
+                {t("chat.regeneratedShort")}
+              </span>
+            )}
             {/* Timestamp - Cycle #136 */}
             {!isStreaming && (
               <span
