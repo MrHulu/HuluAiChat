@@ -182,9 +182,14 @@ describe("SessionList", () => {
       const searchInput = screen.getByPlaceholderText("Search chats...");
       fireEvent.change(searchInput, { target: { value: "Session" } });
 
-      // Wait for debounce and search
+      // Wait for debounce and search API to be called
       await waitFor(() => {
         expect(mockSearchSessions).toHaveBeenCalledWith("Session");
+      }, { timeout: 500 });
+
+      // Wait for search results to be rendered (check for session title to appear)
+      await waitFor(() => {
+        expect(screen.getByText("Session 1")).toBeInTheDocument();
       }, { timeout: 500 });
 
       // Press ArrowDown to focus first result
