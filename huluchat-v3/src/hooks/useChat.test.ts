@@ -477,4 +477,87 @@ describe("useChat hook", () => {
       })
     );
   });
+
+  // TASK-311: 测试连接断开时重置 isLoading
+  it("should reset isLoading when connection is lost (TASK-311 - Bug #3 fix)", async () => {
+    // Start with connected status
+    mockWSReturn.status = "connected";
+
+    const { result, rerender } = renderHook(() => useChat("session-1"));
+
+    await waitFor(() => {
+      expect(result.current.isLoadingHistory).toBe(false);
+    });
+
+    // Start streaming - simulate sending a message
+    act(() => {
+      result.current.sendMessage("Hello");
+    });
+
+    expect(result.current.isLoading).toBe(true);
+
+    // Simulate stream start
+    act(() => {
+      if (mockOnMessage) {
+        mockOnMessage({
+          type: "stream_start",
+          message_id: "stream-123",
+        });
+      }
+    });
+
+    expect(result.current.streamingMessage).not.toBeNull();
+    expect(result.current.isLoading).toBe(true);
+
+    // Simulate connection loss
+    mockWSReturn.status = "disconnected";
+    rerender();
+
+    // isLoading should be reset when connection is lost
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+      expect(result.current.streamingMessage).toBeNull();
+    });
+  });
+
+  it("should reset isLoading when connection error occurs (TASK-311 - Bug #3 fix)", async () => {
+    // Start with connected status
+    mockWSReturn.status = "connected";
+
+    const { result, rerender } = renderHook(() => useChat("session-1"));
+
+    await waitFor(() => {
+      expect(result.current.isLoadingHistory).toBe(false);
+    });
+
+    // Start streaming - simulate sending a message
+    act(() => {
+      result.current.sendMessage("Hello");
+    });
+
+    expect(result.current.isLoading).toBe(true);
+
+    // Simulate stream start
+    act(() => {
+      if (mockOnMessage) {
+        mockOnMessage({
+          type: "stream_start",
+          message_id: "stream-456",
+        });
+      }
+    });
+
+    expect(result.current.streamingMessage).not.toBeNull();
+    expect(result.current.isLoading).toBe(true);
+
+    // Simulate connection error
+    mockWSReturn.status = "error";
+    rerender();
+
+    // isLoading should be reset when connection error occurs
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+      expect(result.current.streamingMessage).toBeNull();
+    });
+  });
 });
