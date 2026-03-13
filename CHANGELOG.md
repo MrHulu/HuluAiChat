@@ -2,6 +2,22 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [3.63.0] - 2026-03-13
+
+### 🐛 Bug Fixes
+
+- **TASK-306**: Fixed API Key validation for Zhipu AI/BigModel
+  - Replaced `client.models.list()` with `chat.completions.create()` for validation
+  - Zhipu AI doesn't support the `/models` endpoint
+  - Uses minimal request (max_tokens=1) to reduce cost
+  - Now compatible with all OpenAI-compatible providers
+  - Files: `backend/api/settings.py`
+
+### 🔧 Technical
+
+- All 1945 frontend tests passing
+- All 137 backend tests passing
+
 ## [3.62.0] - 2026-03-13
 
 ### ✨ Improvements
