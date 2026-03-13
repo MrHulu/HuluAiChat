@@ -22,7 +22,9 @@ if env_path.exists():
                 os.environ[key.strip()] = value.strip()
 
 # 配置
-API_KEY = os.getenv("DEEPSEEK_API_KEY", "REDACTED_API_KEY")
+API_KEY = os.getenv("DEEPSEEK_API_KEY")
+if not API_KEY:
+    raise ValueError("DEEPSEEK_API_KEY environment variable is required")
 POSSIBLE_BASE_URLS = [
     "https://open.bigmodel.cn/api/paas/v4",
     "https://open.bigmodel.cn/api/coding/paas/v4",
