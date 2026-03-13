@@ -5,7 +5,7 @@
 ---
 
 ## 当前状态
-🟢 **v3.59.0 发布完成 + 热修复版本准备中**
+🟢 **v3.59.1 热修复版本发布中**
 
 ### 🚨 Boss 指令 (2026-03-13)
 
@@ -13,26 +13,44 @@
 
 ### 执行计划
 
-**Step 1**: 修复剩余问题 (TASK-221 ~ TASK-225)
-- [x] TASK-221: 自定义模型选择不生效 [P1] ✅ **已修复**
-- [ ] TASK-222: 设置 API 窗口尺寸问题 [P2]
-- [ ] TASK-223: 设置窗口快捷键和 Tab 重叠 [P2]
-- [ ] TASK-224: 消息图标悬浮文字错误 [P3]
-- [ ] TASK-225: 文档对话状态说明 [P3]
+**Step 1**: 修复剩余问题 (TASK-221 ~ TASK-225) ✅ **全部完成**
+- [x] TASK-221: 自定义模型选择不生效 [P1] ✅
+- [x] TASK-222: 设置 API 窗口尺寸问题 [P2] ✅
+- [x] TASK-223: 设置窗口快捷键和 Tab 重叠 [P2] ✅
+- [x] TASK-224: 消息图标悬浮文字错误 [P3] ✅
+- [x] TASK-225: 文档对话状态说明 [P3] ✅
 
-**Step 2**: TASK-226 - 全面回归测试
-- 运行 `npm test -- --run` 确保所有测试通过
+**Step 2**: TASK-226 - 全面回归测试 ✅ **完成**
+- 结果: 83 个测试文件，1909 个测试用例全部通过
 
-**Step 3**: TASK-227 - 发布热修复版本 v3.59.1
-- 更新版本号 (package.json, tauri.conf.json)
-- 更新 CHANGELOG.md
-- 创建 tag 并推送
-- 等待 GitHub Release 构建
+**Step 3**: TASK-227 - 发布热修复版本 v3.59.1 ⏳ **进行中**
 
 ### Next Action
-> **修复 TASK-222 → TASK-223 → TASK-224 → TASK-225 → 回归测试 → 发布 v3.59.1**
+> **更新版本号 → 更新 CHANGELOG → 创建 tag → 推送发布**
 
 ---
+
+### 已修复问题 (v3.59.1)
+
+**TASK-222**: 设置 API 窗口尺寸问题 ✅ **已修复** (2026-03-13)
+- **问题**: 设置 API 时，窗口比程序还大
+- **修复**: DialogContent 添加 `max-h-[85vh] overflow-y-auto` 限制最大高度并支持滚动
+- **变更文件**: `src/components/settings/SettingsDialog.tsx`
+
+**TASK-223**: 设置窗口快捷键和 Tab 重叠 ✅ **已修复** (2026-03-13)
+- **问题**: 设置窗口里面快捷键和后面的 tab 重叠了
+- **修复**: 增加对话框宽度到 640px，TabsList 改用 `flex flex-wrap` 自动换行
+- **变更文件**: `src/components/settings/SettingsDialog.tsx`
+
+**TASK-224**: 消息图标悬浮文字错误 ✅ **已修复** (2026-03-13)
+- **问题**: 发出的文本消息里的所有图标悬浮文字都是"双击引用消息"
+- **修复**: 将 title 属性从外层容器移到消息气泡内层，并添加条件判断
+- **变更文件**: `src/components/chat/MessageItem.tsx`
+
+**TASK-225**: 文档对话状态说明 ✅ **已修复** (2026-03-13)
+- **问题**: 用户不清楚文档对话右边的状态（chunks 数量）是什么意思
+- **修复**: 添加 tooltip 解释 chunks 的含义
+- **变更文件**: `src/components/rag/DocumentList.tsx`, `src/i18n/locales/*.json`
 
 ### 已修复问题 (v3.59.0)
 

@@ -114,7 +114,10 @@ export function DocumentList({
                 />
               </svg>
               <span className="text-sm truncate">{doc.filename}</span>
-              <span className="text-xs text-muted-foreground shrink-0">
+              <span
+                className="text-xs text-muted-foreground shrink-0 cursor-help"
+                title={t("rag.chunksHint")}
+              >
                 {t("rag.chunks", { count: doc.chunk_count })}
               </span>
             </div>

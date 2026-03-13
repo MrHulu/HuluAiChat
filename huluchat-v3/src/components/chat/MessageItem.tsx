@@ -362,7 +362,6 @@ export const MessageItem = memo(function MessageItem({
       role="article"
       aria-label={isUser ? t("chat.you") : t("chat.ai")}
       onDoubleClick={handleDoubleClick}
-      title={t("chat.doubleClickToQuote")}
       className={cn(
         "group flex w-full mb-4 animate-list-enter",
         isUser ? "justify-end" : "justify-start",
@@ -406,6 +405,7 @@ export const MessageItem = memo(function MessageItem({
       )}
 
       <div
+        title={onQuote && !isEditing && !isStreaming ? t("chat.doubleClickToQuote") : undefined}
         className={cn(
           "max-w-[80%] rounded-2xl px-4 py-3 relative",
           "shadow-sm hover:shadow-md transition-all duration-200 ease-out",

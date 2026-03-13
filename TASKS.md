@@ -151,21 +151,25 @@
   - **修复**: 初始加载时也支持自定义模型，添加到模型列表并设置
   - **变更文件**: `src/hooks/useModel.ts`, `src/hooks/useModel.test.ts`
 
-- [ ] **TASK-222**: 🎨 修复设置 API 窗口尺寸问题 [P2]
+- [x] **TASK-222**: 🎨 修复设置 API 窗口尺寸问题 [P2] ✅ 2026-03-13
   - **问题**: 设置 API 时，窗口比程序还大
-  - **位置**: SettingsDialog / API Key 设置组件
+  - **修复**: DialogContent 添加 max-h-[85vh] overflow-y-auto
+  - **变更文件**: SettingsDialog.tsx
 
-- [ ] **TASK-223**: 🎨 修复设置窗口快捷键和 Tab 重叠 [P2]
+- [x] **TASK-223**: 🎨 修复设置窗口快捷键和 Tab 重叠 [P2] ✅ 2026-03-13
   - **问题**: 设置窗口里面快捷键和后面的 tab 重叠了
-  - **位置**: SettingsDialog / QuickActionsSettings
+  - **修复**: 增加对话框宽度到 640px，TabsList 改用 flex flex-wrap
+  - **变更文件**: SettingsDialog.tsx
 
-- [ ] **TASK-224**: 🔤 修复消息图标悬浮文字错误 [P3]
+- [x] **TASK-224**: 🔤 修复消息图标悬浮文字错误 [P3] ✅ 2026-03-13
   - **问题**: 在发出的文本消息里的所有图标悬浮文字都是叫"双击引用消息"
-  - **位置**: MessageItem 组件
+  - **修复**: 将 title 属性从外层容器移到消息气泡内层
+  - **变更文件**: MessageItem.tsx
 
-- [ ] **TASK-225**: 📖 优化文档对话状态说明 [P3]
+- [x] **TASK-225**: 📖 优化文档对话状态说明 [P3] ✅ 2026-03-13
   - **问题**: 用户不清楚文档对话右边的状态是什么意思
-  - **建议**: 添加 tooltip 或帮助说明
+  - **修复**: 添加 tooltip 解释 chunks 的含义
+  - **变更文件**: DocumentList.tsx, i18n locales
 
 ### v3.59.0 - 全局快捷唤起 + 技术韧性 ✅ **Critic 审核通过**
 **主题**: Global Quick Summon + Technical Resilience
