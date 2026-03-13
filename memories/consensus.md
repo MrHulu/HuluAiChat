@@ -51,10 +51,19 @@
 - ✅ 代码审查已完成
 
 ### Next Action
-> **🔴 执行 TASK-309: 修复 Bug #1 (已确认)**
-> - 文件: `src/components/chat/MessageItem.tsx`
-> - 移除第 420-421 行的 `title` 属性
-> - 验证修复效果
+> **🔴 继续验证 Bug #2 和 Bug #3**
+> - Bug #2: API Key 保存后消失 - 需要真实 UI 测试
+> - Bug #3: 消息卡在"思考中" - 需要真实 UI 测试
+> - 或者：修复后端 mypy 类型错误（36 个错误）
+
+---
+
+## TASK-309 完成记录 (2026-03-13)
+
+**修复**: 移除消息容器上的 `title` 属性
+- **文件**: `src/components/chat/MessageItem.tsx`
+- **PR**: #437 ✅ 已合并
+- **验证**: test-frontend passed ✅
 
 ---
 
