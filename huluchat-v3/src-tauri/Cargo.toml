@@ -1,6 +1,6 @@
 [package]
 name = "huluchat-v3"
-version = "3.61.0"
+version = "3.64.0"
 description = "HuluChat - AI Chat Desktop Application"
 authors = ["you"]
 edition = "2021"
@@ -38,4 +38,3 @@ codegen-units = 1       # 单代码生成单元，更好优化
 strip = true            # 移除符号表
 opt-level = "z"         # 优化体积（比 "s" 更激进）
 panic = "abort"         # panic 时直接终止，减小体积
-

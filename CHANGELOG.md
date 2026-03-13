@@ -2,6 +2,28 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [3.64.0] - 2026-03-13
+
+### 🐛 Bug Fixes
+
+- **TASK-309**: Fixed message container hover text issue
+  - Removed `title` attribute from MessageItem container
+  - The `title` was overriding tooltips for copy, bookmark, regenerate buttons
+  - Users can now see correct button tooltips
+  - Files: `src/components/chat/MessageItem.tsx`
+
+- **TASK-310**: Fixed API Key initialization logic error
+  - Fixed incorrect API Key handling in App.tsx initialization
+  - Previously, DeepSeek key could overwrite OpenAI key
+  - Now correctly loads only OpenAI provider key for settings
+  - Files: `src/App.tsx`
+
+### 🔧 Technical
+
+- Fixed backend `.env` config issue (`openai_connect_timeout` → `http_connect_timeout`)
+- All 1945 frontend tests passing
+- All 137 backend tests passing
+
 ## [3.63.0] - 2026-03-13
 
 ### 🐛 Bug Fixes
