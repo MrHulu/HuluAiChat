@@ -137,6 +137,13 @@ AVAILABLE_MODELS: List[ModelInfo] = [
         description="Most powerful Claude 3",
         provider="openai"
     ),
+    # GLM Models (Zhipu AI / BigModel) - For Testing
+    ModelInfo(
+        id="glm-5",
+        name="GLM-5",
+        description="Zhipu AI model for testing",
+        provider="zhipu"
+    ),
 ]
 
 
