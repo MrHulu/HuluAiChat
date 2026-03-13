@@ -1110,6 +1110,11 @@
         "title": "切换 AI 模型",
         "description": "为每个任务选择合适的 AI 模型 - GPT-4 用于复杂工作，本地模型用于隐私保护。",
         "action": "切换模型"
+      },
+      "modelRegenerate": {
+        "title": "对比模型回复",
+        "description": "对回答不满意？使用重新生成按钮尝试其他 AI 模型，对比不同模型的回复效果。",
+        "action": "试试重新生成"
       }
     }
   },

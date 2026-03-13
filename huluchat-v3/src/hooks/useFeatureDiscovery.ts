@@ -20,7 +20,8 @@ export type FeatureId =
   | "document-chat"
   | "session-export"
   | "folder-management"
-  | "model-switch";
+  | "model-switch"
+  | "model-regenerate"; // TASK-236: 多模型回放功能可发现性
 
 // 功能配置
 export interface FeatureConfig {
@@ -75,6 +76,13 @@ export const DISCOVERABLE_FEATURES: FeatureConfig[] = [
     actionKey: "featureDiscovery.features.modelSwitch.action",
     icon: "🔄",
   },
+  {
+    id: "model-regenerate", // TASK-236: 多模型回放功能可发现性
+    titleKey: "featureDiscovery.features.modelRegenerate.title",
+    descriptionKey: "featureDiscovery.features.modelRegenerate.description",
+    actionKey: "featureDiscovery.features.modelRegenerate.action",
+    icon: "🔀",
+  },
 ];
 
 // 功能使用状态类型
@@ -100,6 +108,7 @@ function loadFeatureUsage(): FeatureUsageState {
     "session-export": false,
     "folder-management": false,
     "model-switch": false,
+    "model-regenerate": false, // TASK-236
   };
 }
 
