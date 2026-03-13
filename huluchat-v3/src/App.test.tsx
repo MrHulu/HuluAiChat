@@ -117,6 +117,15 @@ vi.mock("@/hooks", () => ({
     status: "connected",
     send: vi.fn(),
   })),
+  useClipboardHistory: vi.fn(() => ({
+    history: [],
+    addToHistory: vi.fn(),
+    removeFromHistory: vi.fn(),
+    clearHistory: vi.fn(),
+    getItem: vi.fn(),
+    isEmpty: true,
+    count: 0,
+  })),
 }));
 
 // Mock API client

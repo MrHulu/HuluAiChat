@@ -373,7 +373,23 @@
     "clipboardDetected": "已检测到剪贴板内容",
     "fromClipboard": "来自剪贴板",
     "pasteFromClipboard": "从剪贴板粘贴",
-    "quickActions": "快捷操作"
+    "quickActions": "快捷操作",
+    "savedToQuickChats": "已保存到快速对话"
+  },
+  "clipboardHistory": {
+    "title": "历史记录 ({{count}})",
+    "empty": "暂无历史记录",
+    "emptyHint": "处理过的内容会显示在这里",
+    "clearAll": "清空全部",
+    "clearConfirm": "确定清空所有历史记录？",
+    "clearConfirmDesc": "这将永久删除所有剪贴板历史记录，此操作无法撤销。",
+    "clear": "清空",
+    "justNow": "刚刚",
+    "minutesAgo": "{{count}} 分钟前",
+    "hoursAgo": "{{count}} 小时前",
+    "daysAgo": "{{count}} 天前",
+    "reuseContent": "重新使用",
+    "copyResponse": "复制"
   },
   "quickActions": {
     "translate": {

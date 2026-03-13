@@ -8,13 +8,14 @@
  */
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Send, X, Loader2, Copy, Check, Clipboard, Settings } from "lucide-react";
+import { Send, X, Loader2, Copy, Check, Clipboard, Settings, History } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { useModel, useWebSocket } from "@/hooks";
+import { useModel, useWebSocket, useClipboardHistory } from "@/hooks";
 import { createSession, createChatWebSocket } from "@/api/client";
 import { toast } from "sonner";
 import { QuickActions } from "./QuickActions";
+import { ClipboardHistoryPanel } from "./ClipboardHistoryPanel";
 import {
   loadQuickActions,
   type QuickAction,
@@ -64,10 +65,14 @@ export function QuickPanel({
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [quickActions, setQuickActions] = useState<QuickAction[]>([]);
   const [clipboardDetected, setClipboardDetected] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const responseRef = useRef("");
+  const lastInputRef = useRef("");
+  const lastActionRef = useRef<string | undefined>(undefined);
   const { currentModel, setModel, models } = useModel();
+  const { history, addToHistory, removeFromHistory, clearHistory } = useClipboardHistory();
 
   // Load Quick Actions on mount
   useEffect(() => {
@@ -99,15 +104,30 @@ export function QuickPanel({
         setIsLoading(false);
         // Notify parent that conversation happened
         onHasConversation?.(true);
+        // Add to clipboard history
+        if (lastInputRef.current && responseRef.current) {
+          addToHistory({
+            content: lastInputRef.current,
+            action: lastActionRef.current,
+            response: responseRef.current,
+            model: currentModel,
+          });
+        }
+        // Reset refs
+        lastInputRef.current = "";
+        lastActionRef.current = undefined;
         break;
 
       case "error":
         setIsLoading(false);
         setError(msg.error || "Unknown error");
         toast.error(t("quickPanel.sendError"));
+        // Reset refs on error
+        lastInputRef.current = "";
+        lastActionRef.current = undefined;
         break;
     }
-  }, [t, onHasConversation]);
+  }, [t, onHasConversation, addToHistory, currentModel]);
 
   // Use WebSocket hook for real-time communication
   const { status: connectionStatus, send } = useWebSocket({
@@ -188,6 +208,10 @@ export function QuickPanel({
   const handleSend = useCallback(async () => {
     if (!input.trim() || isLoading || connectionStatus !== "connected") return;
 
+    // Store last input for history
+    lastInputRef.current = input.trim();
+    lastActionRef.current = undefined;
+
     setIsLoading(true);
     setError(null);
     setResponse("");
@@ -214,6 +238,10 @@ export function QuickPanel({
 
     setInput(processedPrompt);
 
+    // Store for history - use the original content, not the processed prompt
+    lastInputRef.current = currentText;
+    lastActionRef.current = t(action.nameKey);
+
     // Auto-send after applying action
     setTimeout(() => {
       if (connectionStatus === "connected") {
@@ -229,7 +257,7 @@ export function QuickPanel({
         });
       }
     }, 100);
-  }, [input, connectionStatus, currentModel, send]);
+  }, [input, connectionStatus, currentModel, send, t]);
 
   // Handle Enter key (send on Enter, new line on Shift+Enter)
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -281,9 +309,18 @@ export function QuickPanel({
     setError(null);
     setCopied(false);
     setClipboardDetected(false);
+    setShowHistory(false);
     responseRef.current = "";
     inputRef.current?.focus();
   };
+
+  // Handle reusing history content
+  const handleReuseContent = useCallback((content: string) => {
+    setInput(content);
+    setClipboardDetected(false);
+    setShowHistory(false);
+    setTimeout(() => inputRef.current?.focus(), 100);
+  }, []);
 
   if (!isOpen) return null;
 
@@ -334,6 +371,18 @@ export function QuickPanel({
             )}
           </div>
           <div className="flex items-center gap-1">
+            <Button
+              variant={showHistory ? "secondary" : "ghost"}
+              size="icon-xs"
+              onClick={() => setShowHistory(!showHistory)}
+              className={cn(
+                "text-muted-foreground hover:text-foreground",
+                showHistory && "text-primary"
+              )}
+              aria-label={t("clipboardHistory.title", { count: history.length })}
+            >
+              <History className="h-4 w-4" />
+            </Button>
             {onOpenSettings && (
               <Button
                 variant="ghost"
@@ -357,127 +406,140 @@ export function QuickPanel({
           </div>
         </div>
 
-        {/* Quick Actions bar */}
-        <div className="px-3 py-2 border-b border-border/50 bg-muted/20">
-          <div className="flex items-center justify-between gap-2">
-            <QuickActions
-              actions={quickActions}
-              onActionSelect={handleActionSelect}
-              disabled={isLoading || !input.trim()}
-              compact
-            />
-            <Button
-              variant="ghost"
-              size="icon-xs"
-              onClick={handlePaste}
-              disabled={isLoading}
-              className="text-muted-foreground hover:text-foreground shrink-0"
-              aria-label={t("quickPanel.pasteFromClipboard")}
-            >
-              <Clipboard className="h-3.5 w-3.5" />
-            </Button>
-          </div>
-        </div>
-
-        {/* Input area */}
-        <div className="p-3 border-b border-border/50">
-          <div className="relative">
-            <textarea
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={t("quickPanel.placeholder")}
-              className={cn(
-                "w-full min-h-[60px] max-h-[120px] p-2 text-sm",
-                "bg-muted/30 border border-border/50 rounded-lg",
-                "placeholder:text-muted-foreground",
-                "focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50",
-                "resize-none",
-                clipboardDetected && "ring-1 ring-primary/30"
-              )}
-              rows={2}
-              disabled={isLoading}
-            />
-            {clipboardDetected && (
-              <span className="absolute top-1 right-2 text-[10px] text-primary/70">
-                {t("quickPanel.fromClipboard")}
-              </span>
-            )}
-          </div>
-          <div className="flex items-center justify-between mt-2">
-            <span className="text-xs text-muted-foreground">
-              {t("quickPanel.hint")}
-            </span>
-            <div className="flex gap-2">
-              {input && (
+        {/* History panel or main content */}
+        {showHistory ? (
+          <ClipboardHistoryPanel
+            history={history}
+            onRemove={removeFromHistory}
+            onClear={clearHistory}
+            onReuseContent={handleReuseContent}
+            compact
+          />
+        ) : (
+          <>
+            {/* Quick Actions bar */}
+            <div className="px-3 py-2 border-b border-border/50 bg-muted/20">
+              <div className="flex items-center justify-between gap-2">
+                <QuickActions
+                  actions={quickActions}
+                  onActionSelect={handleActionSelect}
+                  disabled={isLoading || !input.trim()}
+                  compact
+                />
                 <Button
                   variant="ghost"
-                  size="xs"
-                  onClick={handleClear}
+                  size="icon-xs"
+                  onClick={handlePaste}
                   disabled={isLoading}
+                  className="text-muted-foreground hover:text-foreground shrink-0"
+                  aria-label={t("quickPanel.pasteFromClipboard")}
                 >
-                  {t("quickPanel.clear")}
+                  <Clipboard className="h-3.5 w-3.5" />
                 </Button>
-              )}
-              <Button
-                size="xs"
-                onClick={handleSend}
-                disabled={!input.trim() || isLoading || connectionStatus !== "connected"}
-              >
-                {isLoading ? (
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                ) : (
-                  <Send className="h-3 w-3" />
+              </div>
+            </div>
+
+            {/* Input area */}
+            <div className="p-3 border-b border-border/50">
+              <div className="relative">
+                <textarea
+                  ref={inputRef}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder={t("quickPanel.placeholder")}
+                  className={cn(
+                    "w-full min-h-[60px] max-h-[120px] p-2 text-sm",
+                    "bg-muted/30 border border-border/50 rounded-lg",
+                    "placeholder:text-muted-foreground",
+                    "focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50",
+                    "resize-none",
+                    clipboardDetected && "ring-1 ring-primary/30"
+                  )}
+                  rows={2}
+                  disabled={isLoading}
+                />
+                {clipboardDetected && (
+                  <span className="absolute top-1 right-2 text-[10px] text-primary/70">
+                    {t("quickPanel.fromClipboard")}
+                  </span>
                 )}
-                <span className="ml-1">{t("quickPanel.send")}</span>
-              </Button>
+              </div>
+              <div className="flex items-center justify-between mt-2">
+                <span className="text-xs text-muted-foreground">
+                  {t("quickPanel.hint")}
+                </span>
+                <div className="flex gap-2">
+                  {input && (
+                    <Button
+                      variant="ghost"
+                      size="xs"
+                      onClick={handleClear}
+                      disabled={isLoading}
+                    >
+                      {t("quickPanel.clear")}
+                    </Button>
+                  )}
+                  <Button
+                    size="xs"
+                    onClick={handleSend}
+                    disabled={!input.trim() || isLoading || connectionStatus !== "connected"}
+                  >
+                    {isLoading ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <Send className="h-3 w-3" />
+                    )}
+                    <span className="ml-1">{t("quickPanel.send")}</span>
+                  </Button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
 
-        {/* Response area */}
-        <div className="flex-1 overflow-auto p-3 min-h-[80px] max-h-[250px]">
-          {error ? (
-            <div className="text-sm text-destructive p-2 bg-destructive/10 rounded-lg">
-              {error}
-            </div>
-          ) : response ? (
-            <div className="text-sm whitespace-pre-wrap">
-              {response}
-            </div>
-          ) : isLoading ? (
-            <div className="flex items-center justify-center py-4">
-              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-              <span className="ml-2 text-sm text-muted-foreground">
-                {t("quickPanel.thinking")}
-              </span>
-            </div>
-          ) : (
-            <div className="text-sm text-muted-foreground text-center py-4">
-              {t("quickPanel.emptyResponse")}
-            </div>
-          )}
-        </div>
-
-        {/* Footer with copy button */}
-        {response && (
-          <div className="flex justify-end p-3 border-t border-border/50">
-            <Button
-              variant="outline"
-              size="xs"
-              onClick={handleCopy}
-            >
-              {copied ? (
-                <Check className="h-3 w-3 text-green-500" />
+            {/* Response area */}
+            <div className="flex-1 overflow-auto p-3 min-h-[80px] max-h-[250px]">
+              {error ? (
+                <div className="text-sm text-destructive p-2 bg-destructive/10 rounded-lg">
+                  {error}
+                </div>
+              ) : response ? (
+                <div className="text-sm whitespace-pre-wrap">
+                  {response}
+                </div>
+              ) : isLoading ? (
+                <div className="flex items-center justify-center py-4">
+                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                  <span className="ml-2 text-sm text-muted-foreground">
+                    {t("quickPanel.thinking")}
+                  </span>
+                </div>
               ) : (
-                <Copy className="h-3 w-3" />
+                <div className="text-sm text-muted-foreground text-center py-4">
+                  {t("quickPanel.emptyResponse")}
+                </div>
               )}
-              <span className="ml-1">
-                {copied ? t("quickPanel.copied") : t("quickPanel.copy")}
-              </span>
-            </Button>
-          </div>
+            </div>
+
+            {/* Footer with copy button */}
+            {response && (
+              <div className="flex justify-end p-3 border-t border-border/50">
+                <Button
+                  variant="outline"
+                  size="xs"
+                  onClick={handleCopy}
+                >
+                  {copied ? (
+                    <Check className="h-3 w-3 text-green-500" />
+                  ) : (
+                    <Copy className="h-3 w-3" />
+                  )}
+                  <span className="ml-1">
+                    {copied ? t("quickPanel.copied") : t("quickPanel.copy")}
+                  </span>
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

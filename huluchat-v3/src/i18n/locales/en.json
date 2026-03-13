@@ -400,6 +400,21 @@
     "quickActions": "Quick Actions",
     "savedToQuickChats": "Saved to Quick Chats"
   },
+  "clipboardHistory": {
+    "title": "History ({{count}})",
+    "empty": "No history yet",
+    "emptyHint": "Processed content will appear here",
+    "clearAll": "Clear All",
+    "clearConfirm": "Clear all history?",
+    "clearConfirmDesc": "This will permanently delete all clipboard history. This action cannot be undone.",
+    "clear": "Clear",
+    "justNow": "Just now",
+    "minutesAgo": "{{count}} min ago",
+    "hoursAgo": "{{count}}h ago",
+    "daysAgo": "{{count}}d ago",
+    "reuseContent": "Reuse",
+    "copyResponse": "Copy"
+  },
   "quickActions": {
     "translate": {
       "name": "Translate",
