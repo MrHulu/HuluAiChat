@@ -4,6 +4,29 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [3.66.0] - 2026-03-14
+
+### Performance
+- **Lazy Loading Optimization**: Significantly improved initial load performance
+  - Converted 7 non-critical components to lazy loading
+  - Reduced main bundle size from 644KB to 543KB (-16%)
+  - Gzip size reduced from 179KB to 153KB (-15%)
+  - Build time improved from 29s to 15s (-47%)
+
+### Components Lazy Loaded
+- `KeyboardHelpDialog` - F1 shortcut help
+- `CommandPalette` - Ctrl+K command palette
+- `KnowledgeCenter` - Knowledge base management
+- `WelcomeDialog` - First-time user welcome
+- `BookmarkJumpDialog` - Bookmark navigation
+- `PermissionGuideDialog` - macOS accessibility permission guide
+- `QuickPanel` - Quick floating panel
+
+### Technical
+- All lazy-loaded components wrapped in `Suspense` with `fallback={null}`
+- Updated App.test.tsx to use `findByText` for async component loading
+- Total tests: 1947 passed
+
 ## [3.65.0] - 2026-03-14
 
 ### Fixed

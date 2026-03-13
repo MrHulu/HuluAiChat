@@ -346,7 +346,7 @@ describe("App", () => {
     it("should create folder successfully", async () => {
       const newFolder = createFolder("f1", "New Folder");
       mockCreateFolder.mockResolvedValueOnce(newFolder);
-      
+
       // Simulate folder creation handler call
       await act(async () => {
         const result = await mockCreateFolder("New Folder");
@@ -360,7 +360,7 @@ describe("App", () => {
 
     it("should not show toast if folder creation fails", async () => {
       mockCreateFolder.mockResolvedValueOnce(null);
-      
+
       await act(async () => {
         await mockCreateFolder("New Folder");
       });
@@ -511,7 +511,8 @@ describe("App", () => {
       });
 
       // KeyboardHelpDialog should be visible (title is in Chinese)
-      expect(screen.getByText("Keyboard Shortcuts")).toBeInTheDocument();
+      // Use findByText for lazy-loaded component
+      expect(await screen.findByText("Keyboard Shortcuts")).toBeInTheDocument();
     });
 
     it("should toggle keyboard help dialog on ? key (outside input)", async () => {
@@ -526,7 +527,8 @@ describe("App", () => {
       });
 
       // KeyboardHelpDialog should be visible
-      expect(screen.getByText("Keyboard Shortcuts")).toBeInTheDocument();
+      // Use findByText for lazy-loaded component
+      expect(await screen.findByText("Keyboard Shortcuts")).toBeInTheDocument();
     });
 
     it("should not open keyboard help on ? key when input focused", async () => {
@@ -691,7 +693,7 @@ describe("App", () => {
         filename: "test-session.md",
       });
 
-      
+
       render(<App />);
 
       // Trigger export through the handler
@@ -734,7 +736,7 @@ describe("App", () => {
     it("should show success toast when folder is created", async () => {
       const newFolder = createFolder("f1", "New Folder");
       mockCreateFolder.mockResolvedValueOnce(newFolder);
-      
+
       render(<App />);
 
       await act(async () => {
@@ -749,7 +751,7 @@ describe("App", () => {
 
     it("should not show toast when folder creation fails", async () => {
       mockCreateFolder.mockResolvedValueOnce(null);
-      
+
       render(<App />);
 
       await act(async () => {
@@ -765,7 +767,7 @@ describe("App", () => {
     it("should show success toast when folder is renamed", async () => {
       const renamedFolder = createFolder("f1", "Renamed");
       mockRenameFolder.mockResolvedValueOnce(renamedFolder);
-      
+
       render(<App />);
 
       await act(async () => {
@@ -782,7 +784,7 @@ describe("App", () => {
       mockFolders = [createFolder("f1", "Test Folder")];
       mockConfirm.mockReturnValue(true);
       mockRemoveFolder.mockResolvedValueOnce(undefined);
-      
+
       render(<App />);
 
       await act(async () => {
@@ -828,7 +830,7 @@ describe("App", () => {
     it("should refresh sessions after moving session to folder", async () => {
       vi.mocked(apiClient.moveSessionToFolder).mockResolvedValueOnce(undefined);
       mockFolders = [createFolder("f1", "Work")];
-      
+
       render(<App />);
 
       await act(async () => {
@@ -842,7 +844,7 @@ describe("App", () => {
     it("should show success toast with folder name after move", async () => {
       vi.mocked(apiClient.moveSessionToFolder).mockResolvedValueOnce(undefined);
       mockFolders = [createFolder("f1", "Work")];
-      
+
       render(<App />);
 
       await act(async () => {
@@ -856,7 +858,7 @@ describe("App", () => {
 
     it("should show uncategorized when moving to null folder", async () => {
       vi.mocked(apiClient.moveSessionToFolder).mockResolvedValueOnce(undefined);
-      
+
       render(<App />);
 
       await act(async () => {
