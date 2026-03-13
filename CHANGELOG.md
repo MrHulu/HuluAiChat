@@ -2,6 +2,33 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [3.68.0] - 2026-03-14
+
+### 💬 Conversation Continuity
+
+- **TASK-325**: Session Templates Code Audit & Fixes
+  - TemplateSelector error handling enhanced with retry button
+  - session_templates.py JSON parsing with proper logging
+  - i18n support for built-in templates (en/zh)
+  - Bug fixes: en.json duplicate key, Template ID handling
+  - Files: `src/components/TemplateSelector.tsx`, `backend/api/session_templates.py`
+
+- **TASK-326**: Context Recovery (Draft Auto-Save)
+  - `useDraftRecovery` hook: auto-save every 30 seconds
+  - `DraftRecoveryDialog`: startup detection for unfinished sessions
+  - `ChatInput` props: `initialContent`, `initialImages`, `initialFiles`
+  - Max 5 recoverable sessions (localStorage)
+  - i18n support (en/zh)
+  - Files: `src/hooks/useDraftRecovery.ts`, `src/components/DraftRecoveryDialog.tsx`
+
+### 🧪 Testing
+
+- **TASK-327**: E2E Test Expansion (174 tests, +16% over 150+ target)
+  - `e2e/session-templates.spec.ts`: Template CRUD, default templates, custom templates (15 tests)
+  - `e2e/context-recovery.spec.ts`: Draft save, recovery dialog, multiple drafts, settings (15 tests)
+  - `e2e/export-extended.spec.ts`: JSON/Markdown/HTML/PDF export, batch export, error cases (20 tests)
+  - Previous: 124 tests → Now: 174 tests
+
 ## [3.67.0] - 2026-03-14
 
 ### 🔒 Security
