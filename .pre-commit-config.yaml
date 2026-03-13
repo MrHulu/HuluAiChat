@@ -1,0 +1,44 @@
+# Pre-commit hooks for HuluChat
+# Install: pre-commit install
+# Run manually: pre-commit run --all-files
+
+repos:
+  # Detect secrets in code
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+        exclude: |
+          (?x)^(
+            \.secrets\.baseline|
+            \.env\.example|
+            \.env\.test\.example|
+            .*\.md$
+          )
+
+  # Prevent committing to main/master
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: no-commit-to-branch
+        args: ['--branch', 'master', '--branch', 'main']
+        stages: [push]
+
+  # Check for large files
+      - id: check-added-large-files
+        args: ['--maxkb=500']
+
+  # Check for merge conflicts
+      - id: check-merge-conflict
+
+  # Check YAML/JSON syntax
+      - id: check-yaml
+        exclude: 'tauri\.conf\.json'
+      - id: check-json
+
+  # Trim trailing whitespace
+      - id: trailing-whitespace
+
+  # Ensure newline at end of files
+      - id: end-of-file-fixer
