@@ -37,7 +37,7 @@
 - 官网版本已更新到 3.59.1
 
 ### Next Action
-> **所有 Boss 指令的任务已完成。等待下一步指示。**
+> **TASK-215 (Sidecar 健康监控) 已完成。下一个任务: TASK-216 (WebSocket 重连优化)**
 
 ---
 
@@ -100,13 +100,37 @@
 
 **MVP 范围** (6 个任务):
 - P0: ~~TASK-211 全局热键~~ ✅、~~TASK-212 快速面板~~ ✅、~~TASK-213 剪贴板~~ ✅、~~TASK-214 权限引导~~ ✅
-- P1: TASK-215 Sidecar 监控 ⏸️、TASK-216 WebSocket 优化 ⏸️
+- P1: ~~TASK-215 Sidecar 监控~~ ✅、TASK-216 WebSocket 优化 ⏸️
 
 **状态**: ⏸️ 暂停，优先发布
 
 ---
 
 ## 最近完成
+
+### TASK-215: Sidecar 健康监控（Cycle #23）
+
+**完成时间**: 2026-03-13
+
+**产出**:
+- SidecarManager (Rust) 进程状态管理 ✅
+- 指数退避自动重启（1s→2s→4s→最大 30s）✅
+- 最多重试 3 次 ✅
+- 前端 sidecar.ts API ✅
+- useBackendHealth 自动重启支持 ✅
+- BackendStatusIndicator 重启状态显示 ✅
+- 测试：1909 个测试用例通过 ✅
+
+**变更文件**:
+- `src-tauri/src/lib.rs` - SidecarManager + 命令实现
+- `src/api/sidecar.ts` - 前端 API
+- `src/hooks/useBackendHealth.ts` - 自动重启逻辑
+- `src/hooks/useBackendHealth.test.ts` - 测试更新
+- `src/App.tsx` - 集成 sidecar 状态
+
+**PR**: #404
+
+---
 
 ### TASK-213: 剪贴板增强（Cycle #21）
 
