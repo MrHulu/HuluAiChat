@@ -2,6 +2,37 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [3.60.0] - 2026-03-13
+
+### ✨ New Features
+
+- **TASK-230**: QuickPanel History Entry
+  - Added "Quick Chats" folder in sidebar for QuickPanel sessions
+  - Sessions created from QuickPanel are automatically tagged with source='quickpanel'
+  - Toast notification when QuickPanel closes: "Saved to Quick Chats"
+  - Files: `backend/api/sessions.py`, `src/components/sidebar/SessionList.tsx`, `src/api/client.ts`
+
+- **TASK-231**: Clipboard History
+  - Records last 50 clipboard processing items
+  - QuickPanel header shows history button
+  - History items display original text summary + action type + time
+  - Click history item to reuse content
+  - Clear history functionality
+  - Files: `src/hooks/useClipboardHistory.ts`, `src/components/quickpanel/ClipboardHistoryPanel.tsx`
+
+- **TASK-232**: Sidebar Session Quick Search
+  - Search box at top of sidebar
+  - Real-time filtering of sessions
+  - Keyword highlighting in results
+  - Keyboard navigation (Arrow Up/Down, Enter, Esc)
+  - Response time < 200ms
+  - Files: `src/components/sidebar/SessionList.tsx`, `src/components/sidebar/SessionSearch.tsx`
+
+### 🔧 Technical
+
+- Added `source` field to SessionModel (backend migration)
+- Added i18n translations for all new features (EN/ZH)
+
 ## [3.59.1] - 2026-03-13
 
 ### 🐛 Bug Fixes
