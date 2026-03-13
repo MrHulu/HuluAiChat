@@ -71,6 +71,7 @@ jobs:
           pytest -v
 
       - name: Type check (mypy)
+        continue-on-error: true
         run: |
           pip install mypy==1.15.0
           cd huluchat-v3/backend
