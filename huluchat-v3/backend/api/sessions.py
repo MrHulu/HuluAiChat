@@ -1,6 +1,6 @@
 """Session management API"""
 import logging
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Body
 from fastapi.responses import PlainTextResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, or_
@@ -28,6 +28,7 @@ class SessionModel(Base):
     id: Mapped[str] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(default="New Chat")
     folder_id: Mapped[Optional[str]] = mapped_column(nullable=True, index=True)
+    source: Mapped[str] = mapped_column(default="main", index=True)  # 'main' or 'quickpanel'
     created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -37,6 +38,7 @@ class SessionResponse(BaseModel):
     id: str
     title: str
     folder_id: Optional[str] = None
+    source: str = "main"  # 'main' or 'quickpanel'
     created_at: datetime
     updated_at: datetime
 
@@ -68,12 +70,15 @@ class SessionSearchResult(BaseModel):
 @router.get("/", response_model=List[SessionResponse])
 async def list_sessions(
     folder_id: Optional[str] = Query(None, description="Filter by folder ID"),
+    source: Optional[str] = Query(None, description="Filter by session source (main/quickpanel)"),
     db: AsyncSession = Depends(get_db_session)
 ):
-    """List all sessions, optionally filtered by folder"""
+    """List all sessions, optionally filtered by folder and source"""
     query = select(SessionModel).order_by(SessionModel.updated_at.desc())
     if folder_id is not None:
         query = query.where(SessionModel.folder_id == folder_id)
+    if source is not None:
+        query = query.where(SessionModel.source == source)
     result = await db.execute(query)
     sessions = result.scalars().all()
     return sessions
@@ -171,13 +176,22 @@ async def search_sessions(
     return results
 
 
+class SessionCreate(BaseModel):
+    """Schema for creating a session"""
+    source: str = "main"  # 'main' or 'quickpanel'
+
+
 @router.post("/", response_model=SessionResponse)
 async def create_session(
+    request: SessionCreate = Body(default=SessionCreate()),
     db: AsyncSession = Depends(get_db_session)
 ):
     """Create a new session"""
     import uuid
-    session = SessionModel(id=str(uuid.uuid4()))
+    session = SessionModel(
+        id=str(uuid.uuid4()),
+        source=request.source
+    )
     db.add(session)
     await db.commit()
     await db.refresh(session)

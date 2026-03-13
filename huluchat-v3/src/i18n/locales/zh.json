@@ -53,6 +53,8 @@
     "folders": "文件夹",
     "uncategorized": "未分类",
     "backToAll": "返回全部",
+    "quickChats": "快速对话",
+    "quickChatsDesc": "从快速面板（全局快捷键）发起的对话",
     "newFolder": "新建文件夹",
     "folderName": "文件夹名称...",
     "expandSidebar": "展开侧边栏",

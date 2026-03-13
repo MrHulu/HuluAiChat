@@ -21,6 +21,7 @@ import {
   XCircle,
   FolderInput,
   Download,
+  Zap,
 } from "lucide-react";
 import {
   Session,
@@ -369,10 +370,11 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
     };
   }, [searchQuery, performSearch]);
 
-  // Group sessions by folder
+  // Group sessions by folder and including quickpanel source
   const sessionsByFolder = useMemo(() => {
     const grouped: Record<string, Session[]> = {
       root: [], // Sessions without a folder
+      quickpanel: [], // QuickPanel sessions (virtual group)
     };
 
     // Initialize folders
@@ -380,13 +382,19 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
       grouped[folder.id] = [];
     });
 
-    // Group sessions
+    // Group sessions - separate quickpanel sessions from main sessions
     sessions.forEach((session) => {
-      const folderId = session.folder_id || "root";
-      if (!grouped[folderId]) {
-        grouped[folderId] = [];
+      if (session.source === "quickpanel") {
+        // QuickPanel sessions go to virtual quickpanel group
+        grouped.quickpanel.push(session);
+      } else {
+        // Regular sessions go to their folder
+        const folderId = session.folder_id || "root";
+        if (!grouped[folderId]) {
+          grouped[folderId] = [];
+        }
+        grouped[folderId].push(session);
       }
-      grouped[folderId].push(session);
     });
 
     return grouped;
@@ -848,6 +856,42 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
                 </div>
               ))}
             </div>
+
+            {/* QuickPanel Sessions */}
+            {activeFolderFilter === null && sessionsByFolder.quickpanel.length > 0 && (
+              <div className="mt-2" role="region" aria-label={t("sidebar.quickChats")}>
+                <div className="px-3 py-2 mx-2 rounded-md bg-primary/10 dark:bg-primary/20 border border-primary/20">
+                  <span className="text-xs font-semibold text-primary-foreground uppercase tracking-wider flex items-center gap-1">
+                    <Zap className="w-3.5 h-3.5" aria-hidden="true" />
+                    {t("sidebar.quickChats")}
+                  </span>
+                </div>
+                <div className="space-y-1 mt-1" role="list">
+                  {sessionsByFolder.quickpanel.map((session, index) => (
+                    <div
+                      key={session.id}
+                      className="animate-list-enter"
+                      style={{ animationDelay: `${index * 50}ms` }}
+                    >
+                      <SessionItem
+                        session={session}
+                        folders={folders}
+                        isActive={session.id === currentSessionId}
+                        onClick={() => onSelectSession(session.id)}
+                        onDelete={() => onDeleteSession(session.id)}
+                        onExport={onExportSession}
+                        onMoveToFolder={handleMoveSession}
+                        tags={sessionTags[session.id] || []}
+                        onTagClick={handleTagClick}
+                        isBatchMode={isBatchMode}
+                        isSelected={selectedSessionIds.has(session.id)}
+                        onToggleSelection={() => toggleSessionSelection(session.id)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Uncategorized Sessions */}
             {activeFolderFilter === null && sessionsByFolder.root.length > 0 && (

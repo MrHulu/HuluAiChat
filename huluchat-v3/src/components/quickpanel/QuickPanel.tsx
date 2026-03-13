@@ -39,6 +39,8 @@ interface QuickPanelProps {
   initialText?: string;
   /** Callback to open settings for managing Quick Actions */
   onOpenSettings?: () => void;
+  /** Callback when conversation happens - for toast notification */
+  onHasConversation?: (hasConversation: boolean) => void;
 }
 
 /**
@@ -51,6 +53,7 @@ export function QuickPanel({
   onClose,
   initialText = "",
   onOpenSettings,
+  onHasConversation,
 }: QuickPanelProps) {
   const { t } = useTranslation();
   const [input, setInput] = useState(initialText);
@@ -94,6 +97,8 @@ export function QuickPanel({
 
       case "stream_end":
         setIsLoading(false);
+        // Notify parent that conversation happened
+        onHasConversation?.(true);
         break;
 
       case "error":
@@ -102,7 +107,7 @@ export function QuickPanel({
         toast.error(t("quickPanel.sendError"));
         break;
     }
-  }, [t]);
+  }, [t, onHasConversation]);
 
   // Use WebSocket hook for real-time communication
   const { status: connectionStatus, send } = useWebSocket({
@@ -115,7 +120,7 @@ export function QuickPanel({
   // Create a temporary session when panel opens
   useEffect(() => {
     if (isOpen && !sessionId) {
-      createSession()
+      createSession("quickpanel")
         .then((session) => {
           setSessionId(session.id);
         })

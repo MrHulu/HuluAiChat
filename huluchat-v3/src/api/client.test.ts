@@ -91,7 +91,8 @@ describe("API Client", () => {
 
         const result = await listSessions();
 
-        expect(mockFetch).toHaveBeenCalledWith("http://127.0.0.1:8765/api/sessions/");
+        // listSessions() without source parameter returns all sessions
+        expect(mockFetch).toHaveBeenCalledWith("http://127.0.0.1:8765/api/sessions/?");
         expect(result).toEqual(mockSessions);
       });
     });
@@ -111,7 +112,12 @@ describe("API Client", () => {
 
         const result = await createSession();
 
-        expect(mockFetch).toHaveBeenCalledWith("http://127.0.0.1:8765/api/sessions/", { method: "POST" });
+        // createSession() uses default source="main"
+        expect(mockFetch).toHaveBeenCalledWith("http://127.0.0.1:8765/api/sessions/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ source: "main" }),
+        });
         expect(result).toEqual(mockSession);
       });
     });
