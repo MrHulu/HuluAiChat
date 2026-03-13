@@ -232,11 +232,16 @@
   - Cycle #22
 
 #### Phase 2: 技术债务清理 (P1)
-- [ ] **TASK-215**: 🩺 Sidecar 健康监控
-  - 进程健康检查
-  - 崩溃后自动重启（指数退避）
-  - 最多重试 3 次
-  - 用户友好错误提示
+- [x] **TASK-215**: 🩺 Sidecar 健康监控 ✅ 2026-03-13
+  - SidecarManager (Rust) 进程状态管理 ✅
+  - 指数退避自动重启（1s→2s→4s→最大 30s）✅
+  - 最多重试 3 次 ✅
+  - 前端 sidecar.ts API ✅
+  - useBackendHealth 自动重启支持 ✅
+  - BackendStatusIndicator 重启状态显示 ✅
+  - 测试：1909 个测试通过 ✅
+  - PR: #404
+  - Cycle #23
 
 - [ ] **TASK-216**: 🔄 WebSocket 重连优化
   - 断开时显示"重新连接中..."
