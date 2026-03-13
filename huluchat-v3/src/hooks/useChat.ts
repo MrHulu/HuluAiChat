@@ -225,11 +225,12 @@ export function useChat(sessionId: string | null, options?: UseChatOptions): Use
     }
   }, [sessionId]); // 移除 streamingMessage 依赖，使用 ref 替代
 
-  const { status: connectionStatus, send } = useWebSocket({
+  const { status: connectionStatus, send, sendOrQueue, queueSize, clearQueue } = useWebSocket({
     url: wsUrl,
     onMessage: handleWSMessage,
     reconnectAttempts: 10,
     reconnectInterval: 2000,
+    maxQueueSize: 100,
   });
 
   // 当 sessionId 变化时加载历史消息
@@ -390,5 +391,9 @@ export function useChat(sessionId: string | null, options?: UseChatOptions): Use
     isLoadingHistory,
     refreshMessages,
     generateTitle,
+    /** Number of messages in queue waiting to be sent */
+    queueSize,
+    /** Clear the message queue */
+    clearQueue,
   };
 }

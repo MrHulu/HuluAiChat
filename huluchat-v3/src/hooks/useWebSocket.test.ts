@@ -514,4 +514,217 @@ describe("useWebSocket hook", () => {
 
     expect(MockWebSocket.instances.length).toBe(2);
   });
+
+  // TASK-216: Message Queue Tests
+  describe("TASK-216: Message Queue", () => {
+    it("sendOrQueue should send immediately when connected", async () => {
+      const { result } = renderHook(() =>
+        useWebSocket({ url: testUrl })
+      );
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      });
+
+      expect(result.current.status).toBe("connected");
+
+      act(() => {
+        result.current.sendOrQueue({ type: "test", data: "hello" });
+      });
+
+      const ws = MockWebSocket.instances[0];
+      expect(ws?.send).toHaveBeenCalledWith(JSON.stringify({ type: "test", data: "hello" }));
+      expect(result.current.queueSize).toBe(0);
+    });
+
+    it("sendOrQueue should queue message when disconnected", async () => {
+      const onMessageQueued = vi.fn();
+
+      const { result } = renderHook(() =>
+        useWebSocket({
+          url: testUrl,
+          reconnectAttempts: 0, // Disable auto-reconnect for test
+          onMessageQueued,
+        })
+      );
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      });
+
+      // Disconnect the WebSocket
+      const ws = MockWebSocket.instances[0];
+      if (ws?.onclose) {
+        ws.readyState = MockWebSocket.CLOSED;
+        act(() => {
+          ws.onclose!();
+        });
+      }
+
+      expect(result.current.status).toBe("disconnected");
+
+      // Queue a message
+      act(() => {
+        result.current.sendOrQueue({ type: "test", data: "queued" });
+      });
+
+      expect(result.current.queueSize).toBe(1);
+      expect(onMessageQueued).toHaveBeenCalledWith(1);
+    });
+
+    it("should flush queue on reconnect", async () => {
+      const onQueueFlushed = vi.fn();
+      const reconnectInterval = 50;
+
+      const { result } = renderHook(() =>
+        useWebSocket({
+          url: testUrl,
+          reconnectAttempts: 3,
+          reconnectInterval,
+          onQueueFlushed,
+        })
+      );
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      });
+
+      // Disconnect
+      const ws = MockWebSocket.instances[0];
+      if (ws?.onclose) {
+        ws.readyState = MockWebSocket.CLOSED;
+        act(() => {
+          ws.onclose!();
+        });
+      }
+
+      // Queue messages while disconnected
+      act(() => {
+        result.current.sendOrQueue({ type: "test", data: "msg1" });
+        result.current.sendOrQueue({ type: "test", data: "msg2" });
+      });
+
+      expect(result.current.queueSize).toBe(2);
+
+      // Wait for reconnect
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, reconnectInterval + 50));
+      });
+
+      // Queue should be flushed
+      expect(result.current.queueSize).toBe(0);
+      expect(onQueueFlushed).toHaveBeenCalledWith(2);
+    });
+
+    it("should respect maxQueueSize limit", async () => {
+      const maxQueueSize = 3;
+
+      const { result } = renderHook(() =>
+        useWebSocket({
+          url: testUrl,
+          reconnectAttempts: 0,
+          maxQueueSize,
+        })
+      );
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      });
+
+      // Disconnect
+      const ws = MockWebSocket.instances[0];
+      if (ws?.onclose) {
+        ws.readyState = MockWebSocket.CLOSED;
+        act(() => {
+          ws.onclose!();
+        });
+      }
+
+      // Queue more messages than limit
+      act(() => {
+        for (let i = 0; i < 5; i++) {
+          result.current.sendOrQueue({ type: "test", data: `msg${i}` });
+        }
+      });
+
+      // Should drop oldest messages when over limit
+      expect(result.current.queueSize).toBe(3);
+    });
+
+    it("clearQueue should empty the queue", async () => {
+      const { result } = renderHook(() =>
+        useWebSocket({
+          url: testUrl,
+          reconnectAttempts: 0,
+        })
+      );
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      });
+
+      // Disconnect
+      const ws = MockWebSocket.instances[0];
+      if (ws?.onclose) {
+        ws.readyState = MockWebSocket.CLOSED;
+        act(() => {
+          ws.onclose!();
+        });
+      }
+
+      // Queue messages
+      act(() => {
+        result.current.sendOrQueue({ type: "test", data: "msg1" });
+        result.current.sendOrQueue({ type: "test", data: "msg2" });
+      });
+
+      expect(result.current.queueSize).toBe(2);
+
+      // Clear queue
+      act(() => {
+        result.current.clearQueue();
+      });
+
+      expect(result.current.queueSize).toBe(0);
+    });
+
+    it("should send queued messages to the new WebSocket on reconnect", async () => {
+      const reconnectInterval = 50;
+
+      const { result } = renderHook(() =>
+        useWebSocket({
+          url: testUrl,
+          reconnectAttempts: 3,
+          reconnectInterval,
+        })
+      );
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      });
+
+      // Disconnect
+      const ws1 = MockWebSocket.instances[0];
+      if (ws1?.onclose) {
+        ws1.readyState = MockWebSocket.CLOSED;
+        act(() => {
+          ws1.onclose!();
+        });
+      }
+
+      // Queue a message
+      act(() => {
+        result.current.sendOrQueue({ type: "test", data: "queued" });
+      });
+
+      // Wait for reconnect
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, reconnectInterval + 50));
+      });
+
+      // The new WebSocket should have received the queued message
+      const ws2 = MockWebSocket.instances[1];
+      expect(ws2?.send).toHaveBeenCalledWith(JSON.stringify({ type: "test", data: "queued" }));
+    });
+  });
 });

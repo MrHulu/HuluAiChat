@@ -1,10 +1,25 @@
 /**
  * useWebSocket Hook
  * WebSocket 连接管理，支持自动重连和指数退避
+ *
+ * TASK-216: 添加消息队列功能
+ * - 断开时消息进入队列
+ * - 重连成功后自动发送队列消息
  */
 import { useEffect, useRef, useCallback, useState } from "react";
 
+import { toast } from "sonner";
+
 export type ConnectionStatus = "connecting" | "connected" | "disconnected" | "error";
+
+import { createChatWebSocket } from "@/api/client";
+
+/** Queued message type */
+export interface QueuedMessage {
+  id: string;
+  data: string | object;
+  timestamp: number;
+}
 
 export interface UseWebSocketOptions {
   url: string;
@@ -24,6 +39,12 @@ export interface UseWebSocketOptions {
   maxDelay?: number;
   /** Jitter factor (0-1) to randomize delay (default: 0.3) */
   jitter?: number;
+  /** Maximum number of queued messages (default: 100) */
+  maxQueueSize?: number;
+  /** Callback when messages are queued */
+  onMessageQueued?: (count: number) => void;
+  /** Callback when queue is flushed */
+  onQueueFlushed?: (count: number) => void;
 }
 
 /**
@@ -47,14 +68,18 @@ function calculateBackoff(
   const jitter = cappedDelay * jitterFactor * Math.random();
   return Math.floor(cappedDelay + jitter);
 }
-
 export interface UseWebSocketReturn {
   status: ConnectionStatus;
   send: (data: string | object) => void;
+  /** Send message or queue if disconnected (TASK-216) */
+  sendOrQueue: (data: string | object) => void;
   disconnect: () => void;
   reconnect: () => void;
+  /** Number of messages in queue waiting to be sent */
+  queueSize: number;
+  /** Clear the message queue */
+  clearQueue: () => void;
 }
-
 export function useWebSocket({
   url,
   onMessage,
@@ -67,17 +92,33 @@ export function useWebSocket({
   baseDelay = 1000,
   maxDelay = 30000,
   jitter = 0.3,
+  maxQueueSize = 100,
+  onMessageQueued,
+  onQueueFlushed,
 }: UseWebSocketOptions): UseWebSocketReturn {
   const wsRef = useRef<WebSocket | null>(null);
   const attemptsRef = useRef(0);
   const [status, setStatus] = useState<ConnectionStatus>("disconnected");
   const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Message queue for offline resilience (TASK-216)
+  const messageQueueRef = useRef<QueuedMessage[]>([]);
+  const [queueSize, setQueueSize] = useState(0);
+
   // Use ref to store connect function for use in callbacks
   const connectRef = useRef<() => void>(() => {});
 
   // For backwards compatibility, use reconnectInterval as baseDelay if provided
   const effectiveBaseDelay = reconnectInterval ?? baseDelay;
+
+  // Use refs for callbacks to avoid stale closures
+  const onMessageQueuedRef = useRef(onMessageQueued);
+  const onQueueFlushedRef = useRef(onQueueFlushed);
+
+  useEffect(() => {
+    onMessageQueuedRef.current = onMessageQueued;
+    onQueueFlushedRef.current = onQueueFlushed;
+  }, [onMessageQueued, onQueueFlushed]);
 
   const connect = useCallback(() => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
@@ -93,6 +134,26 @@ export function useWebSocket({
       ws.onopen = () => {
         setStatus("connected");
         attemptsRef.current = 0;
+
+        // Flush message queue on reconnect (TASK-216)
+        const queue = messageQueueRef.current;
+        if (queue.length > 0 && ws.readyState === WebSocket.OPEN) {
+          const flushedCount = queue.length;
+          console.log(`[WebSocket] Flushing ${flushedCount} queued messages`);
+
+          queue.forEach((queuedMsg) => {
+            const message = typeof queuedMsg.data === "string"
+              ? queuedMsg.data
+              : JSON.stringify(queuedMsg.data);
+            ws.send(message);
+          });
+
+          // Clear queue after flushing
+          messageQueueRef.current = [];
+          setQueueSize(0);
+          onQueueFlushedRef.current?.(flushedCount);
+        }
+
         onOpen?.();
       };
 
@@ -161,6 +222,56 @@ export function useWebSocket({
     }
   }, []);
 
+  /**
+   * Send message or queue if disconnected (TASK-216)
+   * - If connected: send immediately
+   * - If disconnected: add to queue, will be sent on reconnect
+   */
+  const sendOrQueue = useCallback((data: string | object) => {
+    // If connected, send immediately
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      const message = typeof data === "string" ? data : JSON.stringify(data);
+      wsRef.current.send(message);
+      return;
+    }
+
+    // If disconnected or connecting, queue the message
+    const queue = messageQueueRef.current;
+
+    // Check queue size limit
+    if (queue.length >= maxQueueSize) {
+      console.warn(`[WebSocket] Queue full (${queue.length}/${maxQueueSize}), dropping oldest message`);
+      queue.shift();
+    }
+
+    // Add message to queue
+    const queuedMsg: QueuedMessage = {
+      id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      data,
+      timestamp: Date.now(),
+    };
+    queue.push(queuedMsg);
+    setQueueSize(queue.length);
+
+    console.log(`[WebSocket] Message queued (${queue.length} in queue)`);
+    onMessageQueuedRef.current?.(queue.length);
+
+    // Show toast notification to user
+    toast.info("Message queued", {
+      description: `Will be sent when connection is restored (${queue.length} in queue)`,
+      duration: 2000,
+    });
+  }, [maxQueueSize]);
+
+  /**
+   * Clear the message queue (TASK-216)
+   */
+  const clearQueue = useCallback(() => {
+    messageQueueRef.current = [];
+    setQueueSize(0);
+    console.log("[WebSocket] Queue cleared");
+  }, []);
+
   useEffect(() => {
     connect();
     return () => {
@@ -168,5 +279,5 @@ export function useWebSocket({
     };
   }, [connect, disconnect]);
 
-  return { status, send, disconnect, reconnect };
+  return { status, send, sendOrQueue, disconnect, reconnect, queueSize, clearQueue };
 }
