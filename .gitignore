@@ -170,3 +170,7 @@ memories/consensus.md.bak
 # ====================
 *.orig
 *.rej
+
+# Playwright E2E testing
+test-results/
+playwright-report/
