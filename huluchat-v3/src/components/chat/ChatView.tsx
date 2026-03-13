@@ -164,6 +164,12 @@ export const ChatView = forwardRef<ChatViewRef, ChatViewProps>(function ChatView
   const { currentModel, models, setModel, isLoading: isLoadingModels, parameters, recommendedModel, ollamaAvailable, ollamaModels } = useModel();
   const { markFeatureUsed } = useFeatureDiscovery(); // TASK-236
 
+  // 模型切换处理 - TASK-324: 标记功能已使用
+  const handleModelChange = useCallback((modelId: string) => {
+    markFeatureUsed("model-switch");
+    setModel(modelId);
+  }, [markFeatureUsed, setModel]);
+
   // Refs
   const messageListRef = useRef<MessageListRef>(null);
 
@@ -489,7 +495,7 @@ export const ChatView = forwardRef<ChatViewRef, ChatViewProps>(function ChatView
             <ModelSelector
               value={currentModel}
               models={models}
-              onChange={setModel}
+              onChange={handleModelChange}
               isLoading={isLoadingModels}
               disabled={isLoading}
               recommendedModel={recommendedModel}
@@ -729,6 +735,7 @@ export const ChatView = forwardRef<ChatViewRef, ChatViewProps>(function ChatView
           <RAGPanel
             disabled={isLoading}
             onDocumentChange={() => checkDocuments()}
+            onDocumentUpload={() => markFeatureUsed("document-chat")} // TASK-324
           />
         </div>
       )}

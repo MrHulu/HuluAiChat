@@ -21,7 +21,8 @@ export type FeatureId =
   | "session-export"
   | "folder-management"
   | "model-switch"
-  | "model-regenerate"; // TASK-236: 多模型回放功能可发现性
+  | "model-regenerate" // TASK-236: 多模型回放功能可发现性
+  | "quick-panel"; // TASK-324: QuickPanel 功能可发现性
 
 // 功能配置
 export interface FeatureConfig {
@@ -83,6 +84,13 @@ export const DISCOVERABLE_FEATURES: FeatureConfig[] = [
     actionKey: "featureDiscovery.features.modelRegenerate.action",
     icon: "🔀",
   },
+  {
+    id: "quick-panel", // TASK-324: QuickPanel 功能可发现性
+    titleKey: "featureDiscovery.features.quickPanel.title",
+    descriptionKey: "featureDiscovery.features.quickPanel.description",
+    actionKey: "featureDiscovery.features.quickPanel.action",
+    icon: "⚡",
+  },
 ];
 
 // 功能使用状态类型
@@ -109,6 +117,7 @@ function loadFeatureUsage(): FeatureUsageState {
     "folder-management": false,
     "model-switch": false,
     "model-regenerate": false, // TASK-236
+    "quick-panel": false, // TASK-324
   };
 }
 

@@ -1154,6 +1154,11 @@
         "title": "Compare Model Responses",
         "description": "Not satisfied with an answer? Use the regenerate button to try a different AI model and compare responses.",
         "action": "Try Regenerate"
+      },
+      "quickPanel": {
+        "title": "Quick Panel",
+        "description": "Press Ctrl+Shift+Space to quickly ask AI questions from anywhere. Great for instant translations, summaries, and quick queries.",
+        "action": "Open Quick Panel"
       }
     }
   },

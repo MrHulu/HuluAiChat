@@ -1130,6 +1130,11 @@
         "title": "对比模型回复",
         "description": "对回答不满意？使用重新生成按钮尝试其他 AI 模型，对比不同模型的回复效果。",
         "action": "试试重新生成"
+      },
+      "quickPanel": {
+        "title": "快捷面板",
+        "description": "按 Ctrl+Shift+Space 快速向 AI 提问。适合即时翻译、摘要和快速查询。",
+        "action": "打开快捷面板"
       }
     }
   },

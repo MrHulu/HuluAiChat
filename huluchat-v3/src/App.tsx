@@ -95,6 +95,7 @@ function App() {
         // Only show QuickPanel if permission is granted or not required
         if (permissionStatus === "granted") {
           setQuickPanelOpen(true);
+          markFeatureUsed("quick-panel"); // TASK-324: 标记 QuickPanel 功能已使用
         }
       },
       description: "Quick summon HuluChat from anywhere",
