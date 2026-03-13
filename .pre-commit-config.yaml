@@ -9,13 +9,8 @@ repos:
     hooks:
       - id: detect-secrets
         args: ['--baseline', '.secrets.baseline']
-        exclude: |
-          (?x)^(
-            \.secrets\.baseline|
-            \.env\.example|
-            \.env\.test\.example|
-            .*\.md$
-          )
+        # Only exclude the baseline file itself - scan everything else including .md and .example files
+        exclude: '^\.secrets\.baseline$'
 
   # Prevent committing to main/master
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -23,7 +18,6 @@ repos:
     hooks:
       - id: no-commit-to-branch
         args: ['--branch', 'master', '--branch', 'main']
-        stages: [push]
 
   # Check for large files
       - id: check-added-large-files
