@@ -49,6 +49,7 @@ function App() {
   const [knowledgeCenterOpen, setKnowledgeCenterOpen] = useState(false);
   const [bookmarkJumpOpen, setBookmarkJumpOpen] = useState(false);
   const [quickPanelOpen, setQuickPanelOpen] = useState(false);
+  const [hasQuickPanelConversation, setHasQuickPanelConversation] = useState(false);
   const sessionListRef = useRef<SessionListRef>(null);
   const chatViewRef = useRef<ChatViewRef>(null);
 
@@ -420,8 +421,15 @@ function App() {
       {/* Quick Panel - Floating quick question panel */}
       <QuickPanel
         isOpen={quickPanelOpen}
-        onClose={() => setQuickPanelOpen(false)}
+        onClose={() => {
+          setQuickPanelOpen(false);
+          // Show toast if there was a conversation
+          if (hasQuickPanelConversation) {
+            toast.success(t("quickPanel.savedToQuickChats"));
+          }
+        }}
         onOpenSettings={() => setSettingsOpen(true)}
+        onHasConversation={setHasQuickPanelConversation}
       />
       <div className="flex h-screen bg-background text-foreground">
       {/* Skip to main content link - Accessibility enhancement */}

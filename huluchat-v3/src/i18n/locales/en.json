@@ -53,6 +53,8 @@
     "folders": "Folders",
     "uncategorized": "Uncategorized",
     "backToAll": "Back to all",
+    "quickChats": "Quick Chats",
+    "quickChatsDesc": "Conversations from QuickPanel",
     "newFolder": "New folder",
     "folderName": "Folder name...",
     "expandSidebar": "Expand sidebar",
@@ -395,7 +397,8 @@
     "clipboardDetected": "Clipboard content detected",
     "fromClipboard": "From clipboard",
     "pasteFromClipboard": "Paste from clipboard",
-    "quickActions": "Quick Actions"
+    "quickActions": "Quick Actions",
+    "savedToQuickChats": "Saved to Quick Chats"
   },
   "quickActions": {
     "translate": {

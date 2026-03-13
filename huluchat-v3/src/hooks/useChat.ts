@@ -52,6 +52,10 @@ export interface UseChatReturn {
   isLoadingHistory: boolean;
   refreshMessages: () => void;
   generateTitle: () => Promise<void>;
+  /** Number of messages in queue waiting to be sent */
+  queueSize: number;
+  /** Clear the message queue */
+  clearQueue: () => void;
 }
 
 // WebSocket 消息类型
@@ -225,7 +229,7 @@ export function useChat(sessionId: string | null, options?: UseChatOptions): Use
     }
   }, [sessionId]); // 移除 streamingMessage 依赖，使用 ref 替代
 
-  const { status: connectionStatus, send, sendOrQueue, queueSize, clearQueue } = useWebSocket({
+  const { status: connectionStatus, send, queueSize, clearQueue } = useWebSocket({
     url: wsUrl,
     onMessage: handleWSMessage,
     reconnectAttempts: 10,
