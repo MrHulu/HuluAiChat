@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from core.database import get_session as get_db_session
+from core.security import sanitize_error_message, get_safe_error_type
 from models.schemas import MessageModel
 from sqlalchemy import delete as sql_delete
 from services.openai_service import openai_service
@@ -505,10 +506,12 @@ async def chat_websocket(
                         })
 
             except Exception as e:
-                logger.error(f"Error during streaming: {e}")
+                # SECURITY: Sanitize error message to prevent sensitive info leakage
+                safe_message = sanitize_error_message(e)
+                logger.error(f"Error during streaming: {get_safe_error_type(e)}")
                 await manager.send_json(session_id, {
                     "type": "error",
-                    "error": f"AI 响应出错: {str(e)}",
+                    "error": f"AI 响应出错: {safe_message}",
                 })
 
     except WebSocketDisconnect:
@@ -516,7 +519,8 @@ async def chat_websocket(
         logger.info(f"WebSocket disconnected: {session_id}")
 
     except Exception as e:
-        logger.error(f"WebSocket error: {e}")
+        # SECURITY: Log error type only, not full message which may contain sensitive info
+        logger.error(f"WebSocket error: {get_safe_error_type(e)}")
         manager.disconnect(session_id)
 
 
