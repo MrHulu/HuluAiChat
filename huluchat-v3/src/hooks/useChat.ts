@@ -237,6 +237,16 @@ export function useChat(sessionId: string | null, options?: UseChatOptions): Use
     maxQueueSize: 100,
   });
 
+  // TASK-311: 监听连接状态变化，断开时重置 isLoading
+  // 修复 Bug #3: 消息卡在"思考中"的问题
+  useEffect(() => {
+    if (connectionStatus === "disconnected" || connectionStatus === "error") {
+      // 连接断开或出错时，重置加载状态
+      setIsLoading(false);
+      setStreamingMessage(null);
+    }
+  }, [connectionStatus]);
+
   // 当 sessionId 变化时加载历史消息
   useEffect(() => {
     if (sessionId && sessionId !== currentSessionIdRef.current) {
