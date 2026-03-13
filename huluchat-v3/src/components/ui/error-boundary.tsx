@@ -1,11 +1,13 @@
 /**
  * ErrorBoundary Component
  * Catches JavaScript errors anywhere in the child component tree and displays a fallback UI
+ * Records errors locally for debugging (no telemetry, privacy-first)
  */
 import { Component, ErrorInfo, ReactNode } from "react";
-import { AlertTriangle, RefreshCw, Home } from "lucide-react";
+import { AlertTriangle, RefreshCw, Home, Download } from "lucide-react";
 import { Button } from "./button";
 import i18n from "@/i18n";
+import { logError, exportErrorLogs } from "@/utils/errorLogger";
 
 interface Props {
   children: ReactNode;
@@ -36,6 +38,9 @@ export class ErrorBoundary extends Component<Props, State> {
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("ErrorBoundary caught an error:", error, errorInfo);
     this.setState({ errorInfo });
+
+    // Log error locally (no telemetry, privacy-first)
+    logError(error, errorInfo.componentStack || undefined);
   }
 
   private handleReset = () => {
@@ -45,6 +50,19 @@ export class ErrorBoundary extends Component<Props, State> {
 
   private handleGoHome = () => {
     window.location.href = "/";
+  };
+
+  private handleExportLogs = () => {
+    const logs = exportErrorLogs();
+    const blob = new Blob([logs], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `huluchat-error-log-${new Date().toISOString().split("T")[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   public render() {
@@ -108,7 +126,20 @@ export class ErrorBoundary extends Component<Props, State> {
                 <Home className="w-4 h-4" />
                 {t("errorBoundary.goHome")}
               </Button>
+              <Button
+                onClick={this.handleExportLogs}
+                variant="ghost"
+                className="gap-2"
+              >
+                <Download className="w-4 h-4" />
+                {t("errorBoundary.exportLogs")}
+              </Button>
             </div>
+
+            {/* Help text */}
+            <p className="text-xs text-muted-foreground">
+              {t("errorBoundary.helpText")}
+            </p>
           </div>
         </div>
       );

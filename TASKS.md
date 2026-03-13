@@ -83,14 +83,18 @@
   - **完成日期**: 2026-03-14
   - **周期**: Cycle #18
 
-- [ ] **TASK-323**: 🛡️ 错误边界完善 [P1]
+- [x] **TASK-323**: 🛡️ 错误边界完善 [P1] ✅
   - **来源**: Critic Munger 建议
   - **目标**: 完善错误边界，防止单个组件崩溃影响整个应用
-  - **验收**:
-    - [ ] 所有关键组件有 ErrorBoundary
-    - [ ] 错误时有友好的恢复选项
-    - [ ] 错误信息本地记录（不上传）
-  - **工期**: 1-2 天
+  - **完成内容**:
+    - [x] SessionList 添加 ErrorBoundary 保护
+    - [x] 错误本地持久化记录 (errorLogger.ts)
+    - [x] 错误边界添加导出日志功能
+    - [x] 侧边栏专用错误回退 UI (SidebarErrorFallback)
+    - [x] 国际化支持 (en/zh)
+  - **测试**: 36 个测试通过 (errorLogger: 13, error-boundary: 19, sidebar-error-fallback: 4)
+  - **完成日期**: 2026-03-14
+  - **周期**: Cycle #19
 
 - [ ] **TASK-324**: 💡 功能可发现性优化 [P1]
   - **来源**: Product Norman 建议

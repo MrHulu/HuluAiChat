@@ -13,7 +13,11 @@
     "title": "Something went wrong",
     "description": "An unexpected error occurred. Please try again.",
     "tryAgain": "Try Again",
-    "goHome": "Go Home"
+    "goHome": "Go Home",
+    "exportLogs": "Export Logs",
+    "helpText": "Error details are saved locally. You can export them for debugging.",
+    "sidebarError": "Sidebar Error",
+    "sidebarErrorDesc": "Failed to load session list. Please try again."
   },
   "mermaid": {
     "loading": "Loading chart...",
