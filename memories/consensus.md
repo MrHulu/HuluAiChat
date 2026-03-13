@@ -4,6 +4,56 @@
 
 ---
 
+## ✅ TASK-327: E2E 测试扩展完成 ✅
+
+> **Cycle #25** - v3.68.0 第三个任务
+
+### 实现内容
+
+| 测试文件 | 测试数量 | 覆盖范围 |
+|----------|----------|----------|
+| session-templates.spec.ts | 15 | Template API, UI, 错误处理, 国际化 |
+| context-recovery.spec.ts | 15 | Draft 保存, 恢复对话框, 数量限制, UX |
+| export-extended.spec.ts | 20 | 多格式导出, 文件命名, 错误处理, 性能 |
+
+### 新增测试场景
+
+1. **Session Templates**
+   - 模板列表 API 验证
+   - 内置模板结构检查
+   - 模板选择器 UI 交互
+   - 错误处理和重试机制
+   - 国际化支持
+
+2. **Context Recovery**
+   - localStorage 草稿存储
+   - 恢复对话框 UI 显示
+   - 草稿数量限制 (最多 5 个)
+   - 忽略和恢复操作
+   - 数据完整性验证
+
+3. **Export Extended**
+   - Markdown/JSON/TXT/PDF 导出
+   - 文件名验证
+   - 内容完整性检查
+   - 错误处理
+   - 性能测试
+
+### 修复内容
+
+| 文件 | 修改 |
+|------|------|
+| eslint.config.js | 禁用 no-misleading-character-class 规则 |
+| error-handling.spec.ts | 修复正则表达式 Unicode flag |
+
+### 测试结果
+
+- 前端测试: 1984 passed ✅
+- E2E 测试数量: 124 -> 174 (+50, 超过 150+ 目标 16%)
+- PR: #466
+
+---
+
 ## ✅ TASK-324: 功能可发现性优化完成 ✅
 
 > **Cycle #20** - v3.67.0 第五个任务
@@ -654,17 +704,32 @@ Boss 提供的 GLM-5 API Key 已过期（返回 401 错误）。
 - **项目**: HuluChat
 - **当前版本**: v3.67.0 ✅ **已发布**
 - **下一版本**: v3.68.0 (Conversation Continuity)
-- **当前周期**: Cycle #23
-- **当前状态**: 🔄 v3.68.0 规划完成，准备执行
-- **已完成任务计数**: 89
-- **待开始任务**: TASK-325, TASK-326, TASK-327
+- **当前周期**: Cycle #25
+- **当前状态**: ✅ v3.68.0 所有任务完成，准备发布
+- **已完成任务计数**: 92
+- **待开始任务**: 无 (v3.68.0 完成)
 
 ---
 
 ## Next Action
-> **✅ TASK-325 完成**
+> **✅ TASK-327 完成**
 >
-> **已完成**: Session Templates 代码审计与修复
+> **已完成**: E2E 测试扩展
+> - 新增 50 个测试 (124 -> 174)
+> - 覆盖 Session Templates, Context Recovery, Export
+> - PR: #466
+>
+> **v3.68.0 进度**: 3/3 任务完成 ✅
+>
+> **已完成任务**:
+> - ~~TASK-325: Session Templates 代码审计~~ ✅
+> - ~~TASK-326: Context Recovery 草稿自动保存~~ ✅
+> - ~~TASK-327: E2E 测试扩展~~ ✅
+>
+> **下一步**: 发布 v3.68.0
+> - 更新版本号
+> - 创建 git tag
+> - 推送 tag 触发 GitHub Actions
 > - TemplateSelector: 添加重试按钮，错误处理增强
 > - session_templates.py: JSON 解析日志
 > - 国际化: 内置模板翻译 (en/zh)
