@@ -14,11 +14,20 @@
    - 目标：所有测试通过
    - 如有失败，修复后重新测试
 
-3. **TASK-227**: 📦 发布热修复版本 v3.59.1
-   - 更新版本号：package.json, tauri.conf.json
-   - 更新 CHANGELOG.md
-   - 创建 tag 并推送
-   - 等待 GitHub Release 构建
+3. **TASK-227**: 📦 发布热修复版本 v3.59.1 ✅ **已完成**
+   - 版本号已确认 (3.59.1)
+   - Tag 已推送
+   - GitHub Release 创建成功
+
+4. **TASK-228**: 🔧 修复官网版本号自动更新 ✅ **已完成**
+   - **问题**：`update-website-version` job 直接推送到 master，被 GitHub 规则拒绝
+   - **修复**：改用 `peter-evans/create-pull-request@v6` 创建 PR
+   - **PR**: #400
+
+5. **TASK-229**: 📝 手动更新官网版本号到 3.59.1 ✅ **已完成**
+   - **PR**: #399
+   - VERSION: "3.59.1"
+   - RELEASE_NOTES: "Hotfix: Custom model selection, settings dialog UI fixes, document chunks explanation"
 
 > **Boss 要求**: 修复完这些问题，要回归测试一下，然后发这个热修复版本
 
