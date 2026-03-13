@@ -205,6 +205,24 @@
     "searchNext": "下一个匹配",
     "searchClose": "关闭搜索"
   },
+  "draftRecovery": {
+    "title": "恢复未发送的消息",
+    "description": "您有 {{count}} 条未发送的消息。是否恢复？",
+    "description_one": "您有 1 条未发送的消息。是否恢复？",
+    "recover": "恢复",
+    "dismiss": "忽略",
+    "dismissAll": "全部忽略",
+    "continueWithout": "不恢复，继续",
+    "untitledSession": "未命名会话",
+    "justNow": "刚刚",
+    "minutesAgo": "{{count}} 分钟前",
+    "hoursAgo": "{{count}} 小时前",
+    "daysAgo": "{{count}} 天前",
+    "images": "{{count}} 张图片",
+    "files": "{{count}} 个文件",
+    "recovered": "草稿已恢复",
+    "dismissed": "草稿已忽略"
+  },
   "settings": {
     "title": "设置",
     "description": "配置您的 API 设置和偏好。",
