@@ -248,10 +248,15 @@ async def get_models():
 
 @router.post("/test")
 async def test_connection():
-    """Test API connection with current settings"""
+    """Test API connection with current settings
+
+    Note: Uses chat.completions.create() instead of models.list() because
+    some providers (like Zhipu AI/BigModel) don't support the /models endpoint.
+    """
     user_settings = load_user_settings()
     api_key = user_settings.get("openai_api_key") or settings.openai_api_key
     base_url = user_settings.get("openai_base_url") or settings.openai_base_url
+    model = user_settings.get("openai_model") or settings.openai_model
 
     if not api_key:
         raise HTTPException(status_code=400, detail="API key not configured")
@@ -264,8 +269,13 @@ async def test_connection():
             base_url=base_url if base_url else None,
         )
 
-        # Simple test - list models (or make a minimal request)
-        await client.models.list()
+        # Use chat completion to test connection (works with all providers)
+        # This is more reliable than models.list() which some providers don't support
+        await client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": "Hi"}],
+            max_tokens=1,  # Minimize cost
+        )
 
         return {"status": "success", "message": "Connection successful"}
     except Exception as e:

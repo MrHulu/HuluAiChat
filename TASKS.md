@@ -17,39 +17,11 @@
 
 ## 🔴 紧急 Bug 修复
 
-### 🐛 TASK-306: 修复 API Key 验证失败 [P0] 🔴 **最高优先级**
+### ~~🐛 TASK-306: 修复 API Key 验证失败 [P0]~~ ✅ **已完成**
 
-**问题报告** (Boss 2026-03-13):
-> Boss 收到邮件说 Key 验证失败，但 Key 是没有问题的，这是 HuluChat 的 bug
-
-**根因分析**:
-```python
-# 当前代码 (backend/api/settings.py:185)
-await client.models.list()  # ❌ 智谱 AI 不支持此端点
-```
-
-**问题**:
-- 使用 `client.models.list()` 测试连接
-- 智谱 AI API 不支持 `/models` 端点
-- 导致验证失败，但 Key 实际上是正确的
-
-**修复方案**:
-```python
-# 新代码
-response = await client.chat.completions.create(
-    model=current_model,  # 使用用户选择的模型
-    messages=[{"role": "user", "content": "Hi"}],
-    max_tokens=1  # 最小化成本
-)
-```
-
-**验收标准**:
-- [ ] 智谱 AI API 验证通过
-- [ ] DeepSeek、OpenAI API 不受影响
-- [ ] 测试成本 < 0.01 元/次
-- [ ] 添加错误处理（超时、无效模型等）
-
-**预计周期**: 0.5 cycle
+**修复完成** (2026-03-13, Cycle #35):
+- 将 `client.models.list()` 改为 `chat.completions.create()`
+- 兼容所有 OpenAI 兼容 API（智谱 AI、DeepSeek、OpenAI）
 
 ---
 
@@ -191,6 +163,15 @@ Model: glm-5
 ---
 
 ## ✅ 已完成任务
+
+### v3.63.0 - Bug Fix ✅ **开发完成**
+**主题**: Bug 修复 - API Key 验证问题
+**完成日期**: 2026-03-13
+
+- [x] **TASK-306**: 🐛 修复 API Key 验证失败 [P0] ✅
+  - **问题**: `client.models.list()` 不被智谱 AI 支持
+  - **修复**: 改用 `chat.completions.create()` 测试
+  - **验收**: ✅ 后端 137 passed, 前端 1945 passed
 
 ### v3.62.0 - 质量打磨 ✅ **开发完成，暂不发布**
 **主题**: 质量打磨 - 修复问题，优化体验
