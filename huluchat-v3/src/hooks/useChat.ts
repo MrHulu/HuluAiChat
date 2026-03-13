@@ -46,7 +46,7 @@ export interface UseChatReturn {
   toolCalls: ToolCall[];
   connectionStatus: ConnectionStatus;
   sendMessage: (content: string, model?: string, params?: ChatParameters, images?: ImageContent[], files?: FileAttachment[], useMcp?: boolean, options?: SendMessageOptions) => void;
-  regenerateMessage: (assistantMessageId: string) => void;
+  regenerateMessage: (assistantMessageId: string, model?: string) => void;
   deleteMessage: (messageId: string) => Promise<void>;
   isLoading: boolean;
   isLoadingHistory: boolean;
@@ -318,9 +318,9 @@ export function useChat(sessionId: string | null, options?: UseChatOptions): Use
     }
   }, [sessionId, loadHistory]);
 
-  // 重新生成 AI 消息
+  // 重新生成 AI 消息（支持指定不同模型）
   const regenerateMessage = useCallback(
-    (assistantMessageId: string) => {
+    (assistantMessageId: string, model?: string) => {
       // 找到 AI 消息的索引
       const assistantIndex = messages.findIndex((m) => m.id === assistantMessageId);
       if (assistantIndex === -1) return;
@@ -340,6 +340,8 @@ export function useChat(sessionId: string | null, options?: UseChatOptions): Use
             regenerate: true,
             // 告诉后端删除该用户消息之后的所有消息（包括 AI 消息）
             delete_from_message_id: userMessage.id,
+            // 如果指定了模型，使用新模型重新生成
+            model: model,
           });
           setIsLoading(true);
           break;

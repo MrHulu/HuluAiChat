@@ -75,6 +75,9 @@ export interface Message {
   content: string;
   images?: ImageContent[];  // Optional images for multimodal messages
   files?: FileAttachment[]; // Optional file attachments
+  model_id?: string;  // Model used to generate this message (for AI messages)
+  regenerated_from?: string;  // Original message ID if this is a regenerated response
+  regenerated_at?: string;  // When this message was regenerated
   created_at: string;
 }
 
