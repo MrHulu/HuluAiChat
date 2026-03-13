@@ -1,10 +1,10 @@
 # Auto Company Consensus
 
-> 最后更新: 2026-03-13
+> 最后更新: 2026-03-14
 
 ---
 
-## 🔴🚨 紧急状态 - Bug 修复进行中 🚨🔴
+## ✅ Bug 修复完成 - 所有 3 个 Bug 已修复 ✅
 
 > **Boss 直接指令 (2026-03-13)**: 暂停一切功能开发！
 
@@ -14,7 +14,7 @@
 |-----|------|------|----------|
 | Bug #1 | 消息悬浮文字错误 | ✅ **已修复** | 移除容器上的 `title` 属性 (PR #437) |
 | Bug #2 | API Key 保存后消失 | ✅ **已修复** | 修复 API Key 初始化逻辑 (PR #440) |
-| Bug #3 | 消息卡在"思考中" | ⚠️ **待验证** | 代码审查完成，逻辑正确 |
+| Bug #3 | 消息卡在"思考中" | ✅ **已修复** | 添加连接状态监听重置 isLoading (PR #444) |
 
 ---
 
@@ -42,34 +42,35 @@ for (const provider of providers) {
 
 ---
 
-## Bug #3 分析结果
+## Bug #3 修复详情 (TASK-311)
 
-**代码审查结论**: 代码逻辑正确
+**问题**: WebSocket 连接断开时 `isLoading` 不会重置
 
-| 组件 | 文件 | 状态 |
-|------|------|------|
-| 前端 isLoading 状态 | `useChat.ts` | ✅ 逻辑正确 |
-| 前端 stream_end 处理 | `useChat.ts:158-191` | ✅ 逻辑正确 |
-| 后端 WebSocket 处理 | `chat.py` | ✅ 逻辑正确 |
-| OpenAI 服务 streaming | `openai_service.py` | ✅ 逻辑正确 |
+**根本原因**: `useChat.ts` 没有监听 `connectionStatus` 变化。当 WebSocket 断开（网络问题、后端崩溃）时，`isLoading` 一直保持 `true`，导致 UI 显示"思考中"状态。
 
-**可能原因**:
-1. 网络连接问题
-2. API 服务端错误
-3. 后端未启动
+**修复方案**:
+```typescript
+// TASK-311: 监听连接状态变化，断开时重置 isLoading
+useEffect(() => {
+  if (connectionStatus === "disconnected" || connectionStatus === "error") {
+    setIsLoading(false);
+    setStreamingMessage(null);
+  }
+}, [connectionStatus]);
+```
 
-**建议**: 需要真实 UI 测试确认
+**PR**: #444 ✅ 已合并
+**测试**: 1947 passed ✅ (新增 2 个测试用例)
 
 ---
 
 ## Next Action
-> **🔴 Bug #3 需要真实 UI 测试验证**
-> - 代码审查完成，逻辑正确
-> - 可能原因：网络/API 问题
-> - 建议：使用 agent-browser 进行真实 UI 测试
+> **✅ 所有 3 个 Bug 已修复，等待 Boss 确认或指示下一步**
 >
-> **或者**: 修复后端 mypy 类型错误（35 个错误）
-> **或者**: 等待 Boss 反馈更多 bug 信息
+> **选项**:
+> - A. 发布 v3.65.0（包含 Bug #3 修复）
+> - B. 等待 Boss 反馈是否还有其他 bug
+> - C. 修复后端 mypy 类型错误（35 个错误）
 
 ---
 
@@ -216,10 +217,19 @@ for (const provider of providers) {
 
 - **项目**: HuluChat
 - **当前版本**: v3.64.0 ✅ **已发布**
-- **下一版本**: v3.65.0 (待规划)
-- **当前任务**: Bug #3 验证（需真实 UI 测试）
-- **已完成任务计数**: 70
+- **下一版本**: v3.65.0 (待发布 - 包含 Bug #3 修复)
+- **当前任务**: 所有 Bug 已修复，等待 Boss 指示
+- **已完成任务计数**: 71
 
 ---
 
-*更新时间: 2026-03-14 - Cycle #38 (v3.64.0 发布完成)*
+## TASK-311 完成记录 (2026-03-14)
+
+**修复**: 添加 WebSocket 连接状态监听
+- **文件**: `src/hooks/useChat.ts`
+- **PR**: #444 ✅ 已合并
+- **验证**: test-frontend passed ✅ (1947 tests)
+
+---
+
+*更新时间: 2026-03-14 - Cycle #39 (Bug #3 修复完成)*

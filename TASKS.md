@@ -165,6 +165,17 @@ Model: glm-5
 
 ## ✅ 已完成任务
 
+### v3.65.0 - Bug Fix (Loading Stuck) ✅ **开发完成**
+**主题**: 修复消息卡在"思考中"的 Bug
+**完成日期**: 2026-03-14
+
+- [x] **TASK-311**: 🐛 修复消息卡在"思考中" [P0] ✅
+  - **问题**: WebSocket 连接断开时 `isLoading` 不会重置
+  - **根本原因**: 没有监听 `connectionStatus` 变化
+  - **修复**: 添加 useEffect 监听连接状态，断开时重置 isLoading
+  - **PR**: #444 ✅ 已合并
+  - **验收**: ✅ 前端 1947 passed (新增 2 个测试)
+
 ### v3.64.0 - Bug Fix (UI) ✅ **开发完成**
 **主题**: 修复消息容器悬浮文字错误
 **完成日期**: 2026-03-13
@@ -174,6 +185,12 @@ Model: glm-5
   - **影响**: 用户无法看到复制、书签、重新生成等按钮的正确提示
   - **修复**: 移除 MessageItem.tsx 上的 `title` 属性
   - **PR**: #437 ✅ 已合并
+
+- [x] **TASK-310**: 🐛 修复 API Key 初始化逻辑错误 [P0] ✅
+  - **问题**: App.tsx 中 API Key 初始化逻辑错误
+  - **影响**: 如果存在 deepseek key，会覆盖 openai key
+  - **修复**: 只加载 openai provider 的 key 发送到后端
+  - **PR**: #440 ✅ 已合并
 
 ### v3.63.0 - Bug Fix ✅ **开发完成**
 **主题**: Bug 修复 - API Key 验证问题
