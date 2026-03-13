@@ -5,19 +5,26 @@
 ---
 
 ## 当前状态
-🟢 **v3.63.0 CI 构建中**
+🟢 **v3.63.0 发布成功**
 📅 **Cycle #36 - GLM-5 模型支持完成**
 
 ### 发布记录 (2026-03-13)
 > **版本**: v3.63.0
 > **Tag**: v3.63.0
-> **PR**: #427, #428
+> **GitHub Release**: https://github.com/MrHulu/HuluAiChat/releases/tag/v3.63.0
+> **PR**: #427, #428, #430
 > **测试**: 1945 passed ✅
 
+### 发布文件
+- ✅ Windows: HuluChat_3.63.0_x64_en-US.msi (46MB)
+- ✅ macOS ARM: HuluChat_3.63.0_aarch64.dmg (39MB)
+- ✅ macOS Intel: HuluChat_3.63.0_x64.dmg (39MB)
+- ✅ Linux: HuluChat_3.63.0_amd64.AppImage (151MB)
+
 ### Next Action
-> **等待 CI 构建完成 (Tauri 构建)**
-> - 后端构建: 4/4 完成 ✅
-> - Tauri 构建: 0/4 进行中 (约 8 分钟)
+> **执行 TASK-302: 真实 API 集成测试**
+> - 使用 GLM-5 模型测试真实对话
+> - 验证流式输出
 
 ---
 
@@ -134,11 +141,11 @@
 ## Company State
 
 - **项目**: HuluChat
-- **当前版本**: v3.63.0 ✅ **CI 构建中**
+- **当前版本**: v3.63.0 ✅ **已发布**
 - **下一版本**: v3.64.0 (待规划)
-- **当前任务**: 等待 CI 构建完成 → TASK-302 真实 API 测试
+- **当前任务**: TASK-302 真实 API 测试
 - **已完成任务计数**: 66
 
 ---
 
-*更新时间: 2026-03-13 - Cycle #36 (GLM-5 模型支持完成)*
+*更新时间: 2026-03-13 - Cycle #36 (v3.63.0 发布成功 + GLM-5 支持)*
