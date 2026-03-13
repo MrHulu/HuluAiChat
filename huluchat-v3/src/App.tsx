@@ -24,7 +24,7 @@ import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { useSession, useKeyboardShortcuts, useFolders, useFeatureDiscovery, useContextualTip, useModel, useBackendHealth, useGlobalShortcut, useAccessibilityPermission } from "@/hooks";
 import { BackendStatusIndicator } from "@/components/BackendStatusIndicator";
 import { exportSession, moveSessionToFolder, updateSettings, ExportFormat } from "@/api/client";
-import { getAPIKey, type APIKeyProvider } from "@/services/keyring";
+import { getAPIKey } from "@/services/keyring";
 
 // Import version from package.json for dynamic version display
 import { version } from "../package.json";
@@ -166,15 +166,13 @@ function App() {
         // Check if we've already done migration
         const migrated = localStorage.getItem(API_KEY_MIGRATED_KEY);
 
-        // Load API keys from keyring and send to backend
-        const providers: APIKeyProvider[] = ["openai", "deepseek"];
-        for (const provider of providers) {
-          const apiKey = await getAPIKey(provider);
-          if (apiKey) {
-            // Send to backend for immediate use (backend stores only in memory)
-            await updateSettings({ openai_api_key: apiKey });
-            console.log(`Loaded ${provider} API key from keyring`);
-          }
+        // Load API key from keyring and send to backend
+        // Only load openai provider's key as the main API key
+        const apiKey = await getAPIKey("openai");
+        if (apiKey) {
+          // Send to backend for immediate use (backend stores only in memory)
+          await updateSettings({ openai_api_key: apiKey });
+          console.log("Loaded openai API key from keyring");
         }
 
         // Mark migration as complete
