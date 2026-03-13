@@ -131,20 +131,21 @@ describe("useModel hook", () => {
     expect(localStorage.getItem("huluchat-selected-model")).toBe("gpt-4");
   });
 
-  it("should not update model if not in model list", async () => {
+  it("should accept custom model and add to list", async () => {
     const { result } = renderHook(() => useModel());
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    const previousModel = result.current.currentModel;
-
     act(() => {
-      result.current.setModel("invalid-model");
+      result.current.setModel("custom-gpt-model");
     });
 
-    expect(result.current.currentModel).toBe(previousModel);
+    // 自定义模型应该被接受并添加到列表中
+    expect(result.current.currentModel).toBe("custom-gpt-model");
+    expect(result.current.models.some((m) => m.id === "custom-gpt-model")).toBe(true);
+    expect(localStorage.getItem("huluchat-selected-model")).toBe("custom-gpt-model");
   });
 
   it("should return correct model name", async () => {
@@ -335,7 +336,7 @@ describe("useModel hook", () => {
       expect(result.current.currentModel).toBe("ollama:llama3");
     });
 
-    it("should not allow selecting invalid Ollama model", async () => {
+    it("should accept custom Ollama model and add to list", async () => {
       mockGetModels.mockResolvedValue(mockMixedModels);
 
       const { result } = renderHook(() => useModel());
@@ -344,14 +345,13 @@ describe("useModel hook", () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      const previousModel = result.current.currentModel;
-
       act(() => {
-        result.current.setModel("ollama:nonexistent-model");
+        result.current.setModel("ollama:custom-model");
       });
 
-      // 模型不应该改变
-      expect(result.current.currentModel).toBe(previousModel);
+      // 自定义模型应该被接受并添加到列表中
+      expect(result.current.currentModel).toBe("ollama:custom-model");
+      expect(result.current.models.some((m) => m.id === "ollama:custom-model")).toBe(true);
     });
   });
 
@@ -361,6 +361,12 @@ describe("useModel hook", () => {
         { id: "gpt-4", name: "GPT-4", description: "Most capable" },
         { id: "ollama:llama3", name: "Llama 3", description: "Local" },
       ];
+      mockGetSettings.mockResolvedValue({
+        openai_api_key: null,
+        openai_base_url: null,
+        openai_model: "gpt-4", // 设置为列表中的模型
+        has_api_key: false,
+      });
       mockGetModels.mockResolvedValue(modelsWithoutProvider);
 
       const { result } = renderHook(() => useModel());
@@ -377,6 +383,12 @@ describe("useModel hook", () => {
         { id: "gpt-4", name: "GPT-4 (Cloud)", description: "OpenAI", provider: "openai" as const },
         { id: "gpt-4", name: "GPT-4 (Local)", description: "Ollama", provider: "ollama" as const },
       ];
+      mockGetSettings.mockResolvedValue({
+        openai_api_key: null,
+        openai_base_url: null,
+        openai_model: "gpt-4", // 设置为列表中的模型
+        has_api_key: false,
+      });
       mockGetModels.mockResolvedValue(modelsWithDuplicates);
 
       const { result } = renderHook(() => useModel());
@@ -413,6 +425,12 @@ describe("useModel hook", () => {
         { id: "gpt-4", name: "GPT-4", description: "" },
         { id: "ollama:llama3", name: "", description: "Local" },
       ];
+      mockGetSettings.mockResolvedValue({
+        openai_api_key: null,
+        openai_base_url: null,
+        openai_model: "gpt-4", // 设置为列表中的模型
+        has_api_key: false,
+      });
       mockGetModels.mockResolvedValue(partialModels);
 
       const { result } = renderHook(() => useModel());

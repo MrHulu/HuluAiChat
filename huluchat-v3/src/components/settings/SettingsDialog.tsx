@@ -263,6 +263,9 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
       setApiKey(""); // Clear the input after save
       toast.success(t("settings.settingsSaved"));
       onSettingsChange?.();
+
+      // 触发设置变更事件，让其他组件（如 useModel）刷新
+      window.dispatchEvent(new CustomEvent("settings-changed"));
     } catch (error) {
       console.error("Failed to save settings:", error);
       toast.error(t("settings.settingsSaveFailed"));
@@ -330,7 +333,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
           <span className="sr-only">{t("settings.title")}</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[525px]">
+      <DialogContent className="sm:max-w-[640px] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{t("settings.title")}</DialogTitle>
           <DialogDescription>
@@ -345,7 +348,7 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
           </div>
         ) : (
           <Tabs defaultValue="api" className="w-full">
-            <TabsList className="grid w-full grid-cols-7">
+            <TabsList className="flex flex-wrap w-full gap-1">
               <TabsTrigger value="api">{t("settings.tabApi")}</TabsTrigger>
               <TabsTrigger value="ollama">{t("settings.tabOllama")}</TabsTrigger>
               <TabsTrigger value="mcp">
