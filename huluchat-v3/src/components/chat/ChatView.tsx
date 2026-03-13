@@ -145,7 +145,7 @@ export const ChatView = forwardRef<ChatViewRef, ChatViewProps>(function ChatView
   const { t } = useTranslation();
   const { messages, streamingMessage, toolCalls, connectionStatus, sendMessage, regenerateMessage, deleteMessage, isLoading } =
     useChat(sessionId, { onTitleGenerated: onSessionUpdated });
-  const { currentModel, models, setModel, isLoading: isLoadingModels, parameters, recommendedModel } = useModel();
+  const { currentModel, models, setModel, isLoading: isLoadingModels, parameters, recommendedModel, ollamaAvailable, ollamaModels } = useModel();
 
   // Refs
   const messageListRef = useRef<MessageListRef>(null);
@@ -669,6 +669,11 @@ export const ChatView = forwardRef<ChatViewRef, ChatViewProps>(function ChatView
         onBookmarkToggle={handleBookmarkToggle}
         onRegenerate={regenerateMessage}
         isRegenerating={isLoading}
+        availableModels={models}
+        currentModel={currentModel}
+        ollamaModels={ollamaModels}
+        ollamaAvailable={ollamaAvailable}
+        recommendedModel={recommendedModel}
         onSuggestionClick={handleSuggestionClick}
         onQuote={handleQuote}
         onDelete={deleteMessage}

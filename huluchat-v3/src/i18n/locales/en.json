@@ -78,6 +78,15 @@
     "regenerated": "Regenerated response",
     "regeneratedShort": "Regenerated",
     "modelUsed": "Model: {{model}}",
+    "modelSelector": {
+      "title": "Select Model",
+      "description": "Choose a different AI model to regenerate the response",
+      "selectModel": "Select {{model}}",
+      "recommended": "Recommended model",
+      "currentModel": "Current model",
+      "ollamaLocal": "Ollama (Local)",
+      "localModel": "Local model"
+    },
     "copy": "Copy",
     "copied": "Copied!",
     "copyCode": "Copy code",
