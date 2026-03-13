@@ -57,12 +57,13 @@ jobs:
         with:
           python-version: '3.12'
           cache: 'pip'
+          cache-dependency-path: huluchat-v3/backend/requirements.txt
 
       - name: Install dependencies
         run: |
           cd huluchat-v3/backend
           pip install -r requirements.txt
-          pip install pytest pytest-asyncio
+          pip install pytest==8.3.5 pytest-asyncio==0.24.0
 
       - name: Run tests
         run: |
@@ -71,15 +72,15 @@ jobs:
 
       - name: Type check (mypy)
         run: |
-          pip install mypy
+          pip install mypy==1.15.0
           cd huluchat-v3/backend
-          mypy . --ignore-missing-imports || true
+          mypy . --ignore-missing-imports
 
       - name: Lint (ruff)
         run: |
-          pip install ruff
+          pip install ruff==0.9.10
           cd huluchat-v3/backend
-          ruff check . || true
+          ruff check .
 
   build-tauri:
     needs: [test-frontend, test-backend]
