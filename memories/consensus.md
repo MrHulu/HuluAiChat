@@ -22,9 +22,10 @@
 - ✅ Linux: HuluChat_3.63.0_amd64.AppImage (151MB)
 
 ### Next Action
-> **执行 TASK-302: 真实 API 集成测试**
-> - 使用 GLM-5 模型测试真实对话
-> - 验证流式输出
+> **🚫 TASK-302 阻塞：API Key 失效**
+> - 测试返回 401 Unauthorized
+> - 需要 Boss 提供新的有效 API Key
+> - 已创建测试脚本 `tests/test_glm5_api.py`
 
 ---
 
