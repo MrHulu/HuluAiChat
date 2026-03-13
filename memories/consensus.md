@@ -4,57 +4,71 @@
 
 ---
 
-## 🔴🚨 紧急状态 - 暂停功能开发 🚨🔴
+## 🔴🚨 紧急状态 - Bug 修复进行中 🚨🔴
 
 > **Boss 直接指令 (2026-03-13)**: 暂停一切功能开发！
 
-### 问题严重性
-- v3.63.0 发布后 Boss 发现**核心功能完全不可用**
-- **API Key 保存后消失**
-- **发送消息卡在"思考中"**
-- **UI 图标和文字全部错误**（都叫"双击引用消息"）
-- **14 人 AI 团队 63 个版本无人发现！**
+### Bug 修复进度
 
-### 当前唯一任务
-🔴 **TASK-308**: E2E 全面测试 - 发现所有 Bug
-🔴 **TASK-309**: 修复消息图标和悬浮文字错误
-🔴 **TASK-310**: 修复 API Key 保存后消失
-🔴 **TASK-311**: 修复消息卡在"思考中"
+| Bug | 描述 | 状态 | 修复方案 |
+|-----|------|------|----------|
+| Bug #1 | 消息悬浮文字错误 | ✅ **已修复** | 移除容器上的 `title` 属性 (PR #437) |
+| Bug #2 | API Key 保存后消失 | ✅ **已修复** | 修复 API Key 初始化逻辑 (PR #440) |
+| Bug #3 | 消息卡在"思考中" | ⚠️ **待验证** | 代码审查完成，逻辑正确 |
 
-### E2E 测试结果 (2026-03-13)
+---
 
-#### 后端 API 测试
-| API | 状态 | 结果 |
-|-----|------|------|
-| `GET /api/health` | ✅ | `{"status":"ok","version":"3.0.0"}` |
-| `GET /api/sessions/` | ✅ | 返回会话列表 |
-| `POST /api/sessions/` | ✅ | 新建会话成功 |
-| `GET /api/folders/` | ✅ | 返回文件夹列表 |
-| `GET /api/settings/` | ✅ | `has_api_key: true` |
+## Bug #2 修复详情 (TASK-310)
 
-#### 已确认的 Bug
+**问题**: App.tsx 中 API Key 初始化逻辑错误
 
-##### Bug #1: 消息悬浮文字错误 🔴 **代码确认**
-- **文件**: `src/components/chat/MessageItem.tsx:420-421`
-- **问题**: 整个消息容器设置了 `title="双击引用消息"`
-- **影响**: 所有按钮的悬浮提示都被覆盖
-- **修复方案**: 移除容器上的 `title` 属性
+```typescript
+// 问题代码
+const providers: APIKeyProvider[] = ["openai", "deepseek"];
+for (const provider of providers) {
+  const apiKey = await getAPIKey(provider);
+  if (apiKey) {
+    // 问题：无论 provider 是什么，都发送 openai_api_key
+    await updateSettings({ openai_api_key: apiKey });
+  }
+}
+```
 
-##### Bug #2: API Key 保存后消失 (待验证)
-- 代码逻辑正确，需要真实 UI 测试确认
+**影响**: 如果存在 deepseek key，会覆盖 openai key，导致 API Key 失效
 
-##### Bug #3: 消息卡在"思考中" (待验证)
-- 代码逻辑正确，需要真实 UI 测试确认
+**修复**: 只加载 openai provider 的 key 发送到后端
 
-#### 测试限制
-- ❌ agent-browser 无法启动 (daemon 问题)
-- ✅ 代码审查已完成
+**PR**: #440 ✅ 已合并
 
-### Next Action
-> **🔴 继续验证 Bug #2 和 Bug #3**
-> - Bug #2: API Key 保存后消失 - 需要真实 UI 测试
-> - Bug #3: 消息卡在"思考中" - 需要真实 UI 测试
-> - 或者：修复后端 mypy 类型错误（36 个错误）
+---
+
+## Bug #3 分析结果
+
+**代码审查结论**: 代码逻辑正确
+
+| 组件 | 文件 | 状态 |
+|------|------|------|
+| 前端 isLoading 状态 | `useChat.ts` | ✅ 逻辑正确 |
+| 前端 stream_end 处理 | `useChat.ts:158-191` | ✅ 逻辑正确 |
+| 后端 WebSocket 处理 | `chat.py` | ✅ 逻辑正确 |
+| OpenAI 服务 streaming | `openai_service.py` | ✅ 逻辑正确 |
+
+**可能原因**:
+1. 网络连接问题
+2. API 服务端错误
+3. 后端未启动
+
+**建议**: 需要真实 UI 测试确认
+
+---
+
+## Next Action
+> **🔴 Bug #3 需要真实 UI 测试验证**
+> - 启动后端和前端
+> - 发送消息测试
+> - 如果卡在"思考中"，检查控制台错误日志
+>
+> **或者**: 修复后端 mypy 类型错误（36 个错误）
 
 ---
 
@@ -181,10 +195,10 @@
 
 - **项目**: HuluChat
 - **当前版本**: v3.63.0 ✅ **已发布**
-- **下一版本**: v3.64.0 (待规划)
-- **当前任务**: TASK-302 真实 API 测试
-- **已完成任务计数**: 66
+- **下一版本**: v3.64.0 (Bug Fix)
+- **当前任务**: Bug #3 验证 + 发布 v3.64.0
+- **已完成任务计数**: 68
 
 ---
 
-*更新时间: 2026-03-13 - Cycle #36 (v3.63.0 发布成功 + GLM-5 支持)*
+*更新时间: 2026-03-13 - Cycle #37 (Bug #1 + Bug #2 已修复)*
