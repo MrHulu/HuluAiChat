@@ -246,7 +246,24 @@
     "customModelHint": "输入您的 API 服务提供的模型 ID",
     "customModelRequired": "请输入自定义模型 ID",
     "customModelName": "自定义模型",
-    "customModelDescription": "使用自定义模型 ID（例如 GLM-4、Qwen）"
+    "customModelDescription": "使用自定义模型 ID（例如 GLM-4、Qwen）",
+    "quickActions": {
+      "settingsDescription": "自定义快捷面板的快捷操作。使用 {{text}} 作为选中文本的占位符。",
+      "addAction": "添加操作",
+      "editAction": "编辑操作",
+      "reset": "重置为默认",
+      "name": "名称",
+      "namePlaceholder": "例如：翻译",
+      "actionDescription": "描述",
+      "descriptionPlaceholder": "例如：翻译文本到目标语言",
+      "icon": "图标",
+      "category": "分类",
+      "promptTemplate": "提示词模板",
+      "promptPlaceholder": "例如：翻译以下文本：\n\n{{text}}",
+      "promptHint": "使用 {{text}} 作为选中/输入文本的占位符",
+      "saved": "快捷操作已保存",
+      "deleted": "快捷操作已删除"
+    }
   },
   "plugins": {
     "title": "插件",
@@ -490,6 +507,24 @@
       "analysis": "分析",
       "translation": "翻译",
       "custom": "自定义"
+    },
+    "builtIn": {
+      "general-chat": {
+        "name": "通用对话",
+        "description": "适用于日常问答和通用对话"
+      },
+      "code-assistant": {
+        "name": "代码助手",
+        "description": "专注于代码编写、调试和代码审查"
+      },
+      "translation": {
+        "name": "翻译助手",
+        "description": "专业的多语言翻译服务"
+      },
+      "creative-writing": {
+        "name": "创意写作",
+        "description": "帮助撰写文章、邮件和创意内容"
+      }
     }
   },
   "app": {

@@ -97,8 +97,12 @@ class SessionTemplateResponse(BaseModel):
         if model.mcp_servers:
             try:
                 mcp_servers = json.loads(model.mcp_servers)
-            except json.JSONDecodeError:
-                pass
+            except json.JSONDecodeError as e:
+                # Log the error but don't fail - return None for mcp_servers
+                logger.warning(
+                    f"Failed to parse mcp_servers JSON for template {model.id}: {e}. "
+                    f"Raw value: {model.mcp_servers[:100] if len(model.mcp_servers) > 100 else model.mcp_servers}"
+                )
         return cls(
             id=model.id,
             name=model.name,
