@@ -150,26 +150,31 @@
 > 真正需要的是"QuickPanel 历史入口"，而不是"持久化"。
 
 #### Phase 1: QuickPanel 历史入口 (P0)
-- [ ] **TASK-230**: 📜 QuickPanel 历史入口 [P0]
+- [x] **TASK-230**: 📜 QuickPanel 历史入口 [P0] ✅ 2026-03-13
   - **发现**: QuickPanel 的对话已经持久化到数据库，但没有入口让用户访问
   - **功能**:
-    - 在 QuickPanel 添加"历史"按钮
-    - 点击打开快速对话列表
-    - 支持搜索和继续对话
-  - **技术方案**:
-    - QuickPanel Header 添加历史图标按钮
-    - 创建 QuickPanelHistoryDialog 组件
-    - 复用现有会话列表组件
+    - ~在 QuickPanel 添加"历史"按钮~ → 改为侧边栏"快速对话"分组
+    - QuickPanel 会话自动标记为 source='quickpanel'
+    - 侧边栏显示"快速对话"分组（带 Zap 图标）
+    - 关闭 QuickPanel 时显示 Toast 提示"已保存到快速对话"
+  - **技术实现**:
+    - 后端: SessionModel 添加 source 字段 + Alembic 迁移
+    - 后端: create session API 支持 source 参数
+    - 前端: Session 类型添加 source
+    - 前端: createSession/listSessions API 更新
+    - 前端: SessionList 按源类型分组显示
+    - 前端: QuickPanel 传递 source='quickpanel'
+    - 前端: App.tsx 添加关闭时 Toast 提示
+    - i18n: 添加 quickChats/savedToQuickChats 翻译
   - **验收标准**:
-    - [ ] QuickPanel 有"历史"入口
-    - [ ] 可以查看所有 QuickPanel 对话
-    - [ ] 可以搜索历史对话
-    - [ ] 可以继续对话
+    - [x] QuickPanel 会话自动标记为 source='quickpanel'
+    - [x] 侧边栏显示"快速对话"分组
+    - [x] 关闭时显示 Toast 提示
   - **隐私约束**: 数据已本地存储，无需额外处理
-  - **预计周期**: 1-2 Cycles
+  - **Cycle #10**
 
 #### Phase 2: 剪贴板增强 (P1)
-- [ ] **TASK-231**: 📋 剪贴板历史记录 [P1]
+- [x] **TASK-231**: 📋 剪贴板历史记录 [P1] ✅ 2026-03-13
   - **功能**:
     - 记录最近 50 条剪贴板处理历史
     - 支持重新使用历史内容
@@ -179,12 +184,13 @@
     - ClipboardHistoryPanel 组件
     - 与 QuickPanel 集成
   - **验收标准**:
-    - [ ] QuickPanel 可查看剪贴板历史
-    - [ ] 历史记录最多 50 条
-    - [ ] 可以重新使用历史内容
-    - [ ] 可以清除历史记录
+    - [x] QuickPanel 可查看剪贴板历史
+    - [x] 历史记录最多 50 条
+    - [x] 可以重新使用历史内容
+    - [x] 可以清除历史记录
   - **隐私约束**: 仅本地存储，不上传
-  - **预计周期**: 1-2 Cycles
+  - **Cycle #12**
+  - **PR**: #409
 
 #### Phase 3: 搜索增强 (P2)
 - [ ] **TASK-232**: 🔍 侧边栏会话快速搜索 [P2]
