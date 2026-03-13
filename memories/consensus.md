@@ -9,22 +9,24 @@
 🟢 **v3.59.0 所有 MVP 任务完成 ✅**
 
 ### Next Action
-> **开始 TASK-230: QuickPanel 历史入口** 🔄
+> **开始 TASK-232: 侧边栏会话快速搜索** 🔄
 >
-> v3.60.0 规划完成，准备开始第一个任务
+> TASK-230 ✅、TASK-231 ✅ 已完成，剩余 TASK-232
 
 ---
 
-## v3.60.0 规划 ✅ **已完成**
+## v3.60.0 规划 🔄 **进行中 (2/3 完成)**
 
 **主题**: QuickPanel 历史入口 + 剪贴板增强
 **路线图**: `docs/v3.60.0-roadmap.md`
 **决策日期**: 2026-03-13
 
 ### MVP 范围 (3 个任务)
-- P0: TASK-230 QuickPanel 历史入口 (1-2 cycles)
-- P1: TASK-231 剪贴板历史记录 (1-2 cycles)
-- P2: TASK-232 侧边栏会话快速搜索 (1 cycle)
+- P0: ~~TASK-230 QuickPanel 历史入口~~ ✅ (Cycle #10)
+- P1: ~~TASK-231 剪贴板历史记录~~ ✅ (Cycle #12)
+- P2: TASK-232 侧边栏会话快速搜索 (待开始)
+
+**当前周期**: Cycle #12
 
 **预计周期**: 3-5 Cycles
 
@@ -51,6 +53,33 @@
 ---
 
 ## 最近完成
+
+### TASK-231: 剪贴板历史记录（Cycle #12）
+
+**完成时间**: 2026-03-13
+
+**产出**:
+- useClipboardHistory hook（管理剪贴板处理历史）✅
+- ClipboardHistoryPanel 组件（历史列表面板）✅
+- QuickPanel 集成（header 添加历史按钮）✅
+- localStorage 存储（最多 50 条）✅
+- i18n 翻译（EN/ZH）✅
+- 13 个测试用例 ✅
+
+**变更文件**:
+- `src/hooks/useClipboardHistory.ts` - 新建 hook
+- `src/hooks/useClipboardHistory.test.ts` - hook 测试
+- `src/components/quickpanel/ClipboardHistoryPanel.tsx` - 新建组件
+- `src/components/quickpanel/QuickPanel.tsx` - 集成历史按钮
+- `src/i18n/locales/*.json` - 添加翻译
+
+**验证结果**: 1928 个测试通过（84 个测试文件）
+
+**PR**: #409
+
+**隐私约束**: 所有数据仅存储在本地 localStorage，不发送到服务器
+
+---
 
 ### TASK-216: WebSocket 重连优化（Cycle #24）
 
