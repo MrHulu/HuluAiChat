@@ -970,6 +970,10 @@
         "ollama": {
           "name": "Ollama（本地）",
           "description": "在本地设备运行 AI 模型"
+        },
+        "zhipu": {
+          "name": "智谱 AI",
+          "description": "领先的中文 AI 公司，提供 GLM 系列模型"
         }
       },
       "gpt41": {
@@ -1067,6 +1071,12 @@
         "description": "阿里最新模型，中文支持优秀",
         "bestFor": "中文任务、本地处理、隐私保护",
         "limitations": "需要硬件资源，需要配置"
+      },
+      "glm5": {
+        "name": "GLM-5",
+        "description": "智谱 AI 模型，中文支持优秀",
+        "bestFor": "中文内容、编程、通用任务",
+        "limitations": "需要智谱 AI API 密钥"
       },
       "qwen": {
         "name": "Qwen（通义千问）",

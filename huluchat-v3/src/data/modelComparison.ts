@@ -3,7 +3,7 @@
  * 包含支持的 AI 模型特点、价格、适用场景
  */
 
-export type ModelProvider = "openai" | "deepseek" | "ollama" | "custom";
+export type ModelProvider = "openai" | "deepseek" | "ollama" | "zhipu" | "custom";
 export type ModelCategory = "flagship" | "standard" | "budget" | "local";
 
 export interface ModelInfo {
@@ -44,6 +44,12 @@ export const MODEL_PROVIDERS: ProviderInfo[] = [
     nameKey: "knowledge.models.providers.ollama.name",
     descriptionKey: "knowledge.models.providers.ollama.description",
     website: "https://ollama.com",
+  },
+  {
+    id: "zhipu",
+    nameKey: "knowledge.models.providers.zhipu.name",
+    descriptionKey: "knowledge.models.providers.zhipu.description",
+    website: "https://bigmodel.cn",
   },
 ];
 
@@ -175,6 +181,24 @@ export const MODELS: ModelInfo[] = [
     speedKey: "knowledge.models.speed.slow",
     bestForKey: "knowledge.models.deepseekReasoner.bestFor",
     limitationsKey: "knowledge.models.deepseekReasoner.limitations",
+  },
+
+  // 智谱 AI GLM 模型
+  {
+    id: "glm-5",
+    provider: "zhipu",
+    category: "standard",
+    nameKey: "knowledge.models.glm5.name",
+    descriptionKey: "knowledge.models.glm5.description",
+    features: [
+      "knowledge.models.features.chineseSupport",
+      "knowledge.models.features.codeGeneration",
+      "knowledge.models.features.generalPurpose",
+    ],
+    pricingKey: "knowledge.models.pricing.low",
+    speedKey: "knowledge.models.speed.fast",
+    bestForKey: "knowledge.models.glm5.bestFor",
+    limitationsKey: "knowledge.models.glm5.limitations",
   },
 
   // Claude 模型 - Latest Generation
