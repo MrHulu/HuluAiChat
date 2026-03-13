@@ -10,6 +10,7 @@ import { ModelSelector } from "./ModelSelector";
 import { RAGPanel } from "@/components/rag";
 import { BookmarkPanel } from "./BookmarkPanel";
 import { useChat, useModel } from "@/hooks";
+import { useFeatureDiscovery } from "@/hooks/useFeatureDiscovery"; // TASK-236
 import { ConnectionStatus } from "@/hooks/useWebSocket";
 import { ToolCall } from "@/hooks/useChat";
 import { cn } from "@/lib/utils";
@@ -146,6 +147,7 @@ export const ChatView = forwardRef<ChatViewRef, ChatViewProps>(function ChatView
   const { messages, streamingMessage, toolCalls, connectionStatus, sendMessage, regenerateMessage, deleteMessage, isLoading } =
     useChat(sessionId, { onTitleGenerated: onSessionUpdated });
   const { currentModel, models, setModel, isLoading: isLoadingModels, parameters, recommendedModel, ollamaAvailable, ollamaModels } = useModel();
+  const { markFeatureUsed } = useFeatureDiscovery(); // TASK-236
 
   // Refs
   const messageListRef = useRef<MessageListRef>(null);
@@ -411,6 +413,15 @@ export const ChatView = forwardRef<ChatViewRef, ChatViewProps>(function ChatView
     handleSend(suggestion);
   };
 
+  // 重新生成处理 - TASK-236: 标记功能已使用
+  const handleRegenerate = useCallback(
+    (messageId: string, model?: string) => {
+      markFeatureUsed("model-regenerate");
+      regenerateMessage(messageId, model);
+    },
+    [markFeatureUsed, regenerateMessage]
+  );
+
   // 编辑消息处理 - TASK-196
   // 编辑用户消息后，删除后续消息并触发 AI 重新回复
   const handleEditMessage = async (messageId: string, newContent: string) => {
@@ -667,7 +678,7 @@ export const ChatView = forwardRef<ChatViewRef, ChatViewProps>(function ChatView
         onEditMessage={handleEditMessage}
         bookmarkedMessages={bookmarkedMessages}
         onBookmarkToggle={handleBookmarkToggle}
-        onRegenerate={regenerateMessage}
+        onRegenerate={handleRegenerate}
         isRegenerating={isLoading}
         availableModels={models}
         currentModel={currentModel}

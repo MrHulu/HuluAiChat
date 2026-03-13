@@ -1134,6 +1134,11 @@
         "title": "Switch AI Models",
         "description": "Choose the right AI model for each task - GPT-4 for complex work, local models for privacy.",
         "action": "Switch Model"
+      },
+      "modelRegenerate": {
+        "title": "Compare Model Responses",
+        "description": "Not satisfied with an answer? Use the regenerate button to try a different AI model and compare responses.",
+        "action": "Try Regenerate"
       }
     }
   },

@@ -39,7 +39,7 @@ describe("useFeatureDiscovery Hook", () => {
       const { result } = renderHook(() => useFeatureDiscovery());
 
       expect(result.current.features).toEqual(DISCOVERABLE_FEATURES);
-      expect(result.current.features.length).toBe(6);
+      expect(result.current.features.length).toBe(7); // TASK-236: added model-regenerate
     });
 
     it("应该初始化所有功能为未使用状态", () => {
@@ -52,6 +52,7 @@ describe("useFeatureDiscovery Hook", () => {
         "session-export": false,
         "folder-management": false,
         "model-switch": false,
+        "model-regenerate": false, // TASK-236
       });
     });
 
@@ -65,6 +66,7 @@ describe("useFeatureDiscovery Hook", () => {
           "session-export": false,
           "folder-management": false,
           "model-switch": false,
+          "model-regenerate": false, // TASK-236
         })
       );
 
@@ -102,6 +104,7 @@ describe("useFeatureDiscovery Hook", () => {
           "session-export": false,
           "folder-management": false,
           "model-switch": false,
+          "model-regenerate": false, // TASK-236
         })
       );
     });
@@ -129,7 +132,7 @@ describe("useFeatureDiscovery Hook", () => {
       const { result } = renderHook(() => useFeatureDiscovery());
 
       const unused = result.current.getUnusedFeatures();
-      expect(unused.length).toBe(6);
+      expect(unused.length).toBe(7); // TASK-236: added model-regenerate
     });
 
     it("应该排除已使用的功能", () => {
@@ -141,7 +144,7 @@ describe("useFeatureDiscovery Hook", () => {
       });
 
       const unused = result.current.getUnusedFeatures();
-      expect(unused.length).toBe(4);
+      expect(unused.length).toBe(5); // 7 - 2 = 5
       expect(unused.find((f) => f.id === "command-palette")).toBeUndefined();
       expect(unused.find((f) => f.id === "knowledge-center")).toBeUndefined();
     });
