@@ -34,6 +34,7 @@ export interface Session {
   id: string;
   title: string;
   folder_id: string | null;
+  source: "main" | "quickpanel";  // Session source: main app or quickpanel
   created_at: string;
   updated_at: string;
 }
@@ -102,17 +103,27 @@ export async function healthCheck(): Promise<{ status: string; version: string }
 
 /**
  * List all sessions
+ * @param source - Filter by session source: 'main' or 'quickpanel'
  */
-export async function listSessions(): Promise<Session[]> {
-  const response = await fetch(`${API_BASE}/sessions/`);
+export async function listSessions(source?: "main" | "quickpanel"): Promise<Session[]> {
+  const params = new URLSearchParams();
+  if (source) {
+    params.append("source", source);
+  }
+  const response = await fetch(`${API_BASE}/sessions/?${params.toString()}`);
   return response.json();
 }
 
 /**
  * Create a new session
+ * @param source - Where the session was created: 'main' or 'quickpanel'
  */
-export async function createSession(): Promise<Session> {
-  const response = await fetch(`${API_BASE}/sessions/`, { method: "POST" });
+export async function createSession(source: "main" | "quickpanel" = "main"): Promise<Session> {
+  const response = await fetch(`${API_BASE}/sessions/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ source }),
+  });
   return response.json();
 }
 
