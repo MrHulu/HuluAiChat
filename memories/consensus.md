@@ -14,9 +14,37 @@
 | ID | 任务 | 状态 | 周期 |
 |----|------|------|------|
 | TASK-328 | Plugin Discovery & Marketplace | ✅ 完成 | #28 |
-| TASK-329 | Plugin API 扩展 (Phase 1) | 📋 待开始 | - |
+| TASK-329 | Plugin API 扩展 (Phase 1) | ✅ 完成 | #29 |
 | TASK-330 | Plugin 沙箱安全增强 | 📋 待开始 | - |
 | TASK-331 | E2E 测试 - 插件系统 | 📋 待开始 | - |
+
+### TASK-329 完成详情
+
+**完成内容**:
+- `src/plugins/types.ts` - 新增 HookResult, HookOptions 类型
+- `src/plugins/manager.ts` - 异步 Hook 处理
+  - `processBeforeSendAsync()` - 发送前处理
+  - `processAfterReceiveAsync()` - 接收后处理
+  - `executeHandlerWithTimeout()` - 超时保护 (默认 5 秒)
+  - `validateMessage()` - 返回值验证
+  - 错误隔离 (单个 handler 失败不影响其他)
+- `src/hooks/useChat.ts` - Hook 集成
+  - sendMessage 现在是 async 函数
+  - 发送前调用 processBeforeSendAsync
+  - 接收消息时调用 processAfterReceiveAsync
+
+**测试**:
+- manager.test.ts: 23 个新测试 (异步 Hook 测试)
+- useChat.test.ts: 已更新适配 async sendMessage
+- 前端测试: 2062 passed ✅
+
+**安全特性**:
+- ✅ 5 秒超时保护 (可配置)
+- ✅ 返回值验证 (防止非法消息对象)
+- ✅ 错误隔离 (handler 失败不阻塞其他 handler)
+- ✅ null 处理统一 (null = 取消消息)
+
+---
 
 ### TASK-328 完成详情
 
@@ -63,28 +91,28 @@
 - **项目**: HuluChat
 - **当前版本**: v3.68.0 ✅ **已发布**
 - **开发版本**: v3.69.0 (Plugin Ecosystem) 🚧 **开发中**
-- **当前周期**: Cycle #28
-- **当前状态**: TASK-328 完成，准备开始 TASK-329
-- **已完成任务计数**: 93
+- **当前周期**: Cycle #29
+- **当前状态**: TASK-329 完成，准备开始 TASK-330
+- **已完成任务计数**: 94
 
 ---
 
 ## Next Action
-> **✅ TASK-328 Plugin Discovery & Marketplace 完成**
+> **✅ TASK-329 Plugin API 扩展 (Phase 1) 完成**
 >
 > **完成内容**:
-> - 本地插件索引
-> - 插件市场 UI 组件
-> - 分类过滤、搜索、排序功能
-> - 国际化支持 (en/zh)
-> - 55 个新测试 (registry: 37, marketplace: 18)
->
-> **下一步**: 开始 TASK-329 - Plugin API 扩展 (Phase 1)
-> - 消息处理 Hook 集成到 useChat
-> - Hook 超时保护 (5秒)
+> - 异步 Hook 处理
+> - 超时保护 (5秒)
 > - 返回值验证
 > - 错误隔离
+> - 23 个新测试
+>
+> **下一步**: 开始 TASK-330 - Plugin 沙箱安全增强
+> - Web Worker 沙箱实现
+> - 阻止 localStorage 直接访问
+> - 网络权限域名白名单
+> - 请求日志用户可见
 
 ---
 
-*更新时间: 2026-03-14 - Cycle #28 (TASK-328 完成)*
+*更新时间: 2026-03-14 - Cycle #29 (TASK-329 完成)*

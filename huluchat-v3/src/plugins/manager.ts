@@ -22,6 +22,8 @@ import type {
   PluginManagerEvent,
   PluginValidationResult,
   PluginUpdateInfo,
+  HookResult,
+  HookOptions,
 } from "./types";
 import type { Message, Session } from "@/api/client";
 import { getSessionMessages, listSessions, getSession } from "@/api/client";
@@ -365,6 +367,280 @@ class PluginManagerImpl implements PluginManager {
       result = processed;
     }
     return result;
+  }
+
+  // ============== Async Hooks (TASK-329) ==============
+
+  /**
+   * Default hook options
+   */
+  private static readonly DEFAULT_HOOK_OPTIONS: Required<HookOptions> = {
+    timeout: 5000, // 5 seconds
+    continueOnError: true,
+    validateReturn: true,
+  };
+
+  /**
+   * Validate that a returned value is a valid Message object
+   */
+  private validateMessage(message: unknown, handlerIndex: number): { valid: boolean; error?: string } {
+    if (message === null) {
+      // null is valid - means cancel the message
+      return { valid: true };
+    }
+
+    if (typeof message !== "object" || message === null) {
+      return { valid: false, error: `Handler ${handlerIndex} returned non-object value` };
+    }
+
+    const msg = message as Record<string, unknown>;
+
+    // Check required fields
+    if (typeof msg.id !== "string") {
+      return { valid: false, error: `Handler ${handlerIndex} returned message without valid 'id'` };
+    }
+    if (typeof msg.session_id !== "string") {
+      return { valid: false, error: `Handler ${handlerIndex} returned message without valid 'session_id'` };
+    }
+    if (msg.role !== "user" && msg.role !== "assistant" && msg.role !== "system") {
+      return { valid: false, error: `Handler ${handlerIndex} returned message without valid 'role'` };
+    }
+    if (typeof msg.content !== "string") {
+      return { valid: false, error: `Handler ${handlerIndex} returned message without valid 'content'` };
+    }
+
+    return { valid: true };
+  }
+
+  /**
+   * Execute a single handler with timeout protection
+   */
+  private async executeHandlerWithTimeout(
+    handler: MessageHandler,
+    message: Message,
+    timeout: number,
+    handlerIndex: number
+  ): Promise<{ result: Message | null; error?: string; timedOut?: boolean }> {
+    return new Promise((resolve) => {
+      // Create timeout timer
+      const timeoutId = setTimeout(() => {
+        resolve({
+          result: message, // Return original message on timeout
+          error: `Handler ${handlerIndex} timed out after ${timeout}ms`,
+          timedOut: true,
+        });
+      }, timeout);
+
+      // Execute handler
+      try {
+        const result = handler(message);
+
+        // Handle async handlers
+        if (result instanceof Promise) {
+          result
+            .then((asyncResult) => {
+              clearTimeout(timeoutId);
+              resolve({ result: asyncResult });
+            })
+            .catch((error) => {
+              clearTimeout(timeoutId);
+              resolve({
+                result: message,
+                error: `Handler ${handlerIndex} threw error: ${error instanceof Error ? error.message : String(error)}`,
+              });
+            });
+        } else {
+          // Sync handler
+          clearTimeout(timeoutId);
+          resolve({ result });
+        }
+      } catch (error) {
+        clearTimeout(timeoutId);
+        resolve({
+          result: message,
+          error: `Handler ${handlerIndex} threw error: ${error instanceof Error ? error.message : String(error)}`,
+        });
+      }
+    });
+  }
+
+  /**
+   * Process message through beforeSend hooks asynchronously
+   * Includes timeout protection, error isolation, and return value validation
+   */
+  async processBeforeSendAsync(message: Message, options?: HookOptions): Promise<HookResult> {
+    const opts = { ...PluginManagerImpl.DEFAULT_HOOK_OPTIONS, ...options };
+    const errors: string[] = [];
+    let currentMessage: Message | null = message;
+
+    for (let i = 0; i < this.beforeSendHandlers.length; i++) {
+      if (currentMessage === null) {
+        // Message was cancelled by a previous handler
+        break;
+      }
+
+      const handler = this.beforeSendHandlers[i];
+
+      try {
+        const { result, error, timedOut } = await this.executeHandlerWithTimeout(
+          handler,
+          currentMessage,
+          opts.timeout,
+          i
+        );
+
+        if (error) {
+          errors.push(error);
+          if (timedOut) {
+            console.warn(`[PluginManager] beforeSend handler ${i} timed out:`, error);
+          } else {
+            console.error(`[PluginManager] beforeSend handler ${i} error:`, error);
+          }
+
+          if (!opts.continueOnError) {
+            return {
+              success: false,
+              message: currentMessage,
+              error: errors.join("; "),
+              failedHandler: `handler-${i}`,
+            };
+          }
+          // Continue with original message on error
+          continue;
+        }
+
+        // Validate return value
+        if (opts.validateReturn && result !== null) {
+          const validation = this.validateMessage(result, i);
+          if (!validation.valid) {
+            errors.push(validation.error!);
+            console.error(`[PluginManager] beforeSend handler ${i} validation failed:`, validation.error);
+
+            if (!opts.continueOnError) {
+              return {
+                success: false,
+                message: currentMessage,
+                error: validation.error,
+                failedHandler: `handler-${i}`,
+              };
+            }
+            // Continue with original message on validation failure
+            continue;
+          }
+        }
+
+        currentMessage = result;
+      } catch (error) {
+        const errorMsg = `Handler ${i} unexpected error: ${error instanceof Error ? error.message : String(error)}`;
+        errors.push(errorMsg);
+        console.error(`[PluginManager] beforeSend handler ${i} unexpected error:`, error);
+
+        if (!opts.continueOnError) {
+          return {
+            success: false,
+            message: currentMessage,
+            error: errorMsg,
+            failedHandler: `handler-${i}`,
+          };
+        }
+      }
+    }
+
+    return {
+      success: errors.length === 0,
+      message: currentMessage,
+      error: errors.length > 0 ? errors.join("; ") : undefined,
+    };
+  }
+
+  /**
+   * Process message through afterReceive hooks asynchronously
+   * Includes timeout protection, error isolation, and return value validation
+   */
+  async processAfterReceiveAsync(message: Message, options?: HookOptions): Promise<HookResult> {
+    const opts = { ...PluginManagerImpl.DEFAULT_HOOK_OPTIONS, ...options };
+    const errors: string[] = [];
+    let currentMessage: Message | null = message;
+
+    for (let i = 0; i < this.afterReceiveHandlers.length; i++) {
+      if (currentMessage === null) {
+        // Handler wants to skip this message entirely
+        break;
+      }
+
+      const handler = this.afterReceiveHandlers[i];
+
+      try {
+        const { result, error, timedOut } = await this.executeHandlerWithTimeout(
+          handler,
+          currentMessage,
+          opts.timeout,
+          i
+        );
+
+        if (error) {
+          errors.push(error);
+          if (timedOut) {
+            console.warn(`[PluginManager] afterReceive handler ${i} timed out:`, error);
+          } else {
+            console.error(`[PluginManager] afterReceive handler ${i} error:`, error);
+          }
+
+          if (!opts.continueOnError) {
+            return {
+              success: false,
+              message: currentMessage,
+              error: errors.join("; "),
+              failedHandler: `handler-${i}`,
+            };
+          }
+          // Continue with original message on error
+          continue;
+        }
+
+        // Validate return value
+        if (opts.validateReturn && result !== null) {
+          const validation = this.validateMessage(result, i);
+          if (!validation.valid) {
+            errors.push(validation.error!);
+            console.error(`[PluginManager] afterReceive handler ${i} validation failed:`, validation.error);
+
+            if (!opts.continueOnError) {
+              return {
+                success: false,
+                message: currentMessage,
+                error: validation.error,
+                failedHandler: `handler-${i}`,
+              };
+            }
+            // Continue with original message on validation failure
+            continue;
+          }
+        }
+
+        // null means cancel the message (filter it out)
+        currentMessage = result;
+      } catch (error) {
+        const errorMsg = `Handler ${i} unexpected error: ${error instanceof Error ? error.message : String(error)}`;
+        errors.push(errorMsg);
+        console.error(`[PluginManager] afterReceive handler ${i} unexpected error:`, error);
+
+        if (!opts.continueOnError) {
+          return {
+            success: false,
+            message: currentMessage,
+            error: errorMsg,
+            failedHandler: `handler-${i}`,
+          };
+        }
+      }
+    }
+
+    return {
+      success: errors.length === 0,
+      message: currentMessage,
+      error: errors.length > 0 ? errors.join("; ") : undefined,
+    };
   }
 
   // ============== Events ==============

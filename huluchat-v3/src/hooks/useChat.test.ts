@@ -16,6 +16,14 @@ vi.mock("./useWebSocket", () => ({
   ConnectionStatus: {},
 }));
 
+// Mock plugin manager (TASK-329)
+vi.mock("@/plugins/manager", () => ({
+  getPluginManager: vi.fn(() => ({
+    processBeforeSendAsync: vi.fn(async (msg) => ({ success: true, message: msg })),
+    processAfterReceiveAsync: vi.fn(async (msg) => ({ success: true, message: msg })),
+  })),
+}));
+
 const mockGetSessionMessages = vi.mocked(
   await import("@/api/client").then((m) => m.getSessionMessages)
 );
@@ -130,23 +138,23 @@ describe("useChat hook", () => {
     expect(result.current.connectionStatus).toBe("connecting");
   });
 
-  it("should not send message when content is empty", () => {
+  it("should not send message when content is empty", async () => {
     const { result } = renderHook(() => useChat("session-1"));
 
-    act(() => {
-      result.current.sendMessage("");
+    await act(async () => {
+      await result.current.sendMessage("");
     });
 
     expect(mockWSReturn.sendOrQueue).not.toHaveBeenCalled();
   });
 
-  it("should not send message when connection is not established", () => {
+  it("should not send message when connection is not established", async () => {
     mockWSReturn.status = "disconnected";
 
     const { result } = renderHook(() => useChat("session-1"));
 
-    act(() => {
-      result.current.sendMessage("Hello");
+    await act(async () => {
+      await result.current.sendMessage("Hello");
     });
 
     expect(mockWSReturn.sendOrQueue).not.toHaveBeenCalled();
@@ -159,8 +167,8 @@ describe("useChat hook", () => {
       expect(result.current.isLoadingHistory).toBe(false);
     });
 
-    act(() => {
-      result.current.sendMessage("Hello, AI!");
+    await act(async () => {
+      await result.current.sendMessage("Hello, AI!");
     });
 
     // Should add user message
@@ -187,8 +195,8 @@ describe("useChat hook", () => {
       expect(result.current.isLoadingHistory).toBe(false);
     });
 
-    act(() => {
-      result.current.sendMessage("Hello", "gpt-4");
+    await act(async () => {
+      await result.current.sendMessage("Hello", "gpt-4");
     });
 
     expect(mockWSReturn.sendOrQueue).toHaveBeenCalledWith(
@@ -301,9 +309,12 @@ describe("useChat hook", () => {
       }
     });
 
-    expect(result.current.streamingMessage).toBeNull();
-    expect(result.current.isLoading).toBe(false);
-    expect(result.current.messages.length).toBe(1);
+    // TASK-329: stream_end is now async, need to wait for state updates
+    await waitFor(() => {
+      expect(result.current.streamingMessage).toBeNull();
+      expect(result.current.isLoading).toBe(false);
+      expect(result.current.messages.length).toBe(1);
+    });
     expect(result.current.messages[0].content).toBe("Hello World");
     expect(result.current.messages[0].role).toBe("assistant");
   });
@@ -325,7 +336,10 @@ describe("useChat hook", () => {
       }
     });
 
-    expect(result.current.messages.length).toBe(1);
+    // TASK-329: message handling is now async due to afterReceive hooks
+    await waitFor(() => {
+      expect(result.current.messages.length).toBe(1);
+    });
     expect(result.current.messages[0].content).toBe("Complete response");
     expect(result.current.messages[0].id).toBe("msg-123");
     expect(result.current.messages[0].role).toBe("assistant");
@@ -418,7 +432,10 @@ describe("useChat hook", () => {
       }
     });
 
-    expect(result.current.messages.length).toBe(1);
+    // TASK-329: message handling is now async
+    await waitFor(() => {
+      expect(result.current.messages.length).toBe(1);
+    });
 
     // Change to null session
     rerender({ sessionId: null });
@@ -476,8 +493,8 @@ describe("useChat hook", () => {
       expect(result.current.isLoadingHistory).toBe(false);
     });
 
-    act(() => {
-      result.current.sendMessage("  Hello World  ");
+    await act(async () => {
+      await result.current.sendMessage("  Hello World  ");
     });
 
     expect(result.current.messages[0].content).toBe("Hello World");
@@ -500,8 +517,8 @@ describe("useChat hook", () => {
     });
 
     // Start streaming - simulate sending a message
-    act(() => {
-      result.current.sendMessage("Hello");
+    await act(async () => {
+      await result.current.sendMessage("Hello");
     });
 
     expect(result.current.isLoading).toBe(true);
@@ -541,8 +558,8 @@ describe("useChat hook", () => {
     });
 
     // Start streaming - simulate sending a message
-    act(() => {
-      result.current.sendMessage("Hello");
+    await act(async () => {
+      await result.current.sendMessage("Hello");
     });
 
     expect(result.current.isLoading).toBe(true);

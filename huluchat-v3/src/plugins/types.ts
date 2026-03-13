@@ -269,6 +269,36 @@ export type PluginManagerEventHandler = (
   plugin: PluginInstance
 ) => void;
 
+// ============== Plugin Hook Types (TASK-329) ==============
+
+/**
+ * Hook execution result
+ */
+export interface HookResult {
+  /** Whether the hook execution was successful */
+  success: boolean;
+  /** The processed message (null if cancelled) */
+  message: Message | null;
+  /** Error message if execution failed */
+  error?: string;
+  /** Whether the hook timed out */
+  timedOut?: boolean;
+  /** Which handler failed (for error reporting) */
+  failedHandler?: string;
+}
+
+/**
+ * Hook execution options
+ */
+export interface HookOptions {
+  /** Timeout in milliseconds (default: 5000) */
+  timeout?: number;
+  /** Whether to continue on error (default: true) */
+  continueOnError?: boolean;
+  /** Whether to validate return values (default: true) */
+  validateReturn?: boolean;
+}
+
 // ============== Plugin Manager Interface ==============
 
 /**
@@ -303,11 +333,29 @@ export interface PluginManager {
   /** Execute a command */
   executeCommand: (id: string, ...args: unknown[]) => void | Promise<void>;
 
-  // ============== Hooks ==============
-  /** Process message through beforeSend hooks */
+  // ============== Hooks (Sync - Legacy) ==============
+  /** Process message through beforeSend hooks (synchronous, skips async handlers) */
   processBeforeSend: (message: Message) => Message;
-  /** Process message through afterReceive hooks */
+  /** Process message through afterReceive hooks (synchronous, skips async handlers) */
   processAfterReceive: (message: Message) => Message;
+
+  // ============== Hooks (Async - TASK-329) ==============
+  /**
+   * Process message through beforeSend hooks asynchronously
+   * Includes timeout protection (5s), error isolation, and return value validation
+   * @param message The message to process
+   * @param options Hook execution options
+   * @returns Hook execution result
+   */
+  processBeforeSendAsync: (message: Message, options?: HookOptions) => Promise<HookResult>;
+  /**
+   * Process message through afterReceive hooks asynchronously
+   * Includes timeout protection (5s), error isolation, and return value validation
+   * @param message The message to process
+   * @param options Hook execution options
+   * @returns Hook execution result
+   */
+  processAfterReceiveAsync: (message: Message, options?: HookOptions) => Promise<HookResult>;
 
   // ============== Events ==============
   /** Subscribe to plugin events */

@@ -6,6 +6,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { useWebSocket, ConnectionStatus } from "./useWebSocket";
 import { Message, getSessionMessages, ImageContent, FileAttachment, deleteMessage as apiDeleteMessage, createChatWebSocket, generateSessionTitle } from "@/api/client";
+import { getPluginManager } from "@/plugins/manager";
 
 export interface StreamingMessage {
   id: string;
@@ -45,7 +46,7 @@ export interface UseChatReturn {
   streamingMessage: StreamingMessage | null;
   toolCalls: ToolCall[];
   connectionStatus: ConnectionStatus;
-  sendMessage: (content: string, model?: string, params?: ChatParameters, images?: ImageContent[], files?: FileAttachment[], useMcp?: boolean, options?: SendMessageOptions) => void;
+  sendMessage: (content: string, model?: string, params?: ChatParameters, images?: ImageContent[], files?: FileAttachment[], useMcp?: boolean, options?: SendMessageOptions) => Promise<void>;
   regenerateMessage: (assistantMessageId: string, model?: string) => void;
   deleteMessage: (messageId: string) => Promise<void>;
   isLoading: boolean;
@@ -133,7 +134,32 @@ export function useChat(sessionId: string | null, options?: UseChatOptions): Use
             content: msg.content,
             created_at: new Date().toISOString(),
           };
-          setMessages((prev) => [...prev, newMessage]);
+
+          // TASK-329: Process afterReceive hooks asynchronously
+          (async () => {
+            try {
+              const pluginManager = getPluginManager();
+              const hookResult = await pluginManager.processAfterReceiveAsync(newMessage);
+
+              if (hookResult.message === null) {
+                // Message was filtered out by plugin
+                console.log("[useChat] Message filtered by afterReceive hook");
+                return;
+              }
+
+              // Log any non-fatal errors
+              if (hookResult.error) {
+                console.warn("[useChat] afterReceive hooks had errors:", hookResult.error);
+              }
+
+              // Use potentially modified message
+              setMessages((prev) => [...prev, hookResult.message!]);
+            } catch (error) {
+              // On error, still show the original message
+              console.error("[useChat] Failed to process afterReceive hooks:", error);
+              setMessages((prev) => [...prev, newMessage]);
+            }
+          })();
         }
         break;
 
@@ -172,26 +198,71 @@ export function useChat(sessionId: string | null, options?: UseChatOptions): Use
             content: currentStreaming.content,
             created_at: new Date().toISOString(),
           };
-          setMessages((prev) => {
-            const updated = [...prev, newMessage];
-            // Auto-generate title after first AI response
-            if (updated.length === 2 && !titleGeneratedRef.current && sessionId) {
-              // First user + assistant exchange complete
-              titleGeneratedRef.current = true;
-              generateSessionTitle(sessionId).then((result) => {
-                if (result.title && options?.onTitleGenerated) {
-                  options.onTitleGenerated(result.title);
+
+          // TASK-329: Process afterReceive hooks asynchronously
+          (async () => {
+            try {
+              const pluginManager = getPluginManager();
+              const hookResult = await pluginManager.processAfterReceiveAsync(newMessage);
+
+              if (hookResult.message === null) {
+                // Message was filtered out by plugin
+                console.log("[useChat] Stream message filtered by afterReceive hook");
+                setStreamingMessage(null);
+                setToolCalls([]);
+                return;
+              }
+
+              // Log any non-fatal errors
+              if (hookResult.error) {
+                console.warn("[useChat] afterReceive hooks had errors:", hookResult.error);
+              }
+
+              // Use potentially modified message
+              const processedMessage = hookResult.message!;
+              setMessages((prev) => {
+                const updated = [...prev, processedMessage];
+                // Auto-generate title after first AI response
+                if (updated.length === 2 && !titleGeneratedRef.current && sessionId) {
+                  // First user + assistant exchange complete
+                  titleGeneratedRef.current = true;
+                  generateSessionTitle(sessionId).then((result) => {
+                    if (result.title && options?.onTitleGenerated) {
+                      options.onTitleGenerated(result.title);
+                    }
+                  }).catch((error) => {
+                    console.error("Failed to generate title:", error);
+                  });
                 }
-              }).catch((error) => {
-                console.error("Failed to generate title:", error);
+                return updated;
               });
+            } catch (error) {
+              // On error, still show the original message
+              console.error("[useChat] Failed to process afterReceive hooks:", error);
+              setMessages((prev) => {
+                const updated = [...prev, newMessage];
+                // Auto-generate title after first AI response
+                if (updated.length === 2 && !titleGeneratedRef.current && sessionId) {
+                  titleGeneratedRef.current = true;
+                  generateSessionTitle(sessionId).then((result) => {
+                    if (result.title && options?.onTitleGenerated) {
+                      options.onTitleGenerated(result.title);
+                    }
+                  }).catch((error) => {
+                    console.error("Failed to generate title:", error);
+                  });
+                }
+                return updated;
+              });
+            } finally {
+              setStreamingMessage(null);
+              setToolCalls([]);
             }
-            return updated;
-          });
-          setStreamingMessage(null);
+          })();
+        } else {
+          // Clear tool calls when stream ends
+          setToolCalls([]);
         }
-        // Clear tool calls when stream ends
-        setToolCalls([]);
         break;
       }
 
@@ -271,7 +342,7 @@ export function useChat(sessionId: string | null, options?: UseChatOptions): Use
   }, [sessionId, loadHistory]);
 
   const sendMessage = useCallback(
-    (
+    async (
       content: string,
       model?: string,
       params?: ChatParameters,
@@ -285,9 +356,48 @@ export function useChat(sessionId: string | null, options?: UseChatOptions): Use
         return;
       }
 
+      // TASK-329: 创建用户消息对象
+      const userMessage: Message = {
+        id: `temp-${Date.now()}`,
+        session_id: sessionId || "",
+        role: "user",
+        content: content.trim(),
+        images: images,
+        files: files,
+        created_at: new Date().toISOString(),
+      };
+
+      // TASK-329: Process beforeSend hooks
+      try {
+        const pluginManager = getPluginManager();
+        const hookResult = await pluginManager.processBeforeSendAsync(userMessage);
+
+        if (hookResult.message === null) {
+          // Message was cancelled by a plugin
+          console.log("[useChat] Message cancelled by plugin hook");
+          return;
+        }
+
+        // Use potentially modified message
+        const processedMessage = hookResult.message;
+
+        // Log any non-fatal errors
+        if (hookResult.error) {
+          console.warn("[useChat] beforeSend hooks had errors:", hookResult.error);
+        }
+
+        // Update content/images/files from processed message
+        content = processedMessage.content;
+        images = processedMessage.images;
+        files = processedMessage.files;
+      } catch (error) {
+        // Continue with original message if hooks fail completely
+        console.error("[useChat] Failed to process beforeSend hooks:", error);
+      }
+
       // 添加用户消息到本地状态（除非是编辑后重发）
       if (!options?.skipLocalUserMessage) {
-        const userMessage: Message = {
+        const localUserMessage: Message = {
           id: `temp-${Date.now()}`,
           session_id: sessionId || "",
           role: "user",
@@ -296,7 +406,7 @@ export function useChat(sessionId: string | null, options?: UseChatOptions): Use
           files: files,
           created_at: new Date().toISOString(),
         };
-        setMessages((prev) => [...prev, userMessage]);
+        setMessages((prev) => [...prev, localUserMessage]);
       }
 
       // Clear previous tool calls

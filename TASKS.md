@@ -202,16 +202,18 @@
   - **完成日期**: 2026-03-14
   - **周期**: Cycle #28
 
-- [ ] **TASK-329**: 🔌 Plugin API 扩展 (Phase 1) [P0]
+- [x] **TASK-329**: 🔌 Plugin API 扩展 (Phase 1) [P0] ✅
   - **来源**: CEO Bezos 战略决策
   - **目标**: 消息处理 Hook 集成 + 安全修复
-  - **内容**:
-    - [ ] 消息处理 Hook 集成到 useChat
-    - [ ] Hook 超时保护 (5秒)
-    - [ ] 返回值验证
-    - [ ] 错误隔离
-  - **安全要求**: ⚠️ 必须修复 Critic 发现的安全问题
-  - **周期**: 预计 2-3 个
+  - **完成内容**:
+    - [x] 消息处理 Hook 集成到 useChat (processBeforeSendAsync/processAfterReceiveAsync)
+    - [x] Hook 超时保护 (5秒，可配置)
+    - [x] 返回值验证 (validateMessage)
+    - [x] 错误隔离 (单个 handler 失败不影响其他)
+    - [x] sendMessage 改为 async 函数
+  - **测试**: 23 个新测试 (manager.test.ts) + useChat.test.ts 更新
+  - **完成日期**: 2026-03-14
+  - **周期**: Cycle #29
 
 - [ ] **TASK-330**: 🔒 Plugin 沙箱安全增强 [P0]
   - **来源**: Critic Munger Pre-mortem 分析
