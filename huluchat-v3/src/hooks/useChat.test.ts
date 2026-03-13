@@ -23,8 +23,13 @@ const mockGetSessionMessages = vi.mocked(
 interface MockWebSocketReturn {
   status: string;
   send: ReturnType<typeof vi.fn>;
+  sendOrQueue: ReturnType<typeof vi.fn>;
   disconnect: ReturnType<typeof vi.fn>;
   reconnect: ReturnType<typeof vi.fn>;
+  queueSize: number;
+  clearQueue: ReturnType<typeof vi.fn>;
+  reconnectAttempt: number;
+  maxReconnectAttempts: number;
 }
 
 describe("useChat hook", () => {
@@ -38,8 +43,13 @@ describe("useChat hook", () => {
     mockWSReturn = {
       status: "connected",
       send: vi.fn(),
+      sendOrQueue: vi.fn(),
       disconnect: vi.fn(),
       reconnect: vi.fn(),
+      queueSize: 0,
+      clearQueue: vi.fn(),
+      reconnectAttempt: 0,
+      maxReconnectAttempts: 10,
     };
 
     const mockUseWebSocket = vi.mocked(
@@ -127,7 +137,7 @@ describe("useChat hook", () => {
       result.current.sendMessage("");
     });
 
-    expect(mockWSReturn.send).not.toHaveBeenCalled();
+    expect(mockWSReturn.sendOrQueue).not.toHaveBeenCalled();
   });
 
   it("should not send message when connection is not established", () => {
@@ -139,7 +149,7 @@ describe("useChat hook", () => {
       result.current.sendMessage("Hello");
     });
 
-    expect(mockWSReturn.send).not.toHaveBeenCalled();
+    expect(mockWSReturn.sendOrQueue).not.toHaveBeenCalled();
   });
 
   it("should send message and add user message to list", async () => {
@@ -159,7 +169,7 @@ describe("useChat hook", () => {
     expect(result.current.messages[0].content).toBe("Hello, AI!");
 
     // Should call WebSocket send
-    expect(mockWSReturn.send).toHaveBeenCalledWith(
+    expect(mockWSReturn.sendOrQueue).toHaveBeenCalledWith(
       expect.objectContaining({
         type: "message",
         content: "Hello, AI!",
@@ -181,7 +191,7 @@ describe("useChat hook", () => {
       result.current.sendMessage("Hello", "gpt-4");
     });
 
-    expect(mockWSReturn.send).toHaveBeenCalledWith(
+    expect(mockWSReturn.sendOrQueue).toHaveBeenCalledWith(
       expect.objectContaining({
         type: "message",
         content: "Hello",
@@ -471,7 +481,7 @@ describe("useChat hook", () => {
     });
 
     expect(result.current.messages[0].content).toBe("Hello World");
-    expect(mockWSReturn.send).toHaveBeenCalledWith(
+    expect(mockWSReturn.sendOrQueue).toHaveBeenCalledWith(
       expect.objectContaining({
         content: "Hello World",
       })

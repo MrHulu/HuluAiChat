@@ -310,7 +310,7 @@ describe("useWebSocket hook", () => {
       });
     }
 
-    expect(result.current.status).toBe("disconnected");
+    expect(result.current.status).toBe("reconnecting");
 
     // Wait for reconnect timeout + connection delay
     // Need extra time for the second WebSocket to complete connection (setTimeout 0 in mock)
@@ -725,6 +725,49 @@ describe("useWebSocket hook", () => {
       // The new WebSocket should have received the queued message
       const ws2 = MockWebSocket.instances[1];
       expect(ws2?.send).toHaveBeenCalledWith(JSON.stringify({ type: "test", data: "queued" }));
+    });
+  });
+
+  // TASK-321: Heartbeat Tests
+  describe("TASK-321: Heartbeat", () => {
+    it("should respond to ping with pong", async () => {
+      const onMessage = vi.fn();
+
+      renderHook(() =>
+        useWebSocket({ url: testUrl, onMessage })
+      );
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      });
+
+      const ws = MockWebSocket.instances[0];
+      // Simulate server ping
+      if (ws?.onmessage) {
+        ws.onmessage({ data: JSON.stringify({ type: "ping" }) });
+      }
+
+      // Should have sent pong response
+      expect(ws?.send).toHaveBeenCalledWith(JSON.stringify({ type: "pong" }));
+
+      // onMessage should NOT be called for ping
+      expect(onMessage).not.toHaveBeenCalled();
+    });
+
+    it("should not send pong when not connected", async () => {
+      const { result } = renderHook(() =>
+        useWebSocket({ url: testUrl })
+      );
+
+      // Don't wait for connection, ping should be ignored
+      const ws = MockWebSocket.instances[0];
+      if (ws?.onmessage) {
+        ws.readyState = MockWebSocket.CONNECTING;
+        ws.onmessage({ data: JSON.stringify({ type: "ping" }) });
+      }
+
+      // Should not have sent pong (WebSocket not open)
+      expect(ws?.send).not.toHaveBeenCalled();
     });
   });
 });

@@ -56,6 +56,10 @@ export interface UseChatReturn {
   queueSize: number;
   /** Clear the message queue */
   clearQueue: () => void;
+  /** Current reconnect attempt (0 = not reconnecting, 1+ = attempt number) */
+  reconnectAttempt: number;
+  /** Maximum reconnect attempts */
+  maxReconnectAttempts: number;
 }
 
 // WebSocket 消息类型
@@ -229,7 +233,7 @@ export function useChat(sessionId: string | null, options?: UseChatOptions): Use
     }
   }, [sessionId]); // 移除 streamingMessage 依赖，使用 ref 替代
 
-  const { status: connectionStatus, send, queueSize, clearQueue } = useWebSocket({
+  const { status: connectionStatus, sendOrQueue, queueSize, clearQueue, reconnectAttempt, maxReconnectAttempts } = useWebSocket({
     url: wsUrl,
     onMessage: handleWSMessage,
     reconnectAttempts: 10,
@@ -298,8 +302,9 @@ export function useChat(sessionId: string | null, options?: UseChatOptions): Use
       // Clear previous tool calls
       setToolCalls([]);
 
-      // 发送到后端（包含可选的模型参数、图片和文件）
-      send({
+      // TASK-321: 使用 sendOrQueue 确保断线时消息不丢失
+      // 连接正常时立即发送，断线时排队等待重连后自动发送
+      sendOrQueue({
         type: "message",
         content: content.trim(),
         images: images,
@@ -318,7 +323,7 @@ export function useChat(sessionId: string | null, options?: UseChatOptions): Use
 
       setIsLoading(true);
     },
-    [connectionStatus, send, sessionId]
+    [connectionStatus, sendOrQueue, sessionId]
   );
 
   // 刷新消息列表
@@ -341,8 +346,8 @@ export function useChat(sessionId: string | null, options?: UseChatOptions): Use
           const userMessage = messages[i];
           // 删除从用户消息之后的所有消息（包括该 AI 消息）
           setMessages((prev) => prev.slice(0, i));
-          // 重新发送用户消息，告诉后端删除该消息之后的所有消息
-          send({
+          // TASK-321: 使用 sendOrQueue 确保断线时消息不丢失
+          sendOrQueue({
             type: "message",
             content: userMessage.content.trim(),
             images: userMessage.images,
@@ -358,7 +363,7 @@ export function useChat(sessionId: string | null, options?: UseChatOptions): Use
         }
       }
     },
-    [messages, send]
+    [messages, sendOrQueue]
   );
 
   // 删除消息
@@ -411,5 +416,9 @@ export function useChat(sessionId: string | null, options?: UseChatOptions): Use
     queueSize,
     /** Clear the message queue */
     clearQueue,
+    /** Current reconnect attempt */
+    reconnectAttempt,
+    /** Maximum reconnect attempts */
+    maxReconnectAttempts,
   };
 }

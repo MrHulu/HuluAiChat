@@ -4,6 +4,40 @@
 
 ---
 
+## ✅ TASK-321: WebSocket 连接韧性增强完成 ✅
+
+> **Cycle #17** - v3.67.0 第二个任务
+
+### 实现内容
+
+| 功能 | 状态 | 说明 |
+|------|------|------|
+| 自动重连 | ✅ 完成 | 2秒内自动重连 (reconnectInterval: 2000ms) |
+| UI 反馈 | ✅ 完成 | ConnectionIndicator 显示重连进度 (1/10) |
+| 消息队列 | ✅ 增强 | sendMessage 改用 sendOrQueue |
+| 心跳机制 | ✅ 已有 | 30秒 ping 间隔，10秒超时 |
+| 指数退避 | ✅ 已有 | 1s - 30s 退避 |
+
+### 代码修改
+
+1. **`useChat.ts`**
+   - `sendMessage` 改用 `sendOrQueue` 替代 `send`
+   - `regenerateMessage` 改用 `sendOrQueue` 替代 `send`
+   - 断线时消息自动排队，重连后自动发送
+
+2. **`useWebSocket.test.ts`**
+   - 添加心跳响应测试
+   - 修复重连状态测试断言
+
+3. **`useChat.test.ts`**
+   - 更新 mock 包含 `sendOrQueue`
+
+### 测试结果
+
+- 前端测试: 1949 passed ✅
+
+---
+
 ## ✅ TASK-320: API Key 安全审计完成 ✅
 
 > **Cycle #15** - v3.67.0 第一个任务
@@ -226,23 +260,23 @@ Boss 提供的 GLM-5 API Key 已过期（返回 401 错误）。
 ---
 
 ## Next Action
-> **✅ Cycle #15 - TASK-320 完成**
+> **✅ Cycle #17 - TASK-321 完成**
 >
-> **已完成**: TASK-320 API Key 安全审计
-> - 新增 `core/security.py` 敏感信息脱敏工具
-> - 修复错误消息可能泄露敏感信息的问题
-> - 创建 `backend/.env.example` 配置示例
+> **已完成**: TASK-321 WebSocket 连接韧性增强
+> - sendMessage 改用 sendOrQueue 确保断线时消息不丢失
+> - 重连状态有 UI 反馈 (ConnectionIndicator)
+> - 心跳机制 (30秒 ping, 10秒超时)
 >
-> **v3.67.0 进度**: 1/5 任务完成
+> **v3.67.0 进度**: 2/5 任务完成
 >
 > **待开始任务**:
 > - ~~TASK-320: API Key 安全审计 [P0]~~ ✅
-> - TASK-321: WebSocket 连接韧性 [P0]
+> - ~~TASK-321: WebSocket 连接韧性 [P0]~~ ✅
 > - TASK-322: E2E 测试覆盖率 [P0]
 > - TASK-323: 错误边界完善 [P1]
 > - TASK-324: 功能可发现性优化 [P1]
 >
-> **下一步**: 执行 TASK-321 (WebSocket 连接韧性)
+> **下一步**: 执行 TASK-322 (E2E 测试覆盖率提升)
 
 ---
 
@@ -426,11 +460,11 @@ Boss 提供的 GLM-5 API Key 已过期（返回 401 错误）。
 - **项目**: HuluChat
 - **当前版本**: v3.66.0 ✅ **已发布**
 - **下一版本**: v3.67.0 (Stability & Quality) ✅ **已规划**
-- **当前周期**: Cycle #15
-- **当前状态**: ✅ TASK-320 完成，准备执行 TASK-321
-- **已完成任务计数**: 80
-- **待开始任务**: TASK-321, TASK-322, TASK-323, TASK-324
+- **当前周期**: Cycle #17
+- **当前状态**: ✅ TASK-321 完成，准备执行 TASK-322
+- **已完成任务计数**: 81
+- **待开始任务**: TASK-322, TASK-323, TASK-324
 
 ---
 
-*更新时间: 2026-03-14 - Cycle #14 (v3.67.0 规划完成)*
+*更新时间: 2026-03-14 - Cycle #17 (TASK-321 完成)*
