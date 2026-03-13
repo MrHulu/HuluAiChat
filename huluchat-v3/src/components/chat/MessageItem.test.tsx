@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MessageItem } from "./MessageItem";
 import type { Message } from "@/api/client";
 
@@ -410,17 +410,67 @@ describe("MessageItem", () => {
       expect(regenerateButton).not.toBeInTheDocument();
     });
 
-    it("should call onRegenerate when button is clicked", () => {
+    it("should open model selector dialog when regenerate button is clicked", async () => {
       const message = createMessage("assistant", "AI response");
       const onRegenerate = vi.fn();
+      const availableModels = [
+        { id: "gpt-4o", name: "GPT-4o", description: "OpenAI GPT-4o", provider: "openai" as const },
+        { id: "deepseek-chat", name: "DeepSeek V3", description: "DeepSeek Chat", provider: "openai" as const },
+      ];
 
-      render(<MessageItem message={message} onRegenerate={onRegenerate} />);
+      render(
+        <MessageItem
+          message={message}
+          onRegenerate={onRegenerate}
+          availableModels={availableModels}
+          currentModel="gpt-4o"
+        />
+      );
 
       const regenerateButton = screen.getByLabelText("Regenerate");
       regenerateButton.click();
 
-      expect(onRegenerate).toHaveBeenCalledWith(message.id);
-      expect(onRegenerate).toHaveBeenCalledTimes(1);
+      // Dialog should be visible
+      await waitFor(() => {
+        expect(screen.getByText("Select Model")).toBeInTheDocument();
+      });
+    });
+
+    it("should call onRegenerate when a model is selected from dialog", async () => {
+      const message = createMessage("assistant", "AI response");
+      const onRegenerate = vi.fn();
+      const availableModels = [
+        { id: "gpt-4o", name: "GPT-4o", description: "OpenAI GPT-4o", provider: "openai" as const },
+        { id: "deepseek-chat", name: "DeepSeek V3", description: "DeepSeek Chat", provider: "openai" as const },
+      ];
+
+      render(
+        <MessageItem
+          message={message}
+          onRegenerate={onRegenerate}
+          availableModels={availableModels}
+          currentModel="gpt-4o"
+        />
+      );
+
+      const regenerateButton = screen.getByLabelText("Regenerate");
+      regenerateButton.click();
+
+      // Wait for dialog to open and click on a different model
+      await waitFor(() => {
+        expect(screen.getByText("Select Model")).toBeInTheDocument();
+      });
+
+      // Click on DeepSeek V3 model
+      const deepseekButton = screen.getByText("DeepSeek V3").closest("button");
+      if (deepseekButton) {
+        fireEvent.click(deepseekButton);
+      }
+
+      // onRegenerate should be called with the message id and new model
+      await waitFor(() => {
+        expect(onRegenerate).toHaveBeenCalledWith(message.id, "deepseek-chat");
+      });
     });
 
     it("should disable button when isRegenerating is true", () => {

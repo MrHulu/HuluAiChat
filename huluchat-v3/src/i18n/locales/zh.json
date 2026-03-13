@@ -78,6 +78,15 @@
     "regenerated": "重新生成的回复",
     "regeneratedShort": "已重新生成",
     "modelUsed": "模型: {{model}}",
+    "modelSelector": {
+      "title": "选择模型",
+      "description": "选择不同的 AI 模型重新生成回复",
+      "selectModel": "选择 {{model}}",
+      "recommended": "推荐模型",
+      "currentModel": "当前模型",
+      "ollamaLocal": "Ollama (本地)",
+      "localModel": "本地模型"
+    },
     "copy": "复制",
     "copied": "已复制！",
     "copyCode": "复制代码",
