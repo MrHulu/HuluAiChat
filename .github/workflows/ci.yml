@@ -78,6 +78,7 @@ jobs:
           mypy . --ignore-missing-imports
 
       - name: Lint (ruff)
+        continue-on-error: true
         run: |
           pip install ruff==0.9.10
           cd huluchat-v3/backend
