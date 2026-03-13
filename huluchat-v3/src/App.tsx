@@ -9,16 +9,9 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { ChatView, type ChatViewRef } from "@/components/chat";
 import { SessionList, type SessionListRef } from "@/components/sidebar";
 import { UpdateNotification } from "@/components/UpdateNotification";
-import { KeyboardHelpDialog } from "@/components/keyboard/KeyboardHelpDialog";
 import { LanguageSelector } from "@/components/LanguageSelector";
-import { CommandPalette } from "@/components/command";
-import { KnowledgeCenter } from "@/components/knowledge";
-import { WelcomeDialog } from "@/components/WelcomeDialog";
 import { FeatureDiscoveryTip } from "@/components/FeatureDiscoveryTip";
 import { ContextualTip } from "@/components/ContextualTip";
-import { BookmarkJumpDialog } from "@/components/bookmark";
-import { PermissionGuideDialog } from "@/components/permission";
-import { QuickPanel } from "@/components/quickpanel";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { useSession, useKeyboardShortcuts, useFolders, useFeatureDiscovery, useContextualTip, useModel, useBackendHealth, useGlobalShortcut, useAccessibilityPermission } from "@/hooks";
@@ -26,11 +19,34 @@ import { BackendStatusIndicator } from "@/components/BackendStatusIndicator";
 import { exportSession, moveSessionToFolder, updateSettings, ExportFormat } from "@/api/client";
 import { getAPIKey } from "@/services/keyring";
 
+// 懒加载非首屏必需的组件 - 性能优化 TASK-304
+const KeyboardHelpDialog = lazy(() =>
+  import("@/components/keyboard/KeyboardHelpDialog").then((mod) => ({ default: mod.KeyboardHelpDialog }))
+);
+const CommandPalette = lazy(() =>
+  import("@/components/command").then((mod) => ({ default: mod.CommandPalette }))
+);
+const KnowledgeCenter = lazy(() =>
+  import("@/components/knowledge").then((mod) => ({ default: mod.KnowledgeCenter }))
+);
+const WelcomeDialog = lazy(() =>
+  import("@/components/WelcomeDialog").then((mod) => ({ default: mod.WelcomeDialog }))
+);
+const BookmarkJumpDialog = lazy(() =>
+  import("@/components/bookmark").then((mod) => ({ default: mod.BookmarkJumpDialog }))
+);
+const PermissionGuideDialog = lazy(() =>
+  import("@/components/permission").then((mod) => ({ default: mod.PermissionGuideDialog }))
+);
+const QuickPanel = lazy(() =>
+  import("@/components/quickpanel").then((mod) => ({ default: mod.QuickPanel }))
+);
+
 // Import version from package.json for dynamic version display
 import { version } from "../package.json";
 
 // Migration flag stored in localStorage
-const API_KEY_MIGRATED_KEY = "huluchat-api-key-migrated-v2";
+const MIGRATION_FLAG_KEY = "huluchat-api-key-migrated-v2";
 
 // 懒加载设置对话框（非核心功能）
 const SettingsDialog = lazy(() =>
@@ -164,7 +180,7 @@ function App() {
     const initializeAPIKeyFromKeyring = async () => {
       try {
         // Check if we've already done migration
-        const migrated = localStorage.getItem(API_KEY_MIGRATED_KEY);
+        const migrated = localStorage.getItem(MIGRATION_FLAG_KEY);
 
         // Load API key from keyring and send to backend
         // Only load openai provider's key as the main API key
@@ -177,7 +193,7 @@ function App() {
 
         // Mark migration as complete
         if (!migrated) {
-          localStorage.setItem(API_KEY_MIGRATED_KEY, "true");
+          localStorage.setItem(MIGRATION_FLAG_KEY, "true");
         }
       } catch (error) {
         console.warn("Failed to initialize API key from keyring:", error);
@@ -365,70 +381,84 @@ function App() {
         }}
       />
       <UpdateNotification />
-      <WelcomeDialog
-        open={welcomeOpen}
-        onOpenChange={setWelcomeOpen}
-        onComplete={handleWelcomeComplete}
-      />
-      <KeyboardHelpDialog open={keyboardHelpOpen} onOpenChange={setKeyboardHelpOpen} />
-      <CommandPalette
-        open={commandPaletteOpen}
-        onOpenChange={setCommandPaletteOpen}
-        onNewSession={handleCreateSession}
-        onNewFolder={() => handleCreateFolder(t("sidebar.newFolder"))}
-        onToggleSidebar={() => setSidebarCollapsed((prev) => !prev)}
-        onOpenSettings={() => setSettingsOpen(true)}
-        onExportSession={() => currentSession && handleExportSession(currentSession.id, "markdown")}
-        onShowHelp={() => setKeyboardHelpOpen(true)}
-        onOpenKnowledgeCenter={() => {
-          setKnowledgeCenterOpen(true);
-          markFeatureUsed("knowledge-center");
-        }}
-        onJumpToBookmark={() => setBookmarkJumpOpen(true)}
-      />
-      <KnowledgeCenter
-        open={knowledgeCenterOpen}
-        onOpenChange={setKnowledgeCenterOpen}
-      />
-      <BookmarkJumpDialog
-        open={bookmarkJumpOpen}
-        onOpenChange={setBookmarkJumpOpen}
-        onJumpToBookmark={(sessionId, messageId) => {
-          // Switch to the session first
-          selectSession(sessionId);
-          // Then scroll to the message (with a small delay to allow session switch)
-          setTimeout(() => {
-            chatViewRef.current?.scrollToMessage(messageId);
-          }, 100);
-        }}
-      />
+      <Suspense fallback={null}>
+        <WelcomeDialog
+          open={welcomeOpen}
+          onOpenChange={setWelcomeOpen}
+          onComplete={handleWelcomeComplete}
+        />
+      </Suspense>
+      <Suspense fallback={null}>
+        <KeyboardHelpDialog open={keyboardHelpOpen} onOpenChange={setKeyboardHelpOpen} />
+      </Suspense>
+      <Suspense fallback={null}>
+        <CommandPalette
+          open={commandPaletteOpen}
+          onOpenChange={setCommandPaletteOpen}
+          onNewSession={handleCreateSession}
+          onNewFolder={() => handleCreateFolder(t("sidebar.newFolder"))}
+          onToggleSidebar={() => setSidebarCollapsed((prev) => !prev)}
+          onOpenSettings={() => setSettingsOpen(true)}
+          onExportSession={() => currentSession && handleExportSession(currentSession.id, "markdown")}
+          onShowHelp={() => setKeyboardHelpOpen(true)}
+          onOpenKnowledgeCenter={() => {
+            setKnowledgeCenterOpen(true);
+            markFeatureUsed("knowledge-center");
+          }}
+          onJumpToBookmark={() => setBookmarkJumpOpen(true)}
+        />
+      </Suspense>
+      <Suspense fallback={null}>
+        <KnowledgeCenter
+          open={knowledgeCenterOpen}
+          onOpenChange={setKnowledgeCenterOpen}
+        />
+      </Suspense>
+      <Suspense fallback={null}>
+        <BookmarkJumpDialog
+          open={bookmarkJumpOpen}
+          onOpenChange={setBookmarkJumpOpen}
+          onJumpToBookmark={(sessionId, messageId) => {
+            // Switch to the session first
+            selectSession(sessionId);
+            // Then scroll to the message (with a small delay to allow session switch)
+            setTimeout(() => {
+              chatViewRef.current?.scrollToMessage(messageId);
+            }, 100);
+          }}
+        />
+      </Suspense>
       {/* Permission Guide Dialog - macOS Accessibility Permission */}
-      <PermissionGuideDialog
-        open={showPermissionGuide}
-        onOpenChange={(open) => {
-          if (!open) {
-            dismissPermissionGuide();
-          }
-        }}
-        status={permissionStatus}
-        onOpenSettings={openAccessibilitySettings}
-        onDismiss={dismissPermissionGuide}
-        onDismissPermanently={dismissPermissionPermanently}
-        onRecheck={recheckPermission}
-      />
+      <Suspense fallback={null}>
+        <PermissionGuideDialog
+          open={showPermissionGuide}
+          onOpenChange={(open) => {
+            if (!open) {
+              dismissPermissionGuide();
+            }
+          }}
+          status={permissionStatus}
+          onOpenSettings={openAccessibilitySettings}
+          onDismiss={dismissPermissionGuide}
+          onDismissPermanently={dismissPermissionPermanently}
+          onRecheck={recheckPermission}
+        />
+      </Suspense>
       {/* Quick Panel - Floating quick question panel */}
-      <QuickPanel
-        isOpen={quickPanelOpen}
-        onClose={() => {
-          setQuickPanelOpen(false);
-          // Show toast if there was a conversation
-          if (hasQuickPanelConversation) {
-            toast.success(t("quickPanel.savedToQuickChats"));
-          }
-        }}
-        onOpenSettings={() => setSettingsOpen(true)}
-        onHasConversation={setHasQuickPanelConversation}
-      />
+      <Suspense fallback={null}>
+        <QuickPanel
+          isOpen={quickPanelOpen}
+          onClose={() => {
+            setQuickPanelOpen(false);
+            // Show toast if there was a conversation
+            if (hasQuickPanelConversation) {
+              toast.success(t("quickPanel.savedToQuickChats"));
+            }
+          }}
+          onOpenSettings={() => setSettingsOpen(true)}
+          onHasConversation={setHasQuickPanelConversation}
+        />
+      </Suspense>
       <div className="flex h-screen bg-background text-foreground">
       {/* Skip to main content link - Accessibility enhancement */}
       <a
