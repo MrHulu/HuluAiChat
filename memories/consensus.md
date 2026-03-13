@@ -4,6 +4,35 @@
 
 ---
 
+## ✅ TASK-324: 功能可发现性优化完成 ✅
+
+> **Cycle #20** - v3.67.0 第五个任务
+
+### 实现内容
+
+| 功能 | 文件 | 说明 |
+|------|------|------|
+| QuickPanel 可发现 | `useFeatureDiscovery.ts` | 添加 quick-panel 到功能列表 |
+| 模型切换标记 | `ChatView.tsx` | handleModelChange 标记 model-switch |
+| 文档上传标记 | `RAGPanel.tsx` | onDocumentUpload 回调标记 document-chat |
+| QuickPanel 标记 | `App.tsx` | 打开时标记 quick-panel 功能已使用 |
+| 翻译更新 | `en.json`, `zh.json` | 添加 quickPanel 功能发现文案 |
+
+### 新增功能发现标记
+
+| 功能 ID | 触发条件 | 翻译 Key |
+|---------|----------|----------|
+| `quick-panel` | Ctrl+Shift+Space 打开 QuickPanel | featureDiscovery.features.quickPanel.* |
+| `model-switch` | 切换 AI 模型 | featureDiscovery.features.modelSwitch.* |
+| `document-chat` | 上传 RAG 文档 | featureDiscovery.features.documentChat.* |
+
+### 测试结果
+
+- 前端测试: 1968 passed ✅
+- useFeatureDiscovery hook: 17 passed ✅
+
+---
+
 ## ✅ TASK-323: 错误边界完善完成 ✅
 
 > **Cycle #19** - v3.67.0 第四个任务
@@ -564,11 +593,11 @@ Boss 提供的 GLM-5 API Key 已过期（返回 401 错误）。
 - **项目**: HuluChat
 - **当前版本**: v3.66.0 ✅ **已发布**
 - **下一版本**: v3.67.0 (Stability & Quality) ✅ **已规划**
-- **当前周期**: Cycle #19
-- **当前状态**: ✅ TASK-323 完成，准备执行 TASK-324
-- **已完成任务计数**: 83
-- **待开始任务**: TASK-324
+- **当前周期**: Cycle #20
+- **当前状态**: ✅ TASK-324 完成，v3.67.0 所有任务完成
+- **已完成任务计数**: 84
+- **待开始任务**: 无 - 准备发布 v3.67.0
 
 ---
 
-*更新时间: 2026-03-14 - Cycle #19 (TASK-323 完成)*
+*更新时间: 2026-03-14 - Cycle #20 (TASK-324 完成)*
