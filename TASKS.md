@@ -110,13 +110,53 @@
   - **完成日期**: 2026-03-14
   - **周期**: Cycle #20
 
-### 暂缓功能 (v3.68.0 考虑)
+### 暂缓功能 (v3.69.0 考虑)
 
 | 功能 | 原因 |
 |------|------|
-| Session Templates (CEO 建议) | 新功能，风险高 |
-| Context Recovery | 需要大量测试 |
-| Enhanced Export | 非紧急 |
+| Enhanced Export | 非核心痛点，延后 |
+| Context Recovery AI 增强 | 技术方案需细化 |
+
+---
+
+## 🔵 v3.68.0 - Conversation Continuity
+
+> **决策**: 3 Agent 协作 (CEO Bezos, Critic Munger, Product Norman)
+> **主题**: 对话连续性 - 让用户不再丢失工作成果
+> **日期**: 2026-03-14
+
+### 核心任务
+
+- [ ] **TASK-325**: 🔍 Session Templates 代码审计与修复 [P0]
+  - **来源**: Critic Munger 风险评估
+  - **目标**: 审计并修复现有 Session Templates 代码
+  - **范围**:
+    - [ ] 审计 `TemplateSelector.tsx` 错误处理
+    - [ ] 审计 `session_templates.py` MCP 解析
+    - [ ] 添加国际化支持 (内置模板多语言)
+    - [ ] 添加重试机制
+    - [ ] 添加测试覆盖
+  - **风险等级**: HIGH (8/10) - 代码已存在但未验证
+  - **周期**: 待开始
+
+- [ ] **TASK-326**: 💾 Context Recovery (草稿自动保存) [P0]
+  - **来源**: Product Norman P0 建议
+  - **目标**: 防止用户意外丢失工作成果
+  - **范围**:
+    - [ ] 草稿自动保存 (每 30 秒)
+    - [ ] 启动时检测未完成会话
+    - [ ] 恢复提示 UI
+    - [ ] 最多保留 5 个可恢复会话
+  - **约束**: 本地存储，无云同步
+  - **周期**: 待开始
+
+- [ ] **TASK-327**: 🧪 E2E 测试扩展 [P1]
+  - **目标**: 从 124 个测试提升到 150+ 个
+  - **范围**:
+    - [ ] Session Templates 测试
+    - [ ] Context Recovery 测试
+    - [ ] 导出功能测试
+  - **周期**: 待开始
 
 ---
 
