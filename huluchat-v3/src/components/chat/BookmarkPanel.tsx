@@ -78,7 +78,7 @@ export function BookmarkPanel({
       setIsExporting(true);
       const { blob, filename } = await exportBookmarksJSON();
       downloadBlob(blob, filename);
-      toast.success(t("chat.exportSuccess"));
+      toast.success(t("chat.bookmarkExportSuccess"));
     } catch (error) {
       console.error("Failed to export bookmarks:", error);
       toast.error(t("chat.exportError"));
@@ -92,7 +92,7 @@ export function BookmarkPanel({
       setIsExporting(true);
       const { blob, filename } = await exportBookmarksMarkdown();
       downloadBlob(blob, filename);
-      toast.success(t("chat.exportSuccess"));
+      toast.success(t("chat.bookmarkExportSuccess"));
     } catch (error) {
       console.error("Failed to export bookmarks:", error);
       toast.error(t("chat.exportError"));

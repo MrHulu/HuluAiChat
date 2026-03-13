@@ -44,24 +44,39 @@ export interface ChatViewRef {
   scrollToMessage: (messageId: string) => void;
 }
 
-function ConnectionIndicator({ status }: { status: ConnectionStatus }) {
+function ConnectionIndicator({
+  status,
+  reconnectAttempt,
+  maxReconnectAttempts
+}: {
+  status: ConnectionStatus;
+  reconnectAttempt?: number;
+  maxReconnectAttempts?: number;
+}) {
   const { t } = useTranslation();
 
   const statusConfig = {
     connecting: { color: "bg-warning", ring: "ring-warning/30", text: t("chat.connecting"), animate: true },
     connected: { color: "bg-success", ring: "ring-success/30", text: t("chat.connected"), animate: false },
     disconnected: { color: "bg-error", ring: "ring-error/30", text: t("chat.disconnected"), animate: false },
+    reconnecting: { color: "bg-warning", ring: "ring-warning/30", text: t("chat.reconnecting"), animate: true },
     error: { color: "bg-error", ring: "ring-error/30", text: t("chat.connectionError"), animate: true },
   };
 
   const config = statusConfig[status];
+
+  // Build display text with reconnect info if available
+  let displayText = config.text;
+  if (status === "reconnecting" && reconnectAttempt && maxReconnectAttempts) {
+    displayText = `${t("chat.reconnecting")} (${reconnectAttempt}/${maxReconnectAttempts})`;
+  }
 
   return (
     <div
       className="flex items-center gap-2 text-xs text-muted-foreground transition-all duration-200 ease-out"
       role="status"
       aria-live="polite"
-      aria-label={config.text}
+      aria-label={displayText}
     >
       <span className="relative flex h-2 w-2">
         {/* Pulse ring for connecting/error states */}
@@ -85,7 +100,7 @@ function ConnectionIndicator({ status }: { status: ConnectionStatus }) {
           )}
         />
       </span>
-      <span className="transition-opacity duration-200">{config.text}</span>
+      <span className="transition-opacity duration-200">{displayText}</span>
     </div>
   );
 }
@@ -144,7 +159,7 @@ export const ChatView = forwardRef<ChatViewRef, ChatViewProps>(function ChatView
   ref
 ) {
   const { t } = useTranslation();
-  const { messages, streamingMessage, toolCalls, connectionStatus, sendMessage, regenerateMessage, deleteMessage, isLoading } =
+  const { messages, streamingMessage, toolCalls, connectionStatus, sendMessage, regenerateMessage, deleteMessage, isLoading, reconnectAttempt, maxReconnectAttempts } =
     useChat(sessionId, { onTitleGenerated: onSessionUpdated });
   const { currentModel, models, setModel, isLoading: isLoadingModels, parameters, recommendedModel, ollamaAvailable, ollamaModels } = useModel();
   const { markFeatureUsed } = useFeatureDiscovery(); // TASK-236
@@ -352,7 +367,7 @@ export const ChatView = forwardRef<ChatViewRef, ChatViewProps>(function ChatView
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      toast.success(t("chat.exportSuccess", { count: selectedMessages.length }));
+      toast.success(t("chat.messagesExportSuccess", { count: selectedMessages.length }));
       handleExitSelectionMode();
     } catch (error) {
       console.error("Failed to export messages:", error);
@@ -655,7 +670,7 @@ export const ChatView = forwardRef<ChatViewRef, ChatViewProps>(function ChatView
               {t("rag.title")}
             </button>
           )}
-          <ConnectionIndicator status={connectionStatus} />
+          <ConnectionIndicator status={connectionStatus} reconnectAttempt={reconnectAttempt} maxReconnectAttempts={maxReconnectAttempts} />
         </div>
       </div>
 
