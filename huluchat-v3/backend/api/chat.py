@@ -169,7 +169,9 @@ async def save_message(
     role: str,
     content: str,
     images: Optional[str] = None,
-    files: Optional[str] = None
+    files: Optional[str] = None,
+    model_id: Optional[str] = None,
+    regenerated_from: Optional[str] = None,
 ) -> MessageModel:
     """Save a message to the database.
 
@@ -180,6 +182,8 @@ async def save_message(
         content: Text content
         images: Optional JSON string of image data
         files: Optional JSON string of file attachments
+        model_id: Optional model ID used to generate this message
+        regenerated_from: Optional original message ID if this is a regeneration
     """
     message = MessageModel(
         id=str(uuid.uuid4()),
@@ -188,6 +192,9 @@ async def save_message(
         content=content,
         images=images,
         files=files,
+        model_id=model_id,
+        regenerated_from=regenerated_from,
+        regenerated_at=datetime.utcnow() if regenerated_from else None,
         created_at=datetime.utcnow(),
     )
     db.add(message)
@@ -480,9 +487,12 @@ async def chat_websocket(
                         continue
 
                     if chunk.is_done:
-                        # Save the complete assistant response
+                        # Save the complete assistant response with model_id
                         if full_response:
-                            await save_message(db, session_id, "assistant", full_response)
+                            await save_message(
+                                db, session_id, "assistant", full_response,
+                                model_id=request_model
+                            )
                         await manager.send_json(session_id, {
                             "type": "stream_end",
                             "session_id": session_id,
@@ -534,6 +544,9 @@ async def get_messages(
                 "content": m.content,
                 "images": json.loads(m.images) if m.images else None,
                 "files": json.loads(m.files) if m.files else None,
+                "model_id": m.model_id,
+                "regenerated_from": m.regenerated_from,
+                "regenerated_at": m.regenerated_at.isoformat() if m.regenerated_at else None,
                 "created_at": m.created_at.isoformat(),
             }
             for m in messages
