@@ -994,6 +994,10 @@
         "ollama": {
           "name": "Ollama (Local)",
           "description": "Run AI models locally on your device"
+        },
+        "zhipu": {
+          "name": "Zhipu AI (智谱)",
+          "description": "Leading Chinese AI company with GLM series models"
         }
       },
       "gpt41": {
@@ -1091,6 +1095,12 @@
         "description": "Alibaba's latest model with excellent Chinese support",
         "bestFor": "Chinese tasks, local processing, privacy",
         "limitations": "Requires hardware resources, setup needed"
+      },
+      "glm5": {
+        "name": "GLM-5",
+        "description": "Zhipu AI's model with excellent Chinese support",
+        "bestFor": "Chinese content, coding, general tasks",
+        "limitations": "Requires Zhipu AI API key"
       },
       "qwen": {
         "name": "Qwen (通义千问)",
