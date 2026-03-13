@@ -53,6 +53,11 @@ export interface ChatInputProps {
   // Quote message props
   quoteMessage?: Message | null;
   onCancelQuote?: () => void;
+  // Draft recovery props - TASK-326
+  initialContent?: string;
+  initialImages?: ImageContent[];
+  initialFiles?: FileAttachment[];
+  onContentChange?: (content: string, images?: ImageContent[], files?: FileAttachment[]) => void;
 }
 
 export const ChatInput = memo(function ChatInput({
@@ -62,12 +67,17 @@ export const ChatInput = memo(function ChatInput({
   isLoading = false,
   quoteMessage,
   onCancelQuote,
+  // Draft recovery props - TASK-326
+  initialContent,
+  initialImages,
+  initialFiles,
+  onContentChange,
 }: ChatInputProps) {
   const { t, i18n } = useTranslation();
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(initialContent || "");
   const [showTemplateSelector, setShowTemplateSelector] = useState(false);
-  const [images, setImages] = useState<ImageContent[]>([]);
-  const [files, setFiles] = useState<FileAttachment[]>([]);
+  const [images, setImages] = useState<ImageContent[]>(initialImages || []);
+  const [files, setFiles] = useState<FileAttachment[]>(initialFiles || []);
   const [isDragging, setIsDragging] = useState(false);
   const [isSendSuccess, setIsSendSuccess] = useState(false);
   // Variable input dialog state - TASK-176
@@ -77,6 +87,8 @@ export const ChatInput = memo(function ChatInput({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const prevDisabledRef = useRef<boolean | undefined>(undefined);
+  // Track if initial draft has been applied - TASK-326
+  const draftAppliedRef = useRef(false);
 
   const actualPlaceholder = placeholder || t("chat.typeMessage");
 
@@ -88,6 +100,29 @@ export const ChatInput = memo(function ChatInput({
       textarea.style.height = `${Math.min(textarea.scrollHeight, MAX_TEXTAREA_HEIGHT)}px`;
     }
   }, [value]);
+
+  // TASK-326: 初始化草稿内容（仅一次）
+  useEffect(() => {
+    if (!draftAppliedRef.current && (initialContent || initialImages?.length || initialFiles?.length)) {
+      draftAppliedRef.current = true;
+      if (initialContent) {
+        setValue(initialContent);
+      }
+      if (initialImages?.length) {
+        setImages(initialImages);
+      }
+      if (initialFiles?.length) {
+        setFiles(initialFiles);
+      }
+    }
+  }, [initialContent, initialImages, initialFiles]);
+
+  // TASK-326: 当内容变化时通知父组件（用于自动保存）
+  useEffect(() => {
+    if (onContentChange) {
+      onContentChange(value, images.length > 0 ? images : undefined, files.length > 0 ? files : undefined);
+    }
+  }, [value, images, files, onContentChange]);
 
   // 自动聚焦：初始渲染时或 disabled 从 true 变为 false 时聚焦
   useEffect(() => {

@@ -41,3 +41,9 @@ export {
   useClipboardHistory,
   type ClipboardHistoryItem,
 } from "./useClipboardHistory";
+export {
+  useDraftRecovery,
+  type DraftData,
+  type UseDraftRecoveryOptions,
+  type UseDraftRecoveryReturn,
+} from "./useDraftRecovery";

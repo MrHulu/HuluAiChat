@@ -127,28 +127,32 @@
 
 ### 核心任务
 
-- [ ] **TASK-325**: 🔍 Session Templates 代码审计与修复 [P0]
+- [x] **TASK-325**: 🔍 Session Templates 代码审计与修复 [P0] ✅
   - **来源**: Critic Munger 风险评估
   - **目标**: 审计并修复现有 Session Templates 代码
-  - **范围**:
-    - [ ] 审计 `TemplateSelector.tsx` 错误处理
-    - [ ] 审计 `session_templates.py` MCP 解析
-    - [ ] 添加国际化支持 (内置模板多语言)
-    - [ ] 添加重试机制
-    - [ ] 添加测试覆盖
-  - **风险等级**: HIGH (8/10) - 代码已存在但未验证
-  - **周期**: 待开始
+  - **完成内容**:
+    - [x] TemplateSelector 错误处理增强 (添加重试按钮)
+    - [x] session_templates.py JSON 解析日志
+    - [x] 国际化支持 (内置模板翻译 en/zh)
+    - [x] Bug 修复 (en.json 重复 key, Template ID 处理)
+    - [x] 测试覆盖 (前端 1968 passed)
+  - **PR**: #464 ✅ 已合并
+  - **完成日期**: 2026-03-14
+  - **周期**: Cycle #23
 
-- [ ] **TASK-326**: 💾 Context Recovery (草稿自动保存) [P0]
+- [x] **TASK-326**: 💾 Context Recovery (草稿自动保存) [P0] ✅
   - **来源**: Product Norman P0 建议
   - **目标**: 防止用户意外丢失工作成果
-  - **范围**:
-    - [ ] 草稿自动保存 (每 30 秒)
-    - [ ] 启动时检测未完成会话
-    - [ ] 恢复提示 UI
-    - [ ] 最多保留 5 个可恢复会话
-  - **约束**: 本地存储，无云同步
-  - **周期**: 待开始
+  - **完成内容**:
+    - [x] useDraftRecovery hook - 草稿自动保存 (每 30 秒)
+    - [x] DraftRecoveryDialog - 启动时检测未完成会话，恢复提示 UI
+    - [x] ChatInput 支持草稿恢复 (initialContent/initialImages/initialFiles props)
+    - [x] 最多保留 5 个可恢复会话 (localStorage)
+    - [x] 国际化支持 (en/zh)
+    - [x] 测试覆盖 (16 个测试)
+  - **约束**: 本地存储，无云同步 ✅
+  - **完成日期**: 2026-03-14
+  - **周期**: Cycle #24
 
 - [ ] **TASK-327**: 🧪 E2E 测试扩展 [P1]
   - **目标**: 从 124 个测试提升到 150+ 个
