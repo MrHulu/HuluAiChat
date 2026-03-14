@@ -23,6 +23,7 @@ import {
   Palette,
   Keyboard,
   Zap,
+  Terminal,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -61,6 +62,7 @@ import { MCPSettings } from "./MCPSettings";
 import { ThemeSettings } from "./ThemeSettings";
 import { ShortcutSettings } from "./ShortcutSettings";
 import { QuickActionsSettings } from "./QuickActionsSettings";
+import { CustomCommandsSettings } from "./CustomCommandsSettings";
 
 interface SettingsDialogProps {
   onSettingsChange?: () => void;
@@ -366,6 +368,10 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
               <TabsTrigger value="quickActions">
                 <Zap className="h-4 w-4 mr-1" />
                 {t("settings.tabQuickActions")}
+              </TabsTrigger>
+              <TabsTrigger value="commands">
+                <Terminal className="h-4 w-4 mr-1" />
+                {t("settings.tabCommands")}
               </TabsTrigger>
               <TabsTrigger value="plugins">
                 <Puzzle className="h-4 w-4 mr-1" />
@@ -708,6 +714,11 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
             {/* Quick Actions Tab */}
             <TabsContent value="quickActions" className="py-4">
               <QuickActionsSettings />
+            </TabsContent>
+
+            {/* Custom Commands Tab */}
+            <TabsContent value="commands" className="py-4">
+              <CustomCommandsSettings />
             </TabsContent>
 
             {/* Plugins Tab */}
