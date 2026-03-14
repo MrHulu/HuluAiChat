@@ -15,18 +15,22 @@
 | ID | 任务 | 优先级 | 状态 |
 |----|------|--------|------|
 | TASK-333 | Custom Commands UI (简化版) | P0 | ✅ 完成 (Cycle #33) |
-| TASK-336 | 修复 v3.69.0 发现的问题 | P0 | 待开始 |
+| TASK-336 | 修复 v3.69.0 发现的问题 | P0 | ✅ 完成 (Cycle #35) |
 | TASK-337 | E2E 测试稳定性维护 | P1 | 待开始 |
 
-### TASK-333 完成内容
+### TASK-336 完成内容
 
-- CustomCommandsSettings 组件（搜索/过滤）
-- 数据模型 + localStorage 持久化
-- 5 个命令分类（general, writing, coding, analysis, custom）
-- 启用/禁用开关
-- 可选键盘快捷键
-- i18n 支持 (en/zh)
-- 40 个新测试（25 data + 15 component）
+**Bug 清单分析**:
+- 前端测试: 2118 passed ✅
+- 后端测试: 137 passed ✅
+- 类型检查: 通过 ✅
+- Lint 错误: 0 ✅
+- GitHub Issues: 0 个打开
+
+**修复内容**:
+- 修复 7 个 lint 警告（26 → 19）
+- `useBackendHealth.ts`: 添加错误日志
+- 移除测试文件中未使用的导入和变量
 
 ### Critic Munger 关键建议
 
@@ -67,22 +71,22 @@
 - **项目**: HuluChat
 - **当前版本**: v3.69.0 ✅ **已发布**
 - **规划版本**: v3.70.0 (User Experience Polish)
-- **当前周期**: Cycle #33
-- **当前状态**: TASK-333 完成，准备 TASK-336
-- **已完成任务计数**: 97
+- **当前周期**: Cycle #35
+- **当前状态**: TASK-336 完成，准备 TASK-337
+- **已完成任务计数**: 98
 
 ---
 
 ## Next Action
-> **✅ TASK-333 完成**
+> **✅ TASK-336 完成**
 >
 > **完成内容**:
-> - Custom Commands UI (简化版)
-> - 40 个新测试
-> - i18n 支持
+> - v3.69.0 代码质量审计
+> - 修复 lint 警告（26 → 19）
+> - 测试全部通过（2118 passed）
 >
-> **下一步**: Cycle #34 开始 TASK-336（修复 v3.69.0 问题）
+> **下一步**: Cycle #36 开始 TASK-337（E2E 测试稳定性维护）
 
 ---
 
-*更新时间: 2026-03-14 - Cycle #33 (TASK-333 完成)*
+*更新时间: 2026-03-14 - Cycle #35 (TASK-336 完成)*

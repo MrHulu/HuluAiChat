@@ -279,14 +279,22 @@
   - **完成日期**: 2026-03-14
   - **周期**: Cycle #33
 
-- [ ] **TASK-336**: 🐛 修复 v3.69.0 发现的问题 [P0]
+- [x] **TASK-336**: 🐛 修复 v3.69.0 发现的问题 [P0] ✅
   - **来源**: Boss 反馈 + 自发现
   - **目标**: 收集并修复 v3.69.0 的 bug
-  - **范围**:
-    - [ ] 收集 Bug 清单
-    - [ ] 逐个修复
-    - [ ] 回归测试
-  - **预期周期**: Cycle #35
+  - **完成内容**:
+    - [x] 收集 Bug 清单（测试全部通过，无严重 bug）
+    - [x] 修复 lint 警告（26 → 19）
+    - [x] 回归测试（2118 passed）
+  - **修复文件**:
+    - `useBackendHealth.ts`: 添加错误日志
+    - `CustomCommandsSettings.test.tsx`: 移除未使用导入
+    - `useDraftRecovery.test.ts`: 移除未使用导入
+    - `useWebSocket.test.ts`: 移除未使用变量
+    - `sandbox.test.ts`: 移除未使用导入
+    - `templateVariables.test.ts`: 移除未使用导入
+  - **完成日期**: 2026-03-14
+  - **周期**: Cycle #35
 
 - [ ] **TASK-337**: 🧪 E2E 测试稳定性维护 [P1]
   - **来源**: Critic Munger 建议
