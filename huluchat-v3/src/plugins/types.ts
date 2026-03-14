@@ -67,6 +67,12 @@ export interface PluginManifest {
   updateUrl?: string;
   /** URL to download plugin package (.zip) */
   downloadUrl?: string;
+  /**
+   * Allowed domains for network requests (required if 'network' permission is granted)
+   * Supports wildcards: *.example.com matches api.example.com, www.example.com
+   * @security This is enforced by the sandbox
+   */
+  allowedDomains?: string[];
 }
 
 // ============== Plugin Instance ==============
@@ -372,6 +378,45 @@ export interface PluginManager {
   checkForAllUpdates: () => Promise<Map<string, PluginUpdateInfo>>;
   /** Update a plugin to the latest version */
   updatePlugin: (id: string) => Promise<void>;
+
+  // ============== Network Logs (TASK-330) ==============
+  /**
+   * Get network request logs for a plugin
+   * @param pluginId Plugin ID (optional, returns all if not specified)
+   */
+  getNetworkLogs: (pluginId?: string) => NetworkRequestLog[];
+  /** Clear network request logs */
+  clearNetworkLogs: (pluginId?: string) => void;
+  /** Subscribe to network request logs */
+  onNetworkLog: (listener: (log: NetworkRequestLog) => void) => Disposable;
+}
+
+// ============== Network Log Types (TASK-330) ==============
+
+/**
+ * Network request log entry
+ */
+export interface NetworkRequestLog {
+  /** Unique request ID */
+  id: string;
+  /** Plugin ID that made the request */
+  pluginId: string;
+  /** Request URL */
+  url: string;
+  /** HTTP method */
+  method: string;
+  /** Request timestamp */
+  timestamp: number;
+  /** Response status code (if completed) */
+  status?: number;
+  /** Error message (if failed) */
+  error?: string;
+  /** Request duration in ms */
+  duration?: number;
+  /** Whether request was blocked */
+  blocked?: boolean;
+  /** Block reason */
+  blockReason?: string;
 }
 
 // ============== Utility Types ==============

@@ -215,16 +215,18 @@
   - **完成日期**: 2026-03-14
   - **周期**: Cycle #29
 
-- [ ] **TASK-330**: 🔒 Plugin 沙箱安全增强 [P0]
+- [x] **TASK-330**: 🔒 Plugin 沙箱安全增强 [P0] ✅
   - **来源**: Critic Munger Pre-mortem 分析
   - **目标**: 替换 `new Function()` 为真正沙箱
-  - **内容**:
-    - [ ] Web Worker 沙箱实现
-    - [ ] 阻止 localStorage 直接访问
-    - [ ] 网络权限域名白名单
-    - [ ] 请求日志用户可见
-  - **约束**: 必须在 API 发布前完成
-  - **周期**: 预计 2 个
+  - **完成内容**:
+    - [x] Web Worker 沙箱实现 (`src/plugins/sandbox/`)
+    - [x] 阻止 localStorage 直接访问 (Worker 隔离)
+    - [x] 网络权限域名白名单 (`allowedDomains`)
+    - [x] 请求日志用户可见 (`PluginNetworkLog` 组件)
+  - [x] manifest 验证：network 权限需要 `allowedDomains`
+  - **测试**: 16 个新测试 (sandbox.test.ts)
+  - **完成日期**: 2026-03-14
+  - **周期**: Cycle #30
 
 - [ ] **TASK-331**: 🧪 E2E 测试 - 插件系统 [P1]
   - **目标**: 插件系统端到端测试

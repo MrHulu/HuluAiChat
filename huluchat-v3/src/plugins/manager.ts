@@ -2,6 +2,12 @@
  * HuluChat Plugin Manager
  * Manages plugin lifecycle, commands, and hooks
  * @module plugins/manager
+ *
+ * SECURITY (TASK-330):
+ * - Plugins run in Web Worker sandbox
+ * - No direct access to localStorage, DOM, or main thread
+ * - Network requests are restricted to allowedDomains whitelist
+ * - All network requests are logged and visible to users
  */
 
 import { toast } from "sonner";
@@ -10,7 +16,7 @@ import type {
   PluginInstance,
   PluginManifest,
   PluginContext,
-  PluginModule,
+  // PluginModule - no longer used directly, plugins run in sandbox
   PluginStorage,
   PluginAPI,
   Command,
@@ -27,6 +33,8 @@ import type {
 } from "./types";
 import type { Message, Session } from "@/api/client";
 import { getSessionMessages, listSessions, getSession } from "@/api/client";
+import { createSandbox, PluginSandbox, requestLogStore } from "./sandbox";
+import type { SandboxConfig } from "./sandbox/types";
 
 // Detect if running in Tauri environment
 const isTauri = typeof window !== "undefined" && "__TAURI__" in window;
@@ -107,6 +115,8 @@ class PluginManagerImpl implements PluginManager {
   private eventHandlers: PluginManagerEventHandler[] = [];
   private pluginStorages: Map<string, PluginStorageImpl> = new Map();
   private disposeCallbacks: Map<string, (() => void)[]> = new Map();
+  private sandboxes: Map<string, PluginSandbox> = new Map();
+  private pluginCodes: Map<string, string> = new Map();
 
   // ============== Discovery ==============
 
@@ -152,12 +162,20 @@ class PluginManagerImpl implements PluginManager {
       await this.deactivatePlugin(id);
     }
 
+    // Dispose sandbox if exists
+    const sandbox = this.sandboxes.get(id);
+    if (sandbox) {
+      await sandbox.dispose();
+      this.sandboxes.delete(id);
+    }
+
     // Remove from plugins
     this.plugins.delete(id);
 
     // Cleanup storage
     this.pluginStorages.delete(id);
     this.disposeCallbacks.delete(id);
+    this.pluginCodes.delete(id);
   }
 
   async activatePlugin(id: string): Promise<void> {
@@ -173,19 +191,29 @@ class PluginManagerImpl implements PluginManager {
     try {
       plugin.state = "activating";
 
-      // Load plugin module
-      const module = await this.loadPluginModule(plugin.path);
-      plugin.module = module;
+      // SECURITY (TASK-330): All plugins run in sandbox
+      // The sandbox provides isolation from main thread and controls network access
+      const { code, sandbox } = await this.loadPluginModule(plugin.path, plugin.manifest);
+      this.sandboxes.set(id, sandbox);
+      this.pluginCodes.set(id, code);
 
-      // Create context
+      // Activate in sandbox
+      await sandbox.activate();
+
+      // Create a minimal module wrapper for API compatibility
+      plugin.module = {
+        activate: async () => {},
+        deactivate: async () => {
+          await sandbox.deactivate();
+        },
+      };
+
+      // Create context for legacy API (hooks are now handled by sandbox)
       const context = this.createPluginContext(plugin);
       plugin.context = context;
 
       // Initialize storage (load persisted data)
       await this.initPluginStorageAsync(plugin);
-
-      // Call activate
-      await module.activate(context);
 
       plugin.state = "active";
       this.emit("plugin:activated", plugin);
@@ -202,7 +230,15 @@ class PluginManagerImpl implements PluginManager {
     if (!plugin || plugin.state !== "active") return;
 
     try {
-      // Call deactivate if available
+      // Deactivate sandbox if exists
+      const sandbox = this.sandboxes.get(id);
+      if (sandbox) {
+        await sandbox.deactivate();
+        await sandbox.dispose();
+        this.sandboxes.delete(id);
+      }
+
+      // Call deactivate if available (legacy)
       if (plugin.module?.deactivate) {
         await plugin.module.deactivate();
       }
@@ -666,6 +702,57 @@ class PluginManagerImpl implements PluginManager {
     return storage;
   }
 
+  // ============== Network Logs (TASK-330) ==============
+
+  /**
+   * Get network request logs for a specific plugin
+   * @param pluginId Plugin ID (optional, returns all logs if not specified)
+   * @returns Array of network request logs
+   */
+  getNetworkLogs(pluginId?: string): import("./sandbox/types").NetworkRequestLog[] {
+    if (pluginId) {
+      return requestLogStore.getLogs(pluginId);
+    }
+    return Array.from(requestLogStore.getAllLogs().values()).flat();
+  }
+
+  /**
+   * Clear network request logs
+   * @param pluginId Plugin ID (optional, clears all logs if not specified)
+   */
+  clearNetworkLogs(pluginId?: string): void {
+    if (pluginId) {
+      requestLogStore.clearLogs(pluginId);
+    } else {
+      // Clear all logs
+      for (const id of requestLogStore.getAllLogs().keys()) {
+        requestLogStore.clearLogs(id);
+      }
+    }
+  }
+
+  /**
+   * Subscribe to network request logs
+   * @param listener Callback function for new logs
+   * @returns Disposable for cleanup
+   */
+  onNetworkLog(listener: (log: import("./sandbox/types").NetworkRequestLog) => void): Disposable {
+    const { unsubscribe } = requestLogStore.subscribe(listener);
+    return { dispose: unsubscribe };
+  }
+
+  // ============== Sandbox Info (TASK-330) ==============
+
+  /**
+   * Get sandbox info for a plugin
+   * @param pluginId Plugin ID
+   * @returns Sandbox info or undefined if plugin not found
+   */
+  getSandboxInfo(pluginId: string): import("./sandbox/types").SandboxInfo | undefined {
+    const sandbox = this.sandboxes.get(pluginId);
+    return sandbox?.getInfo();
+  }
+
   // ============== Updates ==============
 
   async checkForUpdate(id: string): Promise<PluginUpdateInfo | null> {
@@ -828,7 +915,7 @@ class PluginManagerImpl implements PluginManager {
     }
   }
 
-  private async loadPluginModule(pluginPath: string): Promise<PluginModule> {
+  private async loadPluginModule(pluginPath: string, manifest: PluginManifest): Promise<{ code: string; sandbox: PluginSandbox }> {
     const fs = await getTauriFs();
     if (!fs) {
       throw new Error("Plugin loading requires Tauri environment");
@@ -836,26 +923,30 @@ class PluginManagerImpl implements PluginManager {
 
     try {
       const mainPath = `${pluginPath}/main.js`;
-      const content = await fs.readTextFile(mainPath, {
+      const code = await fs.readTextFile(mainPath, {
         baseDir: fs.BaseDirectory.AppData,
       });
 
-      // Create a sandboxed evaluation context
-      // Using Function constructor for sandboxing
-      const sandboxedModule = new Function(
-        "exports",
-        "module",
-        `${content}\n return module.exports;`
-      )({}, { exports: {} });
+      // Create sandbox configuration
+      const sandboxConfig: SandboxConfig = {
+        pluginId: manifest.id,
+        code,
+        manifest: {
+          id: manifest.id,
+          version: manifest.version,
+          permissions: manifest.permissions,
+          allowedDomains: manifest.allowedDomains || [],
+        },
+        hookTimeout: 5000,
+        networkRateLimit: 100,
+        storageQuota: 10 * 1024 * 1024, // 10MB
+      };
 
-      // Support both default export and named export
-      const moduleExport = sandboxedModule.default || sandboxedModule;
+      // Create and initialize sandbox
+      const sandbox = createSandbox(sandboxConfig);
+      await sandbox.initialize();
 
-      if (typeof moduleExport.activate !== "function") {
-        throw new Error("Plugin module must export an activate function");
-      }
-
-      return moduleExport as PluginModule;
+      return { code, sandbox };
     } catch (error) {
       throw new Error(
         `Failed to load plugin module: ${error instanceof Error ? error.message : String(error)}`
@@ -900,6 +991,23 @@ class PluginManagerImpl implements PluginManager {
       for (const perm of manifest.permissions) {
         if (!validPermissions.includes(perm)) {
           warnings.push(`Unknown permission: ${perm}`);
+        }
+      }
+
+      // SECURITY (TASK-330): If network permission is requested, require allowedDomains
+      if (manifest.permissions.includes("network")) {
+        if (!manifest.allowedDomains || manifest.allowedDomains.length === 0) {
+          errors.push(
+            "Plugins with 'network' permission must declare 'allowedDomains' in manifest.json. " +
+            "Example: \"allowedDomains\": [\"api.example.com\", \"*.github.com\"]"
+          );
+        } else {
+          // Validate domain format
+          for (const domain of manifest.allowedDomains) {
+            if (typeof domain !== "string" || domain.length === 0) {
+              errors.push(`Invalid domain in allowedDomains: ${domain}`);
+            }
+          }
         }
       }
     }
