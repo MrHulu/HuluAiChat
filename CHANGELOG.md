@@ -2,6 +2,46 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [3.69.0] - 2026-03-14
+
+### 🔌 Plugin Ecosystem (Secure)
+
+- **TASK-328**: Plugin Discovery & Marketplace
+  - `src/plugins/registry.ts`: Local plugin index with 5 official plugins
+  - `PluginMarketplace.tsx`: Plugin marketplace UI with filtering and search
+  - 7 categories: Productivity, Developer, Communication, Export, Appearance, Utility, Integration
+  - Featured/All toggle, sorting by name/downloads/rating
+  - i18n support (en/zh)
+  - Integration with PluginSettings (Tabs UI)
+
+- **TASK-329**: Plugin API Extension (Phase 1)
+  - `processBeforeSendAsync()`: Pre-send message processing
+  - `processAfterReceiveAsync()`: Post-receive message processing
+  - `executeHandlerWithTimeout()`: 5-second timeout protection
+  - `validateMessage()`: Return value validation
+  - Error isolation: single handler failure doesn't block others
+  - `sendMessage` is now async in useChat hook
+
+- **TASK-330**: Plugin Sandbox Security Enhancement
+  - Web Worker sandbox implementation (`src/plugins/sandbox/`)
+  - Worker isolation: no direct localStorage access
+  - Network permission domain whitelist (`allowedDomains`)
+  - Request logs visible to users (`PluginNetworkLog` component)
+  - Manifest validation: network permission requires `allowedDomains`
+
+### 🧪 Testing
+
+- **TASK-331**: E2E Tests - Plugin System (23 tests)
+  - Plugin settings page tests (3 tests)
+  - Plugin marketplace tests (4 tests)
+  - Plugin install/uninstall tests (4 tests)
+  - Plugin permissions tests (2 tests)
+  - Plugin security boundary tests (4 tests)
+  - Plugin API functionality tests (3 tests)
+  - Plugin network logs tests (2 tests)
+  - Plugin i18n tests (1 test)
+  - Previous: 174 tests → Now: 197 tests
+
 ## [3.68.0] - 2026-03-14
 
 ### 💬 Conversation Continuity
