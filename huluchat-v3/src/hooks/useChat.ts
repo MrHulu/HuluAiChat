@@ -5,7 +5,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { useWebSocket, ConnectionStatus } from "./useWebSocket";
-import { Message, getSessionMessages, ImageContent, FileAttachment, deleteMessage as apiDeleteMessage, createChatWebSocket, generateSessionTitle } from "@/api/client";
+import { Message, getSessionMessages, ImageContent, FileAttachment, deleteMessage as apiDeleteMessage, getChatWebSocketUrl, generateSessionTitle } from "@/api/client";
 
 export interface StreamingMessage {
   id: string;
@@ -92,7 +92,7 @@ export function useChat(sessionId: string | null, options?: UseChatOptions): Use
   }, [streamingMessage]);
 
   const wsUrl = sessionId
-    ? createChatWebSocket(sessionId).url
+    ? getChatWebSocketUrl(sessionId)
     : "";
 
   // 加载历史消息
