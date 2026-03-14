@@ -582,6 +582,36 @@ class PluginManagerImpl implements PluginManager {
       }
     }
 
+    // Process sandbox hooks (TASK-330)
+    for (const [pluginId, sandbox] of this.sandboxes) {
+      if (currentMessage === null) {
+        // Message was cancelled by a previous handler
+        break;
+      }
+      if (sandbox.getState() !== "active") {
+        continue;
+      }
+      try {
+        const result = await sandbox.processBeforeSend(currentMessage);
+        if (result === null) {
+          // Message cancelled by sandbox plugin
+          currentMessage = null;
+          break;
+        }
+        currentMessage = result;
+      } catch (error) {
+        errors.push(`Sandbox ${pluginId} error: ${error instanceof Error ? error.message : String(error)}`);
+        if (!opts.continueOnError) {
+          return {
+            success: false,
+            message: currentMessage,
+            error: errors.join("; "),
+            failedHandler: `sandbox-${pluginId}`,
+          };
+        }
+      }
+    }
+
     return {
       success: errors.length === 0,
       message: currentMessage,
@@ -667,6 +697,36 @@ class PluginManagerImpl implements PluginManager {
             message: currentMessage,
             error: errorMsg,
             failedHandler: `handler-${i}`,
+          };
+        }
+      }
+    }
+
+    // Process sandbox hooks (TASK-330)
+    for (const [pluginId, sandbox] of this.sandboxes) {
+      if (currentMessage === null) {
+        // Handler wants to skip this message entirely
+        break;
+      }
+      if (sandbox.getState() !== "active") {
+        continue;
+      }
+      try {
+        const result = await sandbox.processAfterReceive(currentMessage);
+        if (result === null) {
+          // Handler wants to skip this message entirely
+          currentMessage = null;
+          break;
+        }
+        currentMessage = result;
+      } catch (error) {
+        errors.push(`Sandbox ${pluginId} error: ${error instanceof Error ? error.message : String(error)}`);
+        if (!opts.continueOnError) {
+          return {
+            success: false,
+            message: currentMessage,
+            error: errors.join("; "),
+            failedHandler: `sandbox-${pluginId}`,
           };
         }
       }
