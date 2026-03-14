@@ -2,7 +2,7 @@
  * Tests for CustomCommandsSettings component
  */
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { CustomCommandsSettings } from "./CustomCommandsSettings";
 import * as customCommandsModule from "@/data/customCommands";

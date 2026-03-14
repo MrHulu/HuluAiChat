@@ -96,6 +96,8 @@ export function useBackendHealth(options: UseBackendHealthOptions = {}) {
 
       wasOffline.current = false;
     } catch (error) {
+      // Log error for debugging (error object exists but state is tracked via consecutiveFailures)
+      console.debug("[useBackendHealth] Health check failed:", error);
       const now = new Date();
 
       // Increment failures

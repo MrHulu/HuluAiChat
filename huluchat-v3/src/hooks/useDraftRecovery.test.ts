@@ -2,7 +2,7 @@
  * useDraftRecovery Hook Tests
  * TASK-326: Context Recovery
  */
-import { renderHook, act, waitFor } from "@testing-library/react";
+import { renderHook, act } from "@testing-library/react";
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { useDraftRecovery, type DraftData } from "./useDraftRecovery";
 
@@ -209,7 +209,7 @@ describe("useDraftRecovery", () => {
   });
 
   it("should auto-save at specified interval", () => {
-    const { result } = renderHook(() =>
+    renderHook(() =>
       useDraftRecovery({ ...defaultOptions, saveInterval: 5000 })
     );
 

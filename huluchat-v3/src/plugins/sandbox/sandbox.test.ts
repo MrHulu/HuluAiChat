@@ -3,7 +3,7 @@
  * @module plugins/sandbox/tests
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { requestLogStore } from "./index";
 import type { NetworkRequestLog } from "./types";
 
