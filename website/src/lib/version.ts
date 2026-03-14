@@ -5,6 +5,6 @@
  * DO NOT manually edit this file - it will be overwritten during releases.
  */
 
-export const VERSION = "3.59.1";
+export const VERSION = "3.69.0";
 
-export const RELEASE_NOTES = "Hotfix: Custom model selection, settings dialog UI fixes, document chunks explanation";
+export const RELEASE_NOTES = "New features and improvements";
