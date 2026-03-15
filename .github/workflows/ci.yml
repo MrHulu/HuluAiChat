@@ -117,11 +117,21 @@ jobs:
           cd huluchat-v3
           npx playwright install chromium
 
-      - name: Start backend server
+      - name: Start backend server with health check
         run: |
           cd huluchat-v3/backend
           python main.py &
-          sleep 5
+          # 健康检查：最多等待 60 秒确保后端可用
+          echo "Waiting for backend to be ready..."
+          for i in {1..60}; do
+            if curl -s http://localhost:8765/health > /dev/null 2>&1; then
+              echo "✅ Backend is ready after ${i} seconds!"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "❌ Backend failed to start within 60 seconds"
+          exit 1
         env:
           PYTHONUNBUFFERED: 1
 
