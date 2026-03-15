@@ -5,9 +5,7 @@ import { useChat } from "./useChat";
 // Mock getSessionMessages and createChatWebSocket
 vi.mock("@/api/client", () => ({
   getSessionMessages: vi.fn(),
-  createChatWebSocket: vi.fn((sessionId: string) => ({
-    url: `ws://localhost:8765/api/chat/ws/${sessionId}`,
-  })),
+  getChatWebSocketUrl: vi.fn((sessionId: string) => `ws://localhost:8765/api/chat/ws/${sessionId}`),
 }));
 
 // Mock useWebSocket hook
