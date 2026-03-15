@@ -23,13 +23,19 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    # Add source column with default value 'main'
-    op.add_column(
-        'sessions',
-        sa.Column('source', sa.String(), nullable=False, server_default='main')
-    )
-    # Create index for filtering by source
-    op.create_index('ix_sessions_source', 'sessions', ['source'])
+    # Check if column already exists (may have been added in initial schema)
+    conn = op.get_bind()
+    inspector = sa.inspect(conn)
+    columns = [col['name'] for col in inspector.get_columns('sessions')]
+
+    if 'source' not in columns:
+        # Add source column with default value 'main'
+        op.add_column(
+            'sessions',
+            sa.Column('source', sa.String(), nullable=False, server_default='main')
+        )
+        # Create index for filtering by source
+        op.create_index('ix_sessions_source', 'sessions', ['source'])
 
 
 def downgrade() -> None:

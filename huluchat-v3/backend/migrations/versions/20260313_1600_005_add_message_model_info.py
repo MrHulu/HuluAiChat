@@ -24,27 +24,30 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    # Add model_id column - the model used to generate this message
-    op.add_column(
-        'messages',
-        sa.Column('model_id', sa.String(255), nullable=True)
-    )
+    # Check if columns already exist (may have been added in initial schema)
+    conn = op.get_bind()
+    inspector = sa.inspect(conn)
+    columns = [col['name'] for col in inspector.get_columns('messages')]
 
-    # Add regenerated_from column - original message ID if regenerated
-    op.add_column(
-        'messages',
-        sa.Column('regenerated_from', sa.String(36), nullable=True)
-    )
+    if 'model_id' not in columns:
+        op.add_column(
+            'messages',
+            sa.Column('model_id', sa.String(255), nullable=True)
+        )
+        op.create_index('ix_messages_model_id', 'messages', ['model_id'])
 
-    # Add regenerated_at column - when the message was regenerated
-    op.add_column(
-        'messages',
-        sa.Column('regenerated_at', sa.DateTime(), nullable=True)
-    )
+    if 'regenerated_from' not in columns:
+        op.add_column(
+            'messages',
+            sa.Column('regenerated_from', sa.String(36), nullable=True)
+        )
+        op.create_index('ix_messages_regenerated_from', 'messages', ['regenerated_from'])
 
-    # Create indexes for efficient queries
-    op.create_index('ix_messages_model_id', 'messages', ['model_id'])
-    op.create_index('ix_messages_regenerated_from', 'messages', ['regenerated_from'])
+    if 'regenerated_at' not in columns:
+        op.add_column(
+            'messages',
+            sa.Column('regenerated_at', sa.DateTime(), nullable=True)
+        )
 
 
 def downgrade() -> None:

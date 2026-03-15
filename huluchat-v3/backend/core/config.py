@@ -6,8 +6,8 @@ from typing import Optional, Literal
 class Settings(BaseSettings):
     """Application settings loaded from environment variables"""
 
-    # Database
-    database_url: str = "sqlite+aiosqlite:///./huluchat.db"
+    # Database - use absolute path for data directory
+    database_url: str = "sqlite+aiosqlite:///./data/huluchat.db"
 
     # OpenAI
     openai_api_key: Optional[str] = None
