@@ -67,14 +67,14 @@ jobs:
         if: matrix.platform != 'windows-latest'
         run: |
           cd huluchat-v3/backend
-          pyinstaller --onefile --name huluchat-backend-${{ matrix.target }} main.py
+          pyinstaller --onefile --name huluchat-backend-${{ matrix.target }} --hidden-import aiosqlite --hidden-import sqlalchemy.dialects.sqlite.aiosqlite --hidden-import multipart --hidden-import multipart.multipart main.py
           mv dist/huluchat-backend-${{ matrix.target }} ../src-tauri/binaries/
 
       - name: Build backend binary (Windows)
         if: matrix.platform == 'windows-latest'
         run: |
           cd huluchat-v3/backend
-          pyinstaller --onefile --name huluchat-backend-${{ matrix.target }} main.py
+          pyinstaller --onefile --name huluchat-backend-${{ matrix.target }} --hidden-import aiosqlite --hidden-import sqlalchemy.dialects.sqlite.aiosqlite --hidden-import multipart --hidden-import multipart.multipart main.py
           Move-Item -Force dist/huluchat-backend-${{ matrix.target }}.exe ../src-tauri/binaries/
         shell: pwsh
 
