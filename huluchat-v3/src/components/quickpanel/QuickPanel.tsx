@@ -12,7 +12,7 @@ import { Send, X, Loader2, Copy, Check, Clipboard, Settings, History } from "luc
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useModel, useWebSocket, useClipboardHistory } from "@/hooks";
-import { createSession, createChatWebSocket } from "@/api/client";
+import { createSession, getChatWebSocketUrl } from "@/api/client";
 import { toast } from "sonner";
 import { QuickActions } from "./QuickActions";
 import { ClipboardHistoryPanel } from "./ClipboardHistoryPanel";
@@ -80,7 +80,7 @@ export function QuickPanel({
   }, []);
 
   // Create WebSocket URL when session is available
-  const wsUrl = sessionId ? createChatWebSocket(sessionId).url : "";
+  const wsUrl = sessionId ? getChatWebSocketUrl(sessionId) : "";
 
   // Handle WebSocket messages
   const handleWSMessage = useCallback((data: unknown) => {

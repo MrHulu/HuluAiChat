@@ -336,13 +336,18 @@ export async function deleteMessage(
 }
 
 /**
+ * Get WebSocket URL for chat session (does NOT create a connection)
+ */
+export function getChatWebSocketUrl(sessionId: string): string {
+  const wsBase = API_BASE.replace(/^http/, "ws");
+  return `${wsBase}/chat/ws/${sessionId}`;
+}
+
+/**
  * Create WebSocket connection for chat
  */
 export function createChatWebSocket(sessionId: string): WebSocket {
-  // Convert HTTP API base URL to WebSocket URL
-  // e.g., http://127.0.0.1:8765/api -> ws://127.0.0.1:8765/api
-  const wsBase = API_BASE.replace(/^http/, "ws");
-  return new WebSocket(`${wsBase}/chat/ws/${sessionId}`);
+  return new WebSocket(getChatWebSocketUrl(sessionId));
 }
 
 // Settings types

@@ -14,6 +14,14 @@ vi.mock("@/api/client", () => ({
   createChatWebSocket: vi.fn(() => ({
     url: "ws://localhost:8765/ws/chat/test-session",
   })),
+  getChatWebSocketUrl: vi.fn(
+    (sessionId: string) => `ws://localhost:8765/api/chat/ws/${sessionId}`
+  ),
+}));
+
+// Mock Tauri clipboard API
+vi.mock("@tauri-apps/plugin-clipboard-manager", () => ({
+  readText: vi.fn().mockRejectedValue(new Error("Clipboard not available in test")),
 }));
 
 vi.mock("@/hooks", () => ({
