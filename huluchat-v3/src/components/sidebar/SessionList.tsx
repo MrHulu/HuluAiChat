@@ -60,6 +60,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
+import { ShortcutTooltip } from "@/components/ui/shortcut-tooltip";
 
 /**
  * 估算会话项高度
@@ -619,20 +620,28 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
           <PanelLeft className="w-5 h-5" aria-hidden="true" />
         </button>
 
-        <button
-          onClick={onCreateSession}
-          className={cn(
-            "mt-4 p-2 rounded-lg transition-all duration-200 ease-out",
-            "hover:bg-muted dark:hover:bg-muted/50",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-            "active:scale-95",
-            // Dark mode enhancements - Cycle #192
-            "dark:hover:bg-primary/15 dark:hover:shadow-[0_0_12px_oklch(0.5_0.15_264/0.2)]"
-          )}
-          aria-label={t("sidebar.newChat")}
+        <ShortcutTooltip
+          label={t("sidebar.newChat")}
+          shortcutMac="⌘N"
+          shortcutWindows="Ctrl+N"
+          translateLabel={false}
+          side="right"
         >
-          <Plus className="w-5 h-5" aria-hidden="true" />
-        </button>
+          <button
+            onClick={onCreateSession}
+            className={cn(
+              "mt-4 p-2 rounded-lg transition-all duration-200 ease-out",
+              "hover:bg-muted dark:hover:bg-muted/50",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+              "active:scale-95",
+              // Dark mode enhancements - Cycle #192
+              "dark:hover:bg-primary/15 dark:hover:shadow-[0_0_12px_oklch(0.5_0.15_264/0.2)]"
+            )}
+            aria-label={t("sidebar.newChat")}
+          >
+            <Plus className="w-5 h-5" aria-hidden="true" />
+          </button>
+        </ShortcutTooltip>
       </div>
     );
   }
@@ -651,26 +660,40 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
       <div className="flex items-center justify-between px-4 py-3 border-b border-border">
         <h2 className="font-semibold text-foreground">{t("sidebar.chats")}</h2>
         <div className="flex items-center gap-1">
-          <button
-            onClick={onToggleCollapse}
-            className="group/collapse p-1.5 rounded-md hover:bg-muted transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
-            aria-label={t("sidebar.collapseSidebar")}
+          <ShortcutTooltip
+            label="keyboard.toggleSidebar"
+            shortcutMac="⌘B"
+            shortcutWindows="Ctrl+B"
+            side="left"
           >
-            <PanelLeftClose className="w-4 h-4 transition-transform duration-200 ease-out group-hover/collapse:-translate-x-0.5" aria-hidden="true" />
-          </button>
+            <button
+              onClick={onToggleCollapse}
+              className="group/collapse p-1.5 rounded-md hover:bg-muted transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+              aria-label={t("sidebar.collapseSidebar")}
+            >
+              <PanelLeftClose className="w-4 h-4 transition-transform duration-200 ease-out group-hover/collapse:-translate-x-0.5" aria-hidden="true" />
+            </button>
+          </ShortcutTooltip>
         </div>
       </div>
 
       {/* New Chat Button */}
       <div className="p-3 flex gap-2">
-        <Button
-          onClick={onCreateSession}
-          className="flex-1 justify-start gap-2"
-          variant="outline"
+        <ShortcutTooltip
+          label="keyboard.newChat"
+          shortcutMac="⌘N"
+          shortcutWindows="Ctrl+N"
+          side="right"
         >
-          <Plus className="w-4 h-4" aria-hidden="true" />
-          {t("sidebar.newChat")}
-        </Button>
+          <Button
+            onClick={onCreateSession}
+            className="flex-1 justify-start gap-2"
+            variant="outline"
+          >
+            <Plus className="w-4 h-4" aria-hidden="true" />
+            {t("sidebar.newChat")}
+          </Button>
+        </ShortcutTooltip>
         {sessions.length > 0 && (
           <Button
             onClick={toggleBatchMode}

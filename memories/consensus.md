@@ -783,10 +783,10 @@ Boss 提供的 GLM-5 API Key 已过期（返回 401 错误）。
 
 - **项目**: HuluChat
 - **当前版本**: v3.71.0 ✅ 已发布
-- **下一版本**: v3.72.0 进行中
+- **下一版本**: v3.72.0 ✅ 开发完成，待发布
 - **当前周期**: Cycle #20
-- **当前状态**: 🔄 v3.72.0 进行中 (3/4 任务完成)
-- **已完成任务计数**: 106
+- **当前状态**: ✅ v3.72.0 全部完成 (4/4 任务)
+- **已完成任务计数**: 107
 
 ---
 
@@ -939,55 +939,60 @@ Boss 提供的 GLM-5 API Key 已过期（返回 401 错误）。
 
 ---
 
-## ✅ TASK-345: GitHub Issues 模板优化完成 ✅
+## ✅ TASK-346: 快捷键提示优化完成 ✅
 
-> **Cycle #20** - v3.72.0 第三个任务
+> **Cycle #20** - v3.72.0 第四个任务
 
 ### 实现内容
 
-| 模板文件 | 类型 | 说明 |
-|----------|------|------|
-| `bug_report.yml` | Bug 报告 | 结构化表单，包含复现步骤、期望行为、截图、严重程度等 |
-| `feature_request.yml` | 功能请求 | 问题/用例、解决方案、隐私检查 |
-| `question.yml` | 问答帮助 | 用户问题收集 |
-| `security_vulnerability.yml` | 安全漏洞 | 安全问题报告（引导敏感问题使用 Security Advisories） |
-| `config.yml` | 配置 | 欢迎信息、文档链接、FAQ 链接 |
-| `SECURITY.md` | 安全政策 | 支持版本、漏洞报告流程、最佳实践 |
-| `PULL_REQUEST_TEMPLATE.md` | PR 模板 | 变更类型、测试结果、隐私检查清单 |
+| 组件 | 文件 | 说明 |
+|------|------|------|
+| ShortcutTooltip | `ui/shortcut-tooltip.tsx` | 新增通用快捷键提示组件 |
+| ShortcutTooltip 测试 | `ui/shortcut-tooltip.test.tsx` | 5 个测试用例 |
+| SessionList 集成 | `SessionList.tsx` | New Chat 和 Sidebar 按钮添加快捷键提示 |
 
-### 特点
+### 新增功能
 
-1. **结构化表单**
-   - 使用 YAML 格式的 GitHub Issue Forms
-   - 必填字段验证
-   - 下拉菜单和复选框
+1. **ShortcutTooltip 组件**
+   - 根据操作系统自动显示对应快捷键 (Mac: ⌘ / Windows: Ctrl)
+   - 支持禁用 tooltip
+   - 支持 i18n 翻译
+   - 带有 aria-label 无障碍支持
 
-2. **隐私保护提醒**
-   - 功能请求模板包含隐私检查
-   - PR 模板包含隐私检查清单
+2. **SessionList 快捷键提示**
+   - New Chat 按钮: ⌘N / Ctrl+N
+   - Toggle Sidebar 按钮: ⌘B / Ctrl+B
 
-3. **用户引导**
-   - config.yml 链接到文档、FAQ、故障排除
-   - 鼓励用户先搜索现有 issues
+### 测试结果
 
-4. **安全漏洞报告**
-   - 敏感问题引导到 Security Advisories
-   - 明确响应时间和披露政策
+- ShortcutTooltip 测试: 5 passed ✅
+- SessionList 测试: 72 passed ✅
+
+---
+
+## ✅ v3.72.0 完成 ✅
+
+> **4 个任务全部完成**
+
+| 任务 | 优先级 | 状态 |
+|------|--------|------|
+| TASK-343 | P0 | Website 文档页 ✅ |
+| TASK-344 | P0 | 增强会话搜索 ✅ |
+| TASK-345 | P1 | GitHub Issues 模板优化 ✅ |
+| TASK-346 | P2 | 快捷键提示优化 ✅ |
 
 ---
 
 ## Next Action
-> **🔄 v3.72.0 进行中**
+> **✅ v3.72.0 全部完成**
 >
-> **已完成**: 3/4 任务
+> **已完成**: 4/4 任务
 > - ~~TASK-343: Website 文档页 [P0]~~ ✅
 > - ~~TASK-344: 增强会话搜索 [P0]~~ ✅
 > - ~~TASK-345: GitHub Issues 模板优化 [P1]~~ ✅
+> - ~~TASK-346: 快捷键提示优化 [P2]~~ ✅
 >
-> **待开始任务**:
-> - TASK-346: 快捷键提示优化 [P2]
->
-> **下一步**: 执行 TASK-346 (快捷键提示优化)
+> **下一步**: 发送邮件给 Boss，等待下一步指示
 
 ---
 
@@ -1021,4 +1026,4 @@ Boss 提供的 GLM-5 API Key 已过期（返回 401 错误）。
 
 ---
 
-*更新时间: 2026-03-16 - Cycle #20 (TASK-345 完成)*
+*更新时间: 2026-03-17 - Cycle #20 (v3.72.0 完成)*

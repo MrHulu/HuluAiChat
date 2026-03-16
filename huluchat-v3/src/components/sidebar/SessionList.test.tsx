@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { SessionList } from "./SessionList";
 import type { Session, Folder } from "@/api/client";
 import * as apiClient from "@/api/client";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 // Mock API client functions
 vi.mock("@/api/client", () => ({
@@ -12,6 +13,11 @@ vi.mock("@/api/client", () => ({
   listAllTags: vi.fn().mockResolvedValue([]),
   batchGetSessionTags: vi.fn().mockResolvedValue({ sessions: [] }),
 }));
+
+// Helper to render with TooltipProvider (needed for ShortcutTooltip)
+const renderWithTooltip = (ui: React.ReactElement) => {
+  return render(<TooltipProvider>{ui}</TooltipProvider>);
+};
 
 const createSession = (id: string, title: string, folderId?: string): Session => ({
   id,
@@ -51,28 +57,28 @@ describe("SessionList", () => {
 
   describe("Collapsed State", () => {
     it("should render collapsed sidebar when isCollapsed is true", () => {
-      render(<SessionList {...defaultProps} isCollapsed={true} />);
+      renderWithTooltip(<SessionList {...defaultProps} isCollapsed={true} />);
 
       expect(screen.getByLabelText("Expand sidebar")).toBeInTheDocument();
     });
 
     it("should call onToggleCollapse when expand button clicked", () => {
       const onToggleCollapse = vi.fn();
-      render(<SessionList {...defaultProps} isCollapsed={true} onToggleCollapse={onToggleCollapse} />);
+      renderWithTooltip(<SessionList {...defaultProps} isCollapsed={true} onToggleCollapse={onToggleCollapse} />);
 
       fireEvent.click(screen.getByLabelText("Expand sidebar"));
       expect(onToggleCollapse).toHaveBeenCalled();
     });
 
     it("should show new chat button in collapsed state", () => {
-      render(<SessionList {...defaultProps} isCollapsed={true} />);
+      renderWithTooltip(<SessionList {...defaultProps} isCollapsed={true} />);
 
       expect(screen.getByLabelText("New Chat")).toBeInTheDocument();
     });
 
     it("should call onCreateSession when new chat clicked in collapsed state", () => {
       const onCreateSession = vi.fn();
-      render(<SessionList {...defaultProps} isCollapsed={true} onCreateSession={onCreateSession} />);
+      renderWithTooltip(<SessionList {...defaultProps} isCollapsed={true} onCreateSession={onCreateSession} />);
 
       fireEvent.click(screen.getByLabelText("New Chat"));
       expect(onCreateSession).toHaveBeenCalled();
@@ -81,14 +87,14 @@ describe("SessionList", () => {
 
   describe("Header", () => {
     it("should render Chats title", () => {
-      render(<SessionList {...defaultProps} />);
+      renderWithTooltip(<SessionList {...defaultProps} />);
 
       expect(screen.getByText("Chats")).toBeInTheDocument();
     });
 
     it("should call onToggleCollapse when collapse button clicked", () => {
       const onToggleCollapse = vi.fn();
-      render(<SessionList {...defaultProps} onToggleCollapse={onToggleCollapse} />);
+      renderWithTooltip(<SessionList {...defaultProps} onToggleCollapse={onToggleCollapse} />);
 
       fireEvent.click(screen.getByLabelText("Collapse sidebar"));
       expect(onToggleCollapse).toHaveBeenCalled();
@@ -97,14 +103,14 @@ describe("SessionList", () => {
 
   describe("New Chat Button", () => {
     it("should render New Chat button", () => {
-      render(<SessionList {...defaultProps} />);
+      renderWithTooltip(<SessionList {...defaultProps} />);
 
       expect(screen.getByText("New Chat")).toBeInTheDocument();
     });
 
     it("should call onCreateSession when clicked", () => {
       const onCreateSession = vi.fn();
-      render(<SessionList {...defaultProps} onCreateSession={onCreateSession} />);
+      renderWithTooltip(<SessionList {...defaultProps} onCreateSession={onCreateSession} />);
 
       fireEvent.click(screen.getByText("New Chat"));
       expect(onCreateSession).toHaveBeenCalled();
@@ -113,13 +119,13 @@ describe("SessionList", () => {
 
   describe("Search", () => {
     it("should render search input", () => {
-      render(<SessionList {...defaultProps} />);
+      renderWithTooltip(<SessionList {...defaultProps} />);
 
       expect(screen.getByPlaceholderText("Search chats...")).toBeInTheDocument();
     });
 
     it("should update search query on input", () => {
-      render(<SessionList {...defaultProps} />);
+      renderWithTooltip(<SessionList {...defaultProps} />);
 
       const searchInput = screen.getByPlaceholderText("Search chats...");
       fireEvent.change(searchInput, { target: { value: "test query" } });
@@ -128,7 +134,7 @@ describe("SessionList", () => {
     });
 
     it("should show clear button when search has value", () => {
-      render(<SessionList {...defaultProps} />);
+      renderWithTooltip(<SessionList {...defaultProps} />);
 
       const searchInput = screen.getByPlaceholderText("Search chats...");
       fireEvent.change(searchInput, { target: { value: "test" } });
@@ -139,7 +145,7 @@ describe("SessionList", () => {
     });
 
     it("should clear search when clear button clicked", () => {
-      render(<SessionList {...defaultProps} />);
+      renderWithTooltip(<SessionList {...defaultProps} />);
 
       const searchInput = screen.getByPlaceholderText("Search chats...");
       fireEvent.change(searchInput, { target: { value: "test" } });
@@ -155,7 +161,7 @@ describe("SessionList", () => {
     });
 
     it("should clear search when Escape key pressed", () => {
-      render(<SessionList {...defaultProps} />);
+      renderWithTooltip(<SessionList {...defaultProps} />);
 
       const searchInput = screen.getByPlaceholderText("Search chats...");
       fireEvent.change(searchInput, { target: { value: "test" } });
@@ -178,7 +184,7 @@ describe("SessionList", () => {
         { session: sessions[1], matched_messages: [] },
       ]);
 
-      render(<SessionList {...defaultProps} sessions={sessions} />);
+      renderWithTooltip(<SessionList {...defaultProps} sessions={sessions} />);
 
       const searchInput = screen.getByPlaceholderText("Search chats...");
       fireEvent.change(searchInput, { target: { value: "Session" } });
@@ -216,7 +222,7 @@ describe("SessionList", () => {
         { session: sessions[1], matched_messages: [] },
       ]);
 
-      render(<SessionList {...defaultProps} sessions={sessions} onSelectSession={onSelectSession} />);
+      renderWithTooltip(<SessionList {...defaultProps} sessions={sessions} onSelectSession={onSelectSession} />);
 
       const searchInput = screen.getByPlaceholderText("Search chats...");
       fireEvent.change(searchInput, { target: { value: "Session" } });
@@ -256,7 +262,7 @@ describe("SessionList", () => {
         { session: sessions[1], matched_messages: [] },
       ]);
 
-      render(<SessionList {...defaultProps} sessions={sessions} />);
+      renderWithTooltip(<SessionList {...defaultProps} sessions={sessions} />);
 
       const searchInput = screen.getByPlaceholderText("Search chats...");
       fireEvent.change(searchInput, { target: { value: "Session" } });
@@ -281,7 +287,7 @@ describe("SessionList", () => {
 
   describe("Session List", () => {
     it("should show loading skeleton when isLoading is true", () => {
-      render(<SessionList {...defaultProps} isLoading={true} />);
+      renderWithTooltip(<SessionList {...defaultProps} isLoading={true} />);
 
       // Skeleton items have animate-shimmer class (custom animation)
       const skeletons = document.querySelectorAll(".animate-shimmer");
@@ -293,7 +299,7 @@ describe("SessionList", () => {
         createSession("1", "Session 1"),
         createSession("2", "Session 2"),
       ];
-      render(<SessionList {...defaultProps} sessions={sessions} />);
+      renderWithTooltip(<SessionList {...defaultProps} sessions={sessions} />);
 
       expect(screen.getByText("Session 1")).toBeInTheDocument();
       expect(screen.getByText("Session 2")).toBeInTheDocument();
@@ -301,7 +307,7 @@ describe("SessionList", () => {
 
     it("should highlight current session", () => {
       const sessions = [createSession("1", "Session 1")];
-      render(
+      renderWithTooltip(
         <SessionList {...defaultProps} sessions={sessions} currentSessionId="1" />
       );
 
@@ -312,7 +318,7 @@ describe("SessionList", () => {
     it("should call onSelectSession when session clicked", () => {
       const onSelectSession = vi.fn();
       const sessions = [createSession("1", "Session 1")];
-      render(<SessionList {...defaultProps} sessions={sessions} onSelectSession={onSelectSession} />);
+      renderWithTooltip(<SessionList {...defaultProps} sessions={sessions} onSelectSession={onSelectSession} />);
 
       fireEvent.click(screen.getByText("Session 1"));
       expect(onSelectSession).toHaveBeenCalledWith("1");
@@ -321,20 +327,20 @@ describe("SessionList", () => {
 
   describe("Folders", () => {
     it("should render Folders section", () => {
-      render(<SessionList {...defaultProps} />);
+      renderWithTooltip(<SessionList {...defaultProps} />);
 
       expect(screen.getByText("Folders")).toBeInTheDocument();
     });
 
     it("should render folder list", () => {
       const folders = [createFolder("f1", "Work")];
-      render(<SessionList {...defaultProps} folders={folders} />);
+      renderWithTooltip(<SessionList {...defaultProps} folders={folders} />);
 
       expect(screen.getByText("Work")).toBeInTheDocument();
     });
 
     it("should show new folder input when + button clicked", () => {
-      render(<SessionList {...defaultProps} />);
+      renderWithTooltip(<SessionList {...defaultProps} />);
 
       const newFolderButton = screen.getByLabelText("New folder");
       fireEvent.click(newFolderButton);
@@ -344,7 +350,7 @@ describe("SessionList", () => {
 
     it("should call onCreateFolder when new folder submitted", () => {
       const onCreateFolder = vi.fn();
-      render(<SessionList {...defaultProps} onCreateFolder={onCreateFolder} />);
+      renderWithTooltip(<SessionList {...defaultProps} onCreateFolder={onCreateFolder} />);
 
       // Click new folder button
       fireEvent.click(screen.getByLabelText("New folder"));
@@ -365,7 +371,7 @@ describe("SessionList", () => {
         createSession("1", "Work Session", "f1"),
         createSession("2", "Personal Session"),
       ];
-      render(<SessionList {...defaultProps} folders={folders} sessions={sessions} />);
+      renderWithTooltip(<SessionList {...defaultProps} folders={folders} sessions={sessions} />);
 
       // Click on the folder (not expand button)
       const folderName = screen.getByText("Work");
@@ -377,7 +383,7 @@ describe("SessionList", () => {
 
     it("should show uncategorized sessions", () => {
       const sessions = [createSession("1", "Uncategorized Session")];
-      render(<SessionList {...defaultProps} sessions={sessions} />);
+      renderWithTooltip(<SessionList {...defaultProps} sessions={sessions} />);
 
       expect(screen.getByText("Uncategorized")).toBeInTheDocument();
       expect(screen.getByText("Uncategorized Session")).toBeInTheDocument();
@@ -391,7 +397,7 @@ describe("SessionList", () => {
         createSession("1", "Work 1", "f1"),
         createSession("2", "Work 2", "f1"),
       ];
-      render(<SessionList {...defaultProps} folders={folders} sessions={sessions} />);
+      renderWithTooltip(<SessionList {...defaultProps} folders={folders} sessions={sessions} />);
 
       expect(screen.getByText("2")).toBeInTheDocument();
     });
@@ -401,7 +407,7 @@ describe("SessionList", () => {
     it("should clear folder filter when Back to all clicked", () => {
       const folders = [createFolder("f1", "Work")];
       const sessions = [createSession("1", "Work Session", "f1")];
-      render(<SessionList {...defaultProps} folders={folders} sessions={sessions} />);
+      renderWithTooltip(<SessionList {...defaultProps} folders={folders} sessions={sessions} />);
 
       // Click folder to filter
       fireEvent.click(screen.getByText("Work"));
@@ -417,14 +423,14 @@ describe("SessionList", () => {
 
   describe("Edge Cases", () => {
     it("should handle empty folders and sessions", () => {
-      render(<SessionList {...defaultProps} folders={[]} sessions={[]} />);
+      renderWithTooltip(<SessionList {...defaultProps} folders={[]} sessions={[]} />);
 
       expect(screen.getByText("Chats")).toBeInTheDocument();
     });
 
     it("should handle session without folder_id", () => {
       const sessions = [createSession("1", "No Folder Session")];
-      render(<SessionList {...defaultProps} sessions={sessions} />);
+      renderWithTooltip(<SessionList {...defaultProps} sessions={sessions} />);
 
       expect(screen.getByText("No Folder Session")).toBeInTheDocument();
     });
@@ -440,7 +446,7 @@ describe("SessionList", () => {
         },
       ]);
 
-      render(<SessionList {...defaultProps} />);
+      renderWithTooltip(<SessionList {...defaultProps} />);
 
       const searchInput = screen.getByPlaceholderText("Search chats...");
       fireEvent.change(searchInput, { target: { value: "test" } });
@@ -458,7 +464,7 @@ describe("SessionList", () => {
       const mockSearchSessions = vi.mocked(apiClient.searchSessions);
       mockSearchSessions.mockResolvedValueOnce([]);
 
-      render(<SessionList {...defaultProps} />);
+      renderWithTooltip(<SessionList {...defaultProps} />);
 
       const searchInput = screen.getByPlaceholderText("Search chats...");
       fireEvent.change(searchInput, { target: { value: "notfound" } });
@@ -476,7 +482,7 @@ describe("SessionList", () => {
       const mockSearchSessions = vi.mocked(apiClient.searchSessions);
       mockSearchSessions.mockResolvedValueOnce([]);
 
-      render(<SessionList {...defaultProps} />);
+      renderWithTooltip(<SessionList {...defaultProps} />);
 
       const searchInput = screen.getByPlaceholderText("Search chats...");
       fireEvent.change(searchInput, { target: { value: "test" } });
@@ -495,7 +501,7 @@ describe("SessionList", () => {
     it("should toggle folder expand/collapse", () => {
       const folders = [createFolder("f1", "Work")];
       const sessions = [createSession("1", "Work Session", "f1")];
-      render(<SessionList {...defaultProps} folders={folders} sessions={sessions} />);
+      renderWithTooltip(<SessionList {...defaultProps} folders={folders} sessions={sessions} />);
 
       // Find the chevron button and click it (lucide ChevronRight icon)
       const chevronButtons = document.querySelectorAll("button");
@@ -513,7 +519,7 @@ describe("SessionList", () => {
 
     it("should show folder context menu on right click", () => {
       const folders = [createFolder("f1", "Work")];
-      render(<SessionList {...defaultProps} folders={folders} />);
+      renderWithTooltip(<SessionList {...defaultProps} folders={folders} />);
 
       const folderRow = screen.getByText("Work").closest("div");
       if (folderRow) {
@@ -528,7 +534,7 @@ describe("SessionList", () => {
     it("should delete folder when Delete clicked in menu", () => {
       const onDeleteFolder = vi.fn();
       const folders = [createFolder("f1", "Work")];
-      render(<SessionList {...defaultProps} folders={folders} onDeleteFolder={onDeleteFolder} />);
+      renderWithTooltip(<SessionList {...defaultProps} folders={folders} onDeleteFolder={onDeleteFolder} />);
 
       // Right-click to open menu
       const folderRow = screen.getByText("Work").closest("div");
@@ -543,7 +549,7 @@ describe("SessionList", () => {
 
     it("should start editing folder when Rename clicked", () => {
       const folders = [createFolder("f1", "Work")];
-      render(<SessionList {...defaultProps} folders={folders} />);
+      renderWithTooltip(<SessionList {...defaultProps} folders={folders} />);
 
       // Right-click to open menu
       const folderRow = screen.getByText("Work").closest("div");
@@ -562,7 +568,7 @@ describe("SessionList", () => {
     it("should call onRenameFolder when editing submitted", () => {
       const onRenameFolder = vi.fn();
       const folders = [createFolder("f1", "Work")];
-      render(<SessionList {...defaultProps} folders={folders} onRenameFolder={onRenameFolder} />);
+      renderWithTooltip(<SessionList {...defaultProps} folders={folders} onRenameFolder={onRenameFolder} />);
 
       // Right-click to open menu
       const folderRow = screen.getByText("Work").closest("div");
@@ -585,7 +591,7 @@ describe("SessionList", () => {
 
     it("should close menu when clicking outside", () => {
       const folders = [createFolder("f1", "Work")];
-      render(<SessionList {...defaultProps} folders={folders} />);
+      renderWithTooltip(<SessionList {...defaultProps} folders={folders} />);
 
       // Open menu via context menu button (three dots)
       const menuButtons = document.querySelectorAll("button");
@@ -608,7 +614,7 @@ describe("SessionList", () => {
     it("should call moveSessionToFolder when moving session", async () => {
       const mockMoveSessionToFolder = vi.mocked(apiClient.moveSessionToFolder);
       const sessions = [createSession("1", "Test Session")];
-      render(<SessionList {...defaultProps} sessions={sessions} />);
+      renderWithTooltip(<SessionList {...defaultProps} sessions={sessions} />);
 
       // Find session item and trigger move (this would be via SessionItem context menu)
       // Since SessionItem is mocked internally, we test the handler directly
@@ -626,7 +632,7 @@ describe("SessionList", () => {
       const onMoveSession = vi.fn();
       const folders = [createFolder("f1", "Work")];
       const sessions = [createSession("1", "Test Session", "f1")];
-      render(
+      renderWithTooltip(
         <SessionList
           {...defaultProps}
           folders={folders}
@@ -650,7 +656,7 @@ describe("SessionList", () => {
         },
       ]);
 
-      render(<SessionList {...defaultProps} />);
+      renderWithTooltip(<SessionList {...defaultProps} />);
 
       const searchInput = screen.getByPlaceholderText("Search chats...");
       fireEvent.change(searchInput, { target: { value: "test query" } });
@@ -680,7 +686,7 @@ describe("SessionList", () => {
         },
       ]);
 
-      render(<SessionList {...defaultProps} />);
+      renderWithTooltip(<SessionList {...defaultProps} />);
 
       const searchInput = screen.getByPlaceholderText("Search chats...");
       fireEvent.change(searchInput, { target: { value: "hello" } });
@@ -697,7 +703,7 @@ describe("SessionList", () => {
 
   describe("New Folder Cancel", () => {
     it("should cancel new folder creation on blur when empty", () => {
-      render(<SessionList {...defaultProps} />);
+      renderWithTooltip(<SessionList {...defaultProps} />);
 
       // Click new folder button
       fireEvent.click(screen.getByLabelText("New folder"));
@@ -713,7 +719,7 @@ describe("SessionList", () => {
     });
 
     it("should keep input visible on blur when has content", () => {
-      render(<SessionList {...defaultProps} />);
+      renderWithTooltip(<SessionList {...defaultProps} />);
 
       // Click new folder button
       fireEvent.click(screen.getByLabelText("New folder"));
@@ -730,7 +736,7 @@ describe("SessionList", () => {
   describe("Folder Filter Toggle", () => {
     it("should clear folder filter when clicking same folder again", () => {
       const folders = [createFolder("f1", "Work")];
-      render(<SessionList {...defaultProps} folders={folders} />);
+      renderWithTooltip(<SessionList {...defaultProps} folders={folders} />);
 
       // Click folder once to filter
       fireEvent.click(screen.getByText("Work"));
@@ -747,7 +753,7 @@ describe("SessionList", () => {
       const mockSearchSessions = vi.mocked(apiClient.searchSessions);
       mockSearchSessions.mockRejectedValueOnce(new Error("Network error"));
 
-      render(<SessionList {...defaultProps} />);
+      renderWithTooltip(<SessionList {...defaultProps} />);
 
       const searchInput = screen.getByPlaceholderText("Search chats...");
       fireEvent.change(searchInput, { target: { value: "error test" } });
@@ -776,7 +782,7 @@ describe("SessionList", () => {
         },
       ]);
 
-      render(<SessionList {...defaultProps} />);
+      renderWithTooltip(<SessionList {...defaultProps} />);
 
       const searchInput = screen.getByPlaceholderText("Search chats...");
       fireEvent.change(searchInput, { target: { value: "test" } });
@@ -805,7 +811,7 @@ describe("SessionList", () => {
         },
       ]);
 
-      render(<SessionList {...defaultProps} />);
+      renderWithTooltip(<SessionList {...defaultProps} />);
 
       const searchInput = screen.getByPlaceholderText("Search chats...");
       fireEvent.change(searchInput, { target: { value: "test" } });
@@ -833,7 +839,7 @@ describe("SessionList", () => {
         },
       ]);
 
-      render(<SessionList {...defaultProps} />);
+      renderWithTooltip(<SessionList {...defaultProps} />);
 
       const searchInput = screen.getByPlaceholderText("Search chats...");
       fireEvent.change(searchInput, { target: { value: "response" } });
@@ -850,7 +856,7 @@ describe("SessionList", () => {
   describe("Folder Edit Input Interactions", () => {
     it("should stop propagation on edit input click", () => {
       const folders = [createFolder("f1", "Work")];
-      render(<SessionList {...defaultProps} folders={folders} />);
+      renderWithTooltip(<SessionList {...defaultProps} folders={folders} />);
 
       // Right-click to open menu
       const folderRow = screen.getByText("Work").closest("div");
@@ -874,7 +880,7 @@ describe("SessionList", () => {
 
     it("should cancel editing when input loses focus", () => {
       const folders = [createFolder("f1", "Work")];
-      render(<SessionList {...defaultProps} folders={folders} />);
+      renderWithTooltip(<SessionList {...defaultProps} folders={folders} />);
 
       // Right-click to open menu
       const folderRow = screen.getByText("Work").closest("div");
@@ -899,7 +905,7 @@ describe("SessionList", () => {
     it("should submit on Enter key in edit input", () => {
       const onRenameFolder = vi.fn();
       const folders = [createFolder("f1", "Work")];
-      render(<SessionList {...defaultProps} folders={folders} onRenameFolder={onRenameFolder} />);
+      renderWithTooltip(<SessionList {...defaultProps} folders={folders} onRenameFolder={onRenameFolder} />);
 
       // Right-click to open menu
       const folderRow = screen.getByText("Work").closest("div");
@@ -929,7 +935,7 @@ describe("SessionList", () => {
         createSession("2", "Work Session 2", "f1"),
         createSession("3", "Other Session"),
       ];
-      render(<SessionList {...defaultProps} folders={folders} sessions={sessions} />);
+      renderWithTooltip(<SessionList {...defaultProps} folders={folders} sessions={sessions} />);
 
       // Click folder to filter
       fireEvent.click(screen.getByText("Work"));
@@ -944,7 +950,7 @@ describe("SessionList", () => {
   describe("Empty Folder State", () => {
     it("should show folder with zero sessions", () => {
       const folders = [createFolder("f1", "Empty Folder")];
-      render(<SessionList {...defaultProps} folders={folders} />);
+      renderWithTooltip(<SessionList {...defaultProps} folders={folders} />);
 
       expect(screen.getByText("Empty Folder")).toBeInTheDocument();
       expect(screen.getByText("0")).toBeInTheDocument(); // Session count
@@ -958,7 +964,7 @@ describe("SessionList", () => {
         createSession("1", "Work Session", "f1"),
         createSession("2", "Personal Session", "f2"),
       ];
-      render(<SessionList {...defaultProps} folders={folders} sessions={sessions} />);
+      renderWithTooltip(<SessionList {...defaultProps} folders={folders} sessions={sessions} />);
 
       // Folders should always be visible
       expect(screen.getByText("Work")).toBeInTheDocument();
@@ -986,7 +992,7 @@ describe("SessionList", () => {
         createSession("2", "Work 2", "f1"),
         createSession("3", "Personal 1", "f2"),
       ];
-      render(<SessionList {...defaultProps} folders={folders} sessions={sessions} />);
+      renderWithTooltip(<SessionList {...defaultProps} folders={folders} sessions={sessions} />);
 
       // Should show counts: Work has 2, Personal has 1
       const counts = screen.getAllByText(/^[0-9]$/);
@@ -997,7 +1003,7 @@ describe("SessionList", () => {
   describe("Folder Active State Styling", () => {
     it("should show active background on selected folder", () => {
       const folders = [createFolder("f1", "Work")];
-      render(<SessionList {...defaultProps} folders={folders} />);
+      renderWithTooltip(<SessionList {...defaultProps} folders={folders} />);
 
       // Click folder to filter
       fireEvent.click(screen.getByText("Work"));
@@ -1013,7 +1019,7 @@ describe("SessionList", () => {
       const onSelectSession = vi.fn();
       const folders = [createFolder("f1", "Work")];
       const sessions = [createSession("1", "Work Session", "f1")];
-      render(
+      renderWithTooltip(
         <SessionList
           {...defaultProps}
           folders={folders}
@@ -1034,7 +1040,7 @@ describe("SessionList", () => {
       const onDeleteSession = vi.fn();
       const folders = [createFolder("f1", "Work")];
       const sessions = [createSession("1", "Work Session", "f1")];
-      render(
+      renderWithTooltip(
         <SessionList
           {...defaultProps}
           folders={folders}
@@ -1062,7 +1068,7 @@ describe("SessionList", () => {
       const onExportSession = vi.fn();
       const folders = [createFolder("f1", "Work")];
       const sessions = [createSession("1", "Work Session", "f1")];
-      render(
+      renderWithTooltip(
         <SessionList
           {...defaultProps}
           folders={folders}
@@ -1088,7 +1094,7 @@ describe("SessionList", () => {
       const onMoveSession = vi.fn();
       const folders = [createFolder("f1", "Work"), createFolder("f2", "Personal")];
       const sessions = [createSession("1", "Work Session", "f1")];
-      render(
+      renderWithTooltip(
         <SessionList
           {...defaultProps}
           folders={folders}
@@ -1112,7 +1118,7 @@ describe("SessionList", () => {
       const onMoveSession = vi.fn();
       const folders = [createFolder("f1", "Work"), createFolder("f2", "Personal")];
       const sessions = [createSession("1", "Work Session", "f1")];
-      render(
+      renderWithTooltip(
         <SessionList
           {...defaultProps}
           folders={folders}
@@ -1141,7 +1147,7 @@ describe("SessionList", () => {
       const onExportSession = vi.fn();
       const folders = [createFolder("f1", "Work")];
       const sessions = [createSession("1", "Work Session", "f1")];
-      render(
+      renderWithTooltip(
         <SessionList
           {...defaultProps}
           folders={folders}
@@ -1177,7 +1183,7 @@ describe("SessionList", () => {
         createSession("1", "Work Session", "f1"),
         createSession("2", "Other Session"),
       ];
-      render(<SessionList {...defaultProps} folders={folders} sessions={sessions} />);
+      renderWithTooltip(<SessionList {...defaultProps} folders={folders} sessions={sessions} />);
 
       // Uncategorized should show only root sessions
       expect(screen.getByText("Other Session")).toBeInTheDocument();
@@ -1190,7 +1196,7 @@ describe("SessionList", () => {
     it("should call onSelectSession when clicking uncategorized session", () => {
       const onSelectSession = vi.fn();
       const sessions = [createSession("1", "My Uncategorized Chat")];
-      render(<SessionList {...defaultProps} sessions={sessions} onSelectSession={onSelectSession} />);
+      renderWithTooltip(<SessionList {...defaultProps} sessions={sessions} onSelectSession={onSelectSession} />);
 
       // Click on the uncategorized session
       fireEvent.click(screen.getByText("My Uncategorized Chat"));
@@ -1200,7 +1206,7 @@ describe("SessionList", () => {
     it("should call onDeleteSession when deleting uncategorized session", () => {
       const onDeleteSession = vi.fn();
       const sessions = [createSession("1", "Session to Delete")];
-      render(<SessionList {...defaultProps} sessions={sessions} onDeleteSession={onDeleteSession} />);
+      renderWithTooltip(<SessionList {...defaultProps} sessions={sessions} onDeleteSession={onDeleteSession} />);
 
       // Find and click delete button
       const deleteButton = screen.getByLabelText("Delete session");
@@ -1219,7 +1225,7 @@ describe("SessionList", () => {
       const onSelectSession = vi.fn();
       const folders = [createFolder("f1", "Work")];
       const sessions = [createSession("1", "Work Session", "f1")];
-      render(
+      renderWithTooltip(
         <SessionList
           {...defaultProps}
           folders={folders}
@@ -1246,7 +1252,7 @@ describe("SessionList", () => {
       const onDeleteSession = vi.fn();
       const folders = [createFolder("f1", "Work")];
       const sessions = [createSession("1", "Work Session", "f1")];
-      render(
+      renderWithTooltip(
         <SessionList
           {...defaultProps}
           folders={folders}
@@ -1279,7 +1285,7 @@ describe("SessionList", () => {
   describe("Folder Edit Cancel via Blur", () => {
     it("should cancel editing and clear state when input loses focus", () => {
       const folders = [createFolder("f1", "Work")];
-      render(<SessionList {...defaultProps} folders={folders} />);
+      renderWithTooltip(<SessionList {...defaultProps} folders={folders} />);
 
       // Right-click to open menu
       const folderRow = screen.getByText("Work").closest("div");
@@ -1323,7 +1329,7 @@ describe("SessionList", () => {
         },
       ]);
 
-      render(<SessionList {...defaultProps} />);
+      renderWithTooltip(<SessionList {...defaultProps} />);
 
       const searchInput = screen.getByPlaceholderText("Search chats...");
       fireEvent.change(searchInput, { target: { value: "hello" } });
@@ -1352,7 +1358,7 @@ describe("SessionList", () => {
         },
       ]);
 
-      render(<SessionList {...defaultProps} />);
+      renderWithTooltip(<SessionList {...defaultProps} />);
 
       const searchInput = screen.getByPlaceholderText("Search chats...");
       fireEvent.change(searchInput, { target: { value: "response" } });

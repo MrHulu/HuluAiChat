@@ -360,14 +360,19 @@
   - **完成日期**: 2026-03-16
   - **周期**: Cycle #20
 
-- [ ] **TASK-346**: ⌨️ 快捷键提示优化 [P2]
+- [x] **TASK-346**: ⌨️ 快捷键提示优化 [P2] ✅
   - **来源**: Product Norman 建议
   - **目标**: 让用户更容易发现快捷键
-  - **范围**:
-    - [ ] 快捷键 Cheat Sheet (Ctrl+Shift+?)
-    - [ ] 首次使用提示
-    - [ ] Tooltip 显示快捷键
-  - **预计工作量**: 0.5 cycle
+  - **完成内容**:
+    - [x] 快捷键 Cheat Sheet - 已存在 (按 ? 或 F1 打开 KeyboardHelpDialog)
+    - [x] 首次使用提示 - 已存在 (WelcomeDialog 步骤 4)
+    - [x] ShortcutTooltip 组件 - 新增 tooltip 显示快捷键的通用组件
+    - [x] SessionList 集成 - New Chat 和 Toggle Sidebar 按钮显示快捷键
+  - **新增文件**:
+    - `src/components/ui/shortcut-tooltip.tsx` - ShortcutTooltip 组件
+    - `src/components/ui/shortcut-tooltip.test.tsx` - 5 个测试
+  - **完成日期**: 2026-03-17
+  - **周期**: Cycle #20
 
 ### 暂缓功能 (v3.73.0)
 
