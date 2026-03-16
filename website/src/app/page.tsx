@@ -177,7 +177,7 @@ export default function Home() {
             </div>
             <div className="relative aspect-video bg-zinc-900">
               <Image
-                src="/screenshots/dark-theme.png"
+                src="/screenshots/main-dark-new.png"
                 alt="HuluChat - AI Chat Desktop Application"
                 fill
                 className="object-cover"
@@ -199,7 +199,7 @@ export default function Home() {
               </div>
               <div className="relative aspect-[4/3] bg-zinc-900">
                 <Image
-                  src="/screenshots/dark-theme.png"
+                  src="/screenshots/main-dark-new.png"
                   alt="HuluChat Dark Mode"
                   fill
                   className="object-cover"
@@ -210,10 +210,58 @@ export default function Home() {
               <div className="p-3 bg-zinc-800/50 border-b border-zinc-700 text-sm text-zinc-400">
                 Light Mode
               </div>
+              <div className="relative aspect-[4/3] bg-white">
+                <Image
+                  src="/screenshots/main-light-new.png"
+                  alt="HuluChat Light Mode"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Settings & Features */}
+      <section className="px-6 pb-20">
+        <div className="max-w-5xl mx-auto">
+          <h3 className="text-2xl font-bold text-center mb-8">Powerful Features</h3>
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="rounded-xl border border-zinc-800 overflow-hidden">
+              <div className="p-3 bg-zinc-800/50 border-b border-zinc-700 text-sm text-zinc-400">
+                ⚙️ Settings
+              </div>
               <div className="relative aspect-[4/3] bg-zinc-900">
                 <Image
-                  src="/screenshots/light-theme.png"
-                  alt="HuluChat Light Mode"
+                  src="/screenshots/settings-new.png"
+                  alt="HuluChat Settings"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            </div>
+            <div className="rounded-xl border border-zinc-800 overflow-hidden">
+              <div className="p-3 bg-zinc-800/50 border-b border-zinc-700 text-sm text-zinc-400">
+                🎨 Appearance
+              </div>
+              <div className="relative aspect-[4/3] bg-zinc-900">
+                <Image
+                  src="/screenshots/settings-appearance.png"
+                  alt="HuluChat Appearance Settings"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            </div>
+            <div className="rounded-xl border border-zinc-800 overflow-hidden">
+              <div className="p-3 bg-zinc-800/50 border-b border-zinc-700 text-sm text-zinc-400">
+                ⌨️ Shortcuts
+              </div>
+              <div className="relative aspect-[4/3] bg-zinc-900">
+                <Image
+                  src="/screenshots/settings-shortcuts.png"
+                  alt="HuluChat Keyboard Shortcuts"
                   fill
                   className="object-cover"
                 />
