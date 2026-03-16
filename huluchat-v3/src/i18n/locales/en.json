@@ -612,6 +612,11 @@
     "deleteUndone": "Deletion cancelled",
     "deleteError": "Failed to delete session"
   },
+  "unsavedContent": {
+    "title": "Unsaved Content",
+    "description": "You have unsaved content in your message. If you switch sessions, this content will be lost. Do you want to continue?",
+    "discard": "Discard and Continue"
+  },
   "batch": {
     "enterBatchMode": "Enter batch selection mode",
     "exitBatchMode": "Exit batch selection mode",

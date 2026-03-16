@@ -45,6 +45,49 @@
 
 ---
 
+## ✅ TASK-351: 输入内容丢失警告完成 ✅
+
+> **Cycle #28** - v3.73.0 第三个任务
+
+### 问题描述
+
+**内容丢失问题**：用户切换会话时未发送内容会丢失
+- 用户输入长消息后误点其他会话
+- 内容永久丢失，用户体验差
+
+### 解决方案
+
+| 组件 | 文件 | 修改 |
+|------|------|------|
+| useUnsavedContent hook | `hooks/useUnsavedContent.tsx` | 跟踪未保存输入内容 |
+| useUnsavedContent 测试 | `hooks/useUnsavedContent.test.tsx` | 9 个测试用例 |
+| UnsavedContentDialog | `components/UnsavedContentDialog.tsx` | 确认对话框组件 |
+| UnsavedContentDialog 测试 | `components/UnsavedContentDialog.test.tsx` | 4 个测试用例 |
+| 国际化 | `en.json`, `zh.json` | 新增未保存内容警告翻译 |
+
+### 新增功能
+
+1. **useUnsavedContent Hook**
+   - `hasUnsavedContent` - 当前是否有未保存内容
+   - `getUnsavedContent()` - 获取当前会话的未保存内容
+   - `updateUnsavedContent()` - 更新当前会话的未保存内容
+   - `clearUnsavedContent()` - 清除当前会话的未保存内容
+   - `clearSessionUnsavedContent()` - 清除指定会话的未保存内容
+
+2. **UnsavedContentDialog 组件**
+   - 使用 AlertDialog 显示确认对话框
+   - 显示警告图标和提示信息
+   - 提供"取消"和"丢弃并继续"选项
+
+### 测试结果
+
+- useUnsavedContent 测试: 9 passed ✅
+- UnsavedContentDialog 测试: 4 passed ✅
+- 类型检查: 通过 ✅
+- Lint: 0 errors ✅
+
+---
+
 ## ✅ TASK-334: Tags N+1 查询优化完成 ✅
 
 > **Cycle #28** - v3.70.0 第二个任务
@@ -519,24 +562,24 @@ Boss 提供的 GLM-5 API Key 已过期（返回 401 错误）。
 ---
 
 ## Next Action
-> **✅ Cycle #28 - TASK-350 完成**
+> **✅ Cycle #28 - TASK-351 完成**
 >
-> **已完成**: TASK-350 会话删除撤销
-> - useUndoDelete hook 实现
-> - 10 秒延迟删除 + 撤销能力
+> **已完成**: TASK-351 输入内容丢失警告
+> - useUnsavedContent hook 实现
+> - UnsavedContentDialog 组件
 > - 国际化支持 (en/zh)
-> - 7 个测试全部通过
+> - 13 个测试全部通过
 >
-> **v3.73.0 进度**: 2/5 任务完成
+> **v3.73.0 进度**: 3/5 任务完成
 >
 > **待开始任务**:
 > - ~~TASK-349: 消息状态指示器 [P0]~~ ✅
 > - ~~TASK-350: 会话删除撤销 [P0]~~ ✅
+> - ~~TASK-351: 输入内容丢失警告 [P1]~~ ✅
 > - TASK-348: Beta 测试准备 [P0]
-> - TASK-351: 输入内容丢失警告 [P1]
 > - TASK-352: API Key 即时验证反馈 [P1]
 >
-> **下一步**: 执行 TASK-351 (输入内容丢失警告)
+> **下一步**: 执行 TASK-352 (API Key 即时验证反馈)
 
 ---
 
