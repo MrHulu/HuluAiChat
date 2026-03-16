@@ -159,7 +159,7 @@ export const ChatView = forwardRef<ChatViewRef, ChatViewProps>(function ChatView
   ref
 ) {
   const { t } = useTranslation();
-  const { messages, streamingMessage, toolCalls, connectionStatus, sendMessage, regenerateMessage, deleteMessage, isLoading, reconnectAttempt, maxReconnectAttempts } =
+  const { messages, streamingMessage, toolCalls, connectionStatus, sendMessage, regenerateMessage, deleteMessage, isLoading, reconnectAttempt, maxReconnectAttempts, queueSize } =
     useChat(sessionId, { onTitleGenerated: onSessionUpdated });
   const { currentModel, models, setModel, isLoading: isLoadingModels, parameters, recommendedModel, ollamaAvailable, ollamaModels } = useModel();
   const { markFeatureUsed } = useFeatureDiscovery(); // TASK-236
@@ -714,6 +714,8 @@ export const ChatView = forwardRef<ChatViewRef, ChatViewProps>(function ChatView
         onMessageSelect={handleMessageSelect}
         searchMatchIds={matchingMessageIds}
         currentMatchId={currentMatchId}
+        isConnected={connectionStatus === "connected"}
+        queueSize={queueSize}
       />
 
       {/* Tool Calls Indicator */}

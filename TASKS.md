@@ -408,14 +408,18 @@
     - [ ] 收集反馈渠道（GitHub Issues / 邮件）
   - **验收**: 5 个测试用户同意参与
 
-- [ ] **TASK-349**: 💬 消息状态指示器 [P0]
+- [x] **TASK-349**: 💬 消息状态指示器 [P0] ✅
   - **来源**: Product Norman 建议
   - **目标**: 让用户知道消息状态
-  - **内容**:
-    - [ ] 发送中状态（动画）
-    - [ ] 已保存状态（对勾）
-    - [ ] 等待发送状态（断线时）
-  - **验收**: 用户能清晰区分消息状态
+  - **完成内容**:
+    - [x] MessageStatusIndicator 组件 - 发送中/已保存/等待发送/错误状态
+    - [x] MessageStatusGroup 组件 - 断线时显示排队消息数量
+    - [x] getMessageStatus 辅助函数 - 根据消息 ID 和连接状态判断状态
+    - [x] ChatView 集成 - 传递 isConnected 和 queueSize
+    - [x] 国际化支持 - en.json, zh.json
+    - [x] 测试覆盖 - 20 个测试全部通过
+  - **完成日期**: 2026-03-17
+  - **周期**: Cycle #27
 
 - [ ] **TASK-350**: ↩️ 会话删除撤销 [P0]
   - **来源**: Product Norman 建议
