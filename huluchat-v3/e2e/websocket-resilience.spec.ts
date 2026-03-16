@@ -23,7 +23,7 @@ const TEST_CONFIG = {
 async function skipWelcomeIfNeeded(page: Page) {
   const skipButton = page.locator('button:has-text("Skip")');
   if (await skipButton.isVisible({ timeout: 2000 }).catch(() => false)) {
-    await skipButton.click();
+    await skipButton.click({ force: true });
     await page.waitForTimeout(500);
   }
 }
@@ -179,10 +179,16 @@ test.describe('WebSocket 断连重连', () => {
 });
 
 test.describe('断连期间消息排队', () => {
-  test('离线时输入的消息应该在重连后发送', async ({ page }) => {
+  test('离线时输入的消息应该在重连后发送', async ({ page, request }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await skipWelcomeIfNeeded(page);
+
+    // 先通过 API 创建会话，确保有会话被选中
+    await createTestSession(request);
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(500);
 
     const inputArea = page.locator('textarea').or(page.locator('[contenteditable="true"]'));
 
@@ -205,10 +211,16 @@ test.describe('断连期间消息排队', () => {
     await goOnline(page);
   });
 
-  test('断连时 UI 应该显示离线提示', async ({ page }) => {
+  test('断连时 UI 应该显示离线提示', async ({ page, request }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await skipWelcomeIfNeeded(page);
+
+    // 先通过 API 创建会话，确保有会话被选中
+    await createTestSession(request);
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(500);
 
     // 模拟网络中断
     await goOffline(page);
@@ -299,7 +311,13 @@ test.describe('连接状态 UI 反馈', () => {
     console.log(`Loading indicator visible during connection: ${isVisible}`);
   });
 
-  test('连接失败应该显示错误', async ({ page }) => {
+  test('连接失败应该显示错误', async ({ page, request }) => {
+    // 先通过 API 创建会话，确保有会话被选中
+    await createTestSession(request);
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(500);
+
     // 模拟后端不可用
     await goOffline(page);
     await page.waitForTimeout(3000);

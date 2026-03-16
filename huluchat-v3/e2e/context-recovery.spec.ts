@@ -22,7 +22,7 @@ const TEST_CONFIG = {
 async function skipWelcomeIfNeeded(page: Page) {
   const skipButton = page.locator('button:has-text("Skip")');
   if (await skipButton.isVisible({ timeout: 2000 }).catch(() => false)) {
-    await skipButton.click();
+    await skipButton.click({ force: true });
     await page.waitForTimeout(500);
   }
 }
