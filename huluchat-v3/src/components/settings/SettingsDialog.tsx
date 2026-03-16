@@ -23,6 +23,8 @@ import {
   Palette,
   Keyboard,
   Zap,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -87,6 +89,11 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
   const [model, setModel] = useState("");
   const [customModel, setCustomModel] = useState(""); // Custom model ID input
   const [hasApiKey, setHasApiKey] = useState(false);
+
+  // API Key verification state - TASK-352  // pragma: allowlist secret
+  type ApiKeyStatus = "idle" | "verifying" | "valid" | "invalid";
+  const [apiKeyStatus, setApiKeyStatus] = useState<ApiKeyStatus>("idle");
+  const [apiKeyErrorMessage, setApiKeyErrorMessage] = useState<string | null>(null);
 
   // Model parameters state
   const [temperature, setTemperature] = useState(0.7);
@@ -266,6 +273,28 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
 
       // 触发设置变更事件，让其他组件（如 useModel）刷新
       window.dispatchEvent(new CustomEvent("settings-changed"));
+
+      // TASK-352: Auto-verify API Key after save
+      if (updateData.openai_api_key) {
+        setApiKeyStatus("verifying");
+        try {
+          await testConnection();
+          setApiKeyStatus("valid");
+        } catch (verifyError) {
+          setApiKeyStatus("invalid");
+          // Human-friendly error messages - TASK-352
+          const errorMsg = verifyError instanceof Error ? verifyError.message : String(verifyError);
+          if (errorMsg.includes("401") || errorMsg.includes("Unauthorized") || errorMsg.includes("invalid")) {
+            setApiKeyErrorMessage(t("settings.apiKeyInvalidAuth"));
+          } else if (errorMsg.includes("timeout") || errorMsg.includes("ETIMEDOUT")) {
+            setApiKeyErrorMessage(t("settings.apiKeyTimeout"));
+          } else if (errorMsg.includes("network") || errorMsg.includes("ENOTFOUND") || errorMsg.includes("ECONNREFUSED")) {
+            setApiKeyErrorMessage(t("settings.apiKeyNetworkError"));
+          } else {
+            setApiKeyErrorMessage(t("settings.apiKeyVerifyFailed"));
+          }
+        }
+      }
     } catch (error) {
       console.error("Failed to save settings:", error);
       toast.error(t("settings.settingsSaveFailed"));
@@ -277,17 +306,34 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
   const handleTest = async () => {
     setTesting(true);
     setTestResult(null);
+    setApiKeyStatus("verifying"); // TASK-352
     try {
       const result = await testConnection();
       setTestResult({ success: true, message: result.message });
+      setApiKeyStatus("valid"); // TASK-352
+      setApiKeyErrorMessage(null); // TASK-352
       toast.success(t("settings.connectionSuccessful"));
     } catch (error) {
-      const message = error instanceof Error ? error.message : t("settings.connectionFailed");
+      const errorMsg = error instanceof Error ? error.message : t("settings.connectionFailed");
       setTestResult({
         success: false,
-        message,
+        message: errorMsg,
       });
-      toast.error(message);
+      setApiKeyStatus("invalid"); // TASK-352
+      // Human-friendly error messages - TASK-352
+      if (errorMsg.includes("401") || errorMsg.includes("Unauthorized") || errorMsg.includes("invalid")) {
+        setApiKeyErrorMessage(t("settings.apiKeyInvalidAuth"));
+        toast.error(t("settings.apiKeyInvalidAuth"));
+      } else if (errorMsg.includes("timeout") || errorMsg.includes("ETIMEDOUT")) {
+        setApiKeyErrorMessage(t("settings.apiKeyTimeout"));
+        toast.error(t("settings.apiKeyTimeout"));
+      } else if (errorMsg.includes("network") || errorMsg.includes("ENOTFOUND") || errorMsg.includes("ECONNREFUSED")) {
+        setApiKeyErrorMessage(t("settings.apiKeyNetworkError"));
+        toast.error(t("settings.apiKeyNetworkError"));
+      } else {
+        setApiKeyErrorMessage(t("settings.apiKeyVerifyFailed"));
+        toast.error(errorMsg);
+      }
     } finally {
       setTesting(false);
     }
@@ -375,21 +421,57 @@ export function SettingsDialog({ onSettingsChange, open: externalOpen, onOpenCha
 
             {/* API Settings Tab */}
             <TabsContent value="api" className="space-y-4 py-4">
-              {/* API Key */}
+              {/* API Key - TASK-352 enhanced with verification feedback */}
               <div className="grid gap-2">
-                <Label htmlFor="apiKey">{t("settings.apiKey")}</Label>
+                <Label htmlFor="apiKey" className="flex items-center gap-2">
+                  {t("settings.apiKey")}
+                  {apiKeyStatus === "verifying" && (
+                    <span className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      {t("settings.apiKeyVerifying")}
+                    </span>
+                  )}
+                  {apiKeyStatus === "valid" && (
+                    <span className="text-xs text-success flex items-center gap-1">
+                      <CheckCircle className="h-3 w-3" />
+                      {t("settings.apiKeyValid")}
+                    </span>
+                  )}
+                  {apiKeyStatus === "invalid" && (
+                    <span className="text-xs text-destructive flex items-center gap-1">
+                      <XCircle className="h-3 w-3" />
+                      {t("settings.apiKeyInvalid")}
+                    </span>
+                  )}
+                </Label>
                 <div className="flex gap-2">
                   <Input
                     id="apiKey"
                     type="password"
                     placeholder={hasApiKey ? "••••••••••••••••" : t("settings.apiKeyPlaceholder")}
                     value={apiKey}
-                    onChange={(e) => setApiKey(e.target.value)}
-                    className="flex-1"
+                    onChange={(e) => {
+                      setApiKey(e.target.value);
+                      // Reset verification status when API key changes - TASK-352
+                      if (apiKeyStatus !== "idle") {
+                        setApiKeyStatus("idle");
+                        setApiKeyErrorMessage(null);
+                      }
+                    }}
+                    className={`flex-1 ${apiKeyStatus === "valid" ? "border-success" : apiKeyStatus === "invalid" ? "border-destructive" : ""}`}
+                    aria-invalid={apiKeyStatus === "invalid"}
+                    aria-describedby={apiKeyStatus === "invalid" && apiKeyErrorMessage ? "apiKey-error" : hasApiKey && !apiKey ? "apiKey-hint" : undefined}
                   />
                 </div>
-                {hasApiKey && !apiKey && (
-                  <p className="text-xs text-muted-foreground">
+                {/* Error message - TASK-352 */}
+                {apiKeyStatus === "invalid" && apiKeyErrorMessage && (
+                  <p id="apiKey-error" className="text-xs text-destructive" role="alert">
+                    {apiKeyErrorMessage}
+                  </p>
+                )}
+                {/* API key set hint */}
+                {hasApiKey && !apiKey && apiKeyStatus === "idle" && (
+                  <p id="apiKey-hint" className="text-xs text-muted-foreground">
                     {t("settings.apiKeySet")}
                   </p>
                 )}
