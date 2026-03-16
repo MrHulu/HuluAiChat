@@ -62,6 +62,10 @@ class Config:
         self.error_count = 0
         self.running = True
 
+        # Consecutive timeout tracking for email notification
+        self.consecutive_timeouts = 0
+        self.max_consecutive_timeouts = 2  # Send email after 2 consecutive timeouts
+
 
 # === Logging ===
 
@@ -268,9 +272,10 @@ class ClaudeRunner:
         output_file = self.config.log_dir / "temp_output.json"
         cycle_log = self.config.log_dir / f"cycle-{self.config.loop_count:04d}-{datetime.now().strftime('%Y%m%d-%H%M%S')}.log"
 
-        # Build command
+        # Build command - use -p for non-interactive headless mode
         cmd = [
             claude_path,
+            "-p",  # Non-interactive mode (CRITICAL for headless operation)
             "--model", self.config.model,
             "--dangerously-skip-permissions",
             "--output-format", "json"
@@ -467,15 +472,26 @@ class AutoLoop:
                 if metadata.get("timed_out"):
                     cycle_failed = True
                     failed_reason = f"Timed out after {self.config.cycle_timeout}s"
+                    self.config.consecutive_timeouts += 1
+
+                    # Send email after 2 consecutive timeouts
+                    if self.config.consecutive_timeouts >= self.config.max_consecutive_timeouts:
+                        self.logger.log_cycle(self.config.loop_count, "ALERT",
+                                            f"Consecutive timeouts ({self.config.consecutive_timeouts}) - sending email notification")
+                        self._send_timeout_email()
+                        self.config.consecutive_timeouts = 0  # Reset after email
                 elif returncode != 0:
                     cycle_failed = True
                     failed_reason = f"Exit code {returncode}"
+                    self.config.consecutive_timeouts = 0  # Reset on non-timeout failure
                 elif metadata.get("subtype") != "success" and metadata.get("subtype"):
                     cycle_failed = True
                     failed_reason = f"Non-success subtype '{metadata['subtype']}'"
+                    self.config.consecutive_timeouts = 0  # Reset on non-timeout failure
                 elif not self.consensus.validate():
                     cycle_failed = True
                     failed_reason = "consensus.md validation failed after cycle"
+                    self.config.consecutive_timeouts = 0  # Reset on non-timeout failure
 
                 if cycle_failed:
                     self.config.error_count += 1
@@ -509,15 +525,70 @@ class AutoLoop:
                     if result_text:
                         self.logger.log_cycle(self.config.loop_count, "SUMMARY", result_text[:300])
                     self.config.error_count = 0
+                    self.config.consecutive_timeouts = 0  # Reset on success
 
             except Exception as e:
                 self.config.error_count += 1
+                self.config.consecutive_timeouts = 0  # Reset on exception (non-timeout)
                 self.logger.log_cycle(self.config.loop_count, "ERROR", str(e))
                 self.consensus.restore()
 
             self.state.save("idle")
             self.logger.log_cycle(self.config.loop_count, "WAIT", f"Sleeping {self.config.loop_interval}s...")
             time.sleep(self.config.loop_interval)
+
+    def _send_timeout_email(self):
+        """Send email notification for consecutive timeouts"""
+        import smtplib
+        from email.mime.text import MIMEText
+        from email.mime.multipart import MIMEMultipart
+
+        smtp_host = os.getenv("SMTP_HOST", "smtp.qq.com")
+        smtp_port = int(os.getenv("SMTP_PORT", "587"))
+        smtp_user = os.getenv("SMTP_USER", "491849417@qq.com")
+        smtp_password = os.getenv("SMTP_PASSWORD", "")
+        email_to = os.getenv("EMAIL_TO", "491849417@qq.com")
+
+        if not smtp_password:
+            self.logger.log("Email skipped: SMTP_PASSWORD not set")
+            return
+
+        try:
+            msg = MIMEMultipart()
+            msg["From"] = smtp_user
+            msg["To"] = email_to
+            msg["Subject"] = "[HuluChat] 🆘 小弟连续超时，可能卡住了"
+
+            timeout_minutes = self.config.cycle_timeout // 60
+            body = f"""Hi Boss,
+
+HuluChat 小弟已连续 {self.config.max_consecutive_timeouts} 次超时（每次 {timeout_minutes} 分钟），可能遇到了无法自动解决的问题。
+
+当前状态：
+- Cycle: #{self.config.loop_count}
+- 错误计数: {self.config.error_count}/{self.config.max_errors}
+- 时间: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+
+建议检查：
+1. 查看 logs/auto-loop.log 了解详细日志
+2. 查看 memories/consensus.md 了解当前任务
+3. 检查是否有测试失败或 CI 问题
+
+小弟会继续运行，但可能需要人工干预。
+
+---
+HuluChat Auto Loop
+"""
+            msg.attach(MIMEText(body, "plain", "utf-8"))
+
+            with smtplib.SMTP(smtp_host, smtp_port, timeout=30) as server:
+                server.starttls()
+                server.login(smtp_user, smtp_password)
+                server.send_message(msg)
+
+            self.logger.log("Timeout notification email sent successfully")
+        except Exception as e:
+            self.logger.log(f"Failed to send timeout email: {e}")
 
 
 def main():
