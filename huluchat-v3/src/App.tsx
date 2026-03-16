@@ -134,6 +134,9 @@ function App() {
     createNewSession,
     removeSession,
     refreshSessions,
+    hasMore: hasMoreSessions,
+    loadMoreSessions,
+    isLoadingMore: isLoadingMoreSessions,
   } = useSession();
 
   const {
@@ -487,6 +490,9 @@ function App() {
           onMoveSession={handleMoveSessionToFolder}
           isCollapsed={sidebarCollapsed}
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+          hasMore={hasMoreSessions}
+          onLoadMore={loadMoreSessions}
+          isLoadingMore={isLoadingMoreSessions}
         />
       </ErrorBoundary>
 

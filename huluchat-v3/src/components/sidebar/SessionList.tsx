@@ -87,6 +87,10 @@ export interface SessionListProps {
   onRefreshSessions?: () => void;
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
+  // Infinite scroll props
+  hasMore?: boolean;
+  onLoadMore?: () => void;
+  isLoadingMore?: boolean;
 }
 
 // Session tags state type
@@ -115,6 +119,10 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
       onRefreshSessions,
       isCollapsed = false,
       onToggleCollapse,
+      // Infinite scroll props
+      hasMore = false,
+      onLoadMore,
+      isLoadingMore = false,
     },
     ref
   ) => {
@@ -138,6 +146,21 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
   const [focusedSearchIndex, setFocusedSearchIndex] = useState<number>(-1);
   // Virtual list ref for scroll container
   const listContainerRef = useRef<HTMLDivElement>(null);
+
+  // Infinite scroll: handle scroll to load more sessions
+  const handleScroll = useCallback(
+    (e: React.UIEvent<HTMLDivElement>) => {
+      const target = e.currentTarget;
+      if (!target || !hasMore || isLoadingMore || !onLoadMore) return;
+
+      // Check if scrolled to bottom (within 100px threshold)
+      const { scrollTop, scrollHeight, clientHeight } = target;
+      if (scrollHeight - scrollTop - clientHeight < 100) {
+        onLoadMore();
+      }
+    },
+    [hasMore, isLoadingMore, onLoadMore]
+  );
 
   // Expose focusSearch method to parent
   useImperativeHandle(ref, () => ({
@@ -768,9 +791,11 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
 
       {/* Session List */}
       <div
+        ref={listContainerRef}
         className="flex-1 overflow-y-auto p-2 scrollbar-thin"
         role="list"
         aria-label={t("sidebar.chats")}
+        onScroll={handleScroll}
       >
         {isLoading || isSearching ? (
           <div className="space-y-1" aria-busy="true" aria-live="polite">
@@ -1106,6 +1131,13 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
               </div>
             )}
           </>
+        )}
+
+        {/* Load More Indicator */}
+        {isLoadingMore && (
+          <div className="py-2 flex justify-center" role="status" aria-live="polite">
+            <div className="animate-spin w-5 h-5 border-2 border-primary border-t-transparent rounded-full" />
+          </div>
         )}
       </div>
 

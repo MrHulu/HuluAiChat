@@ -12,6 +12,7 @@ export interface UseSessionReturn {
   error: string | null;
   hasMore: boolean;
   total: number;
+  isLoadingMore: boolean;
   selectSession: (id: string) => void;
   createNewSession: () => Promise<Session | null>;
   removeSession: (id: string) => Promise<void>;
@@ -28,6 +29,7 @@ export function useSession(): UseSessionReturn {
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
   const [total, setTotal] = useState(0);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const refreshSessions = useCallback(async () => {
     setIsLoading(true);
@@ -45,9 +47,9 @@ export function useSession(): UseSessionReturn {
   }, []);
 
   const loadMoreSessions = useCallback(async () => {
-    if (isLoading || !hasMore) return;
+    if (isLoadingMore || !hasMore) return;
 
-    setIsLoading(true);
+    setIsLoadingMore(true);
     setError(null);
     try {
       const data: SessionListResponse = await listSessions({
@@ -59,9 +61,9 @@ export function useSession(): UseSessionReturn {
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load more sessions");
     } finally {
-      setIsLoading(false);
+      setIsLoadingMore(false);
     }
-  }, [sessions.length, hasMore, isLoading]);
+  }, [sessions.length, hasMore, isLoadingMore]);
 
   const selectSession = useCallback(async (id: string) => {
     setIsLoading(true);
@@ -120,6 +122,7 @@ export function useSession(): UseSessionReturn {
     error,
     hasMore,
     total,
+    isLoadingMore,
     selectSession,
     createNewSession,
     removeSession,
