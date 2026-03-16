@@ -53,3 +53,9 @@ export {
   type UseUndoDeleteOptions,
   type UseUndoDeleteReturn,
 } from "./useUndoDelete";
+export {
+  useUnsavedContent,
+  type UnsavedContent,
+  type UseUnsavedContentOptions,
+  type UseUnsavedContentReturn,
+} from "./useUnsavedContent";

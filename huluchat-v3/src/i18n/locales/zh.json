@@ -600,6 +600,11 @@
     "deleteUndone": "已取消删除",
     "deleteError": "删除会话失败"
   },
+  "unsavedContent": {
+    "title": "未保存的内容",
+    "description": "您的消息中有未保存的内容。如果切换会话，这些内容将丢失。确定要继续吗？",
+    "discard": "丢弃并继续"
+  },
   "batch": {
     "enterBatchMode": "进入批量选择模式",
     "exitBatchMode": "退出批量选择模式",
