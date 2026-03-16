@@ -784,9 +784,9 @@ Boss 提供的 GLM-5 API Key 已过期（返回 401 错误）。
 - **项目**: HuluChat
 - **当前版本**: v3.72.0 ✅ 已发布
 - **下一版本**: v3.73.0 ⏳ 待规划
-- **当前周期**: Cycle #21
-- **当前状态**: ⏳ 等待 Boss 指示
-- **已完成任务计数**: 111
+- **当前周期**: Cycle #25
+- **当前状态**: ✅ 所有任务完成，邮件已发送，等待 Boss 指示
+- **已完成任务计数**: 113
 
 ---
 
@@ -980,6 +980,47 @@ Boss 提供的 GLM-5 API Key 已过期（返回 401 错误）。
 | TASK-344 | P0 | 增强会话搜索 ✅ |
 | TASK-345 | P1 | GitHub Issues 模板优化 ✅ |
 | TASK-346 | P2 | 快捷键提示优化 ✅ |
+
+---
+
+## ✅ TASK-347: 素材准备完成 ✅
+
+> **Cycle #22-23** - Boss 指令
+
+### 完成内容
+
+| 类型 | 数量 | 文件 |
+|------|------|------|
+| 截图 | 13 张 | 主界面、聊天、书签、标签、设置、主题等 |
+| 视频 | 3 个 | 快速演示 53s、功能演示 60s、使用场景 60s |
+
+### 截图清单
+
+1. `main-dark.png` - 深色主题主界面
+2. `main-light.png` - 浅色主题主界面
+3. `main-chat.png` - 聊天界面
+4. `chat-interface.png` - 聊天界面详情
+5. `chat-with-message.png` - 带消息的聊天
+6. `real-chat.png` - 真实对话
+7. `bookmark-feature.png` - 书签功能
+8. `tag-feature.png` - 标签功能
+9. `settings.png` - 设置总览
+10. `settings-api.png` - API 设置
+11. `settings-appearance.png` - 外观设置
+12. `light-theme-demo.png` - 浅色主题演示
+13. `programming-use-case.png` - 编程使用场景
+
+### 视频清单
+
+1. `quick-demo.webm` - 快速演示 (53s)
+2. `feature-demo.webm` - 功能演示 (60s)
+3. `use-case-demo.webm` - 使用场景 (60s)
+
+### 文件位置
+
+- 截图: `product-hunt/screenshots/`
+- 视频: `product-hunt/videos/`
+- 文案: `product-hunt/copy/description.md`
 
 ---
 
