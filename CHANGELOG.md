@@ -2,6 +2,64 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [3.71.0] - 2026-03-16
+
+### ⚡ Performance
+
+- **TASK-341**: SessionList Virtualization
+  - Added `useVirtualizer` for folders with >50 sessions
+  - Reduced DOM nodes from 1000 to ~20 for large lists
+  - Small lists (≤50) keep standard rendering with animations
+  - Search results keep standard rendering due to complexity
+  - Files: `src/components/SessionList.tsx`
+
+- **TASK-342**: Infinite Scroll for Session List
+  - SessionList supports `hasMore`, `onLoadMore`, `isLoadingMore` props
+  - useSession adds `isLoadingMore` state (distinct from initial load)
+  - Auto-loads more when scrolling within 100px of bottom
+  - Loading indicator shown during fetch
+  - Initial load: 50 sessions, load more on demand
+  - Files: `src/components/SessionList.tsx`, `src/hooks/useSession.ts`
+
+### 🔍 Audits
+
+- **TASK-336**: Code Audit - N+1 Queries and Memory Leaks
+  - Audited all API calls for N+1 query patterns - No high risks
+  - Checked WebSocket connection leaks - No issues
+  - Checked React component memory leaks - No high risks
+  - Checked localStorage unbounded growth - No issues
+  - Report: `docs/cto/code-audit-report-2026-03-16.md`
+  - Conclusion: Codebase well-maintained, production-ready
+
+- **TASK-337**: Performance Analysis
+  - First screen load time - Score 6/10
+  - Large session list rendering - Score 5/10 (before virtualization)
+  - Message list virtualization - Score 9/10 (already implemented)
+  - Backend API response time - Score 7/10
+  - Overall Score: 6.75/10
+
+### 💡 UX
+
+- **TASK-338**: Feature Discovery Verification
+  - Verified 8 discoverable features implemented
+  - English translations complete
+  - Chinese translations complete
+  - Privacy compliant (local storage only)
+
+- **TASK-339**: User Testing Preparation
+  - Test checklist: `docs/user-testing/v3.70.0-test-checklist.md`
+  - Feedback form: `docs/user-testing/feedback-form.md`
+  - Installation packages: v3.70.0 release
+
+### 📦 Technical
+
+- **TASK-340**: Mermaid Dynamic Import Verification
+  - Verified Mermaid already uses dynamic import
+  - Already split to separate chunk (`vendor-mermaid`)
+  - Lazy loaded only when rendering diagrams
+  - Gzip size: 689 KB (acceptable)
+  - No further optimization needed
+
 ## [3.70.0] - 2026-03-16
 
 ### 🐛 Bug Fixes
