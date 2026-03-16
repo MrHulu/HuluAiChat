@@ -169,10 +169,13 @@ test.describe('API 错误处理', () => {
 });
 
 test.describe('输入验证', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, request }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await skipWelcomeIfNeeded(page);
+
+    // 先通过 API 创建会话，确保有会话被选中
+    await ensureSessionSelected(page, request);
   });
 
   test('空消息不应该发送', async ({ page }) => {
@@ -234,10 +237,13 @@ test.describe('输入验证', () => {
 });
 
 test.describe('超时处理', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, request }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await skipWelcomeIfNeeded(page);
+
+    // 先通过 API 创建会话，确保有会话被选中
+    await ensureSessionSelected(page, request);
   });
 
   test('慢速网络应该显示加载状态', async ({ page }) => {
