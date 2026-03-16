@@ -126,6 +126,16 @@ vi.mock("@/hooks", () => ({
     isEmpty: true,
     count: 0,
   })),
+  useUndoDelete: vi.fn(() => ({
+    pendingDeletions: [],
+    requestDelete: vi.fn((id: string, _title: string) => {
+      // Immediately call removeSession for test simplicity
+      mockRemoveSession(id);
+    }),
+    undoDelete: vi.fn(),
+    executeDelete: vi.fn(),
+    clearPendingDeletions: vi.fn(),
+  })),
 }));
 
 // Mock API client

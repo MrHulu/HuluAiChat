@@ -607,7 +607,10 @@
     "json": "JSON (.json)",
     "plainText": "Plain Text (.txt)",
     "tags": "Tags",
-    "moreTags": "+{{count}} more tags"
+    "moreTags": "+{{count}} more tags",
+    "deleteToast": "\"{{title}}\" will be deleted",
+    "deleteUndone": "Deletion cancelled",
+    "deleteError": "Failed to delete session"
   },
   "batch": {
     "enterBatchMode": "Enter batch selection mode",
