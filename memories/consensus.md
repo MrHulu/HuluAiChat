@@ -782,11 +782,11 @@ Boss 提供的 GLM-5 API Key 已过期（返回 401 错误）。
 ## Company State
 
 - **项目**: HuluChat
-- **当前版本**: v3.71.0 开发中
-- **下一版本**: v3.71.0
-- **当前周期**: Cycle #16
-- **当前状态**: 🔄 v3.71.0 进行中
-- **已完成任务计数**: 96
+- **当前版本**: v3.71.0 ✅ 已发布
+- **下一版本**: v3.72.0 待规划
+- **当前周期**: Cycle #17
+- **当前状态**: ✅ v3.71.0 完成，等待下一步指示
+- **已完成任务计数**: 103
 
 ---
 
@@ -833,17 +833,117 @@ Boss 提供的 GLM-5 API Key 已过期（返回 401 错误）。
 
 ---
 
-## Next Action
-> **🔄 v3.71.0 进行中**
->
-> **已完成**: 1/2 任务
-> - ~~TASK-341: SessionList 虚拟化 [P0]~~ ✅
->
-> **待开始任务**:
-> - TASK-342: 前端分页/无限滚动 [P1]
->
-> **下一步**: 执行 TASK-342 (前端分页/无限滚动)
+## v3.71.0 发布完成 ✅
+
+**主题**: Stability & Discoverability + Performance
+**发布日期**: 2026-03-16
+**实际周期**: 3 Cycles (#15-17)
+
+### 完成任务
+
+| 任务 | 内容 | 状态 |
+|------|------|------|
+| TASK-336 | 代码审计 - N+1 查询和内存泄漏 | ✅ |
+| TASK-337 | 性能分析 | ✅ |
+| TASK-338 | 功能发现优化 | ✅ |
+| TASK-339 | 真实用户测试准备 | ✅ |
+| TASK-340 | Mermaid 动态导入优化 (验证完成) | ✅ |
+| TASK-341 | SessionList 虚拟化 | ✅ |
+| TASK-342 | 前端分页/无限滚动 | ✅ |
+
+### 性能改进
+
+| 指标 | 优化前 | 优化后 |
+|------|--------|--------|
+| SessionList DOM 节点 | 1000 | ~20 |
+| 初始加载会话数 | 全部 | 50 |
+| 滚动流畅度 | 卡顿 | 流畅 |
+
+### 技术指标
+
+- 前端测试: 1984 passed ✅
+- E2E 测试: 174 个 ✅
+- Tag: v3.71.0 ✅
+- GitHub Release: https://github.com/MrHulu/HuluAiChat/releases/tag/v3.71.0
 
 ---
 
-*更新时间: 2026-03-16 - Cycle #16 (TASK-341 完成)*
+## ✅ TASK-343: Website 文档页完成 ✅
+
+> **Cycle #17** - v3.72.0 第一个任务
+
+### 实现内容
+
+| 页面 | 路径 | 内容 |
+|------|------|------|
+| 文档主页 | `/docs` | 快速链接、帮助信息 |
+| 安装指南 | `/docs/installation` | Windows/macOS/Linux 安装说明 |
+| 快速开始 | `/docs/quick-start` | API 配置、键盘快捷键 |
+| 多模型支持 | `/docs/features/multi-model` | 支持的 AI 提供商、切换模型 |
+| RAG 知识库 | `/docs/features/rag` | 文档上传、语义搜索 |
+| QuickPanel | `/docs/features/quick-panel` | 全局快捷键、使用方法 |
+| 会话管理 | `/docs/features/sessions` | 文件夹、标签、搜索 |
+| FAQ | `/docs/faq` | 常见问题解答 |
+| 故障排除 | `/docs/troubleshooting` | 常见问题和解决方案 |
+
+### 技术细节
+
+- 使用 Next.js App Router
+- DocsLayout 共享布局组件
+- 响应式设计（移动端底部导航）
+- 深色主题与主站一致
+- SEO 优化（sitemap 更新）
+
+### 构建验证
+
+- `npm run build` 成功 ✅
+- 10 个新页面生成
+
+---
+
+## Next Action
+> **🔄 v3.72.0 进行中**
+>
+> **已完成**: 1/4 任务
+> - ~~TASK-343: Website 文档页 [P0]~~ ✅
+>
+> **待开始任务**:
+> - TASK-344: 增强会话搜索 [P0]
+> - TASK-345: GitHub Issues 模板优化 [P1]
+> - TASK-346: 快捷键提示优化 [P2]
+>
+> **下一步**: 执行 TASK-344 (增强会话搜索)
+
+---
+
+## ✅ v3.72.0 规划完成 ✅
+
+> **Cycle #17** - 3 Agent 协作决策
+
+### Agent 观点汇总
+
+| Agent | 主题 | 核心建议 |
+|-------|------|----------|
+| **CEO Bezos** | Real User Validation & Website | Website 文档页 [P0] + 用户反馈机制 [P0] |
+| **Critic Munger** | 进入观察模式 | 不添加新功能，收集真实用户反馈 |
+| **Product Norman** | Enhancement First | Enhanced Session Search [P0] + Quick Actions [P1] |
+
+### 综合决策
+
+采取**折中策略**：
+- **不添加复杂新功能**（遵循 Critic 建议）
+- **完成 Website 文档页**（遵循 CEO 建议）
+- **增强会话搜索体验**（遵循 Product 建议）
+
+### 任务列表
+
+| 任务 | 优先级 | 说明 |
+|------|--------|------|
+| TASK-343 | P0 | Website 文档页 |
+| TASK-344 | P0 | 增强会话搜索 |
+| TASK-345 | P1 | GitHub Issues 模板优化 |
+| TASK-346 | P2 | 快捷键提示优化 |
+
+---
+
+*更新时间: 2026-03-16 - Cycle #17 (v3.72.0 规划完成)*

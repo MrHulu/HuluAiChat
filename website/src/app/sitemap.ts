@@ -1,28 +1,49 @@
-import { MetadataRoute } from 'next'
+import { MetadataRoute } from 'next';
 
-export const dynamic = 'force-static'
+export const dynamic = 'force-static';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://huluchat-website.pages.dev'
+  const baseUrl = 'https://huluchat-website.pages.dev';
+  const currentDate = new Date();
 
-  return [
+  const docPages = [
+    '/docs',
+    '/docs/installation',
+    '/docs/quick-start',
+    '/docs/features/multi-model',
+    '/docs/features/rag',
+    '/docs/features/quick-panel',
+    '/docs/features/sessions',
+    '/docs/faq',
+    '/docs/troubleshooting',
+  ];
+
+  const routes: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
-      lastModified: new Date(),
+      lastModified: currentDate,
       changeFrequency: 'weekly',
       priority: 1,
     },
     {
       url: `${baseUrl}/#features`,
-      lastModified: new Date(),
+      lastModified: currentDate,
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
       url: `${baseUrl}/#download`,
-      lastModified: new Date(),
+      lastModified: currentDate,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
-  ]
+    ...docPages.map((path) => ({
+      url: `${baseUrl}${path}`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly' as const,
+      priority: 0.9,
+    })),
+  ];
+
+  return routes;
 }

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { VERSION, RELEASE_NOTES } from "@/lib/version";
 
 // JSON-LD structured data for SEO
@@ -100,6 +101,9 @@ export default function Home() {
             HuluChat
           </Link>
           <div className="flex items-center gap-6">
+            <Link href="/docs" className="text-zinc-400 hover:text-white transition-colors">
+              Docs
+            </Link>
             <Link href="https://github.com/MrHulu/HuluAiChat" target="_blank" className="text-zinc-400 hover:text-white transition-colors">
               GitHub
             </Link>
@@ -171,10 +175,48 @@ export default function Home() {
               <div className="w-3 h-3 rounded-full bg-green-500"></div>
               <span className="ml-4 text-sm text-zinc-500">HuluChat</span>
             </div>
-            <div className="aspect-video bg-zinc-900 flex items-center justify-center">
-              <div className="text-center">
-                <span className="text-6xl mb-4 block">💬</span>
-                <p className="text-zinc-500">Screenshot placeholder</p>
+            <div className="relative aspect-video bg-zinc-900">
+              <Image
+                src="/screenshots/dark-theme.png"
+                alt="HuluChat - AI Chat Desktop Application"
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* More Screenshots */}
+      <section className="px-6 pb-20">
+        <div className="max-w-5xl mx-auto">
+          <h3 className="text-2xl font-bold text-center mb-8">Beautiful in Every Mode</h3>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="rounded-xl border border-zinc-800 overflow-hidden">
+              <div className="p-3 bg-zinc-800/50 border-b border-zinc-700 text-sm text-zinc-400">
+                Dark Mode
+              </div>
+              <div className="relative aspect-[4/3] bg-zinc-900">
+                <Image
+                  src="/screenshots/dark-theme.png"
+                  alt="HuluChat Dark Mode"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            </div>
+            <div className="rounded-xl border border-zinc-800 overflow-hidden">
+              <div className="p-3 bg-zinc-800/50 border-b border-zinc-700 text-sm text-zinc-400">
+                Light Mode
+              </div>
+              <div className="relative aspect-[4/3] bg-zinc-900">
+                <Image
+                  src="/screenshots/light-theme.png"
+                  alt="HuluChat Light Mode"
+                  fill
+                  className="object-cover"
+                />
               </div>
             </div>
           </div>

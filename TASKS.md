@@ -305,6 +305,69 @@
 
 ---
 
+## 🔵 v3.72.0 - User Validation & Experience Enhancement
+
+> **决策**: 3 Agent 协作 (CEO Bezos, Critic Munger, Product Norman)
+> **主题**: 用户验证 + 体验增强
+> **日期**: 2026-03-16
+> **原因**: v3.71.0 稳定发布，需要真实用户验证和体验打磨
+
+### 核心任务
+
+- [x] **TASK-343**: 📚 Website 文档页 [P0] ✅
+  - **来源**: CEO Bezos 建议
+  - **目标**: 添加使用文档、FAQ、安装指南
+  - **完成内容**:
+    - [x] 安装指南 - `/docs/installation`
+    - [x] 快速开始教程 - `/docs/quick-start`
+    - [x] 多模型支持文档 - `/docs/features/multi-model`
+    - [x] RAG 知识库文档 - `/docs/features/rag`
+    - [x] QuickPanel 文档 - `/docs/features/quick-panel`
+    - [x] 会话管理文档 - `/docs/features/sessions`
+    - [x] 常见问题 - `/docs/faq`
+    - [x] 故障排除 - `/docs/troubleshooting`
+  - **约束**: 无用户追踪，纯静态页面 ✅
+  - **完成日期**: 2026-03-16
+  - **周期**: Cycle #17
+
+- [ ] **TASK-344**: 🔍 增强会话搜索 [P0]
+  - **来源**: Product Norman 建议
+  - **目标**: 让用户更容易找到历史会话
+  - **范围**:
+    - [ ] 支持搜索会话标题
+    - [ ] 支持按日期筛选
+    - [ ] 支持按文件夹筛选
+    - [ ] 搜索结果显示匹配位置高亮
+  - **预计工作量**: 1 cycle
+
+- [ ] **TASK-345**: 📝 GitHub Issues 模板优化 [P1]
+  - **来源**: CEO Bezos + Critic Munger 建议
+  - **目标**: 规范用户反馈收集
+  - **范围**:
+    - [ ] Bug 报告模板
+    - [ ] 功能请求模板
+    - [ ] 问题排查指南
+  - **预计工作量**: 0.5 cycle
+
+- [ ] **TASK-346**: ⌨️ 快捷键提示优化 [P2]
+  - **来源**: Product Norman 建议
+  - **目标**: 让用户更容易发现快捷键
+  - **范围**:
+    - [ ] 快捷键 Cheat Sheet (Ctrl+Shift+?)
+    - [ ] 首次使用提示
+    - [ ] Tooltip 显示快捷键
+  - **预计工作量**: 0.5 cycle
+
+### 暂缓功能 (v3.73.0)
+
+| 功能 | 原因 |
+|------|------|
+| Session Quick Actions | 需要更多用户反馈 |
+| Website SEO 优化 | 文档页优先 |
+| 后端日志优化 | 非关键路径 |
+
+---
+
 ## 🔵 v3.68.0 - Conversation Continuity
 
 > **决策**: 3 Agent 协作 (CEO Bezos, Critic Munger, Product Norman)
