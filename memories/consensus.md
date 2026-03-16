@@ -984,27 +984,42 @@ Boss 提供的 GLM-5 API Key 已过期（返回 401 错误）。
 ---
 
 ## Next Action
-> **📋 素材准备任务 - 秘书下达**
+> **✅ 素材准备任务 - 全部完成**
 >
 > **来源**: Boss 指令 - 为 Product Hunt 和官网准备完整素材
 > **时间**: 2026-03-17
+> **完成日期**: 2026-03-17
+> **周期**: Cycle #22
 >
-> **待完成**: 6/10 任务
-> - [x] ~~截取深色模式主界面~~ ✅ (秘书完成)
-> - [x] ~~截取浅色模式主界面~~ ✅ (秘书完成)
-> - [x] ~~截取设置界面 (API/外观/快捷键)~~ ✅ (秘书完成)
-> - [x] ~~同步截图到官网~~ ✅ PR #494
-> - [ ] **截取真实对话界面** - 需要配置 API Key 后进行真实对话
-> - [ ] **截取书签功能** - 展示消息书签和导出
-> - [ ] **截取标签功能** - 展示会话标签管理
-> - [ ] **录制快速演示视频** (30-60s)
-> - [ ] **录制功能演示视频** (1-2min)
-> - [ ] **录制使用场景视频** (1-2min)
+> **完成**: 10/10 任务 ✅
 >
-> **阻塞问题**: 前端 dev 服务器需要后端服务才能正常工作
-> **解决方案**: 启动 `npm run tauri dev` 或单独启动后端
+> ### 截图素材 (13 张)
+> | 文件 | 大小 | 说明 |
+> |------|------|------|
+> | real-chat.png | 48 KB | 应用主界面 |
+> | chat-interface.png | 100 KB | 聊天界面 |
+> | chat-with-message.png | 69 KB | 带消息的对话界面 |
+> | bookmark-feature.png | 72 KB | 书签功能展示 |
+> | tag-feature.png | 73 KB | 标签功能展示 |
+> | settings-api.png | 62 KB | API 设置界面 |
+> | settings-appearance.png | 59 KB | 外观设置界面 |
+> | light-theme-demo.png | 71 KB | 浅色主题演示 |
+> | programming-use-case.png | 74 KB | 编程使用场景 |
+> | main-dark.png | 51 KB | 深色模式主界面 |
+> | main-light.png | 94 KB | 浅色模式主界面 |
+> | main-chat.png | 91 KB | 主聊天界面 |
+> | settings.png | 65 KB | 设置界面 |
 >
-> **API Key 可用**: GLM-5 (智谱 AI)
+> ### 视频素材 (3 个)
+> | 文件 | 大小 | 时长 | 说明 |
+> |------|------|------|------|
+> | quick-demo.webm | 2.8 MB | ~53s | 快速演示视频 |
+> | feature-demo.webm | 2.2 MB | ~60s | 功能演示视频 |
+> | use-case-demo.webm | 2.0 MB | ~60s | 使用场景视频 |
+>
+> **文件位置**: `product-hunt/screenshots/`, `product-hunt/videos/`
+>
+> **⚠️ 下一步**: 等待 Boss 指示
 
 ---
 
