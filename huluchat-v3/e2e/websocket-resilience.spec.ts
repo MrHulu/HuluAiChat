@@ -49,6 +49,30 @@ async function goOnline(page: Page) {
   await context.setOffline(false);
 }
 
+// 辅助函数：确保有选中的会话（通过 UI 创建并选中）
+async function ensureSessionSelected(page: Page) {
+  // 点击 "New Chat" 按钮创建并选中一个新会话
+  const newChatButton = page.getByRole('button', { name: /new|新建/i })
+    .or(page.locator('button').filter({ has: page.locator('svg') }).first());
+
+  if (await newChatButton.first().isVisible({ timeout: 2000 }).catch(() => false)) {
+    await newChatButton.first().click({ force: true });
+    await page.waitForTimeout(500);
+  }
+
+  // 等待 textarea 变为可用
+  const inputArea = page.locator('textarea').or(page.locator('[contenteditable="true"]'));
+  await inputArea.first().waitFor({ state: 'visible', timeout: 5000 });
+
+  // 验证 textarea 不是 disabled 状态
+  const isDisabled = await inputArea.first().isDisabled();
+  if (isDisabled) {
+    // 如果还是 disabled，再点击一次新建按钮
+    await newChatButton.first().click({ force: true });
+    await page.waitForTimeout(500);
+  }
+}
+
 test.describe('WebSocket 连接状态', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
@@ -184,11 +208,8 @@ test.describe('断连期间消息排队', () => {
     await page.waitForLoadState('networkidle');
     await skipWelcomeIfNeeded(page);
 
-    // 先通过 API 创建会话，确保有会话被选中
-    await createTestSession(request);
-    await page.reload();
-    await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(500);
+    // 通过 UI 创建并选中一个会话
+    await ensureSessionSelected(page);
 
     const inputArea = page.locator('textarea').or(page.locator('[contenteditable="true"]'));
 
@@ -216,11 +237,8 @@ test.describe('断连期间消息排队', () => {
     await page.waitForLoadState('networkidle');
     await skipWelcomeIfNeeded(page);
 
-    // 先通过 API 创建会话，确保有会话被选中
-    await createTestSession(request);
-    await page.reload();
-    await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(500);
+    // 通过 UI 创建并选中一个会话
+    await ensureSessionSelected(page);
 
     // 模拟网络中断
     await goOffline(page);
@@ -295,6 +313,9 @@ test.describe('连接状态 UI 反馈', () => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await skipWelcomeIfNeeded(page);
+
+    // 通过 UI 创建并选中一个会话
+    await ensureSessionSelected(page);
   });
 
   test('连接中应该显示加载状态', async ({ page }) => {
@@ -312,12 +333,6 @@ test.describe('连接状态 UI 反馈', () => {
   });
 
   test('连接失败应该显示错误', async ({ page, request }) => {
-    // 先通过 API 创建会话，确保有会话被选中
-    await createTestSession(request);
-    await page.reload();
-    await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(500);
-
     // 模拟后端不可用
     await goOffline(page);
     await page.waitForTimeout(3000);
@@ -334,10 +349,6 @@ test.describe('连接状态 UI 反馈', () => {
   });
 
   test('重连进度应该显示给用户', async ({ page }) => {
-    await page.goto('/');
-    await page.waitForLoadState('networkidle');
-    await skipWelcomeIfNeeded(page);
-
     // 模拟断连
     await goOffline(page);
     await page.waitForTimeout(1000);

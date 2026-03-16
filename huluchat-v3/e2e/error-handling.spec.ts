@@ -34,12 +34,28 @@ async function createTestSession(request: APIRequestContext, title?: string) {
   return response;
 }
 
-// 辅助函数：确保有会话被选中
-async function ensureSessionSelected(page: Page, request: APIRequestContext) {
-  await createTestSession(request, 'Error Test Session');
-  await page.reload();
-  await page.waitForLoadState('networkidle');
-  await page.waitForTimeout(500);
+// 辅助函数：确保有会话被选中（通过 UI 创建）
+async function ensureSessionSelected(page: Page) {
+  // 点击 "New Chat" 按钮创建并选中一个新会话
+  const newChatButton = page.getByRole('button', { name: /new|新建/i })
+    .or(page.locator('button').filter({ has: page.locator('svg') }).first());
+
+  if (await newChatButton.first().isVisible({ timeout: 2000 }).catch(() => false)) {
+    await newChatButton.first().click({ force: true });
+    await page.waitForTimeout(500);
+  }
+
+  // 等待 textarea 变为可用
+  const inputArea = page.locator('textarea').or(page.locator('[contenteditable="true"]'));
+  await inputArea.first().waitFor({ state: 'visible', timeout: 5000 });
+
+  // 验证 textarea 不是 disabled 状态
+  const isDisabled = await inputArea.first().isDisabled();
+  if (isDisabled) {
+    // 如果还是 disabled，再点击一次新建按钮
+    await newChatButton.first().click({ force: true });
+    await page.waitForTimeout(500);
+  }
 }
 
 // 辅助函数：模拟网络离线
@@ -61,8 +77,8 @@ test.describe('后端不可用场景', () => {
     await skipWelcomeIfNeeded(page);
 
     // 查找连接状态指示器
-    // 即使后端不可用，UI 应该能正常渲染
-    const app = page.locator('#root').or(page.locator('body'));
+    // 即使后端不可用，UI 应该能正常渲染 - 使用 .first() 避免 strict mode
+    const app = page.locator('#root').first();
     await expect(app).toBeVisible();
   });
 
@@ -84,13 +100,13 @@ test.describe('后端不可用场景', () => {
     await expect(inputArea.first()).toBeVisible();
   });
 
-  test('离线时发送消息应该排队', async ({ page, request }) => {
+  test('离线时发送消息应该排队', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await skipWelcomeIfNeeded(page);
 
-    // 先创建会话
-    await ensureSessionSelected(page, request);
+    // 通过 UI 创建并选中一个会话
+    await ensureSessionSelected(page);
 
     // 模拟网络中断
     await goOffline(page);
@@ -169,13 +185,13 @@ test.describe('API 错误处理', () => {
 });
 
 test.describe('输入验证', () => {
-  test.beforeEach(async ({ page, request }) => {
+  test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await skipWelcomeIfNeeded(page);
 
-    // 先通过 API 创建会话，确保有会话被选中
-    await ensureSessionSelected(page, request);
+    // 通过 UI 创建并选中一个会话
+    await ensureSessionSelected(page);
   });
 
   test('空消息不应该发送', async ({ page }) => {
@@ -237,13 +253,13 @@ test.describe('输入验证', () => {
 });
 
 test.describe('超时处理', () => {
-  test.beforeEach(async ({ page, request }) => {
+  test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await skipWelcomeIfNeeded(page);
 
-    // 先通过 API 创建会话，确保有会话被选中
-    await ensureSessionSelected(page, request);
+    // 通过 UI 创建并选中一个会话
+    await ensureSessionSelected(page);
   });
 
   test('慢速网络应该显示加载状态', async ({ page }) => {
