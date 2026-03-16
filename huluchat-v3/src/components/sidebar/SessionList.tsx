@@ -3,6 +3,7 @@
  * 会话列表侧边栏，支持文件夹分组、标签筛选和批量操作
  */
 import { useState, useMemo, useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { useTranslation } from "react-i18next";
 import {
   PanelLeftClose,
@@ -59,6 +60,16 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
+
+/**
+ * 估算会话项高度
+ * 用于虚拟列表的初始高度估算
+ * SessionItem 组件高度通常是固定的，约为 48-72px
+ */
+function estimateSessionItemHeight(): number {
+  // 使用固定高度估算，SessionItem 组件高度通常在 48-72px 之间
+  return 60;
+}
 
 export interface SessionListProps {
   sessions: Session[];
@@ -125,6 +136,8 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [focusedSearchIndex, setFocusedSearchIndex] = useState<number>(-1);
+  // Virtual list ref for scroll container
+  const listContainerRef = useRef<HTMLDivElement>(null);
 
   // Expose focusSearch method to parent
   useImperativeHandle(ref, () => ({
@@ -439,6 +452,20 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
 
     return result;
   }, [sessions, sessionsByFolder, searchResults, activeFolderFilter, selectedFilterTags, sessionTags]);
+
+  // Virtual list for selected folder view (simple list without grouping)
+  // Search results are handled separately due to matchedMessages complexity
+  const shouldUseVirtualization = useMemo(() => {
+    // Only use virtualization for selected folder view with many sessions
+    return activeFolderFilter !== null && displaySessions.length > 50;
+  }, [activeFolderFilter, displaySessions.length]);
+
+  const virtualizer = useVirtualizer({
+    count: shouldUseVirtualization ? displaySessions.length : 0,
+    getScrollElement: () => listContainerRef.current,
+    estimateSize: useCallback(() => estimateSessionItemHeight(), []),
+    overscan: 10, // Pre-render 10 items for smooth scrolling
+  });
 
   // Select all visible sessions
   const selectAllVisible = useCallback(() => {
@@ -996,29 +1023,85 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
                   <ArrowLeft className="w-3 h-3 transition-transform duration-200 ease-out group-hover/back:-translate-x-0.5" aria-hidden="true" />
                   {t("sidebar.backToAll")}
                 </button>
-                <div className="space-y-1 mt-1" role="list">
-                  {(sessionsByFolder[activeFolderFilter] || []).map((session, index) => (
+                {/* Session list container */}
+                <div
+                  ref={listContainerRef}
+                  className="mt-1"
+                  role="list"
+                  style={shouldUseVirtualization ? {
+                    height: "400px",
+                    overflow: "auto",
+                  } : undefined}
+                >
+                  {shouldUseVirtualization ? (
+                    // Virtualized rendering for large lists (>50 sessions)
                     <div
-                      key={session.id}
-                      className="animate-list-enter"
-                      style={{ animationDelay: `${index * 50}ms` }}
+                      style={{
+                        height: `${virtualizer.getTotalSize()}px`,
+                        width: "100%",
+                        position: "relative",
+                      }}
                     >
-                      <SessionItem
-                        session={session}
-                        folders={folders}
-                        isActive={session.id === currentSessionId}
-                        onClick={() => onSelectSession(session.id)}
-                        onDelete={() => onDeleteSession(session.id)}
-                        onExport={onExportSession}
-                        onMoveToFolder={handleMoveSession}
-                        tags={sessionTags[session.id] || []}
-                        onTagClick={handleTagClick}
-                        isBatchMode={isBatchMode}
-                        isSelected={selectedSessionIds.has(session.id)}
-                        onToggleSelection={() => toggleSessionSelection(session.id)}
-                      />
+                      {virtualizer.getVirtualItems().map((virtualItem) => {
+                        const session = displaySessions[virtualItem.index];
+                        return (
+                          <div
+                            key={session.id}
+                            data-index={virtualItem.index}
+                            ref={virtualizer.measureElement}
+                            style={{
+                              position: "absolute",
+                              top: 0,
+                              left: 0,
+                              width: "100%",
+                              transform: `translateY(${virtualItem.start}px)`,
+                            }}
+                          >
+                            <SessionItem
+                              session={session}
+                              folders={folders}
+                              isActive={session.id === currentSessionId}
+                              onClick={() => onSelectSession(session.id)}
+                              onDelete={() => onDeleteSession(session.id)}
+                              onExport={onExportSession}
+                              onMoveToFolder={handleMoveSession}
+                              tags={sessionTags[session.id] || []}
+                              onTagClick={handleTagClick}
+                              isBatchMode={isBatchMode}
+                              isSelected={selectedSessionIds.has(session.id)}
+                              onToggleSelection={() => toggleSessionSelection(session.id)}
+                            />
+                          </div>
+                        );
+                      })}
                     </div>
-                  ))}
+                  ) : (
+                    // Standard rendering for small lists (<=50 sessions)
+                    <div className="space-y-1" role="list">
+                      {displaySessions.map((session, index) => (
+                        <div
+                          key={session.id}
+                          className="animate-list-enter"
+                          style={{ animationDelay: `${index * 50}ms` }}
+                        >
+                          <SessionItem
+                            session={session}
+                            folders={folders}
+                            isActive={session.id === currentSessionId}
+                            onClick={() => onSelectSession(session.id)}
+                            onDelete={() => onDeleteSession(session.id)}
+                            onExport={onExportSession}
+                            onMoveToFolder={handleMoveSession}
+                            tags={sessionTags[session.id] || []}
+                            onTagClick={handleTagClick}
+                            isBatchMode={isBatchMode}
+                            isSelected={selectedSessionIds.has(session.id)}
+                            onToggleSelection={() => toggleSessionSelection(session.id)}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
