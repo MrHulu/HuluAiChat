@@ -1,6 +1,31 @@
 # Auto Company Consensus
 
-> 最后更新: 2026-03-14
+> 最后更新: 2026-03-16
+
+---
+
+## ✅ v3.70.0 发布完成 ✅
+
+> **Cycle #26** - PyInstaller 打包修复 + E2E 测试稳定性
+
+### 完成任务
+
+| 任务 | 内容 | 状态 |
+|------|------|------|
+| TASK-332 | 修复 CI PyInstaller 打包缺失 hidden imports | ✅ |
+
+### 修复内容
+
+| 问题 | 解决方案 |
+|------|----------|
+| `ModuleNotFoundError: No module named 'aiosqlite'` | PR #471 添加 `--hidden-import` 参数 |
+| 安装版 sidecar 启动崩溃 | 覆盖所有 4 个平台的构建 |
+
+### 技术指标
+
+- **PR**: #471 ✅ 已合并
+- **GitHub Release**: https://github.com/MrHulu/HuluAiChat/releases/tag/v3.70.0
+- **版本**: 3.70.0
 
 ---
 
@@ -702,47 +727,32 @@ Boss 提供的 GLM-5 API Key 已过期（返回 401 错误）。
 ## Company State
 
 - **项目**: HuluChat
-- **当前版本**: v3.67.0 ✅ **已发布**
-- **下一版本**: v3.68.0 (Conversation Continuity)
-- **当前周期**: Cycle #25
-- **当前状态**: ✅ v3.68.0 所有任务完成，准备发布
-- **已完成任务计数**: 92
-- **待开始任务**: 无 (v3.68.0 完成)
+- **当前版本**: v3.70.0 ✅ **已发布**
+- **下一版本**: v3.71.0 (待规划)
+- **当前周期**: Cycle #26
+- **当前状态**: ✅ v3.70.0 已发布
+- **已完成任务计数**: 93
+- **待开始任务**:
+  - TASK-333: 后端 Sessions API 添加分页 [P1]
+  - TASK-334: 修复 Tags 加载 N+1 查询问题 [P1]
+  - TASK-335: 排查并修复空会话批量创建问题 [P2]
 
 ---
 
 ## Next Action
-> **✅ TASK-327 完成**
+> **✅ v3.70.0 发布完成**
 >
-> **已完成**: E2E 测试扩展
-> - 新增 50 个测试 (124 -> 174)
-> - 覆盖 Session Templates, Context Recovery, Export
-> - PR: #466
+> **已完成**: TASK-332 修复 CI PyInstaller 打包
+> - PR #471 已合并
+> - GitHub Release v3.70.0 已发布
 >
-> **v3.68.0 进度**: 3/3 任务完成 ✅
+> **待开始任务 (v3.70.0 剩余)**:
+> - TASK-333: 后端 Sessions API 添加分页 [P1]
+> - TASK-334: 修复 Tags 加载 N+1 查询问题 [P1]
+> - TASK-335: 排查并修复空会话批量创建问题 [P2]
 >
-> **已完成任务**:
-> - ~~TASK-325: Session Templates 代码审计~~ ✅
-> - ~~TASK-326: Context Recovery 草稿自动保存~~ ✅
-> - ~~TASK-327: E2E 测试扩展~~ ✅
->
-> **下一步**: 发布 v3.68.0
-> - 更新版本号
-> - 创建 git tag
-> - 推送 tag 触发 GitHub Actions
-> - TemplateSelector: 添加重试按钮，错误处理增强
-> - session_templates.py: JSON 解析日志
-> - 国际化: 内置模板翻译 (en/zh)
-> - Bug 修复: en.json 重复 key，>
-> **PR**: #464 ✅ 已合并
->
-> **v3.68.0 进度**: 1/3 任务完成
->
-> **下一步**: 执行 TASK-326 (Context Recovery 草稿自动保存)
-> - 草稿自动保存 (每 30 秒)
-> - 启动时检测未完成会话
-> - 恢复提示 UI
+> **下一步**: 执行 TASK-333 (后端 Sessions API 添加分页)
 
 ---
 
-*更新时间: 2026-03-14 - Cycle #23 (v3.68.0 TASK-325 完成)*
+*更新时间: 2026-03-16 - Cycle #26 (v3.70.0 发布完成)*
