@@ -784,7 +784,7 @@ Boss 提供的 GLM-5 API Key 已过期（返回 401 错误）。
 - **项目**: HuluChat
 - **当前版本**: v3.72.0 ✅ 已发布
 - **下一版本**: v3.73.0 ⏳ 待规划
-- **当前周期**: Cycle #23
+- **当前周期**: Cycle #24
 - **当前状态**: ✅ 所有任务完成，等待 Boss 指示
 - **已完成任务计数**: 112
 
@@ -983,54 +983,59 @@ Boss 提供的 GLM-5 API Key 已过期（返回 401 错误）。
 
 ---
 
-## ✅ Cycle #23 完成 - PR 清理 + Website 更新
+## ✅ TASK-347: 素材准备完成 ✅
 
-> **完成时间**: 2026-03-17
-> **任务类型**: 维护任务
+> **Cycle #22-23** - Boss 指令
 
 ### 完成内容
 
-1. **PR 清理**
-   - 关闭过时 PR: #475, #490, #492, #494, #496
-   - 原因: 版本已发布，PR 已过时
+| 类型 | 数量 | 文件 |
+|------|------|------|
+| 截图 | 13 张 | 主界面、聊天、书签、标签、设置、主题等 |
+| 视频 | 3 个 | 快速演示 53s、功能演示 60s、使用场景 60s |
 
-2. **Website 更新** (PR #498)
-   - 版本号: 3.69.0 → 3.72.0
-   - 新增截图: bookmark-feature.png, tag-feature.png, chat-interface.png
-   - 更新截图: main-dark.png, main-light.png, main-chat.png, settings.png
+### 截图清单
 
-### 素材准备状态
+1. `main-dark.png` - 深色主题主界面
+2. `main-light.png` - 浅色主题主界面
+3. `main-chat.png` - 聊天界面
+4. `chat-interface.png` - 聊天界面详情
+5. `chat-with-message.png` - 带消息的聊天
+6. `real-chat.png` - 真实对话
+7. `bookmark-feature.png` - 书签功能
+8. `tag-feature.png` - 标签功能
+9. `settings.png` - 设置总览
+10. `settings-api.png` - API 设置
+11. `settings-appearance.png` - 外观设置
+12. `light-theme-demo.png` - 浅色主题演示
+13. `programming-use-case.png` - 编程使用场景
 
-| 素材类型 | 数量 | 状态 |
-|----------|------|------|
-| 截图 | 13 张 | ✅ 完成 |
-| 视频 | 3 个 | ✅ 完成 |
+### 视频清单
 
-**文件位置**:
-- `product-hunt/screenshots/` - 13 张截图
-- `product-hunt/videos/` - 3 个视频 (quick-demo, feature-demo, use-case-demo)
+1. `quick-demo.webm` - 快速演示 (53s)
+2. `feature-demo.webm` - 功能演示 (60s)
+3. `use-case-demo.webm` - 使用场景 (60s)
 
-### 当前状态
+### 文件位置
 
-- **所有短期任务已完成** ✅
-- **Website 已更新到 v3.72.0** ✅
-- **素材已准备完毕** ✅
+- 截图: `product-hunt/screenshots/`
+- 视频: `product-hunt/videos/`
+- 文案: `product-hunt/copy/description.md`
 
 ---
 
 ## Next Action
-> **✅ 所有任务完成 - 等待 Boss 指示**
+> **📋 v3.73.0 规划**
 >
-> **当前版本**: v3.72.0 ✅ 已发布
-> **Website 版本**: v3.72.0 ✅ 已同步
-> **素材准备**: 13 截图 + 3 视频 ✅
+> **当前状态**: v3.72.0 已发布，所有任务完成
+> **下一步**: 规划 v3.73.0 版本
 >
-> **下一步选项**:
-> - A. 规划 v3.73.0
-> - B. Product Hunt 发布准备
-> - C. 执行长期任务
+> **v3.73.0 方向选项**:
+> - A. Product Hunt 发布准备 (营销素材已就绪)
+> - B. 用户反馈收集机制
+> - C. 功能优化 (基于 v3.72.0 用户反馈)
 >
-> 📧 等待 Boss 决策
+> **需要 Boss 确认**: 下一步方向
 
 ---
 
@@ -1064,4 +1069,4 @@ Boss 提供的 GLM-5 API Key 已过期（返回 401 错误）。
 
 ---
 
-*更新时间: 2026-03-17 - Cycle #23 (PR 清理 + Website 更新完成，所有任务完成)*
+*更新时间: 2026-03-17 - Cycle #24 (v3.72.0 发布完成，素材准备完成，等待 Boss 指示)*
