@@ -314,16 +314,21 @@
 
 ### 核心任务
 
-- [ ] **TASK-343**: 📚 Website 文档页 [P0]
+- [x] **TASK-343**: 📚 Website 文档页 [P0] ✅
   - **来源**: CEO Bezos 建议
   - **目标**: 添加使用文档、FAQ、安装指南
-  - **范围**:
-    - [ ] 安装指南 (Windows/macOS/Linux)
-    - [ ] 快速开始教程
-    - [ ] 核心功能文档 (多模型、RAG、QuickPanel)
-    - [ ] 常见问题 FAQ
-  - **约束**: 无用户追踪，纯静态页面
-  - **预计工作量**: 1-2 cycles
+  - **完成内容**:
+    - [x] 安装指南 - `/docs/installation`
+    - [x] 快速开始教程 - `/docs/quick-start`
+    - [x] 多模型支持文档 - `/docs/features/multi-model`
+    - [x] RAG 知识库文档 - `/docs/features/rag`
+    - [x] QuickPanel 文档 - `/docs/features/quick-panel`
+    - [x] 会话管理文档 - `/docs/features/sessions`
+    - [x] 常见问题 - `/docs/faq`
+    - [x] 故障排除 - `/docs/troubleshooting`
+  - **约束**: 无用户追踪，纯静态页面 ✅
+  - **完成日期**: 2026-03-16
+  - **周期**: Cycle #17
 
 - [ ] **TASK-344**: 🔍 增强会话搜索 [P0]
   - **来源**: Product Norman 建议

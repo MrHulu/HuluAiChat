@@ -868,18 +868,51 @@ Boss 提供的 GLM-5 API Key 已过期（返回 401 错误）。
 
 ---
 
+## ✅ TASK-343: Website 文档页完成 ✅
+
+> **Cycle #17** - v3.72.0 第一个任务
+
+### 实现内容
+
+| 页面 | 路径 | 内容 |
+|------|------|------|
+| 文档主页 | `/docs` | 快速链接、帮助信息 |
+| 安装指南 | `/docs/installation` | Windows/macOS/Linux 安装说明 |
+| 快速开始 | `/docs/quick-start` | API 配置、键盘快捷键 |
+| 多模型支持 | `/docs/features/multi-model` | 支持的 AI 提供商、切换模型 |
+| RAG 知识库 | `/docs/features/rag` | 文档上传、语义搜索 |
+| QuickPanel | `/docs/features/quick-panel` | 全局快捷键、使用方法 |
+| 会话管理 | `/docs/features/sessions` | 文件夹、标签、搜索 |
+| FAQ | `/docs/faq` | 常见问题解答 |
+| 故障排除 | `/docs/troubleshooting` | 常见问题和解决方案 |
+
+### 技术细节
+
+- 使用 Next.js App Router
+- DocsLayout 共享布局组件
+- 响应式设计（移动端底部导航）
+- 深色主题与主站一致
+- SEO 优化（sitemap 更新）
+
+### 构建验证
+
+- `npm run build` 成功 ✅
+- 10 个新页面生成
+
+---
+
 ## Next Action
-> **🔄 v3.72.0 规划完成**
+> **🔄 v3.72.0 进行中**
 >
-> **主题**: User Validation & Experience Enhancement
+> **已完成**: 1/4 任务
+> - ~~TASK-343: Website 文档页 [P0]~~ ✅
 >
 > **待开始任务**:
-> - TASK-343: Website 文档页 [P0]
 > - TASK-344: 增强会话搜索 [P0]
 > - TASK-345: GitHub Issues 模板优化 [P1]
 > - TASK-346: 快捷键提示优化 [P2]
 >
-> **下一步**: 执行 TASK-343 (Website 文档页)
+> **下一步**: 执行 TASK-344 (增强会话搜索)
 
 ---
 
