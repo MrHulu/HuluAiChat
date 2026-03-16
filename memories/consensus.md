@@ -609,18 +609,14 @@ Boss 提供的 GLM-5 API Key 已过期（返回 401 错误）。
 ---
 
 ## Next Action
-> **✅ Cycle #29 - v3.73.0 所有任务完成**
+> **⏳ Cycle #30 - 等待 v3.73.0 Release 构建**
 >
-> **已完成**: TASK-348 Beta 测试准备
-> - Beta 测试邀请模板（邮件/微信/Twitter）
-> - v3.73.0 测试清单（含新功能测试）
-> - 反馈表（含新功能评价）
-> - 测试用户跟踪表
-> - 快速开始指南
+> **当前状态**:
+> - v3.73.0 所有任务完成 ✅ (5/5)
+> - v3.73.0 tag 已创建 ✅
+> - Release CI 正在构建 ⏳ (预计 12-15 分钟)
 >
-> **v3.73.0 进度**: 5/5 任务完成 ✅
->
-> **所有任务**:
+> **已完成任务**:
 > - ~~TASK-349: 消息状态指示器 [P0]~~ ✅
 > - ~~TASK-350: 会话删除撤销 [P0]~~ ✅
 > - ~~TASK-351: 输入内容丢失警告 [P1]~~ ✅
@@ -628,16 +624,18 @@ Boss 提供的 GLM-5 API Key 已过期（返回 401 错误）。
 > - ~~TASK-348: Beta 测试准备 [P0]~~ ✅
 >
 > **下一步行动**:
-> 1. **发布 v3.73.0** - 更新版本号、创建 tag、推送触发 CI
-> 2. **发送 Beta 测试邀请** - 使用 `docs/beta-testing/invitation-template.md`
-> 3. **收集反馈** - 等待 1-2 周收集用户反馈
-> 4. **根据反馈规划 v3.74.0**
+> 1. ⏳ **等待 Release 构建完成** - GitHub Actions 正在运行
+> 2. ✅ **验证 Release** - 确认 4 个平台安装包都已上传
+> 3. 📧 **发送邮件给 Boss** - 告知 v3.73.0 已发布
+> 4. 🧪 **Boss 执行 Beta 测试邀请** - 使用 `docs/beta-testing/invitation-template.md`
 >
-> **等待**: Boss 决策下一步方向
-> - ~~TASK-352: API Key 即时验证反馈 [P1]~~ ✅
-> - TASK-348: Beta 测试准备 [P0]
->
-> **下一步**: 执行 TASK-348 (Beta 测试准备)
+> **Beta 测试文档已就绪**:
+> - `docs/beta-testing/README.md` - 项目概述
+> - `docs/beta-testing/invitation-template.md` - 邀请模板
+> - `docs/beta-testing/test-checklist.md` - 测试清单
+> - `docs/beta-testing/feedback-form.md` - 反馈表
+> - `docs/beta-testing/tester-tracking.md` - 测试用户跟踪
+> - `docs/beta-testing/quick-start.md` - 快速开始指南
 
 ---
 
@@ -925,11 +923,11 @@ Boss 提供的 GLM-5 API Key 已过期（返回 401 错误）。
 ## Company State
 
 - **项目**: HuluChat
-- **当前版本**: v3.73.0 ✅ 开发完成
-- **下一版本**: v3.73.0 ⏳ 待发布
-- **当前周期**: Cycle #29
-- **当前状态**: ✅ v3.73.0 所有任务完成，Beta 测试准备就绪
-- **已完成任务计数**: 116
+- **当前版本**: v3.73.0 ⏳ Release 构建中
+- **下一版本**: v3.74.0 (待规划)
+- **当前周期**: Cycle #30
+- **当前状态**: ⏳ 等待 v3.73.0 Release 构建完成
+- **已完成任务计数**: 121
 
 ---
 
