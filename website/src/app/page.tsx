@@ -101,6 +101,9 @@ export default function Home() {
             HuluChat
           </Link>
           <div className="flex items-center gap-6">
+            <Link href="/docs" className="text-zinc-400 hover:text-white transition-colors">
+              Docs
+            </Link>
             <Link href="https://github.com/MrHulu/HuluAiChat" target="_blank" className="text-zinc-400 hover:text-white transition-colors">
               GitHub
             </Link>
