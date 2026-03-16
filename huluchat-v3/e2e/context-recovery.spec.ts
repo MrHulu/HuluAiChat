@@ -164,7 +164,7 @@ test.describe('Draft Recovery Dialog UI', () => {
     }).first();
 
     if (await dismissButton.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await dismissButton.click();
+      await dismissButton.click({ force: true });
       await page.waitForTimeout(300);
 
       const drafts = await getCurrentDrafts(page);

@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect, Page, APIRequestContext } from '@playwright/test';
 
 /**
  * HuluChat E2E 测试 - 错误处理场景 (TASK-322)
@@ -11,13 +11,35 @@ import { test, expect, Page } from '@playwright/test';
  * 5. 超时处理
  */
 
+const TEST_CONFIG = {
+  backendUrl: 'http://localhost:8765',
+  apiTimeout: 30000,
+};
+
 // 辅助函数：跳过欢迎引导
 async function skipWelcomeIfNeeded(page: Page) {
   const skipButton = page.locator('button:has-text("Skip")');
   if (await skipButton.isVisible({ timeout: 2000 }).catch(() => false)) {
-    await skipButton.click();
+    await skipButton.click({ force: true });
     await page.waitForTimeout(500);
   }
+}
+
+// 辅助函数：创建测试会话
+async function createTestSession(request: APIRequestContext, title?: string) {
+  const response = await request.post(`${TEST_CONFIG.backendUrl}/api/sessions`, {
+    data: { title: title || `Error Handling Test ${Date.now()}` },
+    timeout: TEST_CONFIG.apiTimeout,
+  });
+  return response;
+}
+
+// 辅助函数：确保有会话被选中
+async function ensureSessionSelected(page: Page, request: APIRequestContext) {
+  await createTestSession(request, 'Error Test Session');
+  await page.reload();
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(500);
 }
 
 // 辅助函数：模拟网络离线
@@ -62,10 +84,13 @@ test.describe('后端不可用场景', () => {
     await expect(inputArea.first()).toBeVisible();
   });
 
-  test('离线时发送消息应该排队', async ({ page }) => {
+  test('离线时发送消息应该排队', async ({ page, request }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await skipWelcomeIfNeeded(page);
+
+    // 先创建会话
+    await ensureSessionSelected(page, request);
 
     // 模拟网络中断
     await goOffline(page);
