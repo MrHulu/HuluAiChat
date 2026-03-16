@@ -67,21 +67,57 @@ class SessionSearchResult(BaseModel):
     match_type: str  # 'title' or 'content' or 'both'
 
 
-@router.get("/", response_model=List[SessionResponse])
+class SessionListResponse(BaseModel):
+    """Paginated session list response"""
+    sessions: List[SessionResponse]
+    total: int
+    limit: int
+    offset: int
+    has_more: bool
+
+
+@router.get("/", response_model=SessionListResponse)
 async def list_sessions(
     folder_id: Optional[str] = Query(None, description="Filter by folder ID"),
     source: Optional[str] = Query(None, description="Filter by session source (main/quickpanel)"),
+    limit: int = Query(50, ge=1, le=200, description="Number of sessions to return"),
+    offset: int = Query(0, ge=0, description="Number of sessions to skip"),
     db: AsyncSession = Depends(get_db_session)
 ):
-    """List all sessions, optionally filtered by folder and source"""
-    query = select(SessionModel).order_by(SessionModel.updated_at.desc())
+    """List sessions with pagination, optionally filtered by folder and source.
+
+    Default pagination: 50 sessions per page.
+    Use limit and offset parameters for infinite scroll or load more patterns.
+    """
+    from sqlalchemy import func
+
+    # Build base query with filters
+    base_query = select(SessionModel)
+    count_query = select(func.count(SessionModel.id))
+
     if folder_id is not None:
-        query = query.where(SessionModel.folder_id == folder_id)
+        base_query = base_query.where(SessionModel.folder_id == folder_id)
+        count_query = count_query.where(SessionModel.folder_id == folder_id)
     if source is not None:
-        query = query.where(SessionModel.source == source)
+        base_query = base_query.where(SessionModel.source == source)
+        count_query = count_query.where(SessionModel.source == source)
+
+    # Get total count
+    total_result = await db.execute(count_query)
+    total = total_result.scalar() or 0
+
+    # Get paginated sessions
+    query = base_query.order_by(SessionModel.updated_at.desc()).offset(offset).limit(limit)
     result = await db.execute(query)
     sessions = result.scalars().all()
-    return sessions
+
+    return SessionListResponse(
+        sessions=[SessionResponse.model_validate(s) for s in sessions],
+        total=total,
+        limit=limit,
+        offset=offset,
+        has_more=(offset + len(sessions)) < total
+    )
 
 
 @router.get("/search/", response_model=List[SessionSearchResult])

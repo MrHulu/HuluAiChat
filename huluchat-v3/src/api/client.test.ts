@@ -80,20 +80,28 @@ describe("API Client", () => {
 
   describe("Session APIs", () => {
     describe("listSessions", () => {
-      it("should fetch all sessions", async () => {
+      it("should fetch all sessions with pagination", async () => {
         const mockSessions = [
-          { id: "1", title: "Session 1", folder_id: null, created_at: "2024-01-01", updated_at: "2024-01-01" },
-          { id: "2", title: "Session 2", folder_id: "folder-1", created_at: "2024-01-02", updated_at: "2024-01-02" },
+          { id: "1", title: "Session 1", folder_id: null, source: "main", created_at: "2024-01-01", updated_at: "2024-01-01" },
+          { id: "2", title: "Session 2", folder_id: "folder-1", source: "main", created_at: "2024-01-02", updated_at: "2024-01-02" },
         ];
+        const mockResponse = {
+          sessions: mockSessions,
+          total: 2,
+          limit: 50,
+          offset: 0,
+          has_more: false,
+        };
         mockFetch.mockResolvedValueOnce({
-          json: () => Promise.resolve(mockSessions),
+          json: () => Promise.resolve(mockResponse),
         });
 
         const result = await listSessions();
 
-        // listSessions() without source parameter returns all sessions
+        // listSessions() returns paginated response
         expect(mockFetch).toHaveBeenCalledWith("http://127.0.0.1:8765/api/sessions/?");
-        expect(result).toEqual(mockSessions);
+        expect(result).toEqual(mockResponse);
+        expect(result.sessions).toEqual(mockSessions);
       });
     });
 
@@ -252,7 +260,7 @@ describe("API Client", () => {
     describe("updateSettings", () => {
       it("should update settings with POST request", async () => {
         const mockUpdatedSettings = {
-          openai_api_key: "sk-test",
+          openai_api_key: "sk-test", // pragma: allowlist secret
           openai_base_url: null,
           openai_model: "gpt-4",
           has_api_key: true,
@@ -261,12 +269,12 @@ describe("API Client", () => {
           json: () => Promise.resolve(mockUpdatedSettings),
         });
 
-        const result = await updateSettings({ openai_api_key: "sk-test" });
+        const result = await updateSettings({ openai_api_key: "sk-test" }); // pragma: allowlist secret
 
         expect(mockFetch).toHaveBeenCalledWith("http://127.0.0.1:8765/api/settings/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ openai_api_key: "sk-test" }),
+          body: JSON.stringify({ openai_api_key: "sk-test" }), // pragma: allowlist secret
         });
         expect(result).toEqual(mockUpdatedSettings);
       });
@@ -563,33 +571,47 @@ describe("API Client", () => {
     });
 
     describe("listSessionsByFolder", () => {
-      it("should list sessions in a specific folder", async () => {
+      it("should list sessions in a specific folder with pagination", async () => {
         const mockSessions = [
-          { id: "1", title: "Session 1", folder_id: "folder-1", created_at: "", updated_at: "" },
+          { id: "1", title: "Session 1", folder_id: "folder-1", source: "main", created_at: "", updated_at: "" },
         ];
+        const mockResponse = {
+          sessions: mockSessions,
+          total: 1,
+          limit: 50,
+          offset: 0,
+          has_more: false,
+        };
         mockFetch.mockResolvedValueOnce({
-          json: () => Promise.resolve(mockSessions),
+          json: () => Promise.resolve(mockResponse),
         });
 
         const result = await listSessionsByFolder("folder-1");
 
         expect(mockFetch).toHaveBeenCalledWith("http://127.0.0.1:8765/api/sessions/?folder_id=folder-1");
-        expect(result).toEqual(mockSessions);
+        expect(result).toEqual(mockResponse);
       });
 
       it("should list all sessions when folder is null", async () => {
         const mockSessions = [
-          { id: "1", title: "Session 1", folder_id: null, created_at: "", updated_at: "" },
-          { id: "2", title: "Session 2", folder_id: "folder-1", created_at: "", updated_at: "" },
+          { id: "1", title: "Session 1", folder_id: null, source: "main", created_at: "", updated_at: "" },
+          { id: "2", title: "Session 2", folder_id: "folder-1", source: "main", created_at: "", updated_at: "" },
         ];
+        const mockResponse = {
+          sessions: mockSessions,
+          total: 2,
+          limit: 50,
+          offset: 0,
+          has_more: false,
+        };
         mockFetch.mockResolvedValueOnce({
-          json: () => Promise.resolve(mockSessions),
+          json: () => Promise.resolve(mockResponse),
         });
 
         const result = await listSessionsByFolder(null);
 
-        expect(mockFetch).toHaveBeenCalledWith("http://127.0.0.1:8765/api/sessions/");
-        expect(result).toEqual(mockSessions);
+        expect(mockFetch).toHaveBeenCalledWith("http://127.0.0.1:8765/api/sessions/?");
+        expect(result).toEqual(mockResponse);
       });
     });
   });

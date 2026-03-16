@@ -41,9 +41,17 @@ describe("useSession hook", () => {
     },
   ];
 
+  const mockSessionListResponse = {
+    sessions: mockSessions,
+    total: mockSessions.length,
+    limit: 50,
+    offset: 0,
+    has_more: false,
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
-    mockListSessions.mockResolvedValue(mockSessions);
+    mockListSessions.mockResolvedValue(mockSessionListResponse);
   });
 
   afterEach(() => {
@@ -248,12 +256,23 @@ describe("useSession hook", () => {
         id: "session-3",
         title: "Third Chat",
         folder_id: null,
+        source: "main",
         created_at: "2024-01-03T00:00:00Z",
         updated_at: "2024-01-03T00:00:00Z",
       },
     ];
-    mockListSessions.mockResolvedValueOnce(mockSessions);
-    mockListSessions.mockResolvedValueOnce(newSessionsList);
+    const newSessionListResponse = {
+      sessions: newSessionsList,
+      total: newSessionsList.length,
+      limit: 50,
+      offset: 0,
+      has_more: false,
+    };
+
+    // First call (initial load) - already mocked in beforeEach
+    // Second call (refresh)
+    mockListSessions.mockResolvedValueOnce(mockSessionListResponse);
+    mockListSessions.mockResolvedValueOnce(newSessionListResponse);
 
     const { result } = renderHook(() => useSession());
 
