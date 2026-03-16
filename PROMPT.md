@@ -22,13 +22,63 @@
 | 1. 代码实现 | ✅ | 功能/修复已完成 |
 | 2. 本地验证 | ✅ | `npm run typecheck` + `npm run lint` 通过 |
 | 3. **测试通过** | ✅ | **`npm test` 全部通过，无例外** |
-| 4. 集成验证 | ✅ | 调用 test-integration-kent agent |
-| 5. 提交推送 | ✅ | `git add . && git commit && git push` |
+| 4. **后端测试** | ✅ | **`pytest` 全部通过（如有后端变更）** |
+| 5. 集成验证 | ✅ | 调用 test-integration-kent agent |
+| 6. 提交推送 | ✅ | `git add . && git commit && git push` |
 
 **❌ 以下情况不算完成**：
 - 测试有失败
 - 跳过测试
 - 声称"测试通过"但实际未运行
+- 只跑前端测试，忽略后端测试
+
+---
+
+## ⚠️ API 修改检查清单 🔴 **修改 API 时强制遵守**
+
+**当修改任何 API（前端/后端）时，必须执行**：
+
+### 步骤 1: 搜索所有相关测试
+
+```bash
+# 搜索前端测试
+grep -r "api/sessions" huluchat-v3/src/ --include="*.test.*"
+
+# 搜索后端测试
+grep -r "sessions" huluchat-v3/backend/tests/ --include="*.py"
+
+# 搜索 E2E 测试
+grep -r "sessions" tests/ --include="*.spec.*"
+```
+
+### 步骤 2: 更新所有找到的测试文件
+
+| 测试类型 | 位置 | 检查命令 |
+|----------|------|----------|
+| 前端单元测试 | `huluchat-v3/src/**/*.test.ts` | `cd huluchat-v3 && npm test` |
+| 后端测试 | `huluchat-v3/backend/tests/*.py` | `cd huluchat-v3/backend && pytest` |
+| E2E 测试 | `tests/*.spec.ts` | `npm run test:e2e` |
+
+### 步骤 3: 本地完整验证
+
+```bash
+# 前端测试
+cd huluchat-v3 && npm test
+
+# 后端测试（如有变更）
+cd huluchat-v3/backend && pytest
+
+# 类型检查
+cd huluchat-v3 && npm run typecheck
+
+# Lint
+cd huluchat-v3 && npm run lint
+```
+
+**⚠️ 常见遗漏场景**：
+- 修改了后端 API 返回格式，但只更新了前端测试
+- 添加了新字段，但测试仍期望旧格式
+- 分页/过滤参数变更，测试未同步
 
 ---
 
@@ -99,7 +149,7 @@
 
 | 类型 | 示例 | 后果 |
 |------|------|------|
-| API Keys | `sk-xxxx`, `ghp_xxxx` | 🔴 泄露导致滥用 |
+| API Keys | `sk-xxxx`, `ghp_xxxx` | 🔴 泄露导致滥用 |  # pragma: allowlist secret
 | Tokens | `Bearer xxxx` | 🔴 账户被盗用 |
 | Secrets/密码 | 任何明文密码 | 🔴 安全漏洞 |
 | 数据库连接串 | `postgres://user:pass@...` | 🔴 数据泄露 |
@@ -107,7 +157,7 @@
 **正确做法**：
 ```python
 # ❌ 绝对禁止 - 硬编码默认值
-API_KEY = os.getenv("API_KEY", "sk-xxxxx")
+API_KEY = os.getenv("API_KEY", "sk-xxxxx")  # pragma: allowlist secret
 
 # ✅ 正确 - 必须从环境变量获取，无默认值
 API_KEY = os.getenv("API_KEY")
