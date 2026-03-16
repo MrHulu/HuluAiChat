@@ -4,6 +4,44 @@
 
 ---
 
+## 🎉 v3.73.0 发布完成 🎉
+
+> **Cycle #30** - 2026-03-17
+
+### 发布信息
+
+- **版本**: v3.73.0
+- **主题**: Beta Validation & Feedback Enhancement
+- **发布时间**: 2026-03-16T23:12:40Z
+- **GitHub Release**: https://github.com/MrHulu/HuluAiChat/releases/tag/v3.73.0
+
+### 安装包
+
+| 平台 | 文件 | 大小 |
+|------|------|------|
+| Windows | `HuluChat_3.73.0_x64_en-US.msi` | 44.3 MB |
+| macOS Intel | `HuluChat_3.73.0_x64.dmg` | 37.4 MB |
+| macOS ARM | `HuluChat_3.73.0_aarch64.dmg` | 37.3 MB |
+| Linux | `HuluChat_3.73.0_amd64.AppImage` | 143.9 MB |
+
+### 完成任务
+
+| 任务 | 内容 | 状态 |
+|------|------|------|
+| TASK-349 | 消息状态指示器 | ✅ |
+| TASK-350 | 会话删除撤销 | ✅ |
+| TASK-351 | 输入内容丢失警告 | ✅ |
+| TASK-352 | API Key 即时验证反馈 | ✅ |
+| TASK-348 | Beta 测试准备 | ✅ |
+
+### 下一步
+
+1. **Boss 执行 Beta 测试邀请** - 使用 `docs/beta-testing/invitation-template.md`
+2. **收集反馈** - 等待 1-2 周收集用户反馈
+3. **根据反馈规划 v3.74.0**
+
+---
+
 ## ✅ TASK-348: Beta 测试准备完成 ✅
 
 > **Cycle #29** - v3.73.0 最后一个任务
@@ -609,12 +647,12 @@ Boss 提供的 GLM-5 API Key 已过期（返回 401 错误）。
 ---
 
 ## Next Action
-> **⏳ Cycle #30 - 等待 v3.73.0 Release 构建**
+> **✅ Cycle #30 - v3.73.0 发布完成**
 >
 > **当前状态**:
 > - v3.73.0 所有任务完成 ✅ (5/5)
-> - v3.73.0 tag 已创建 ✅
-> - Release CI 正在构建 ⏳ (预计 12-15 分钟)
+> - v3.73.0 Release 已发布 ✅
+> - GitHub Release: https://github.com/MrHulu/HuluAiChat/releases/tag/v3.73.0
 >
 > **已完成任务**:
 > - ~~TASK-349: 消息状态指示器 [P0]~~ ✅
@@ -623,19 +661,24 @@ Boss 提供的 GLM-5 API Key 已过期（返回 401 错误）。
 > - ~~TASK-352: API Key 即时验证反馈 [P1]~~ ✅
 > - ~~TASK-348: Beta 测试准备 [P0]~~ ✅
 >
-> **下一步行动**:
-> 1. ⏳ **等待 Release 构建完成** - GitHub Actions 正在运行
-> 2. ✅ **验证 Release** - 确认 4 个平台安装包都已上传
-> 3. 📧 **发送邮件给 Boss** - 告知 v3.73.0 已发布
-> 4. 🧪 **Boss 执行 Beta 测试邀请** - 使用 `docs/beta-testing/invitation-template.md`
+> **等待 Boss 执行**:
+> 1. 📧 **发送 Beta 测试邀请** - 使用 `docs/beta-testing/invitation-template.md`
+> 2. 🧪 **邀请 5 个测试用户** - 跟踪表在 `docs/beta-testing/tester-tracking.md`
+> 3. 📊 **收集反馈** - 通过 GitHub Issues 或邮件
 >
 > **Beta 测试文档已就绪**:
 > - `docs/beta-testing/README.md` - 项目概述
-> - `docs/beta-testing/invitation-template.md` - 邀请模板
-> - `docs/beta-testing/test-checklist.md` - 测试清单
+> - `docs/beta-testing/invitation-template.md` - 邀请模板（邮件/微信/Twitter）
+> - `docs/beta-testing/test-checklist.md` - v3.73.0 测试清单
 > - `docs/beta-testing/feedback-form.md` - 反馈表
 > - `docs/beta-testing/tester-tracking.md` - 测试用户跟踪
 > - `docs/beta-testing/quick-start.md` - 快速开始指南
+>
+> **v3.73.0 新功能**:
+> 1. 消息状态指示器 - 显示发送中/已保存/等待发送状态
+> 2. 会话删除撤销 - 10 秒内可撤销删除
+> 3. 输入内容丢失警告 - 切换会话时警告未发送内容
+> 4. API Key 即时验证反馈 - 验证状态实时显示
 
 ---
 
@@ -923,10 +966,10 @@ Boss 提供的 GLM-5 API Key 已过期（返回 401 错误）。
 ## Company State
 
 - **项目**: HuluChat
-- **当前版本**: v3.73.0 ⏳ Release 构建中
+- **当前版本**: v3.73.0 ✅ 已发布
 - **下一版本**: v3.74.0 (待规划)
 - **当前周期**: Cycle #30
-- **当前状态**: ⏳ 等待 v3.73.0 Release 构建完成
+- **当前状态**: ✅ v3.73.0 发布完成，等待 Boss 执行 Beta 测试邀请
 - **已完成任务计数**: 121
 
 ---
