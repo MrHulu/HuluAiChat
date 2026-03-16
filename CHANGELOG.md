@@ -2,6 +2,58 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [3.73.0] - 2026-03-17
+
+### 💬 Message Status
+
+- **TASK-349**: Message Status Indicator
+  - Added `MessageStatusIndicator` component showing sending/saved/error states
+  - Added `MessageStatusGroup` component for offline queue display
+  - Added `getMessageStatus` helper function
+  - Real-time status updates based on connection state
+  - Internationalization support (en/zh)
+  - Files: `src/components/MessageStatusIndicator.tsx`, `src/components/MessageStatusGroup.tsx`
+
+### ↩️ Session Management
+
+- **TASK-350**: Session Deletion with Undo
+  - Added `useUndoDelete` hook for delayed deletion
+  - Toast notification with undo button (10-second window)
+  - Automatic deletion after timeout
+  - Session restoration after undo
+  - Internationalization support (en/zh)
+  - Files: `src/hooks/useUndoDelete.tsx`
+
+### ⚠️ Content Protection
+
+- **TASK-351**: Unsaved Content Warning
+  - Added `useUnsavedContent` hook for tracking unsaved input
+  - Added `UnsavedContentDialog` confirmation dialog
+  - Warning when switching sessions with unsaved content
+  - Draft content tracking per session
+  - Internationalization support (en/zh)
+  - Files: `src/hooks/useUnsavedContent.tsx`, `src/components/UnsavedContentDialog.tsx`
+
+### 🔑 API Key Validation
+
+- **TASK-352**: Instant API Key Validation Feedback
+  - Real-time validation status (idle/verifying/valid/invalid)
+  - Status icons in input field (spinner/check/x)
+  - Auto-validate on save
+  - Humanized error messages (auth failed/timeout/network error)
+  - Internationalization support (en/zh)
+  - Files: `src/components/SettingsDialog.tsx`
+
+### 🧪 Beta Testing
+
+- **TASK-348**: Beta Testing Preparation
+  - Beta testing program overview (`docs/beta-testing/README.md`)
+  - Invitation templates (email/WeChat/Twitter/Reddit)
+  - v3.73.0 test checklist
+  - Feedback form with new feature evaluation
+  - Tester tracking table
+  - Quick start guide for executing beta tests
+
 ## [3.72.0] - 2026-03-17
 
 ### 📚 Documentation
