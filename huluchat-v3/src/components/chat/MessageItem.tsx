@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { Message, ModelInfo, OllamaModel } from "@/api/client";
 import { Button } from "@/components/ui/button";
 import { Pencil, Check, X, Bookmark, BookmarkCheck, Copy, Clock, RefreshCw, Quote, Trash2, CheckCircle2 } from "lucide-react";
+import { MessageStatusIndicator, MessageStatus } from "./MessageStatusIndicator";
 import { CodeBlock } from "./CodeBlock";
 import { MermaidBlock } from "./MermaidBlock";
 import { ModelSelectorDialog } from "./ModelSelectorDialog";
@@ -122,6 +123,8 @@ export interface MessageItemProps {
   isCurrentMatch?: boolean;
   searchQuery?: string;
   caseSensitive?: boolean;
+  // Message status props - TASK-349
+  messageStatus?: MessageStatus;
 }
 
 // Stable plugin references (defined outside component to avoid recreation)
@@ -204,6 +207,7 @@ export const MessageItem = memo(function MessageItem({
   onSelect,
   isSearchMatch = false,
   isCurrentMatch = false,
+  messageStatus,
 }: MessageItemProps) {
   const { t } = useTranslation();
   const isUser = message.role === "user";
@@ -508,6 +512,14 @@ export const MessageItem = memo(function MessageItem({
                 <Clock className="w-2.5 h-2.5" aria-hidden="true" />
                 {formatRelativeTime(message.created_at, t)}
               </span>
+            )}
+            {/* Message Status Indicator - TASK-349 */}
+            {isUser && messageStatus && messageStatus !== "saved" && (
+              <MessageStatusIndicator
+                status={messageStatus}
+                isUser={isUser}
+                showLabel={messageStatus === "sending" || messageStatus === "queued"}
+              />
             )}
           </div>
           <div className="flex items-center gap-1">

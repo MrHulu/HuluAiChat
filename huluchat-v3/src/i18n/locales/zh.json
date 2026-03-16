@@ -214,7 +214,19 @@
     "searchCaseSensitive": "区分大小写",
     "searchPrev": "上一个匹配",
     "searchNext": "下一个匹配",
-    "searchClose": "关闭搜索"
+    "searchClose": "关闭搜索",
+    "status": {
+      "sending": "发送中...",
+      "saved": "已保存",
+      "queued": "等待发送",
+      "error": "发送失败",
+      "sendingTooltip": "消息正在发送中...",
+      "savedTooltip": "消息已保存到服务器",
+      "queuedTooltip": "消息已排队 - 连接恢复后将自动发送",
+      "errorTooltip": "消息发送失败",
+      "queuedMessages": "{{count}} 条消息等待发送",
+      "queuedMessagesTooltip": "连接恢复后将自动发送这些消息"
+    }
   },
   "draftRecovery": {
     "title": "恢复未发送的消息",
