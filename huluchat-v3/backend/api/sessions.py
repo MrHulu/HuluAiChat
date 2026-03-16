@@ -123,27 +123,78 @@ async def list_sessions(
 @router.get("/search/", response_model=List[SessionSearchResult])
 async def search_sessions(
     q: str = Query(..., min_length=1, description="Search query"),
+    folder_id: Optional[str] = Query(None, description="Filter by folder ID"),
+    date_from: Optional[str] = Query(None, description="Filter from date (YYYY-MM-DD)"),
+    date_to: Optional[str] = Query(None, description="Filter to date (YYYY-MM-DD)"),
     db: AsyncSession = Depends(get_db_session)
 ):
-    """Search sessions by title and message content"""
+    """Search sessions by title and message content with optional filters.
+
+    Args:
+        q: Search query string
+        folder_id: Optional folder ID to filter results
+        date_from: Optional start date (inclusive, YYYY-MM-DD format)
+        date_to: Optional end date (inclusive, YYYY-MM-DD format)
+    """
+    from datetime import datetime as dt
+
     query = q.lower().strip()
     results = []
 
+    # Parse date filters
+    parsed_date_from = None
+    parsed_date_to = None
+    if date_from:
+        try:
+            parsed_date_from = dt.strptime(date_from, "%Y-%m-%d")
+        except ValueError:
+            pass
+    if date_to:
+        try:
+            # Add 23:59:59 to include the end date
+            parsed_date_to = dt.strptime(date_to, "%Y-%m-%d")
+            parsed_date_to = parsed_date_to.replace(hour=23, minute=59, second=59)
+        except ValueError:
+            pass
+
+    # Build base title query with filters
+    title_query = select(SessionModel).where(SessionModel.title.ilike(f"%{query}%"))
+
+    # Apply folder filter
+    if folder_id is not None:
+        title_query = title_query.where(SessionModel.folder_id == folder_id)
+
+    # Apply date filters
+    if parsed_date_from:
+        title_query = title_query.where(SessionModel.updated_at >= parsed_date_from)
+    if parsed_date_to:
+        title_query = title_query.where(SessionModel.updated_at <= parsed_date_to)
+
+    title_query = title_query.order_by(SessionModel.updated_at.desc())
+
     # Search in session titles
-    title_result = await db.execute(
-        select(SessionModel)
-        .where(SessionModel.title.ilike(f"%{query}%"))
-        .order_by(SessionModel.updated_at.desc())
-    )
+    title_result = await db.execute(title_query)
     title_sessions = {s.id: s for s in title_result.scalars().all()}
 
     # Search in message content
-    message_result = await db.execute(
+    message_query = (
         select(MessageModel, SessionModel)
         .join(SessionModel, MessageModel.session_id == SessionModel.id)
         .where(MessageModel.content.ilike(f"%{query}%"))
-        .order_by(SessionModel.updated_at.desc())
     )
+
+    # Apply folder filter to message search
+    if folder_id is not None:
+        message_query = message_query.where(SessionModel.folder_id == folder_id)
+
+    # Apply date filters to message search
+    if parsed_date_from:
+        message_query = message_query.where(SessionModel.updated_at >= parsed_date_from)
+    if parsed_date_to:
+        message_query = message_query.where(SessionModel.updated_at <= parsed_date_to)
+
+    message_query = message_query.order_by(SessionModel.updated_at.desc())
+    message_result = await db.execute(message_query)
     message_rows = message_result.all()
 
     # Group messages by session

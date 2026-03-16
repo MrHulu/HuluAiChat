@@ -177,7 +177,7 @@ describe("API Client", () => {
 
         const result = await searchSessions("test query");
 
-        expect(mockFetch).toHaveBeenCalledWith("http://127.0.0.1:8765/api/sessions/search/?q=test%20query");
+        expect(mockFetch).toHaveBeenCalledWith("http://127.0.0.1:8765/api/sessions/search/?q=test+query");
         expect(result).toEqual(mockResults);
       });
 
@@ -188,7 +188,27 @@ describe("API Client", () => {
 
         await searchSessions("test & query");
 
-        expect(mockFetch).toHaveBeenCalledWith("http://127.0.0.1:8765/api/sessions/search/?q=test%20%26%20query");
+        expect(mockFetch).toHaveBeenCalledWith("http://127.0.0.1:8765/api/sessions/search/?q=test+%26+query");
+      });
+
+      it("should include folder_id filter in search", async () => {
+        mockFetch.mockResolvedValueOnce({
+          json: () => Promise.resolve([]),
+        });
+
+        await searchSessions("test", { folder_id: "folder-123" });
+
+        expect(mockFetch).toHaveBeenCalledWith("http://127.0.0.1:8765/api/sessions/search/?q=test&folder_id=folder-123");
+      });
+
+      it("should include date filters in search", async () => {
+        mockFetch.mockResolvedValueOnce({
+          json: () => Promise.resolve([]),
+        });
+
+        await searchSessions("test", { date_from: "2024-01-01", date_to: "2024-12-31" });
+
+        expect(mockFetch).toHaveBeenCalledWith("http://127.0.0.1:8765/api/sessions/search/?q=test&date_from=2024-01-01&date_to=2024-12-31");
       });
     });
   });

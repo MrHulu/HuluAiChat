@@ -128,6 +128,9 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
   ) => {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
+  // Search filter state
+  const [searchDateFilter, setSearchDateFilter] = useState<"all" | "today" | "week" | "month">("all");
+  const [searchFolderFilter, setSearchFolderFilter] = useState<string | null>(null);
   // Batch selection state
   const [isBatchMode, setIsBatchMode] = useState(false);
   const [selectedSessionIds, setSelectedSessionIds] = useState<Set<string>>(new Set());
@@ -377,6 +380,29 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
     }
   }, [selectedSessionIds]);
 
+  // Helper: Get date range based on filter
+  const getDateRange = useCallback((filter: "all" | "today" | "week" | "month"): { date_from?: string; date_to?: string } => {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    switch (filter) {
+      case "today":
+        return { date_from: today.toISOString().split("T")[0] };
+      case "week": {
+        const weekAgo = new Date(today);
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        return { date_from: weekAgo.toISOString().split("T")[0] };
+      }
+      case "month": {
+        const monthAgo = new Date(today);
+        monthAgo.setMonth(monthAgo.getMonth() - 1);
+        return { date_from: monthAgo.toISOString().split("T")[0] };
+      }
+      default:
+        return {};
+    }
+  }, []);
+
   // Debounced search
   const performSearch = useCallback(async (query: string) => {
     if (!query.trim()) {
@@ -386,7 +412,11 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
 
     setIsSearching(true);
     try {
-      const results = await searchSessions(query);
+      const dateRange = getDateRange(searchDateFilter);
+      const results = await searchSessions(query, {
+        folder_id: searchFolderFilter ?? undefined,
+        ...dateRange,
+      });
       setSearchResults(results);
     } catch (error) {
       console.error("Search failed:", error);
@@ -394,7 +424,7 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
     } finally {
       setIsSearching(false);
     }
-  }, []);
+  }, [searchDateFilter, searchFolderFilter, getDateRange]);
 
   // Debounce search input
   useEffect(() => {
@@ -752,7 +782,7 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
       )}
 
       {/* Search Box */}
-      <div className="p-3">
+      <div className="p-3 pb-0">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" aria-hidden="true" />
           <Input
@@ -776,6 +806,74 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
           )}
         </div>
       </div>
+
+      {/* Search Filters - shown when searching */}
+      {searchQuery && (
+        <div className="px-3 pt-2 pb-1 flex items-center gap-2 flex-wrap">
+          {/* Date Filter */}
+          <div className="flex items-center gap-1">
+            {(["all", "today", "week", "month"] as const).map((filter) => (
+              <Button
+                key={filter}
+                variant={searchDateFilter === filter ? "secondary" : "ghost"}
+                size="sm"
+                className="h-6 px-2 text-xs"
+                onClick={() => setSearchDateFilter(filter)}
+              >
+                {t(`sidebar.searchFilter.date.${filter}`)}
+              </Button>
+            ))}
+          </div>
+
+          {/* Folder Filter */}
+          {folders.length > 0 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant={searchFolderFilter ? "secondary" : "ghost"}
+                  size="sm"
+                  className="h-6 px-2 text-xs gap-1"
+                >
+                  <FolderOpen className="w-3 h-3" aria-hidden="true" />
+                  {searchFolderFilter
+                    ? folders.find(f => f.id === searchFolderFilter)?.name
+                    : t("sidebar.searchFilter.folder.all")}
+                  <ChevronRight className="w-3 h-3" aria-hidden="true" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="min-w-[150px]">
+                <DropdownMenuItem onClick={() => setSearchFolderFilter(null)}>
+                  {t("sidebar.searchFilter.folder.all")}
+                </DropdownMenuItem>
+                {folders.map((folder) => (
+                  <DropdownMenuItem
+                    key={folder.id}
+                    onClick={() => setSearchFolderFilter(folder.id)}
+                  >
+                    {folder.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+
+          {/* Clear Filters */}
+          {(searchDateFilter !== "all" || searchFolderFilter) && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground"
+              onClick={() => {
+                setSearchDateFilter("all");
+                setSearchFolderFilter(null);
+              }}
+            >
+              <X className="w-3 h-3 mr-1" aria-hidden="true" />
+              {t("common.clear")}
+            </Button>
+          )}
+        </div>
+      )}
 
       {/* Tag Filter */}
       {allTags.length > 0 && (

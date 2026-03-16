@@ -68,7 +68,18 @@
     "folderWithName": "{{name}} ({{count}} sessions)",
     "expandFolder": "Expand folder",
     "collapseFolder": "Collapse folder",
-    "sessionCount": "{{count}} sessions"
+    "sessionCount": "{{count}} sessions",
+    "searchFilter": {
+      "date": {
+        "all": "All",
+        "today": "Today",
+        "week": "Week",
+        "month": "Month"
+      },
+      "folder": {
+        "all": "All Folders"
+      }
+    }
   },
   "chat": {
     "you": "You",

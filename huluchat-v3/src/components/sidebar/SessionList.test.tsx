@@ -185,7 +185,7 @@ describe("SessionList", () => {
 
       // Wait for debounce and search API to be called
       await waitFor(() => {
-        expect(mockSearchSessions).toHaveBeenCalledWith("Session");
+        expect(mockSearchSessions).toHaveBeenCalledWith("Session", expect.anything());
       }, { timeout: 500 });
 
       // Wait for search results to be rendered (check for session title to appear)
@@ -223,7 +223,7 @@ describe("SessionList", () => {
 
       // Wait for debounce and search
       await waitFor(() => {
-        expect(mockSearchSessions).toHaveBeenCalledWith("Session");
+        expect(mockSearchSessions).toHaveBeenCalledWith("Session", expect.anything());
       }, { timeout: 500 });
 
       // Wait for search results to render (important for timing)
@@ -263,7 +263,7 @@ describe("SessionList", () => {
 
       // Wait for debounce and search
       await waitFor(() => {
-        expect(mockSearchSessions).toHaveBeenCalledWith("Session");
+        expect(mockSearchSessions).toHaveBeenCalledWith("Session", expect.anything());
       }, { timeout: 500 });
 
       // Navigate down 3 times (2 sessions + wrap to first)
@@ -448,7 +448,7 @@ describe("SessionList", () => {
       // Wait for debounce
       await waitFor(
         () => {
-          expect(mockSearchSessions).toHaveBeenCalledWith("test");
+          expect(mockSearchSessions).toHaveBeenCalledWith("test", expect.anything());
         },
         { timeout: 500 }
       );
@@ -484,7 +484,7 @@ describe("SessionList", () => {
       // Wait for debounce and search to complete
       await waitFor(
         () => {
-          expect(mockSearchSessions).toHaveBeenCalledWith("test");
+          expect(mockSearchSessions).toHaveBeenCalledWith("test", expect.anything());
         },
         { timeout: 500 }
       );
@@ -658,7 +658,7 @@ describe("SessionList", () => {
       // Wait for debounce and search
       await waitFor(
         () => {
-          expect(mockSearchSessions).toHaveBeenCalledWith("test query");
+          expect(mockSearchSessions).toHaveBeenCalledWith("test query", expect.anything());
         },
         { timeout: 500 }
       );
@@ -755,7 +755,7 @@ describe("SessionList", () => {
       // Wait for debounce and search API call
       await waitFor(
         () => {
-          expect(mockSearchSessions).toHaveBeenCalledWith("error test");
+          expect(mockSearchSessions).toHaveBeenCalledWith("error test", expect.anything());
         },
         { timeout: 1000 }
       );
@@ -784,7 +784,7 @@ describe("SessionList", () => {
       // Wait for debounce and search API call
       await waitFor(
         () => {
-          expect(mockSearchSessions).toHaveBeenCalledWith("test");
+          expect(mockSearchSessions).toHaveBeenCalledWith("test", expect.anything());
         },
         { timeout: 1000 }
       );
@@ -812,7 +812,7 @@ describe("SessionList", () => {
 
       await waitFor(
         () => {
-          expect(mockSearchSessions).toHaveBeenCalledWith("test");
+          expect(mockSearchSessions).toHaveBeenCalledWith("test", expect.anything());
         },
         { timeout: 1000 }
       );
@@ -840,7 +840,7 @@ describe("SessionList", () => {
 
       await waitFor(
         () => {
-          expect(mockSearchSessions).toHaveBeenCalledWith("response");
+          expect(mockSearchSessions).toHaveBeenCalledWith("response", expect.anything());
         },
         { timeout: 1000 }
       );
@@ -1331,7 +1331,7 @@ describe("SessionList", () => {
       // Wait for search API to be called
       await waitFor(
         () => {
-          expect(mockSearchSessions).toHaveBeenCalledWith("hello");
+          expect(mockSearchSessions).toHaveBeenCalledWith("hello", expect.anything());
         },
         { timeout: 1000 }
       );
@@ -1360,7 +1360,7 @@ describe("SessionList", () => {
       // Wait for search API to be called
       await waitFor(
         () => {
-          expect(mockSearchSessions).toHaveBeenCalledWith("response");
+          expect(mockSearchSessions).toHaveBeenCalledWith("response", expect.anything());
         },
         { timeout: 1000 }
       );

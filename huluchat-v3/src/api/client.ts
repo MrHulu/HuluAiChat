@@ -267,10 +267,34 @@ export async function batchExportSessions(sessionIds: string[]): Promise<BatchEx
 }
 
 /**
- * Search sessions by title and message content
+ * Search options for session search
  */
-export async function searchSessions(query: string): Promise<SessionSearchResult[]> {
-  const response = await fetch(`${API_BASE}/sessions/search/?q=${encodeURIComponent(query)}`);
+export interface SessionSearchOptions {
+  folder_id?: string | null;
+  date_from?: string;  // YYYY-MM-DD format
+  date_to?: string;    // YYYY-MM-DD format
+}
+
+/**
+ * Search sessions by title and message content with optional filters
+ */
+export async function searchSessions(
+  query: string,
+  options?: SessionSearchOptions
+): Promise<SessionSearchResult[]> {
+  const params = new URLSearchParams({ q: query });
+
+  if (options?.folder_id) {
+    params.append("folder_id", options.folder_id);
+  }
+  if (options?.date_from) {
+    params.append("date_from", options.date_from);
+  }
+  if (options?.date_to) {
+    params.append("date_to", options.date_to);
+  }
+
+  const response = await fetch(`${API_BASE}/sessions/search/?${params.toString()}`);
   return response.json();
 }
 

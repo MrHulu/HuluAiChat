@@ -68,7 +68,18 @@
     "folderWithName": "{{name}}（{{count}} 个会话）",
     "expandFolder": "展开文件夹",
     "collapseFolder": "折叠文件夹",
-    "sessionCount": "{{count}} 个会话"
+    "sessionCount": "{{count}} 个会话",
+    "searchFilter": {
+      "date": {
+        "all": "全部",
+        "today": "今天",
+        "week": "本周",
+        "month": "本月"
+      },
+      "folder": {
+        "all": "所有文件夹"
+      }
+    }
   },
   "chat": {
     "you": "你",
