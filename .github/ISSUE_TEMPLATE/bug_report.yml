@@ -1,0 +1,137 @@
+name: 🐛 Bug Report
+description: Report a bug to help us improve HuluChat
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this bug! Please fill out the sections below to help us fix it quickly.
+
+        **Before you start:**
+        - Check if this bug has already been reported in [existing issues](https://github.com/MrHulu/HuluAiChat/issues)
+        - Make sure you're using the latest version of HuluChat
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is
+      placeholder: "When I click X, Y happens instead of Z..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Detailed steps to reproduce the behavior
+      placeholder: |
+        1. Open HuluChat
+        2. Click on '...'
+        3. Scroll down to '...'
+        4. See error
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: "I expected X to happen because..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: "Instead, Y happened..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots / Logs
+      description: |
+        If applicable, add screenshots or error logs to help explain your problem.
+
+        **For logs:**
+        - Windows: Check `%APPDATA%\com.huluchat.app\logs\`
+        - macOS: Check `~/Library/Application Support/com.huluchat.app/logs/`
+        - Linux: Check `~/.config/com.huluchat.app/logs/`
+      placeholder: "Paste logs or drag & drop screenshots here..."
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: How severe is this bug?
+      options:
+        - "Low - Minor inconvenience"
+        - "Medium - Workaround available"
+        - "High - Major feature broken"
+        - "Critical - App crashes / Data loss"
+      default: 1
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: HuluChat Version
+      description: Which version are you using? (Check Settings → About)
+      placeholder: "v3.72.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating System
+      description: Which OS are you using?
+      options:
+        - Windows 11
+        - Windows 10
+        - macOS (Intel)
+        - macOS (Apple Silicon)
+        - Linux (Ubuntu/Debian)
+        - Linux (Fedora/RHEL)
+        - Linux (Arch)
+        - Other Linux
+    validations:
+      required: true
+
+  - type: textarea
+    id: ai-provider
+    attributes:
+      label: AI Provider (if relevant)
+      description: If the bug is related to AI chat, which provider/model are you using?
+      placeholder: "OpenAI GPT-4, DeepSeek V3, GLM-5, Ollama (local)..."
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched for similar issues
+          required: true
+        - label: I am using the latest version of HuluChat
+          required: false
+        - label: I can provide additional details if needed
+          required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other context about the problem? (config settings, recent changes, etc.)
+      placeholder: "This started happening after I..."

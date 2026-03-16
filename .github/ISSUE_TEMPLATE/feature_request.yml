@@ -1,0 +1,109 @@
+name: 💡 Feature Request
+description: Suggest a new feature or enhancement for HuluChat
+title: "[Feature]: "
+labels: ["enhancement", "needs-triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new feature! Your feedback helps make HuluChat better.
+
+        **Before you start:**
+        - Check if this feature has already been requested in [existing issues](https://github.com/MrHulu/HuluAiChat/issues)
+        - Consider if this aligns with HuluChat's **privacy-first** philosophy
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / Use Case
+      description: What problem does this feature solve? Or what use case does it enable?
+      placeholder: |
+        I'm always frustrated when...
+        OR
+        It would be great if I could...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: How would you like this feature to work?
+      placeholder: |
+        A clear description of what you want to happen:
+        - Add a button that...
+        - When user clicks X, Y happens...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Have you considered any alternative solutions or workarounds?
+      placeholder: "I've considered using X instead, but it doesn't work because..."
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - "Nice to have"
+        - "Important for my workflow"
+        - "Blocking my use case"
+      default: 0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Feature Category
+      description: Which area of HuluChat does this affect?
+      options:
+        - "AI Chat"
+        - "Session Management"
+        - "Search & Organization"
+        - "QuickPanel"
+        - "RAG / Knowledge Base"
+        - "UI/UX"
+        - "Settings & Configuration"
+        - "Plugins"
+        - "Performance"
+        - "Other"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy Considerations
+      description: |
+        HuluChat is a **privacy-first** application. We do NOT implement:
+        - User tracking/analytics
+        - Telemetry
+        - Data collection to external servers
+
+        Features that require these will not be accepted.
+      options:
+        - label: This feature does not require user tracking or external data collection
+          required: true
+        - label: I understand that privacy-invasive features will not be considered
+          required: true
+
+  - type: textarea
+    id: mockup
+    attributes:
+      label: Mockups / Examples
+      description: |
+        Any mockups, screenshots from other apps, or examples that illustrate the feature?
+        You can drag & drop images here.
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other context or details?
+      placeholder: "This feature exists in app X, but I think HuluChat could do it better by..."

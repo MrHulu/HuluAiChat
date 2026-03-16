@@ -1,0 +1,48 @@
+name: ❓ Question / Help
+description: Ask a question about using HuluChat
+title: "[Question]: "
+labels: ["question"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question about using HuluChat? We're here to help!
+
+        **Before asking:**
+        - Check our [Documentation](https://huluchat-website.pages.dev/docs)
+        - Check our [FAQ](https://huluchat-website.pages.dev/docs/faq)
+        - Search [existing questions](https://github.com/MrHulu/HuluAiChat/issues?q=label%3Aquestion)
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: What would you like to know?
+      placeholder: "How do I..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Any relevant context? (what you've tried, what you're trying to achieve)
+      placeholder: "I'm trying to... I've already tried..."
+
+  - type: input
+    id: version
+    attributes:
+      label: HuluChat Version (if relevant)
+      description: Which version are you using?
+      placeholder: "v3.72.0"
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating System (if relevant)
+      options:
+        - Windows
+        - macOS
+        - Linux
+        - Not relevant
