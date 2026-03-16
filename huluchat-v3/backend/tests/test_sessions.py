@@ -13,8 +13,12 @@ class TestSessionsList:
 
         assert response.status_code == 200
         data = response.json()
-        assert isinstance(data, list)
-        assert len(data) == 0
+        # API 返回分页格式: {"sessions": [...], "total": 0, "limit": 50, "offset": 0, "has_more": false}
+        assert isinstance(data, dict)
+        assert "sessions" in data
+        assert data["sessions"] == []
+        assert data["total"] == 0
+        assert data["has_more"] is False
 
     @pytest.mark.asyncio
     async def test_list_sessions_with_data(self, client: AsyncClient):
@@ -28,8 +32,11 @@ class TestSessionsList:
 
         assert response.status_code == 200
         data = response.json()
-        assert isinstance(data, list)
-        assert len(data) == 1
+        # API 返回分页格式
+        assert isinstance(data, dict)
+        assert "sessions" in data
+        assert len(data["sessions"]) == 1
+        assert data["total"] == 1
 
     @pytest.mark.asyncio
     async def test_list_sessions_filter_by_source(self, client: AsyncClient):
@@ -43,8 +50,8 @@ class TestSessionsList:
 
         assert response.status_code == 200
         data = response.json()
-        assert len(data) == 1
-        assert data[0]["source"] == "main"
+        assert len(data["sessions"]) == 1
+        assert data["sessions"][0]["source"] == "main"
 
 
 class TestSessionCreate:

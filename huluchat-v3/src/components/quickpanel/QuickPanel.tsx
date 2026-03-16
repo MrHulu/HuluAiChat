@@ -31,6 +31,9 @@ interface QuickWSMessage {
   error?: string;
 }
 
+// LocalStorage key for persisting QuickPanel session ID
+const QUICKPANEL_SESSION_KEY = "huluchat-quickpanel-session-id";
+
 interface QuickPanelProps {
   /** Whether the panel is visible */
   isOpen: boolean;
@@ -62,7 +65,14 @@ export function QuickPanel({
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [sessionId, setSessionId] = useState<string | null>(null);
+  // Restore sessionId from localStorage to avoid creating empty sessions on every open
+  const [sessionId, setSessionId] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem(QUICKPANEL_SESSION_KEY);
+    } catch {
+      return null;
+    }
+  });
   const [quickActions, setQuickActions] = useState<QuickAction[]>([]);
   const [clipboardDetected, setClipboardDetected] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
@@ -125,6 +135,15 @@ export function QuickPanel({
         // Reset refs on error
         lastInputRef.current = "";
         lastActionRef.current = undefined;
+        // If session not found, clear the persisted session ID so a new one will be created next time
+        if (msg.error?.includes("not found") || msg.error?.includes("Session")) {
+          try {
+            localStorage.removeItem(QUICKPANEL_SESSION_KEY);
+          } catch {
+            // Ignore localStorage errors
+          }
+          setSessionId(null);
+        }
         break;
     }
   }, [t, onHasConversation, addToHistory, currentModel]);
@@ -137,12 +156,28 @@ export function QuickPanel({
     baseDelay: 1000,
   });
 
-  // Create a temporary session when panel opens
+  // Create or reuse a session when panel opens
   useEffect(() => {
     if (isOpen && !sessionId) {
+      // Try to reuse existing session from localStorage first
+      const existingSessionId = localStorage.getItem(QUICKPANEL_SESSION_KEY);
+      if (existingSessionId) {
+        // Verify session still exists by checking if we can connect to it
+        // For simplicity, we just reuse it - if invalid, WebSocket will fail and clear it
+        setSessionId(existingSessionId);
+        return;
+      }
+
+      // No existing session, create new one
       createSession("quickpanel")
         .then((session) => {
           setSessionId(session.id);
+          // Persist session ID for reuse
+          try {
+            localStorage.setItem(QUICKPANEL_SESSION_KEY, session.id);
+          } catch {
+            // Ignore localStorage errors
+          }
         })
         .catch((err) => {
           console.error("Failed to create quick session:", err);
