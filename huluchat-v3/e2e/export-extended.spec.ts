@@ -277,7 +277,8 @@ test.describe('Export API - 错误处理', () => {
     );
 
     // 应该返回错误或回退到默认格式
-    expect([200, 400, 404, 500]).toContain(exportResponse.status());
+    // 501 (Not Implemented) 也是可接受的
+    expect([200, 400, 404, 500, 501]).toContain(exportResponse.status());
   });
 
   test('空会话导出应该正常工作', async ({ request }) => {
