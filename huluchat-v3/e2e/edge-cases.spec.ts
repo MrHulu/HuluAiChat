@@ -37,25 +37,49 @@ async function createTestSession(request: APIRequestContext, title?: string) {
 
 // 辅助函数：确保有选中的会话（通过 UI 创建并选中）
 async function ensureSessionSelected(page: Page) {
-  // 点击 "New Chat" 按钮创建并选中一个新会话
-  const newChatButton = page.getByRole('button', { name: /new|新建/i })
-    .or(page.locator('button').filter({ has: page.locator('svg') }).first());
+  // 等待页面完全加载
+  await page.waitForTimeout(1000);
 
-  if (await newChatButton.first().isVisible({ timeout: 2000 }).catch(() => false)) {
+  // 方法1: 点击 "New Chat" 按钮创建并选中一个新会话
+  // 按钮文本可能是 "New Chat" 或包含 Plus 图标
+  const newChatButton = page.getByRole('button', { name: /new chat|新建|new/i });
+
+  const isVisible = await newChatButton.first().isVisible({ timeout: 3000 }).catch(() => false);
+  console.log(`New Chat button visible: ${isVisible}`);
+
+  if (isVisible) {
     await newChatButton.first().click({ force: true });
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1000); // 增加等待时间
   }
 
   // 等待 textarea 变为可用
   const inputArea = page.locator('textarea').or(page.locator('[contenteditable="true"]'));
-  await inputArea.first().waitFor({ state: 'visible', timeout: 5000 });
+  await inputArea.first().waitFor({ state: 'visible', timeout: 10000 });
 
   // 验证 textarea 不是 disabled 状态
-  const isDisabled = await inputArea.first().isDisabled();
+  let isDisabled = await inputArea.first().isDisabled();
+  console.log(`Textarea disabled after first click: ${isDisabled}`);
+
+  // 如果还是 disabled，尝试再次点击
   if (isDisabled) {
-    // 如果还是 disabled，再点击一次新建按钮
-    await newChatButton.first().click({ force: true });
-    await page.waitForTimeout(500);
+    // 方法2: 点击侧边栏中的第一个会话
+    const sessionItem = page.locator('[class*="session"]').first();
+    const sessionVisible = await sessionItem.isVisible({ timeout: 2000 }).catch(() => false);
+    if (sessionVisible) {
+      await sessionItem.click({ force: true });
+      await page.waitForTimeout(500);
+    }
+
+    isDisabled = await inputArea.first().isDisabled();
+    console.log(`Textarea disabled after clicking session: ${isDisabled}`);
+  }
+
+  // 最后尝试: 使用快捷键 Ctrl+Shift+N 创建新会话
+  if (isDisabled) {
+    await page.keyboard.press('Control+Shift+N');
+    await page.waitForTimeout(1000);
+    isDisabled = await inputArea.first().isDisabled();
+    console.log(`Textarea disabled after keyboard shortcut: ${isDisabled}`);
   }
 }
 
