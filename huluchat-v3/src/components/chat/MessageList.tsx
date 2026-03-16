@@ -13,6 +13,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { ArrowDown } from "lucide-react";
+import { getMessageStatus, MessageStatusGroup } from "./MessageStatusIndicator";
 
 export interface MessageListRef {
   scrollToMessage: (messageId: string) => void;
@@ -48,6 +49,9 @@ export interface MessageListProps {
   // Search highlight props - TASK-202
   searchMatchIds?: Set<string>; // IDs of messages that match search
   currentMatchId?: string; // Current highlighted match
+  // Connection status props - TASK-349
+  isConnected?: boolean;
+  queueSize?: number;
 }
 
 /**
@@ -105,7 +109,7 @@ function buildVirtualItems(messages: Message[]): VirtualItem[] {
 }
 
 export const MessageList = forwardRef<MessageListRef, MessageListProps>(function MessageList(
-  { messages, streamingMessage, isLoading, onEditMessage, bookmarkedMessages, onBookmarkToggle, onRegenerate, isRegenerating, availableModels, currentModel, ollamaModels, ollamaAvailable, recommendedModel, onSuggestionClick, onQuote, onDelete, isSelectionMode, selectedMessageIds, onMessageSelect, searchMatchIds, currentMatchId },
+  { messages, streamingMessage, isLoading, onEditMessage, bookmarkedMessages, onBookmarkToggle, onRegenerate, isRegenerating, availableModels, currentModel, ollamaModels, ollamaAvailable, recommendedModel, onSuggestionClick, onQuote, onDelete, isSelectionMode, selectedMessageIds, onMessageSelect, searchMatchIds, currentMatchId, isConnected = true, queueSize = 0 },
   ref
 ) {
   const { t } = useTranslation();
@@ -291,6 +295,7 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
                   onSelect={onMessageSelect}
                   isSearchMatch={searchMatchIds?.has(message.id)}
                   isCurrentMatch={currentMatchId === message.id}
+                  messageStatus={getMessageStatus(message.id, isConnected, message.id.startsWith("temp-"))}
                 />
               </div>
             );
@@ -299,6 +304,9 @@ export const MessageList = forwardRef<MessageListRef, MessageListProps>(function
           return null;
         })}
       </div>
+
+      {/* 队列状态指示器 - TASK-349 */}
+      <MessageStatusGroup queueSize={queueSize} isConnected={isConnected} />
 
       {/* 流式消息（不虚拟化，始终显示） */}
       {streamingMessage && (

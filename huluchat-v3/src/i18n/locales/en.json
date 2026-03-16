@@ -217,7 +217,19 @@
     "searchCaseSensitive": "Case sensitive",
     "searchPrev": "Previous match",
     "searchNext": "Next match",
-    "searchClose": "Close search"
+    "searchClose": "Close search",
+    "status": {
+      "sending": "Sending...",
+      "saved": "Saved",
+      "queued": "Waiting to send",
+      "error": "Failed to send",
+      "sendingTooltip": "Message is being sent...",
+      "savedTooltip": "Message saved to server",
+      "queuedTooltip": "Message queued - will send when connection is restored",
+      "errorTooltip": "Failed to send message",
+      "queuedMessages": "{{count}} message(s) queued",
+      "queuedMessagesTooltip": "Messages will be sent automatically when connection is restored"
+    }
   },
   "draftRecovery": {
     "title": "Recover Unsent Message",
