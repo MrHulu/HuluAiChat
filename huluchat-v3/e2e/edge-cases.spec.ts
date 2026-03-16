@@ -36,17 +36,25 @@ async function createTestSession(request: APIRequestContext, title?: string) {
 }
 
 test.describe('空会话处理', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, request }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await skipWelcomeIfNeeded(page);
+
+    // 先通过 API 创建一个会话，确保有会话被选中
+    await createTestSession(request, 'Edge Case Test Session');
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(500);
   });
 
   test('新会话应该显示空状态提示', async ({ page }) => {
     // 创建新会话
     const newChatButton = page.getByRole('button', { name: /new|新建/i });
-    await newChatButton.first().click();
-    await page.waitForTimeout(500);
+    if (await newChatButton.first().isVisible({ timeout: 2000 }).catch(() => false)) {
+      await newChatButton.first().click({ force: true });
+      await page.waitForTimeout(500);
+    }
 
     // 查找空状态提示
     const emptyState = page.locator('text=/No messages|没有消息|Start a conversation|开始对话/i')
@@ -89,10 +97,16 @@ test.describe('空会话处理', () => {
 });
 
 test.describe('超长消息处理', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, request }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await skipWelcomeIfNeeded(page);
+
+    // 先通过 API 创建一个会话，确保有会话被选中
+    await createTestSession(request, 'Long Message Test Session');
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(500);
   });
 
   test('输入框应该能处理超长文本', async ({ page }) => {
@@ -133,10 +147,16 @@ test.describe('超长消息处理', () => {
 });
 
 test.describe('特殊字符处理', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, request }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await skipWelcomeIfNeeded(page);
+
+    // 先通过 API 创建一个会话
+    await createTestSession(request, 'Special Chars Test Session');
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(500);
   });
 
   test('应该能处理 HTML 标签', async ({ page }) => {

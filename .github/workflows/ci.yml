@@ -87,6 +87,10 @@ jobs:
   test-e2e:
     needs: [test-frontend, test-backend]
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1/4, 2/4, 3/4, 4/4]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -117,31 +121,56 @@ jobs:
           cd huluchat-v3
           npx playwright install chromium
 
-      - name: Start backend server
+      - name: Start backend server with health check
         run: |
           cd huluchat-v3/backend
           python main.py &
-          sleep 5
+          # 健康检查：最多等待 60 秒确保后端可用
+          echo "Waiting for backend to be ready..."
+          for i in {1..60}; do
+            if curl -s http://localhost:8765/health > /dev/null 2>&1; then
+              echo "✅ Backend is ready after ${i} seconds!"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "❌ Backend failed to start within 60 seconds"
+          exit 1
         env:
           PYTHONUNBUFFERED: 1
 
-      - name: Run E2E tests
+      - name: Run E2E tests (shard ${{ matrix.shard }})
         run: |
           cd huluchat-v3
-          npm run test:e2e
+          npx playwright test --shard=${{ matrix.shard }}
         env:
           CI: true
 
-      - name: Upload Playwright report
+      - name: Upload Playwright report (shard ${{ matrix.shard }})
         uses: actions/upload-artifact@v4
-        if: failure()
+        if: always()
         with:
-          name: playwright-report
+          name: playwright-report-shard-${{ strategy.job-index }}
           path: huluchat-v3/playwright-report/
           retention-days: 7
 
+  # 合并所有 shard 的测试结果
+  e2e-results:
+    needs: test-e2e
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Check E2E results
+        run: |
+          # 如果任何 shard 失败，这个 job 也会失败
+          if [[ "${{ needs.test-e2e.result }}" == "failure" ]]; then
+            echo "❌ Some E2E tests failed"
+            exit 1
+          fi
+          echo "✅ All E2E tests passed"
+
   build-tauri:
-    needs: [test-frontend, test-backend, test-e2e]
+    needs: [test-frontend, test-backend, e2e-results]
     strategy:
       fail-fast: false
       matrix:

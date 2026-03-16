@@ -119,6 +119,56 @@
 
 ---
 
+## 🔵 v3.70.0 - Performance & Sidecar Fix
+
+> **来源**: Boss 本地验证发现
+> **日期**: 2026-03-14
+> **核心问题**: 安装版后端无法启动 + 前端严重卡顿
+
+### 紧急修复
+
+- [ ] **TASK-332**: 🐛 修复 CI PyInstaller 打包缺失 hidden imports [P0]
+  - **问题**: Release 工作流中 `pyinstaller --onefile main.py` 未使用 `.spec` 文件
+  - **影响**: `aiosqlite` 等动态依赖缺失，安装版 sidecar 后端启动即崩溃（`ModuleNotFoundError: No module named 'aiosqlite'`）
+  - **影响范围**: 所有平台（Windows/macOS/Linux），v3.64.0 起所有版本
+  - **修复**: PR #469 已提交，需合并
+  - **验收标准**:
+    - [ ] 合并 PR #469
+    - [ ] 打 tag 触发 Release 构建
+    - [ ] 下载安装版验证后端 sidecar 正常启动
+    - [ ] 核心功能可用（新建会话、发送消息）
+
+### 性能优化
+
+- [ ] **TASK-333**: ⚡ 后端 Sessions API 添加分页 [P1]
+  - **问题**: `GET /api/sessions/` 一次返回所有会话，无 limit/offset
+  - **影响**: 会话数量多时前端加载慢，数据库查询慢
+  - **修复方案**: 添加 `limit`（默认 50）和 `offset` 查询参数，前端配合无限滚动或按需加载
+  - **验收标准**:
+    - [ ] API 支持 `?limit=50&offset=0` 参数
+    - [ ] 前端适配分页加载
+    - [ ] 1000+ 会话时加载时间 < 500ms
+
+- [ ] **TASK-334**: ⚡ 修复 Tags 加载 N+1 查询问题 [P1]
+  - **问题**: `SessionList.tsx` 对每个会话单独调用 `getSessionTags(session.id)`
+  - **影响**: 1000 个会话 = 1000 次 HTTP 请求，严重卡顿
+  - **修复方案**: 添加批量接口 `GET /api/tags/batch?session_ids=...`，一次请求获取所有会话的 tags
+  - **验收标准**:
+    - [ ] 后端提供批量 tags 查询接口
+    - [ ] 前端用一次请求替代 N 次请求
+    - [ ] 100 个会话的 tags 加载时间 < 200ms
+
+- [ ] **TASK-335**: 🐛 排查并修复空会话批量创建问题 [P2]
+  - **问题**: 数据库中发现 1099 个会话，其中 1040 个是标题为 "New Chat" 的空会话（无任何消息）
+  - **影响**: 浪费存储，拖慢查询和渲染
+  - **调查方向**: 前端是否有重复创建会话的 bug？切换会话时是否误创建？
+  - **验收标准**:
+    - [ ] 找到空会话产生的根因
+    - [ ] 修复后不再批量产生空会话
+    - [ ] 可选：添加定期清理机制（删除超过 24h 无消息的空会话）
+
+---
+
 ## 🔵 v3.68.0 - Conversation Continuity
 
 > **决策**: 3 Agent 协作 (CEO Bezos, Critic Munger, Product Norman)
