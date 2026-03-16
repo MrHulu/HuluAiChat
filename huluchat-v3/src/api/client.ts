@@ -96,6 +96,15 @@ export interface SessionSearchResult {
   match_type: "title" | "content" | "both";
 }
 
+// Paginated session list response
+export interface SessionListResponse {
+  sessions: Session[];
+  total: number;
+  limit: number;
+  offset: number;
+  has_more: boolean;
+}
+
 /**
  * Health check
  */
@@ -105,13 +114,25 @@ export async function healthCheck(): Promise<{ status: string; version: string }
 }
 
 /**
- * List all sessions
- * @param source - Filter by session source: 'main' or 'quickpanel'
+ * List sessions with pagination
+ * @param options - Pagination and filter options
  */
-export async function listSessions(source?: "main" | "quickpanel"): Promise<Session[]> {
+export interface ListSessionsOptions {
+  source?: "main" | "quickpanel";
+  limit?: number;  // Default: 50
+  offset?: number; // Default: 0
+}
+
+export async function listSessions(options?: ListSessionsOptions): Promise<SessionListResponse> {
   const params = new URLSearchParams();
-  if (source) {
-    params.append("source", source);
+  if (options?.source) {
+    params.append("source", options.source);
+  }
+  if (options?.limit !== undefined) {
+    params.append("limit", options.limit.toString());
+  }
+  if (options?.offset !== undefined) {
+    params.append("offset", options.offset.toString());
   }
   const response = await fetch(`${API_BASE}/sessions/?${params.toString()}`);
   return response.json();
@@ -552,13 +573,23 @@ export async function moveSessionToFolder(
 }
 
 /**
- * List sessions filtered by folder
+ * List sessions filtered by folder with pagination
  */
-export async function listSessionsByFolder(folderId: string | null): Promise<Session[]> {
-  const url = folderId
-    ? `${API_BASE}/sessions/?folder_id=${folderId}`
-    : `${API_BASE}/sessions/`;
-  const response = await fetch(url);
+export async function listSessionsByFolder(
+  folderId: string | null,
+  options?: { limit?: number; offset?: number }
+): Promise<SessionListResponse> {
+  const params = new URLSearchParams();
+  if (folderId) {
+    params.append("folder_id", folderId);
+  }
+  if (options?.limit !== undefined) {
+    params.append("limit", options.limit.toString());
+  }
+  if (options?.offset !== undefined) {
+    params.append("offset", options.offset.toString());
+  }
+  const response = await fetch(`${API_BASE}/sessions/?${params.toString()}`);
   return response.json();
 }
 

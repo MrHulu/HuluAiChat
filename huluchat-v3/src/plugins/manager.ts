@@ -747,7 +747,8 @@ class PluginManagerImpl implements PluginManager {
         if (!plugin.manifest.permissions.includes("api")) {
           throw new Error("API permission required");
         }
-        return listSessions();
+        const response = await listSessions();
+        return response.sessions;
       },
 
       getSession: async (id: string): Promise<Session | null> => {
