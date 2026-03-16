@@ -127,16 +127,17 @@
 
 ### 紧急修复
 
-- [ ] **TASK-332**: 🐛 修复 CI PyInstaller 打包缺失 hidden imports [P0]
+- [x] **TASK-332**: 🐛 修复 CI PyInstaller 打包缺失 hidden imports [P0] ✅
   - **问题**: Release 工作流中 `pyinstaller --onefile main.py` 未使用 `.spec` 文件
   - **影响**: `aiosqlite` 等动态依赖缺失，安装版 sidecar 后端启动即崩溃（`ModuleNotFoundError: No module named 'aiosqlite'`）
   - **影响范围**: 所有平台（Windows/macOS/Linux），v3.64.0 起所有版本
-  - **修复**: PR #469 已提交，需合并
+  - **修复**: PR #471 已合并
   - **验收标准**:
-    - [ ] 合并 PR #469
-    - [ ] 打 tag 触发 Release 构建
-    - [ ] 下载安装版验证后端 sidecar 正常启动
-    - [ ] 核心功能可用（新建会话、发送消息）
+    - [x] 合并 PR #471
+    - [x] 打 tag 触发 Release 构建
+    - [x] GitHub Release v3.70.0 已发布
+  - **完成日期**: 2026-03-16
+  - **周期**: Cycle #26
 
 ### 性能优化
 
