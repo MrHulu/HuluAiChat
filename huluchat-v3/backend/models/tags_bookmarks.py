@@ -52,6 +52,22 @@ class TagList(BaseModel):
     tags: List[str]
 
 
+class BatchTagsRequest(BaseModel):
+    """Schema for batch tags query request."""
+    session_ids: List[str]
+
+
+class SessionTags(BaseModel):
+    """Schema for tags of a single session in batch response."""
+    session_id: str
+    tags: List[str]
+
+
+class BatchTagsResponse(BaseModel):
+    """Schema for batch tags query response."""
+    sessions: List[SessionTags]
+
+
 # ============================================================
 # Message Bookmarks
 # ============================================================

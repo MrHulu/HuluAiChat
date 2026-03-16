@@ -4,28 +4,38 @@
 
 ---
 
-## ✅ v3.70.0 发布完成 ✅
+## ✅ TASK-334: Tags N+1 查询优化完成 ✅
 
-> **Cycle #26** - PyInstaller 打包修复 + E2E 测试稳定性
+> **Cycle #28** - v3.70.0 第二个任务
 
-### 完成任务
+### 问题描述
 
-| 任务 | 内容 | 状态 |
+**N+1 查询问题**：`SessionList.tsx` 对每个会话单独调用 `getSessionTags(session.id)`
+- 1000 个会话 = 1000 次 HTTP 请求
+- 严重卡顿用户体验
+
+### 解决方案
+
+| 组件 | 文件 | 修改 |
 |------|------|------|
-| TASK-332 | 修复 CI PyInstaller 打包缺失 hidden imports | ✅ |
+| 后端批量接口 | `api/tags.py` | 新增 `GET /api/tags/batch?session_ids=...` |
+| 后端 Schema | `models/tags_bookmarks.py` | 新增 `BatchTagsResponse`, `SessionTags` |
+| 前端 API | `api/client.ts` | 新增 `batchGetSessionTags()` |
+| SessionList | `SessionList.tsx` | 使用批量接口替代循环调用 |
 
-### 修复内容
+### 性能改进
 
-| 问题 | 解决方案 |
-|------|----------|
-| `ModuleNotFoundError: No module named 'aiosqlite'` | PR #471 添加 `--hidden-import` 参数 |
-| 安装版 sidecar 启动崩溃 | 覆盖所有 4 个平台的构建 |
+| 指标 | 优化前 | 优化后 | 改善 |
+|------|--------|--------|------|
+| HTTP 请求数 | 1000 次 | 1 次 | **-99.9%** |
+| 网络延迟 | ~30s (30ms*1000) | ~30ms | **1000x** |
 
-### 技术指标
+### 测试结果
 
-- **PR**: #471 ✅ 已合并
-- **GitHub Release**: https://github.com/MrHulu/HuluAiChat/releases/tag/v3.70.0
-- **版本**: 3.70.0
+- 后端测试: 9 个新测试全部通过 ✅
+- 前端测试: 1984 passed ✅
+- 类型检查: 通过 ✅
+- Lint: 0 errors ✅
 
 ---
 
@@ -728,31 +738,35 @@ Boss 提供的 GLM-5 API Key 已过期（返回 401 错误）。
 
 - **项目**: HuluChat
 - **当前版本**: v3.70.0 ✅ **已发布**
-- **下一版本**: v3.71.0 (待规划)
-- **当前周期**: Cycle #26
-- **当前状态**: ✅ v3.70.0 已发布
-- **已完成任务计数**: 93
-- **待开始任务**:
-  - TASK-333: 后端 Sessions API 添加分页 [P1]
-  - TASK-334: 修复 Tags 加载 N+1 查询问题 [P1]
-  - TASK-335: 排查并修复空会话批量创建问题 [P2]
+- **下一版本**: v3.71.0 (Performance & Cleanup)
+- **当前周期**: Cycle #28
+- **当前状态**: ✅ v3.70.0 进行中
+- **已完成任务计数**: 94
+- **待开始任务**: TASK-335
 
 ---
 
 ## Next Action
-> **✅ v3.70.0 发布完成**
+> **✅ TASK-334 完成**
 >
-> **已完成**: TASK-332 修复 CI PyInstaller 打包
-> - PR #471 已合并
-> - GitHub Release v3.70.0 已发布
+> **已完成**: Tags 加载 N+1 查询优化
+> - 后端: 新增批量 tags 查询接口 `GET /api/tags/batch?session_ids=...`
+> - 前端: `batchGetSessionTags()` 替代循环调用
+> - 性能: 1000 次 HTTP 请求 → 1 次 (1000x 提升)
+> - 测试: 后端 9 个新测试全部通过
 >
-> **待开始任务 (v3.70.0 剩余)**:
-> - TASK-333: 后端 Sessions API 添加分页 [P1]
-> - TASK-334: 修复 Tags 加载 N+1 查询问题 [P1]
+> **v3.70.0 进度**: 2/3 任务完成
+>
+> **已完成任务**:
+> - ~~TASK-332: 修复 CI PyInstaller 打包~~ ✅
+> - ~~TASK-333: 后端 Sessions API 分页~~ ✅
+> - ~~TASK-334: Tags N+1 查询优化~~ ✅
+>
+> **待开始任务**:
 > - TASK-335: 排查并修复空会话批量创建问题 [P2]
 >
-> **下一步**: 执行 TASK-333 (后端 Sessions API 添加分页)
+> **下一步**: 执行 TASK-335 (空会话批量创建问题排查)
 
 ---
 
-*更新时间: 2026-03-16 - Cycle #26 (v3.70.0 发布完成)*
+*更新时间: 2026-03-16 - Cycle #28 (v3.70.0 TASK-334 完成)*

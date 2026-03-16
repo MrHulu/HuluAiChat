@@ -10,6 +10,7 @@ vi.mock("@/api/client", () => ({
   searchSessions: vi.fn().mockResolvedValue([]),
   moveSessionToFolder: vi.fn(),
   listAllTags: vi.fn().mockResolvedValue([]),
+  batchGetSessionTags: vi.fn().mockResolvedValue({ sessions: [] }),
 }));
 
 const createSession = (id: string, title: string, folderId?: string): Session => ({

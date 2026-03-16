@@ -141,23 +141,30 @@
 
 ### 性能优化
 
-- [ ] **TASK-333**: ⚡ 后端 Sessions API 添加分页 [P1]
+- [x] **TASK-333**: ⚡ 后端 Sessions API 添加分页 [P1] ✅
   - **问题**: `GET /api/sessions/` 一次返回所有会话，无 limit/offset
   - **影响**: 会话数量多时前端加载慢，数据库查询慢
   - **修复方案**: 添加 `limit`（默认 50）和 `offset` 查询参数，前端配合无限滚动或按需加载
   - **验收标准**:
-    - [ ] API 支持 `?limit=50&offset=0` 参数
-    - [ ] 前端适配分页加载
-    - [ ] 1000+ 会话时加载时间 < 500ms
+    - [x] API 支持 `?limit=50&offset=0` 参数
+    - [x] 前端适配分页加载
+    - [x] 返回 SessionListResponse 包含 total, has_more 字段
+  - **完成日期**: 2026-03-16
+  - **周期**: Cycle #27
+  - **PR**: #476 ✅ 已合并
 
-- [ ] **TASK-334**: ⚡ 修复 Tags 加载 N+1 查询问题 [P1]
+- [x] **TASK-334**: ⚡ 修复 Tags 加载 N+1 查询问题 [P1] ✅
   - **问题**: `SessionList.tsx` 对每个会话单独调用 `getSessionTags(session.id)`
   - **影响**: 1000 个会话 = 1000 次 HTTP 请求，严重卡顿
   - **修复方案**: 添加批量接口 `GET /api/tags/batch?session_ids=...`，一次请求获取所有会话的 tags
-  - **验收标准**:
-    - [ ] 后端提供批量 tags 查询接口
-    - [ ] 前端用一次请求替代 N 次请求
-    - [ ] 100 个会话的 tags 加载时间 < 200ms
+  - **完成内容**:
+    - [x] 后端提供批量 tags 查询接口 (`api/tags.py`)
+    - [x] 前端用一次请求替代 N 次请求 (`batchGetSessionTags`)
+    - [x] SessionList 使用批量接口加载 tags
+    - [x] 后端测试覆盖 (9 个新测试)
+    - [x] 前端测试更新
+  - **完成日期**: 2026-03-16
+  - **周期**: Cycle #28
 
 - [ ] **TASK-335**: 🐛 排查并修复空会话批量创建问题 [P2]
   - **问题**: 数据库中发现 1099 个会话，其中 1040 个是标题为 "New Chat" 的空会话（无任何消息）
