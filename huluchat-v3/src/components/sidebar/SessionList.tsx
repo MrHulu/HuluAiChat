@@ -30,8 +30,8 @@ import {
   searchSessions,
   ExportFormat,
   moveSessionToFolder,
-  getSessionTags,
   listAllTags,
+  batchGetSessionTags,
   batchDeleteSessions,
   batchMoveSessions,
   batchExportSessions,
@@ -153,25 +153,36 @@ export const SessionList = forwardRef<SessionListRef, SessionListProps>(
     loadAllTags();
   }, []);
 
-  // Load tags for all sessions
+  // Load tags for all sessions using batch API (optimized N+1 query fix)
   useEffect(() => {
     const loadSessionTags = async () => {
-      const tagsMap: SessionTagsMap = {};
-      for (const session of sessions) {
-        try {
-          const tagList = await getSessionTags(session.id);
-          tagsMap[session.id] = tagList.tags;
-        } catch (error) {
-          console.error(`Failed to load tags for session ${session.id}:`, error);
+      if (sessions.length === 0) {
+        return;
+      }
+
+      try {
+        // Batch request - single HTTP request for all sessions
+        const sessionIds = sessions.map((s) => s.id);
+        const response = await batchGetSessionTags(sessionIds);
+
+        // Convert to map for quick lookup
+        const tagsMap: SessionTagsMap = {};
+        for (const sessionTags of response.sessions) {
+          tagsMap[sessionTags.session_id] = sessionTags.tags;
+        }
+        setSessionTags(tagsMap);
+      } catch (error) {
+        console.error("Failed to load session tags:", error);
+        // Set empty tags on error
+        const tagsMap: SessionTagsMap = {};
+        for (const session of sessions) {
           tagsMap[session.id] = [];
         }
+        setSessionTags(tagsMap);
       }
-      setSessionTags(tagsMap);
     };
 
-    if (sessions.length > 0) {
-      loadSessionTags();
-    }
+    loadSessionTags();
   }, [sessions]);
 
   // Tag filter handlers

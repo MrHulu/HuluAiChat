@@ -897,10 +897,43 @@ export interface SessionWithTags extends Session {
 }
 
 /**
+ * Session tags for batch response
+ */
+export interface SessionTags {
+  session_id: string;
+  tags: string[];
+}
+
+/**
+ * Batch tags response
+ */
+export interface BatchTagsResponse {
+  sessions: SessionTags[];
+}
+
+/**
  * Get all sessions with a specific tag
  */
 export async function getSessionsByTag(tagName: string): Promise<SessionWithTags[]> {
   const response = await fetch(`${API_BASE}/tags/${encodeURIComponent(tagName)}/sessions`);
+  return response.json();
+}
+
+/**
+ * Batch get tags for multiple sessions
+ * Optimized for reducing N+1 queries when loading session lists
+ * @param sessionIds - Array of session IDs to get tags for (max 500)
+ */
+export async function batchGetSessionTags(sessionIds: string[]): Promise<BatchTagsResponse> {
+  if (sessionIds.length === 0) {
+    return { sessions: [] };
+  }
+  const response = await fetch(
+    `${API_BASE}/tags/batch?session_ids=${sessionIds.join(",")}`
+  );
+  if (!response.ok) {
+    throw new Error(`Batch get tags failed: ${response.statusText}`);
+  }
   return response.json();
 }
 

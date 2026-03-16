@@ -1,8 +1,8 @@
 """Session tags API"""
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
-from typing import List
+from typing import List, Dict
 import uuid
 
 from core.database import get_session as get_db_session
@@ -11,6 +11,8 @@ from models.tags_bookmarks import (
     TagCreate,
     TagResponse,
     TagList,
+    BatchTagsResponse,
+    SessionTags,
 )
 
 router = APIRouter()
@@ -150,3 +152,60 @@ async def get_sessions_by_tag(
         })
 
     return response
+
+
+@router.get("/tags/batch", response_model=BatchTagsResponse)
+async def batch_get_session_tags(
+    session_ids: str = Query(..., description="Comma-separated session IDs"),
+    db: AsyncSession = Depends(get_db_session)
+):
+    """Get tags for multiple sessions in a single request.
+
+    This endpoint is optimized for reducing N+1 queries when loading
+    session lists with tags. Instead of making N requests for N sessions,
+    make a single batch request.
+
+    Args:
+        session_ids: Comma-separated list of session IDs (max 500)
+        db: Database session
+
+    Returns:
+        BatchTagsResponse with tags for each requested session
+    """
+    # Parse and validate session IDs
+    ids_list = [id.strip() for id in session_ids.split(",") if id.strip()]
+
+    # Limit batch size to prevent abuse
+    if len(ids_list) > 500:
+        raise HTTPException(
+            status_code=400,
+            detail="Maximum 500 session IDs allowed per batch request"
+        )
+
+    if not ids_list:
+        return BatchTagsResponse(sessions=[])
+
+    # Single query to get all tags for all sessions
+    result = await db.execute(
+        select(SessionTagModel)
+        .where(SessionTagModel.session_id.in_(ids_list))
+        .order_by(SessionTagModel.session_id, SessionTagModel.tag_name)
+    )
+    all_tags = result.scalars().all()
+
+    # Group tags by session_id
+    tags_by_session: Dict[str, List[str]] = {}
+    for tag in all_tags:
+        if tag.session_id not in tags_by_session:
+            tags_by_session[tag.session_id] = []
+        tags_by_session[tag.session_id].append(tag.tag_name)
+
+    # Build response (include empty tag list for sessions without tags)
+    sessions_response = []
+    for session_id in ids_list:
+        sessions_response.append(SessionTags(
+            session_id=session_id,
+            tags=tags_by_session.get(session_id, [])
+        ))
+
+    return BatchTagsResponse(sessions=sessions_response)
