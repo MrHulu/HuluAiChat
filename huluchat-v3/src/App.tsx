@@ -15,7 +15,7 @@ import { ContextualTip } from "@/components/ContextualTip";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { SidebarErrorFallback } from "@/components/ui/sidebar-error-fallback";
-import { useSession, useKeyboardShortcuts, useFolders, useFeatureDiscovery, useContextualTip, useModel, useBackendHealth, useGlobalShortcut, useAccessibilityPermission } from "@/hooks";
+import { useSession, useKeyboardShortcuts, useFolders, useFeatureDiscovery, useContextualTip, useModel, useBackendHealth, useGlobalShortcut, useAccessibilityPermission, useUndoDelete } from "@/hooks";
 import { BackendStatusIndicator } from "@/components/BackendStatusIndicator";
 import { exportSession, moveSessionToFolder, updateSettings, ExportFormat } from "@/api/client";
 import { getAPIKey } from "@/services/keyring";
@@ -139,6 +139,18 @@ function App() {
     isLoadingMore: isLoadingMoreSessions,
   } = useSession();
 
+  // Undo delete hook - TASK-350
+  const { requestDelete: requestDeleteSession } = useUndoDelete({
+    delay: 10000, // 10 seconds to undo
+    onDelete: async (id: string) => {
+      await removeSession(id);
+    },
+    onUndo: (id: string) => {
+      // Re-select the session on undo
+      selectSession(id);
+    },
+  });
+
   const {
     folders,
     createFolder,
@@ -223,9 +235,11 @@ function App() {
   };
 
   const handleDeleteSession = async (id: string) => {
-    if (window.confirm(t("app.deleteConfirm"))) {
-      await removeSession(id);
-    }
+    // Find session title for toast message
+    const session = sessions.find(s => s.id === id);
+    const title = session?.title || t("sessionItem.newChat");
+    // Use undo delete instead of immediate delete - TASK-350
+    requestDeleteSession(id, title);
   };
 
   // 导出会话

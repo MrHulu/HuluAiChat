@@ -595,7 +595,10 @@
     "json": "JSON (.json)",
     "plainText": "纯文本 (.txt)",
     "tags": "标签",
-    "moreTags": "+{{count}} 个标签"
+    "moreTags": "+{{count}} 个标签",
+    "deleteToast": "「{{title}}」将在 10 秒后删除",
+    "deleteUndone": "已取消删除",
+    "deleteError": "删除会话失败"
   },
   "batch": {
     "enterBatchMode": "进入批量选择模式",

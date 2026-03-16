@@ -47,3 +47,9 @@ export {
   type UseDraftRecoveryOptions,
   type UseDraftRecoveryReturn,
 } from "./useDraftRecovery";
+export {
+  useUndoDelete,
+  type PendingDeletion,
+  type UseUndoDeleteOptions,
+  type UseUndoDeleteReturn,
+} from "./useUndoDelete";
