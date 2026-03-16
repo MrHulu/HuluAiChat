@@ -2,6 +2,121 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [3.72.0] - 2026-03-17
+
+### 📚 Documentation
+
+- **TASK-343**: Website Documentation Pages
+  - Added comprehensive documentation section to website
+  - Installation guide (`/docs/installation`)
+  - Quick start tutorial (`/docs/quick-start`)
+  - Multi-model support docs (`/docs/features/multi-model`)
+  - RAG knowledge base docs (`/docs/features/rag`)
+  - QuickPanel docs (`/docs/features/quick-panel`)
+  - Session management docs (`/docs/features/sessions`)
+  - FAQ page (`/docs/faq`)
+  - Troubleshooting guide (`/docs/troubleshooting`)
+  - Files: `website/src/app/docs/**/*`
+
+### 🔍 Search Enhancement
+
+- **TASK-344**: Enhanced Session Search
+  - Added date filters (Today/This Week/This Month/All)
+  - Added folder filter dropdown
+  - Backend API supports `folder_id`, `date_from`, `date_to` parameters
+  - Search UI with quick filter buttons
+  - Internationalization support (en/zh)
+  - Files: `huluchat-v3/src/components/sidebar/SessionList.tsx`, `backend/api/sessions.py`
+
+### 📝 GitHub Templates
+
+- **TASK-345**: GitHub Issues Templates
+  - Bug report template (`.github/ISSUE_TEMPLATE/bug_report.yml`)
+  - Feature request template (`.github/ISSUE_TEMPLATE/feature_request.yml`)
+  - Question/help template (`.github/ISSUE_TEMPLATE/question.yml`)
+  - Security vulnerability template (`.github/ISSUE_TEMPLATE/security_vulnerability.yml`)
+  - Security policy (`.github/SECURITY.md`)
+  - Pull request template (`.github/PULL_REQUEST_TEMPLATE.md`)
+
+### ⌨️ UX
+
+- **TASK-346**: Keyboard Shortcut Hints
+  - Added `ShortcutTooltip` component for displaying keyboard hints
+  - New Chat button shows ⌘N/Ctrl+N hint
+  - Toggle Sidebar button shows ⌘B/Ctrl+B hint
+  - Auto-detects OS (Mac: ⌘, Windows/Linux: Ctrl)
+  - Files: `src/components/ui/shortcut-tooltip.tsx`
+
+### 🔧 Technical
+
+- All 1986 frontend tests passing
+- All 146 backend tests passing
+- 4 tasks completed in this release
+
+## [3.71.0] - 2026-03-16
+
+### 🔍 Code Audit
+
+- **TASK-336**: N+1 Query and Memory Leak Audit
+  - Comprehensive code audit report generated
+  - Checked all API calls for N+1 patterns
+  - Verified WebSocket connection cleanup
+  - Reviewed React useEffect cleanup functions
+  - Checked localStorage usage
+  - Result: 0 high-risk, 1 medium-risk, 12 low-risk issues
+  - Files: `docs/cto/code-audit-report-2026-03-16.md`
+
+### ⚡ Performance
+
+- **TASK-337**: Performance Analysis
+  - First screen load time analysis (6/10 score)
+  - Large session list rendering analysis (5/10 score)
+  - Message list virtualization verified (9/10 score)
+  - Backend API response time analysis (7/10 score)
+  - Overall score: 6.75/10
+
+- **TASK-340**: Mermaid Dynamic Import Optimization (Verified)
+  - Confirmed Mermaid uses dynamic import (`await import("mermaid")`)
+  - Already split to separate chunk (`vendor-mermaid`)
+  - Only loaded when rendering diagrams (lazy loading)
+  - Gzip size: 689 KB (acceptable)
+
+- **TASK-341**: SessionList Virtualization
+  - Added `useVirtualizer` for large session lists
+  - Auto-enable virtual list when >50 sessions in selected folder
+  - Small lists (≤50) keep standard rendering for animations
+  - Performance improvement: 1000 sessions → ~20 visible DOM nodes
+  - Files: `src/components/sidebar/SessionList.tsx`
+
+- **TASK-342**: Frontend Pagination/Infinite Scroll
+  - Added infinite scroll for session list
+  - Initial load: 50 sessions
+  - Auto-load more when scrolling near bottom (100px threshold)
+  - Loading indicator for more sessions
+  - Files: `src/components/sidebar/SessionList.tsx`, `src/hooks/useSession.ts`
+
+### 💡 UX
+
+- **TASK-338**: Feature Discovery Optimization (Verified)
+  - Verified 8 discoverable features implemented
+  - English translations complete
+  - Chinese translations complete
+  - Privacy compliant (local storage only)
+
+### 🧪 Testing
+
+- **TASK-339**: Real User Testing Preparation
+  - Test checklist: `docs/user-testing/v3.70.0-test-checklist.md`
+  - Feedback form: `docs/user-testing/feedback-form.md`
+  - Installation packages ready on GitHub Releases
+
+### 🔧 Technical
+
+- All 1984 frontend tests passing
+- All 146 backend tests passing
+- E2E tests: 174 tests
+- 7 tasks completed in this release
+
 ## [3.70.0] - 2026-03-16
 
 ### 🐛 Bug Fixes
