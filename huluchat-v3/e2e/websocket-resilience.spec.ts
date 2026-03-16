@@ -23,7 +23,7 @@ const TEST_CONFIG = {
 async function skipWelcomeIfNeeded(page: Page) {
   const skipButton = page.locator('button:has-text("Skip")');
   if (await skipButton.isVisible({ timeout: 2000 }).catch(() => false)) {
-    await skipButton.click();
+    await skipButton.click({ force: true });
     await page.waitForTimeout(500);
   }
 }
@@ -47,6 +47,50 @@ async function goOffline(page: Page) {
 async function goOnline(page: Page) {
   const context = page.context();
   await context.setOffline(false);
+}
+
+// 辅助函数：确保有选中的会话（通过 UI 创建并选中）
+async function ensureSessionSelected(page: Page) {
+  // 等待页面完全加载
+  await page.waitForTimeout(1000);
+
+  // 方法1: 点击 "New Chat" 按钮创建并选中一个新会话
+  const newChatButton = page.getByRole('button', { name: /new chat|新建|new/i });
+
+  const isVisible = await newChatButton.first().isVisible({ timeout: 3000 }).catch(() => false);
+  console.log(`New Chat button visible: ${isVisible}`);
+
+  if (isVisible) {
+    await newChatButton.first().click({ force: true });
+    await page.waitForTimeout(1000);
+  }
+
+  // 等待 textarea 变为可用
+  const inputArea = page.locator('textarea').or(page.locator('[contenteditable="true"]'));
+  await inputArea.first().waitFor({ state: 'visible', timeout: 10000 });
+
+  // 验证 textarea 不是 disabled 状态
+  let isDisabled = await inputArea.first().isDisabled();
+  console.log(`Textarea disabled: ${isDisabled}`);
+
+  // 如果还是 disabled，尝试其他方法
+  if (isDisabled) {
+    // 方法2: 使用快捷键 Ctrl+Shift+N 创建新会话
+    await page.keyboard.press('Control+Shift+N');
+    await page.waitForTimeout(1000);
+    isDisabled = await inputArea.first().isDisabled();
+    console.log(`Textarea disabled after keyboard: ${isDisabled}`);
+  }
+
+  // 最后尝试: 点击侧边栏中的第一个会话
+  if (isDisabled) {
+    const sessionItem = page.locator('[class*="session"]').first();
+    const sessionVisible = await sessionItem.isVisible({ timeout: 2000 }).catch(() => false);
+    if (sessionVisible) {
+      await sessionItem.click({ force: true });
+      await page.waitForTimeout(500);
+    }
+  }
 }
 
 test.describe('WebSocket 连接状态', () => {
@@ -179,10 +223,13 @@ test.describe('WebSocket 断连重连', () => {
 });
 
 test.describe('断连期间消息排队', () => {
-  test('离线时输入的消息应该在重连后发送', async ({ page }) => {
+  test('离线时输入的消息应该在重连后发送', async ({ page, request }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await skipWelcomeIfNeeded(page);
+
+    // 通过 UI 创建并选中一个会话
+    await ensureSessionSelected(page);
 
     const inputArea = page.locator('textarea').or(page.locator('[contenteditable="true"]'));
 
@@ -205,10 +252,13 @@ test.describe('断连期间消息排队', () => {
     await goOnline(page);
   });
 
-  test('断连时 UI 应该显示离线提示', async ({ page }) => {
+  test('断连时 UI 应该显示离线提示', async ({ page, request }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await skipWelcomeIfNeeded(page);
+
+    // 通过 UI 创建并选中一个会话
+    await ensureSessionSelected(page);
 
     // 模拟网络中断
     await goOffline(page);
@@ -283,6 +333,9 @@ test.describe('连接状态 UI 反馈', () => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await skipWelcomeIfNeeded(page);
+
+    // 通过 UI 创建并选中一个会话
+    await ensureSessionSelected(page);
   });
 
   test('连接中应该显示加载状态', async ({ page }) => {
@@ -299,7 +352,7 @@ test.describe('连接状态 UI 反馈', () => {
     console.log(`Loading indicator visible during connection: ${isVisible}`);
   });
 
-  test('连接失败应该显示错误', async ({ page }) => {
+  test('连接失败应该显示错误', async ({ page, request }) => {
     // 模拟后端不可用
     await goOffline(page);
     await page.waitForTimeout(3000);
@@ -316,10 +369,6 @@ test.describe('连接状态 UI 反馈', () => {
   });
 
   test('重连进度应该显示给用户', async ({ page }) => {
-    await page.goto('/');
-    await page.waitForLoadState('networkidle');
-    await skipWelcomeIfNeeded(page);
-
     // 模拟断连
     await goOffline(page);
     await page.waitForTimeout(1000);

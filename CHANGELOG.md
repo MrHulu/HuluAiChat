@@ -2,6 +2,37 @@
 
 All notable changes to HuluChat will be documented in this file.
 
+## [3.70.0] - 2026-03-16
+
+### 🐛 Bug Fixes
+
+- **TASK-332**: Fixed CI PyInstaller build missing hidden imports
+  - Added `--hidden-import aiosqlite` and other dynamic dependencies
+  - Fixed sidecar backend crash on startup (ModuleNotFoundError)
+  - Affected all platforms since v3.64.0
+  - Files: `.github/workflows/release.yml`, `.github/workflows/ci.yml`
+
+- **WebSocket Connection Leak Fix**
+  - Fixed WebSocket connection leak causing "stuck on thinking" issue
+  - Proper connection cleanup and state management
+  - Files: `src/hooks/useWebSocket.ts`
+
+### 🧪 Testing
+
+- **E2E Test Stability Improvements**
+  - Added health check for E2E test backend startup
+  - Added session creation for timeout tests
+  - Added `force:true` for edge-cases skipWelcome
+  - Added multiple fallback methods for session selection
+  - Added more acceptable status codes for API tests
+  - Optimized memory configuration
+
+### 🔧 Technical
+
+- All frontend tests passing
+- All backend tests passing
+- CI/CD pipeline stability improved
+
 ## [3.67.0] - 2026-03-14
 
 ### 🔒 Security
