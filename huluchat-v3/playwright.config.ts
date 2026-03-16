@@ -9,7 +9,7 @@ export default defineConfig({
   fullyParallel: false, // 串行执行避免并发问题
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0, // CI 环境只重试 1 次
-  workers: process.env.CI ? 1 : undefined,
+  workers: 1, // 单 worker 减少内存占用
   reporter: [['html', { open: 'never' }], ['list']],
   timeout: 90000, // 全局超时 90 秒
   expect: {
@@ -19,15 +19,23 @@ export default defineConfig({
     baseURL: 'http://localhost:5173',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
+    video: 'off', // 关闭视频录制减少内存占用
     actionTimeout: 30000, // 操作超时 30 秒
     navigationTimeout: 60000, // 导航超时 60 秒
     viewport: { width: 1280, height: 720 },
     // 忽略 HTTPS 错误
     ignoreHTTPSErrors: true,
-    // 更宽松的等待策略
+    // 内存优化启动参数
     launchOptions: {
-      args: ['--disable-web-security', '--disable-features=IsolateOrigins,site-per-process']
+      args: [
+        '--disable-web-security',
+        '--disable-features=IsolateOrigins,site-per-process',
+        '--disable-dev-shm-usage', // 避免 /dev/shm 内存问题
+        '--disable-gpu', // 禁用 GPU 减少内存
+        '--no-sandbox', // 禁用沙箱减少内存
+        '--disable-setuid-sandbox',
+        '--js-flags=--max-old-space-size=512', // 限制 V8 堆内存
+      ]
     },
   },
 
