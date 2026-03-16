@@ -5,6 +5,6 @@
  * DO NOT manually edit this file - it will be overwritten during releases.
  */
 
-export const VERSION = "3.69.0";
+export const VERSION = "3.72.0";
 
-export const RELEASE_NOTES = "New features and improvements";
+export const RELEASE_NOTES = "Website docs, enhanced search, GitHub templates, keyboard hints";
