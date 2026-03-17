@@ -135,6 +135,7 @@ vi.mock("@/api/client", () => ({
   listAllTags: vi.fn().mockResolvedValue([]),
   getSessionTags: vi.fn().mockResolvedValue([]),
   getSessionBookmarks: vi.fn().mockResolvedValue([]),
+  batchGetSessionTags: vi.fn().mockResolvedValue({}), // Add this line
   getSettings: vi.fn().mockResolvedValue({}),
   getModels: vi.fn().mockResolvedValue([]),
   getOllamaStatus: vi.fn().mockResolvedValue({ running: false }),
