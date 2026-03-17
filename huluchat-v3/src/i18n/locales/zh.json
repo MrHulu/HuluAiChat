@@ -170,9 +170,12 @@
     "time": {
       "justNow": "刚刚",
       "minutesAgo": "{{count}} 分钟前",
+      "minutesAgo_other": "{{count}} 分钟前",
       "hoursAgo": "{{count}} 小时前",
+      "hoursAgo_other": "{{count}} 小时前",
       "yesterday": "昨天",
-      "daysAgo": "{{count}} 天前"
+      "daysAgo": "{{count}} 天前",
+      "daysAgo_other": "{{count}} 天前"
     },
     "imageTooLarge": "{{name}} 文件过大（最大 {{max}}）",
     "fileTooLarge": "{{name}} 文件过大（最大 {{max}}）",
@@ -227,10 +230,15 @@
     "untitledSession": "未命名会话",
     "justNow": "刚刚",
     "minutesAgo": "{{count}} 分钟前",
+    "minutesAgo_other": "{{count}} 分钟前",
     "hoursAgo": "{{count}} 小时前",
+    "hoursAgo_other": "{{count}} 小时前",
     "daysAgo": "{{count}} 天前",
+    "daysAgo_other": "{{count}} 天前",
     "images": "{{count}} 张图片",
+    "images_other": "{{count}} 张图片",
     "files": "{{count}} 个文件",
+    "files_other": "{{count}} 个文件",
     "recovered": "草稿已恢复",
     "dismissed": "草稿已忽略"
   },
@@ -242,6 +250,7 @@
     "tabPlugins": "插件",
     "tabAppearance": "外观",
     "tabShortcuts": "快捷键",
+    "tabQuickActions": "快捷操作",
     "apiKey": "API 密钥",
     "apiKeyPlaceholder": "sk-...",
     "apiKeySet": "已设置 API 密钥。输入新密钥以更新。",
@@ -291,7 +300,10 @@
       "promptPlaceholder": "例如：翻译以下文本：\n\n{{text}}",
       "promptHint": "使用 {{text}} 作为选中/输入文本的占位符",
       "saved": "快捷操作已保存",
-      "deleted": "快捷操作已删除"
+      "deleted": "快捷操作已删除",
+      "resetSuccess": "快捷操作已重置为默认",
+      "errorRequired": "名称和提示词模板为必填项",
+      "noActions": "未配置快捷操作"
     }
   },
   "plugins": {
