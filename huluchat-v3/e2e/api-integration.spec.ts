@@ -45,8 +45,10 @@ async function configureApiKey(request: APIRequestContext, apiKey: string, baseU
 }
 
 // 辅助函数：清除 API Key 配置（通过设置空值）
-async function clearApiKey(request: APIRequestContext) {
-  // 注意：后端不支持清除 API Key，但我们可以设置一个无效值
+// 注意：后端不支持清除 API Key，但我们可以设置一个无效值
+// 这个函数暂时保留用于未来扩展
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function _clearApiKey(_request: APIRequestContext) {
   // 这个测试的目的只是验证错误处理
 }
 
@@ -365,7 +367,7 @@ test.describe('API 集成测试 - 真实 AI 对话', () => {
 test.describe('API 集成测试 - 错误处理', () => {
   test('无效 API Key 应该返回错误', async ({ request }) => {
     // 配置无效的 API Key
-    const response = await configureApiKey(request, 'invalid-api-key-12345', TEST_CONFIG.zhipuBaseUrl);
+    await configureApiKey(request, 'invalid-api-key-12345', TEST_CONFIG.zhipuBaseUrl);
 
     // 测试连接
     const testResponse = await request.post(`${TEST_CONFIG.backendUrl}/api/settings/test`, {
@@ -395,7 +397,7 @@ test.describe('API 集成测试 - 错误处理', () => {
 
     const messages: unknown[] = [];
 
-    await new Promise<void>((resolve, reject) => {
+    await new Promise<void>((resolve) => {
       const timeout = setTimeout(() => {
         // 超时时也视为通过，只要收到了消息
         ws.close();

@@ -143,6 +143,7 @@ export const MessageStatusGroup = memo(function MessageStatusGroup({
  * @param isLocalMessage - 是否是本地消息（未保存到服务器）
  * @returns 消息状态
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function getMessageStatus(
   messageId: string,
   isConnected: boolean,

@@ -3,7 +3,7 @@
  * 提示词模板变量系统测试
  */
 import { describe, it, expect } from "vitest";
-import { extractVariables, getUserVariables, hasUserVariables, replaceVariables, processTemplate, PREDEFINED_VARIABLES } from "./templateVariables";
+import { extractVariables, getUserVariables, hasUserVariables, replaceVariables, processTemplate } from "./templateVariables";
 
 describe("extractVariables", () => {
   it("should extract variable names from template content", () => {

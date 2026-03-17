@@ -755,7 +755,7 @@ describe("useWebSocket hook", () => {
     });
 
     it("should not send pong when not connected", async () => {
-      const { result } = renderHook(() =>
+      renderHook(() =>
         useWebSocket({ url: testUrl })
       );
 

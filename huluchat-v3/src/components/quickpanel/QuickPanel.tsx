@@ -187,10 +187,12 @@ export function QuickPanel({
   }, [isOpen, sessionId]);
 
   // Detect clipboard content when panel opens
+  // Note: detectClipboardContent is intentionally excluded from deps to prevent re-detection on every render
   useEffect(() => {
     if (isOpen && !initialText) {
       detectClipboardContent();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, initialText]);
 
   // Focus input when panel opens

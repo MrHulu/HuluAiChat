@@ -223,7 +223,7 @@ test.describe('WebSocket 断连重连', () => {
 });
 
 test.describe('断连期间消息排队', () => {
-  test('离线时输入的消息应该在重连后发送', async ({ page, request }) => {
+  test('离线时输入的消息应该在重连后发送', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await skipWelcomeIfNeeded(page);
@@ -252,7 +252,7 @@ test.describe('断连期间消息排队', () => {
     await goOnline(page);
   });
 
-  test('断连时 UI 应该显示离线提示', async ({ page, request }) => {
+  test('断连时 UI 应该显示离线提示', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await skipWelcomeIfNeeded(page);
@@ -352,7 +352,7 @@ test.describe('连接状态 UI 反馈', () => {
     console.log(`Loading indicator visible during connection: ${isVisible}`);
   });
 
-  test('连接失败应该显示错误', async ({ page, request }) => {
+  test('连接失败应该显示错误', async ({ page }) => {
     // 模拟后端不可用
     await goOffline(page);
     await page.waitForTimeout(3000);
@@ -386,7 +386,7 @@ test.describe('连接状态 UI 反馈', () => {
 });
 
 test.describe('WebSocket 错误恢复', () => {
-  test('无效会话 ID 应该返回错误', async ({ request }) => {
+  test('无效会话 ID 应该返回错误', async () => {
     // 使用无效的会话 ID
     const ws = new WebSocket(`${TEST_CONFIG.wsUrl}/api/chat/ws/invalid-session-id`);
 
