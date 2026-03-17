@@ -179,3 +179,8 @@ memories/consensus.md.bak
 # Playwright E2E testing
 test-results/
 playwright-report/
+
+# Large video files (use external storage)
+product-hunt/videos/*.webm
+product-hunt/videos/*.mp4
+product-hunt/videos/*.mov
