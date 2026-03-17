@@ -95,7 +95,7 @@ export function useBackendHealth(options: UseBackendHealthOptions = {}) {
       }
 
       wasOffline.current = false;
-    } catch (error) {
+    } catch {
       const now = new Date();
 
       // Increment failures

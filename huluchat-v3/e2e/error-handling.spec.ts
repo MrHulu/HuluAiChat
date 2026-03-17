@@ -25,8 +25,9 @@ async function skipWelcomeIfNeeded(page: Page) {
   }
 }
 
-// 辅助函数：创建测试会话
-async function createTestSession(request: APIRequestContext, title?: string) {
+// 辅助函数：创建测试会话（保留用于未来扩展）
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function _createTestSession(request: APIRequestContext, title?: string) {
   const response = await request.post(`${TEST_CONFIG.backendUrl}/api/sessions`, {
     data: { title: title || `Error Handling Test ${Date.now()}` },
     timeout: TEST_CONFIG.apiTimeout,
@@ -153,9 +154,9 @@ test.describe('API 错误处理', () => {
     await skipWelcomeIfNeeded(page);
   });
 
-  test('无效 API Key 应该显示错误', async ({ page, request }) => {
+  test('无效 API Key 应该显示错误', async ({ request }) => {
     // 配置无效的 API Key (测试用的假 key)
-    const response = await request.post('http://localhost:8765/api/settings', {
+    await request.post('http://localhost:8765/api/settings', {
       data: {
         openai_api_key: 'invalid-key-12345', // pragma: allowlist secret
         openai_base_url: 'https://api.openai.com/v1',
@@ -284,7 +285,7 @@ test.describe('超时处理', () => {
 
   test('慢速网络应该显示加载状态', async ({ page }) => {
     // 模拟慢速网络 (3G)
-    const context = page.context();
+    // 注意: Playwright 的网络模拟需要 CDP 会话，这里仅检查加载状态
 
     // 输入消息
     const inputArea = page.locator('textarea').or(page.locator('[contenteditable="true"]'));

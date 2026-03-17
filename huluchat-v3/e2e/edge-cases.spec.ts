@@ -84,7 +84,7 @@ async function ensureSessionSelected(page: Page) {
 }
 
 test.describe('空会话处理', () => {
-  test.beforeEach(async ({ page, request }) => {
+  test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await skipWelcomeIfNeeded(page);
@@ -142,7 +142,7 @@ test.describe('空会话处理', () => {
 });
 
 test.describe('超长消息处理', () => {
-  test.beforeEach(async ({ page, request }) => {
+  test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await skipWelcomeIfNeeded(page);
@@ -189,7 +189,7 @@ test.describe('超长消息处理', () => {
 });
 
 test.describe('特殊字符处理', () => {
-  test.beforeEach(async ({ page, request }) => {
+  test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await skipWelcomeIfNeeded(page);

@@ -1,4 +1,4 @@
-import { test, expect, Page, APIRequestContext } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 
 /**
  * HuluChat E2E 测试 - Session Templates (TASK-327)
@@ -26,8 +26,9 @@ async function skipWelcomeIfNeeded(page: Page) {
   }
 }
 
-// 辅助函数：关闭所有对话框
-async function closeAllDialogs(page: Page) {
+// 辅助函数：关闭所有对话框（保留用于未来扩展）
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function _closeAllDialogs(page: Page) {
   await page.keyboard.press('Escape');
   await page.waitForTimeout(300);
 }
@@ -76,8 +77,8 @@ test.describe('Session Templates API', () => {
       (t: { is_builtin: boolean }) => t.is_builtin === true
     );
 
-    // 应该有通用聊天模板
-    const generalTemplate = builtInTemplates.find(
+    // 应该有通用聊天模板（检查但不存储变量）
+    void builtInTemplates.some(
       (t: { id: string }) => t.id === 'general' || t.id === 'chat'
     );
 

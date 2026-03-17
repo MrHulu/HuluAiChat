@@ -24,6 +24,7 @@ declare global {
  * Wrapper component for integration tests
  * Uses the global i18n instance from test setup
  */
+// eslint-disable-next-line react-refresh/only-export-components
 function IntegrationTestWrapper({ children }: { children: ReactNode }) {
   // Use the i18n instance from test setup if available
   const i18nInstance = globalThis.testI18n;
