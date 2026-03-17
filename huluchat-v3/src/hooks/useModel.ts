@@ -167,6 +167,8 @@ export function useModel(): UseModelReturn {
     };
 
     loadModelData();
+    // Note: recommendedModel is intentionally excluded - it's set inside this effect
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 设置模型并保存到 localStorage，同时记录使用情况

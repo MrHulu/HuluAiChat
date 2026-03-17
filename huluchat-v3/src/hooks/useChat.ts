@@ -231,7 +231,9 @@ export function useChat(sessionId: string | null, options?: UseChatOptions): Use
         });
         break;
     }
-  }, [sessionId]); // 移除 streamingMessage 依赖，使用 ref 替代
+    // Note: options is intentionally excluded from deps to avoid re-creating the callback on every render
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId]);
 
   const { status: connectionStatus, sendOrQueue, queueSize, clearQueue, reconnectAttempt, maxReconnectAttempts } = useWebSocket({
     url: wsUrl,
