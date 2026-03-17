@@ -1263,6 +1263,7 @@ Boss 提供的 GLM-5 API Key 已过期（返回 401 错误）。
 > **Cycle #44 完成内容**:
 > - ✅ 提交 SearchBar.test.tsx (13 个测试)
 > - ✅ 提交 ClipboardHistoryPanel.test.tsx (16 个测试)
+> - ✅ 修复中文翻译完整性 (12 个缺失翻译)
 > - ⚠️ 视频文件太大 (3.9MB)，不适合提交到 git
 >
 > **自主决策**: 遵循 Critic Munger 保守策略，执行低风险改进
