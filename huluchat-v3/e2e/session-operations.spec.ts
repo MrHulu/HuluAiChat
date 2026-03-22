@@ -62,9 +62,11 @@ test.describe('会话创建和管理', () => {
     const response = await getAllSessions(request);
     expect(response.status()).toBe(200);
 
-    const sessions = await response.json();
-    expect(Array.isArray(sessions)).toBe(true);
-    expect(sessions.length).toBeGreaterThanOrEqual(2);
+    const data = await response.json();
+    // API 返回分页格式: { sessions: [], total, limit, offset, has_more }
+    expect(data.sessions).toBeDefined();
+    expect(Array.isArray(data.sessions)).toBe(true);
+    expect(data.sessions.length).toBeGreaterThanOrEqual(2);
   });
 
   test('应该能获取单个会话详情', async ({ request }) => {
@@ -158,11 +160,12 @@ test.describe('会话搜索', () => {
 
     // 获取所有会话
     const response = await getAllSessions(request);
-    const sessions = await response.json();
+    const data = await response.json();
 
-    // 验证至少有一个会话
-    expect(sessions.length).toBeGreaterThanOrEqual(1);
-    console.log(`✅ 获取到 ${sessions.length} 个会话`);
+    // API 返回分页格式: { sessions: [], total, ... }
+    expect(data.sessions).toBeDefined();
+    expect(data.sessions.length).toBeGreaterThanOrEqual(1);
+    console.log(`✅ 获取到 ${data.sessions.length} 个会话`);
   });
 
   test('UI 搜索框应该可用', async ({ page }) => {
@@ -214,11 +217,12 @@ test.describe('会话排序', () => {
 
     // 获取会话列表
     const response = await getAllSessions(request);
-    const sessions = await response.json();
+    const data = await response.json();
 
-    // 验证至少有 3 个会话
-    expect(sessions.length).toBeGreaterThanOrEqual(3);
-    console.log(`✅ 获取 ${sessions.length} 个会话，按时间排序`);
+    // API 返回分页格式: { sessions: [], total, ... }
+    expect(data.sessions).toBeDefined();
+    expect(data.sessions.length).toBeGreaterThanOrEqual(3);
+    console.log(`✅ 获取 ${data.sessions.length} 个会话，按时间排序`);
   });
 
   test('最近更新的会话应该在顶部', async ({ page }) => {
